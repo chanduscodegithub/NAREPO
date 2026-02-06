@@ -1,0 +1,167 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="ProductsAndCompetitorsAppletController">
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="competitorsEvent" action="{!c.updatePerAndTotalCompetitorsData}" event="c:CompetitorsEvent" />
+    
+    <aura:attribute name="competitorObject" type="Object" />
+    <aura:attribute name="isEditRecord" type="Boolean" default="false"/>
+    <aura:attribute name="productType" type="String" />
+    <aura:attribute name="competitorTypeHeader" type="String" />
+    <aura:attribute name="MembersInvolvedInOpp" type="String" />
+    <aura:attribute name="maType" type="String" />
+    <aura:attribute name="SalesStage" type="String" default="Lead"/>
+    <aura:attribute name="isMedicalAndOthersTab" type="Boolean" default="false"/>
+    <aura:attribute name="MACompetitorTotalList" type="sObject" />
+    <aura:attribute name="MACompetitorTotalRecord" type="sObject" />
+    <aura:attribute name="MARecordId" type="Id" default="006g000000FNn9xAAD"/>  
+    <aura:attribute name="previousSalesStage" type="String" default=""/>
+    <aura:attribute name="Disposition" type="String" default=""/>
+    <aura:attribute name="DispositionOther" type="String" default=""/>
+    <aura:attribute name="opportunityRecord" type="Object" />
+    <aura:attribute name="isQA" type="Boolean" />
+    <aura:attribute name="isReadOnly" type="Boolean" />        
+    
+    <aura:method name="setTotalRecord" action="{!c.setTotalRecordMethod}" >
+        <aura:attribute name="totalRecordObj" type="Object" />
+        <aura:attribute name="updatedMembersInvolvedInMAVal" type="Integer" />
+    </aura:method>
+    
+    <aura:method name="reCalculateTotalRecords" action="{!c.reCalculateTotalMACompetitorRecords}" access="PUBLIC" />
+    
+    <aura:method name="updateMembersInvolvedInMA" action="{!c.updateMembersInvolvedInMA}" access="PUBLIC"> 
+    	<aura:attribute name="updatedMembersInvolvedInMAVal" type="Integer" />
+    </aura:method>
+    
+    <aura:method name="focusCompetitorsSection" action="{!c.focusCompetitors}" access="PUBLIC" />
+
+    <article class="slds-card slds-m-top_none">
+        <div class="slds-size_1-of-2 slds-p-left_medium slds-p-vertical_small products-title">
+            <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                <h4 class="sub-title" title="Other Buy Up Programs">Other Buy Up Programs</h4>
+                <aura:set attribute="else">
+                    <h4 class="sub-title" title="{!v.productType}">{!v.productType}</h4>
+                </aura:set>
+            </aura:if>                    
+        </div>
+        <div class="slds-card__body slds-card__body_inner slds-p-horizontal_none slds-m-bottom_none">
+            <div class="slds-grid slds-wrap">
+                <aura:if isTrue="{!or(v.isQA == null, v.isQA == false)}">
+                    <aura:if isTrue="{!v.productType != 'Other'}">
+                        <div class="slds-size_1-of-1 slds-p-horizontal_medium desc media__body slds-p-vertical_small">
+                            <p class="total-member slds-m-bottom_xx-small slds-grid slds-grid_vertical-align-center">
+                                <label class="slds-p-right_small">{!v.MembersInvolvedInOpp}</label>
+                                <!--<label class="slds-p-horizontal_small">{!v.competitorObject.membersInvolvedInMA}</label>-->
+                                <ui:outputNumber format="#,###,##0" value="{!v.competitorObject.membersInvolvedInMA}" />
+                                <div class="slds-is-relative tooltip-container slds-p-right_xx-small slds-p-left_xxx-small">
+                                    <aura:if isTrue="{!v.productType == 'Medical'}">
+                                        <aura:if isTrue="{!and(v.maType != null, v.maType == 'NBEA')}">
+                                            <c:tooltip helpLink="Help" helpText="{!$Label.c.Competitors_Medical_HelpText}"/>
+                                            <aura:set attribute="else">
+                                                <c:tooltip helpLink="Help" helpText="{!$Label.c.Competitors_Medical_CD_HelpText}"/>                                   
+                                            </aura:set>
+                                        </aura:if>                                        
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!and(v.maType != null, v.maType == 'NBEA')}">
+                                                <aura:if isTrue="{!v.productType == 'Pharmacy'}">
+                                                    <c:tooltip helpLink="Help" helpText="{!$Label.c.Competitors_Pharmacy_HelpText}"/>
+                                                    <aura:set attribute="else">
+                                                        <c:tooltip helpLink="Help" helpText="{!$Label.c.Competitors_OthTypes_HelpText}"/>
+                                                    </aura:set>
+                                                </aura:if>                                               
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!v.productType == 'Pharmacy'}">
+                                                        <c:tooltip helpLink="Help" helpText="{!$Label.c.Competitors_CD_Pharmacy_HelpText}"/>
+                                                        <aura:set attribute="else">
+                                                            <c:tooltip helpLink="Help" helpText="{!$Label.c.Competitors_OthTypes_CD_HelpText}"/>
+                                                        </aura:set>
+                                                    </aura:if>                                                    
+                                                </aura:set>
+                                            </aura:if>                                                                               
+                                        </aura:set>
+                                    </aura:if>                    
+                                </div>
+                            </p>
+                            <span class="mebersInvolvedText">&nbsp; The total Number of Members Held by all Competitors and the total Number of Members Awarded to all Competitors should equal the above number.</span>
+                        </div>	
+                    </aura:if>
+                </aura:if>
+                <div class="slds-size_1-of-1">
+                    <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal table-cust">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" width="210">
+                                    <div class="" title="{!v.competitorTypeHeader}">{!v.competitorTypeHeader}</div>
+                                </th>
+                                <aura:if isTrue="{!or(v.isQA == null, v.isQA == false)}">
+                                    <th scope="col">
+                                        <div class="" title="Number of Members Held">{!$Label.c.Number_of_Members_held}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="" title="% of Members Held">{!$Label.c.of_Members_held}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="" title="Number of Members Awarded">{!$Label.c.Number_of_Members_Awarded}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="" title="% of Member Awarded">{!$Label.c.of_Member_Awarded}</div>
+                                    </th>
+                                    <th scope="col" width="300">
+                                        <div class="" title="Comments">{!$Label.c.Comments}</div>
+                                    </th>
+                                </aura:if>
+                                <aura:if isTrue="{!v.isReadOnly == false}" >
+                                    <th scope="col" class="slds-cell-shrink">
+                                        <div class="" title="Delete">&nbsp;</div>
+                                    </th>
+                                </aura:if>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!or(v.competitorObject.competitorsDetailsList == null, v.competitorObject.competitorsDetailsList.length == 0)}">
+                                <tr>
+                                    <td colspan="7" class="slds-p-horizontal_medium"><p class="slds-text-align_center slds-p-vertical_x-small no-records">No Competitors have been added. Click the Add button to add a Competitor.</p></td>                            	
+                                </tr>
+                                <aura:set attribute="else">
+                                    <aura:iteration items="{!v.competitorObject.competitorsDetailsList}" var="MACompetitorObj" indexVar="index">
+                                        <c:CompetitorsChildComponent isEditRecord="{!v.isEditRecord}" index="{!index}" MACompetitorData="{!MACompetitorObj}" isReadOnly="{!v.isReadOnly}" isQA="{!v.isQA}" />
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                        </tbody>
+                        <aura:if isTrue="{!or(v.isQA == null, v.isQA == false)}">
+                            <tfoot>
+                                <aura:if isTrue="{!and(v.competitorObject.competitorsDetailsList != null, v.competitorObject.competitorsDetailsList.length > 0)}">
+                                    <tr class="tfoot-total">
+                                        <th data-label="Total" width="210">
+                                            <div class="" title="Total">Total</div>
+                                        </th>
+                                        <th class="slds-text-align--right" data-label="{!$Label.c.Number_of_Members_held}">
+                                            <!--<div class="slds-text-align-right total-data" title="Total">{!v.MACompetitorTotalList.Number_of_Members_Held__c}</div>-->
+                                            <ui:outputNumber class="total-data" format="#,###,##0" value="{!v.MACompetitorTotalList.Number_of_Members_Held__c}" />
+                                        </th>
+                                        <th data-label="{!$Label.c.Number_of_Members_Awarded}">
+                                            <div class="slds-text-align--right total-data" title="Total">{!v.MACompetitorTotalList.of_Members_Held__c}%</div>
+                                        </th>
+                                        <th class="slds-text-align--right" data-label="{!$Label.c.Number_of_Members_Awarded}">
+                                            <!--<div class="slds-text-align-right total-data" title="Total">{!v.MACompetitorTotalList.Number_of_Members_Awarded__c}</div>-->
+                                            <ui:outputNumber class="total-data" format="#,###,##0" value="{!v.MACompetitorTotalList.Number_of_Members_Awarded__c}" />
+                                        </th>
+                                        <th data-label="{!$Label.c.of_Member_Awarded}">
+                                            <div class="slds-text-align--right total-data" title="Total">{!v.MACompetitorTotalList.of_Members_Awarded__c}%</div>
+                                        </th>
+                                        <th>&nbsp;</th>
+                                        <aura:if isTrue="{!v.isReadOnly == false}" >
+                                            <th>&nbsp;</th>
+                                        </aura:if>
+                                    </tr>
+                                </aura:if>
+                            </tfoot>
+                        </aura:if>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </article>
+    
+</aura:component>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Policy_Information__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Policy Information</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Please remove the Policy Information to create a template.</errorMessage>
+        <filterItems>
+            <field>$Source.Account__c</field>
+            <operation>notEqual</operation>
+            <value></value>
+        </filterItems>
+        <filterItems>
+            <field>$Source.Account__c</field>
+            <operation>equals</operation>
+            <valueField>Policy_Information__c.Company__r.Id</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Policy_Information__c</referenceTo>
+    <relationshipLabel>Implementation Plans</relationshipLabel>
+    <relationshipName>Implementation_Plans</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

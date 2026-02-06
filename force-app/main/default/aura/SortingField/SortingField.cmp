@@ -1,0 +1,30 @@
+<aura:component >   
+    <aura:attribute name="indexVal" type="Integer"/>
+    <aura:attribute name="fieldNameToSort" type="String"/>
+    <aura:attribute name="fieldOrderToSort" type="String"/>
+    <aura:attribute name="obj" type="Object"/>
+    <aura:attribute name="lastSortField" type="String"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:registerEvent name="changeFieldClasses" type="c:changeFieldClasses"/>
+    <aura:method name="toggleClasses" action="{!c.toggleClasses}" description="Sample method with parameters">         <aura:attribute name="indexVal" type="Integer"/> 
+    </aura:method>
+    <li role="presentation" class="uiMenuItem uiRadioMenuItem forceSortFilterMenuItem" data-aura-class="uiMenuItem uiRadioMenuItem forceSortFilterMenuItem">
+    <a aura:id="sortingFieldLink" onclick="{!c.changeSorting}" href="javascript:void(0);" aria-disabled="false" tabindex="0" title="Company Name" aria-checked="false" class="">                                                    
+        <div class="label truncate">{!v.obj.fieldDisplayName}</div>                                                    
+        <span class="stateIndicator">
+            <span class="indicatorBox">
+                <span class="indicatorArrow">
+                    <span aura:id="arrowId" class="slds-icon_container slds-icon-utility-back up indicatorArrowIcon slds-button__icon forceIcon" data-aura-class="forceIcon">
+                        <span>
+                            <lightning:icon class="slds-icon slds-icon--small"  iconName="utility:back" size="x-small" alternativeText="Back" />                                                              
+                        </span>
+                    </span>
+                </span>
+                
+                <span aura:id="sortingAsc" class="indicatorLabel">Ascending</span>
+                <span aura:id="sortingDsc" class="indicatorLabel">Descending</span>
+            </span>
+        </span>
+    </a>
+    </li>
+</aura:component>

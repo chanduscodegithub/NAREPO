@@ -1,0 +1,287 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,force:hasSObjectName" access="global" 
+                controller="QueryOppLineItems">
+    
+    <aura:attribute name="OpportunityLineData" type="OpportunityLineItem[]" />
+    <aura:attribute name="OppData" type="OpportunityLineItem[]" />
+    <aura:attribute name="SalesPersonPercentageValues" type="List" /> 
+    <aura:attribute name="SalesPerson2PercentageValues" type="List" /> 
+    <aura:attribute name="childId" type="String" /> 
+    <aura:attribute name="SalesIncentive" type="List" /> 
+    <aura:attribute name="isBulkEdit" type="Boolean" default="false" />
+    <aura:attribute name="failureRecords" type="Object"/>
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="ShowErrorTable" type="boolean" default="false" />
+    <aura:attribute name="ErrorMsg" type="String" />
+    <aura:attribute name="enableAllCheckBox" type="boolean" default="false" />
+    <aura:attribute name="checked" type="boolean" default="false" />
+    <aura:attribute name="UnderwriterData" type="List" /> 
+    <aura:attribute name="selectedCheckBoxList" type="Map" default="{}"/> 
+    <aura:attribute name="emptyRecords" type="boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" />
+    <aura:attribute name="hideMAcomponent" type="Boolean" default="false" />
+    <aura:attribute name="disableEdit" type="Boolean" default="true" />
+    <aura:attribute name="salesPerson1" type="List" />
+    <aura:attribute name="otherBuyUpId" type="Id" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="timeZone" type="String" />
+    
+    
+    <!-- UnderWriter Email attributes -->
+    <aura:attribute name="invokeUnderWriterHelpEmailCmp" type="boolean" default="false"/>
+    
+    <aura:attribute name="alertHeader" type="String" />
+    <aura:attribute name="alertType" type="String" />
+    <aura:attribute name="isSpinnertoLoad"  type="Boolean"  default="false"/>
+    
+    <aura:handler event="c:MA_SAVE_SUCCESS" action="{!c.doInitAction}"/>
+    <aura:handler name="init" action="{!c.doInitAction}" value="{!this}" />
+    <aura:handler name="OppDataEvent" event="c:OppDataEvent" action="{!c.handleMyComponentEvent}"/>
+    
+    <!-- UnderWriter Email popup Attributes -->
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    
+    <!-- Help popup Component Attributes -->
+    <aura:attribute name="recordtype" type="String" />
+    <aura:attribute name="invokeHelpPopUp" type="boolean" default="false"/>
+    
+    <aura:handler name="modalCmpCloseEvent1" event="c:Modal_Closing_RR_Event" action="{!c.modelCloseComponentEvent}"/>
+    
+    {!v.body}
+    <aura:if isTrue="{!v.hideMAcomponent}">
+        <div  class="slds-section">
+            <div  class="slds-section" style="text-align: center;">
+                <b>
+                    Access to the Sales Incentives information is Restricted.
+                </b>
+            </div>
+        </div>
+        <aura:set attribute="else">
+            <div  class="slds-section" aura:id="Oppcmp">
+                <article class="slds-card slds-card_boundary">
+                    <div class="slds-spinner_container slds-hide" aura:id="loadingSpinner">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                    <div aura:id="errorToastMessage" class="slds-hide slds-theme--error slds-size_12-of-12">
+                        <div class="general-notification slds-font-size">
+                            <!-- <span>Review the errors on this page.</span> -->
+                            <span>{!v.errorMessage}</span>
+                        </div>
+                    </div>
+                    <div class="slds-card__header slds-theme_shade">
+                        <div class="slds-grid slds-theme_shade" data-record="Oppcmp" id="utilityToggle" style="margin-top: -6px;">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__body">
+                                    <h2 class="slds-grid flex-alignCenter">
+                                        
+                                        <span class="slds-text-heading--small"> </span> 
+                                    </h2>
+                                </div>
+                                <div class="slds-no-flex">
+                                    <aura:if isTrue="{!v.disableEdit}">
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!v.emptyRecords}">
+                                                <aura:set attribute="else">
+                                                    <a onclick="{!c.openMailPopup}" class="" style="margin-right:5px;">{!$Label.c.MA_Underwriter_Send_Email_Header} </a>
+                                                    <button class="slds-button slds-button_neutral" onclick="{!c.download}">Print</button>
+                                                    <aura:if isTrue="{!v.isBulkEdit}">
+                                                        <button class="slds-button slds-button_neutral" onclick="{!c.saveRecord}">{!$Label.c.Save}</button>
+                                                        <button class="slds-button slds-button_neutral" onclick="{!c.cancelRecord}">{!$Label.c.Cancel}</button>
+                                                        
+                                                        <aura:set attribute="else">
+                                                            <button class="slds-button slds-button_neutral" onclick="{!c.editRecord}">{!$Label.c.Edit}</button>                        
+                                                        </aura:set>    
+                                                    </aura:if> 
+                                                </aura:set>
+                                                
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                            </header>
+                        </div> 
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_4-of-4">
+                                <span>
+                                    <strong data-aura-rendered-by="1597:0">Note </strong>
+                                    : 	This tab should be used to initiate Sales Incentive compensation payments for eligible NB/NBEA sales. When ready, submit by checking the "Ready to Send to Incentive Comp Team" box. If you do not submit, nothing will be sent to Comp for payment. The information can be updated at any time up until the Incentive Comp Team extracts the data, at which point the information will be locked.
+                                </span><br/>
+                                <a onclick="{!c.openHelpPopup}" class="text_align">{!$Label.c.Need_Help_Click_Here}</a>
+                            </div>
+                           <!-- <aura:if isTrue="{!v.emptyRecords}">
+                                <aura:set attribute="else">
+                                    <div class="slds-col slds-size_1-of-4" style="padding-right: 14px;">
+                                        <span>
+                                            <a onclick="{!c.openHelpPopup}" class="text_align">{!$Label.c.Need_Help_Click_Here}</a>
+                                        </span>
+                                    </div>
+                                </aura:set>
+                            </aura:if> -->
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1  slds-is-relative account-data_table">
+                        <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: visible;">
+                            <table class="slds-table slds-table_bordered slds-no-row-hover slds-max-medium-table_stacked-horizontal search-data slds-table_col-bordered">
+                                <thead>
+                                    
+                                    <tr class="">
+                                        <th class="slds-cell-shrink" scope="col" style="line-height: 56px; min-width: 220px; text-align: center;"><div class="slds-truncate" title="">{!$Label.c.Product_Name}</div></th>
+                                        <th class="slds-cell-shrink" scope="col" style="padding: 0.25rem;"><div class="slds-truncate" title="" style="white-space: normal;">{!$Label.c.Net_Results}</div></th>
+                                        <th scope="col" class="slds-cell-shrink"  style="line-height: 14px;white-space : normal; min-width: 101px;">
+                                            <!--  <ul style="display: inline-flex;line-height: 18px;margin-top: 0.9rem;"><li>-->
+                                            
+                                            <!-- </li> -->
+                                            <!-- <li style="white-space:normal;"> -->
+                                            {!$Label.c.Submit_for_Sales_Incentives}
+                                            <div class="slds-truncate si" title="" style="white-space:normal; letter-spacing: 0.4px; color: rgb(255, 0, 0);">
+                                                <aura:if isTrue="{!v.enableAllCheckBox}">
+                                                    <ui:inputCheckbox aura:id="selectAllBox" value="{!v.checked}" change="{!c.selectAll}" 
+                                                                      class="chk-inline" /> Select All
+                                                </aura:if>
+                                            </div>
+                                            <!--   </li>
+                                            </ul> -->
+                                        </th>
+                                        <th scope="col" style="width:100px"><div class="slds-truncate" title="" style="min-width: 80px; white-space: normal;">{!$Label.c.Will_Sales_Incentive_be_Split}</div></th>
+                                        <th scope="col" style="width:250px;"><div class="slds-truncate" title="" style="text-align: center; min-width: 113px; white-space: normal;">{!$Label.c.Sales_Person_1}</div></th>
+                                        <th scope="col" style="width:100px"><div class="slds-truncate" title="" style="min-width: 70px; white-space: normal;">{!$Label.c.Sales_Person_1_Split_Percent}</div></th>
+                                        <th scope="col" style="min-width: 159px;"><div class="slds-truncate" title="" style="min-width: 80px; white-space: normal; text-align: center">{!$Label.c.Sales_Person_2}<br/><div style="font-weight: 400!important;font-size: 89%;">{!$Label.c.if_applicable}</div></div></th>
+                                        <th scope="col" style="width:100px"><div class="slds-truncate" title="" style="min-width: 70px; white-space: normal;">{!$Label.c.Sales_Person_2_Split_Percent}</div></th>
+                                        <th scope="col" class="slds-truncate" style="min-width: 159px;"><div class="slds-truncate" title="" style="min-width: 80px; white-space: normal; text-align: center">{!$Label.c.Underwriter}<br/><div style="font-weight: 400!important;font-size: 89%;"> {!$Label.c.if_applicable}</div></div></th>
+                                        <!--  <th scope="col"><div class="slds-truncate" title="" style="white-space: normal;">{!$Label.c.Date_Submitted_for_Incentives}</div></th> -->
+                                        <th scope="col" style="width:90px"><div class="slds-truncate" title="" style="min-width: 80px; white-space: normal;">{!$Label.c.Date_Sent_to_ISI_Site}</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:if isTrue="{!v.emptyRecords}">
+                                        <th colspan="10" style="height: 31px;">
+                                            <div class="slds-text-align--center">There are no items in this Membership Activity that are ready to send to the Incentive Compensation Team.</div>
+                                        </th>
+                                        <aura:set attribute="else">
+                                            <aura:iteration items="{!v.OpportunityLineData}" var="item" >
+                                                <c:childOpportunityLineCmp OpportunityLineData="{!item}" SalesPersonPercentageValues="{!v.SalesPersonPercentageValues}" SalesPerson2PercentageValues="{!v.SalesPerson2PercentageValues}" SalesIncentive="{!v.SalesIncentive}" UnderwriterData="{!v.UnderwriterData}" childId="{!v.childId}" salesPerson1="{!v.salesPerson1}" otherBuyUpId="{!v.otherBuyUpId}" recordId="{!v.recordId}" timeZone="{!v.timeZone}" aura:id="childComp"></c:childOpportunityLineCmp>
+                                            </aura:iteration> 
+                                        </aura:set>
+                                    </aura:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </aura:set>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isModalOpen}">
+        <div class="slds-show" style="height: 640px;" aura:id="popup">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container ">
+                    <header class="slds-modal__header popup-padding slds-modal__header slds-theme--error slds-theme--alert-texture">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick = "{!c.closePopUp}">
+                            <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="StepWise" />
+                            <span class="slds-assistive-text">{Close}</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Error</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-scrollable_y" style="height:100%;">
+                            <aura:if isTrue="{!v.ShowErrorTable}">
+                                <table class="slds-table slds-table_bordered slds-table--header-fixed">
+                                    <thead>
+                                        <tr class="slds-hint-parent">
+                                            <!--  <th scope="row">
+                                                <div  title="">Record No</div>
+                                            </th>
+                                            <th scope="row">
+                                                <div  title="">&nbsp;</div>
+                                            </th> -->
+                                            <th scope="row">
+                                                <div  title="">Error Description</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.failureRecords}" var="failureRecord">
+                                            <tr class="slds-hint-parent">
+                                                <!-- <th scope="row">
+                                                    <div class="slds-cell-wrap" title="">{!failureRecord.rowNumber}</div>
+                                                </th>
+                                                <th scope="row">
+                                                    <div  title="">&nbsp;</div>
+                                                </th> -->
+                                                <th scope="row">
+                                                    <div class="slds-cell-wrap" title="">{!failureRecord.failureReason}</div>
+                                                </th>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                                <aura:set attribute="else">
+                                    {!v.ErrorMsg}
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button class=" slds-Show button" label="OK" variant="brand" onclick="{!c.closePopUp}"/>
+                    </footer>
+                </div>
+            </section>
+        </div>
+    </aura:if>
+    
+    <!-- Help Popup component -->
+    <aura:if isTrue="{!v.invokeHelpPopUp}">
+        <div class="slds-show" aura:id="popup">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open popup-scroll">
+                <div class="slds-modal__container popup-padding popup-btn-close">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick = "{!c.onpresscancel}">
+                            <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="StepWise" />
+                            <span class="slds-assistive-text">{Close}</span>
+                            
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate bold-heading">INSTRUCTIONS</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div>
+                            <article class="slds-card">
+                                <div class="slds-card__body slds-card__body_inner">
+                                    <div class="slds-form-element slds-grid">                            
+                                         <div class="slds-size_1-of-1">
+                                            To send information about this NB/NBEA sale to the Incentive Compensation Team:<br/><br/>
+                                            (1) Click the Edit button; (2) Check the “Ready to Send to Incentive Comp Team” box next to<br/> the applicable products—to send information about all the products, click the Select All box;<br/>
+                                            (3) Indicate whether Sales Incentives will be Split, and (4) Enter the name of the Underwriter, if applicable. 
+                                            <b>Remember to Save when Complete.</b><br/><br/>
+                                            This information can be updated at any time up until the Incentive Compensation Team<br/>
+                                            extracts the data, at which point the information will be locked.
+                                            
+                                            <br/><br/>
+											<b>If you do not submit, nothing will be sent to Comp for payment.</b>
+                                            <br/><br/>
+                                            <b>ADDITIONAL INSTRUCTIONS</b><br/>
+                                            For additional instructions, click the below link to access the complete Reference Guide.  <br/>
+                                            
+                                            <a style="width:100%;" href='https://oneconnect.uhc.com/content/oneconnect/home/training-skills/course-calendar-and-programs/merit.html' target="_blank"> 
+                                                Click Here to Access the Reference Guide </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </article>
+                        </div>
+                    </div>
+                    
+                    <footer class="slds-modal__footer">
+                        <ui:button class=" slds-Show button" label="OK" press="{!c.onpresscancel}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

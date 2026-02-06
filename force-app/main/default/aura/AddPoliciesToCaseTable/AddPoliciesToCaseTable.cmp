@@ -1,0 +1,28 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="PolicyObject" type="Policy_Information__c"/>                
+    <aura:attribute name="PolicyId" type="Id"/>
+    <!--<aura:attribute name="selectedeachpolicy" type="Boolean" default="false"/>-->
+    <aura:method name="childMethod" action="{!c.executeMyMethod}"> 
+        <aura:attribute name="selectedeachpolicy" type="Boolean" default="false"/>
+    </aura:method>
+    <aura:registerEvent name="PolicyChildEvent" type="c:PolicyChildEvent"/>
+    <aura:registerEvent name="CasePoliciesModalEvent" type="c:CasePolicies_AddPopUpEvent"/>
+    
+    <tr class="slds-hint-parent">
+        <th scope="row">
+            <div class="slds-truncate" title="Select">
+                <ui:inputCheckbox aura:id="PolicyCheckBox" value="" change="{!c.Select}"/>
+                <!--	<a href="javascript:void()" onclick="{!c.selectRecord}">Select</a> -->
+            </div>
+        </th>
+        <th scope="row" data-label="Last Name">
+            <div class="slds-cell-wrap" title="{!v.PolicyObject.Name}">{!v.PolicyObject.Name}</div>
+        </th> 
+        <th scope="row" data-label="First Name">
+            <div class="slds-cell-wrap" title="{!v.PolicyObject.Policy__c}">{!v.PolicyObject.Policy__c}</div>
+        </th> 
+        <th scope="row" data-label="First Name">
+            <div class="slds-cell-wrap" title="{!v.PolicyObject.Policy_Type__c}">{!v.PolicyObject.Policy_Type__c}</div>
+        </th>      
+    </tr>
+</aura:component>

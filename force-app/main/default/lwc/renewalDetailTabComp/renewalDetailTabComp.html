@@ -1,0 +1,1803 @@
+<template>
+    <lightning-card>
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+        <template if:true={onLoad}>
+            <div class="slds-p-bottom_medium slds-p-left_medium slds-p-right_medium">
+                <div class="main-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small"
+                    style="text-align:left;">
+                    <h1><b>{accRecordData.accName} Product Change Checklist</b></h1>
+                </div>
+                <div class="slds-m-top_small" style="background-color:#F7F8E0;">
+                    <div>
+                        <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small">
+                            Any new products sold or products with membership growth due to NBEA are listed in the
+                            first section below.
+                            Any products that have fully termed or where membership has declined due to a partial
+                            cancellation are listed in the second section
+                            below.
+                            If this information is incomplete, follow these steps:
+                        </p>
+                    </div>
+                    <p class="slds-p-top_x-small slds-p-left_large slds-p-right_x-small">
+                        <b>1.</b>&nbsp;Click on the membership activity link within the New or Terming products section
+                        to
+                        add products to an existing membership activity.
+                    </p>
+                    <p class="slds-p-top_x-small slds-p-left_large slds-p-right_x-small">
+                        <b>2.</b>&nbsp;Review the membership activities listed in the Open Membership Activities section
+                        and
+                        update the product information as needed. Make sure all membership activities for this selling
+                        season are closed.
+                    </p>
+                    <p class="slds-p-top_x-small slds-p-left_large slds-p-right_x-small slds-p-bottom_x-small">
+                        <b>3.</b>&nbsp;You may also create a new membership activity using the “Missing products? Click
+                        here
+                        to create a new membership activity for this client” link.
+                    </p>
+                </div>
+                <div class="slds-float_right slds-m-top_x-small">
+                    <template if:true={showButtons}>
+                        <div>
+                            <span>
+                                <lightning-button variant="brand" label="Return To Summary" class="slds-m-left_x-small"
+                                    onclick={handleReturn} icon-name="utility:back">
+                                </lightning-button>
+                            </span>
+                        </div>
+                    </template>
+                </div>
+                <div class="slds-m-top_xx-large">
+                    <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small">
+                        <h2>
+                            <b>New Products Sold or NBEA Growth on Existing Products</b>
+                        </h2>
+                    </div>
+                    <br>
+                    <template if:true={showNewProducts}>
+                        <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered"
+                            style="text-align: center;">
+                            <colgroup>
+                                <col style="width:40%;" />
+                                <col style="width:13%;" />
+                                <col style="width:12%;" />
+                                <col style="width:12%;" />
+                                <col style="width:23%;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Product
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Product Selection
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Sold New Mbrs
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Effective Date
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Membership Activity
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={existingProducts} for:item="existingProducts">
+                                    <tr key={existingProducts}>
+                                        <td class="slds-cell-wrap" scope="col">{existingProducts.Product2.Name}</td>
+                                        <td class="slds-cell-wrap" scope="col">{existingProducts.Buyup_Product_Selection__c}</td>
+                                        <td class="slds-cell-wrap slds-p-right_large" scope="col">
+                                            <lightning-formatted-number
+                                                value={existingProducts.Net_Results__c}></lightning-formatted-number>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-formatted-date-time
+                                                value={existingProducts.Opportunity.EffectiveDate__c} year="numeric"
+                                                day="numeric" month="numeric" time-zone="UTC">
+                                            </lightning-formatted-date-time>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <a onclick={handleOppView} data-oppid={existingProducts.Opportunity.Id}
+                                                href={oppPageUrl}>{existingProducts.Opportunity.Name}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={showNewProducts}>
+                        <div style="text-align:center;">
+                            <p><b>{label.Renewal_Checklist_no_new_products}</b></p>
+                        </div>
+                    </template>
+                </div>
+                <br>
+                <div>
+                    <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small">
+                        <h2>
+                            <b>Fully or Partially Terming Products</b>
+                        </h2>
+                    </div>
+                    <br>
+                    <template if:true={showTermingProducts}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-no-row-hover">
+                            <colgroup>
+                                <col style="width:40%;" />
+                                <col style="width:13%;" />
+                                <col style="width:12%;" />
+                                <col style="width:12%;" />
+                                <col style="width:23%;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Product
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Product Selection
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Mbrs Termed
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Effective Date
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        Membership Activity
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={termingProducts} for:item="termingProducts">
+                                    <tr key={termingProducts}>
+                                        <td class="slds-cell-wrap" scope="col">{termingProducts.Product2.Name}</td>
+                                        <td class="slds-cell-wrap" scope="col">{termingProducts.Buyup_Product_Selection__c}</td>
+                                        <td class="slds-cell-wrap slds-p-right_large" scope="col">
+                                            <lightning-formatted-number
+                                                value={termingProducts.Net_Results__c}></lightning-formatted-number>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-formatted-date-time
+                                                value={termingProducts.Opportunity.EffectiveDate__c} year="numeric"
+                                                day="numeric" month="numeric" time-zone="UTC">
+                                            </lightning-formatted-date-time>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <a onclick={handleOppView} data-oppid={termingProducts.Opportunity.Id}
+                                                href={oppPageUrl}>{termingProducts.Opportunity.Name}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={showTermingProducts}>
+                        <div style="text-align:center;">
+                            <p><b>{label.Renewal_Checklist_no_terming_products}</b></p>
+                        </div>
+                    </template>
+                </div>
+                <br>
+                <div>
+                    <br>
+                    <div>
+                        <!-- <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small"> -->
+                        <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small">
+                            <h2>
+                                <b>Open Membership Activities</b>
+                            </h2>
+                        </div>
+                        <br>
+                        <template if:true={showOpenMembership}>
+                            <table style="background-color:#fdfdfd;"
+                                class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-no-row-hover slds-table_bordered slds-table_striped">
+                                <tbody>
+                                    <template for:each={openMembershipProducts} for:item="openMembershipProducts">
+                                        <tr key={openMembershipProducts}>
+                                            <td class="slds-cell-wrap">
+                                                <a href={oppPageUrl} data-oppid={openMembershipProducts.Id}
+                                                    onclick={handleOppView}>{openMembershipProducts.Name}</a>
+                                            </td>
+                                        </tr>
+                                    </template>
+
+                                </tbody>
+                            </table>
+                        </template>
+                        <template if:false={showOpenMembership}>
+                            <div style="text-align:center;">
+                                <p><b>There are no open membership activities for this client.</b></p>
+                            </div>
+                        </template>
+                    </div>
+                    <br>
+                    <div class="slds-p-left_large slds-p-right_large">
+                        <a onclick={handleNewOpp} href={createOppUrl}>
+                            <p>Missing products? Click here to create a new membership activity for this client.</p>
+                        </a>
+                    </div>
+                </div>
+                <!-- Added by spoorthy - 3948 - Start -->
+                <template if:true={showSurestNaviguardSection}>
+                <br>
+                <div>
+                    <br>
+                    <div>
+                        <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small">
+                            <h2>
+                                <b>Naviguard - Surest - Customer Credits & Fees</b>
+                            </h2>
+                        </div>
+                        <br>    
+                        <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+                                style="background-color:#F7F8E0; margin-bottom: 1rem;">
+                                {label.Renewal_Checklist_Additional_Information_instruction}
+                        </p>
+                        <template if:true={isEditNaviguard}>
+                        <div class="slds-float_right slds-m-top_x-small">
+                            <lightning-button variant="brand" label="Edit" class="slds-m-left_x-small"
+                                onclick={handleNaviguardEdit} icon-name="action:edit">
+                            </lightning-button>
+                        </div>
+                        </template>
+                        <template if:true={isEditNaviguardProd}>
+                        <div class="slds-float_right slds-m-right_large slds-m-top_x-small slds-m-bottom_x-small">
+                            <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleNaviguardCancel}
+                                icon-name="action:remove">
+                            </lightning-button>
+                            <lightning-button variant="brand" label="Save" class="slds-m-left_x-small"
+                                onclick={handleNaviguardSave} icon-name="utility:save">
+                            </lightning-button>
+                        </div>
+                        </template>
+                        <br>
+                        <table class="slds-table slds-no-row-hover">
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>Cap Type</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												<template if:false={isEditNaviguardProd}>
+													{renewalChecklistData.Cap_Type__c}
+												</template>
+												 
+												<template if:true={isEditNaviguardProd}>
+													<lightning-combobox
+														class="slds-text-align_left refreshValueOnChangeSO"
+														data-api="Cap_Type__c"
+														variant="label-hidden"
+														value={renewalChecklistData.Cap_Type__c}
+														placeholder="---None---"
+														options={capTypeOptions}
+														onchange={handleNaviguardChange}>
+													</lightning-combobox>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Cap Category</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												<template if:false={isEditNaviguardProd}>
+													{renewalChecklistData.Cap_Category__c}
+												</template>
+												 
+												<template if:true={isEditNaviguardProd}>
+													<lightning-combobox
+														class="slds-text-align_left refreshValueOnChangeSO"
+														data-api="Cap_Category__c"
+														variant="label-hidden"
+														value={renewalChecklistData.Cap_Category__c}
+														placeholder="---None---"
+														options={capCategoryOptions}
+														onchange={handleNaviguardChange}>
+													</lightning-combobox>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>Cap Value</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												<template if:false={isEditNaviguardProd}>
+													{renewalChecklistData.Cap_Value__c}
+												</template>
+												 
+												<template if:true={isEditNaviguardProd}>
+                                                    <lightning-input class="slds-text-align_left"
+                                                        type="text" variant="label-hidden"
+                                                        data-api="Cap_Value__c"
+                                                        value={renewalChecklistData.Cap_Value__c}
+                                                        onchange={handleNaviguardChange}>
+                                                    </lightning-input>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Amount Type</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												<template if:false={isEditNaviguardProd}>
+													{renewalChecklistData.Amount_Type__c}
+												</template>
+												 
+												<template if:true={isEditNaviguardProd}>
+													<lightning-combobox
+														class="slds-text-align_left refreshValueOnChangeSO"
+														data-api="Amount_Type__c"
+														variant="label-hidden"
+														value={renewalChecklistData.Amount_Type__c}
+														placeholder="---None---"
+														options={amountTypeOptions}
+														onchange={handleNaviguardChange}>
+													</lightning-combobox>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Amount</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												<template if:false={isEditNaviguardProd}>
+													{renewalChecklistData.Amount__c}
+												</template>
+												 
+												<template if:true={isEditNaviguardProd}>
+                                                    <lightning-input class="slds-text-align_left"
+                                                        type="text" variant="label-hidden"
+                                                        data-api="Amount__c"
+                                                        value={renewalChecklistData.Amount__c}
+                                                        onchange={handleNaviguardChange}>
+                                                    </lightning-input>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr> 
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Additional Comments</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												<template if:false={isEditNaviguardProd}>
+													{renewalChecklistData.Additional_Comments_Naviguard__c}
+												</template>
+												 
+												<template if:true={isEditNaviguardProd}>
+                                                    <lightning-textarea class="slds-text-align_left"
+														data-api="Additional_Comments_Naviguard__c"
+                                                        value={renewalChecklistData.Additional_Comments_Naviguard__c}
+                                                        onchange={handleNaviguardChange} max-length="4000">
+													</lightning-textarea>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</table>
+                    </div>
+                </div>
+                </template>
+                <!-- Added by spoorthy - 3948 - End -->
+                <!-- Added by spoorthy - 3834 - Start -->
+                <template if:true={BHSP1}>
+                <br>
+                <div>
+                    <br>
+                    <div>
+                        <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small">
+                            <h2>
+                                <b>{BHSPName}</b>
+                            </h2>
+                        </div>
+                        <br>
+                        <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+                                style="background-color:#F7F8E0; margin-bottom: 1rem;">
+                                {label.Renewal_Checklist_Additional_Information_instruction}
+                        </p>
+                        <template if:true={isEditBHS}>
+                        <div class="slds-float_right slds-m-top_x-small">
+                            <lightning-button variant="brand" label="Edit" class="slds-m-left_x-small"
+                                onclick={handleBHSEdit} icon-name="action:edit">
+                            </lightning-button>
+                        </div>
+                        </template>
+                        <template if:true={isEditProd}>
+                        <div class="slds-float_right slds-m-right_large slds-m-top_x-small slds-m-bottom_x-small">
+                            <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleBHSCancel}
+                                icon-name="action:remove">
+                            </lightning-button>
+                            <lightning-button variant="brand" label="Save" class="slds-m-left_x-small"
+                                onclick={handleBHSSave} icon-name="utility:save">
+                            </lightning-button>
+                        </div>
+                        </template>
+                        <br>
+                        <table class="slds-table slds-no-row-hover">
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>National Network, Outpatient/Inpatient, Utilization Management</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Behavioral Health Virtual Visits</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Substance Use Disorder Helpline</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>Care Explorer (myuhc.com® and mobile app digital navigation)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Calm Health app</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Virtual Behavioral Coaching for adults (provided by AbleTo Coaching+, for age 18+)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												<template if:false={isEditProd}>
+													{renewalChecklistData.Virtual_Behavioral_Coaching_for_adults__c}
+												</template>
+												 
+												<template if:true={isEditProd}>
+													<lightning-combobox
+														class="slds-text-align_left refreshValueOnChangeSO"
+														data-api="Virtual_Behavioral_Coaching_for_adults__c"
+														variant="label-hidden"
+														value={renewalChecklistData.Virtual_Behavioral_Coaching_for_adults__c}
+														placeholder="---None---"
+														options={includedOptOut}
+														onchange={handleBHSChange}>
+													</lightning-combobox>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr> 
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Child and Family Behavioral Coaching (provided by Bend Health, for age 25 and under)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												<template if:false={isEditProd}>
+													{renewalChecklistData.Child_and_Family_Behavioral_Coaching__c}
+												</template>
+												 
+												<template if:true={isEditProd}>
+													<lightning-combobox
+														class="slds-text-align_left refreshValueOnChangeSO"
+														data-api="Child_and_Family_Behavioral_Coaching__c"
+														variant="label-hidden"
+														value={renewalChecklistData.Child_and_Family_Behavioral_Coaching__c}
+														placeholder="---None---"
+														options={includedOptOut}
+														onchange={handleBHSChange}>
+													</lightning-combobox>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>24/7 in-the-moment and crisis support (previously Emotional Health Line and Crisis Support)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Family Support (previously Family Support Program and Family Support Plus)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>Case Management</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr> 
+							<template if:true={BHSP2}>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Enhanced Case Management</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center"
+										style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>Behavioral Care Connect Guaranteed time to care – 5 days (curated by AbleTo and Alma)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap" >
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr> 
+							</template>
+						</table>
+                    </div>
+                </div>
+                </template>
+                <!-- Added by spoorthy - 3834 - End -->
+                <br>
+                <div style="margin-bottom: 1.5%;">
+                    <div class="payment-integrity">
+                        <c-pcc-payment-integrity-section renewal-checklist-data-from-parent ={renewalChecklistData} hide-edit={isEditPISurest} onpaymentintegritydata ={handlePaymentIntegrityData} oncanceledit ={handlePiCancel} onhidevalidation ={handleHideValidation} >
+                        </c-pcc-payment-integrity-section>
+                    </div>
+                    <div class="payment-integrity">
+                        <c-pcc-payment-integrity-section-surest renewal-checklist-data-from-parent ={renewalChecklistData} hide-edit={isEditPI} onsurestpaymentintegritydata ={handlePaymentIntegrityData} onsurestcanceledit ={handlePiCancel} onsuresthidevalidation ={handleHideValidationSurest}>
+                        </c-pcc-payment-integrity-section-surest>
+                    </div>
+                    <template if:false={isEdit}>
+                        <div>
+                            <div
+                                class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+                                <p>
+                                    <strong>Additional Information</strong>
+                                </p>
+                            </div>
+                            <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+                                style="background-color:#F7F8E0; margin-bottom: 1rem;">
+                                {label.Renewal_Checklist_Additional_Information_instruction}
+                            </p>
+                            <template if:true={isEditPaymentSec}>
+                            <div class="slds-float_right slds-m-top_x-small">
+                                <lightning-button variant="brand" label="Edit" class="slds-m-left_x-small"
+                                    onclick={handleEdit} icon-name="action:edit">
+                                </lightning-button>
+                            </div>
+                            </template>
+                            <br>
+                            <table class="slds-table slds-table_cell-buffer slds-no-row-hover border-bottom">
+                                <colgroup>
+                                    <col style="width:30%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:40%;" />
+                                </colgroup>
+                                <tbody>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Supplemental Compensation Payee</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <!-- <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Supplemental_Compensation_Payee__c}>
+                                                </lightning-formatted-text>
+                                            </p> -->
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Supplemental_Compensation_Payee__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Are PGs confirmed as final? Please note
+                                            PGs
+                                            that sold. (If NO - please specify in comments)
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text value={renewalChecklistData.PGs_confirmed__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.PGs_confirmed_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Did the Client move to a high-performing
+                                            network?
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.High_performing_network__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <template if:true={isDisplayAdditional}>
+
+                                                <span>
+                                                    <lightning-formatted-text
+                                                        value={renewalChecklistData.High_performing_network_Additional__c}>
+                                                    </lightning-formatted-text>
+                                                </span>
+
+                                            </template>
+                                        </td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.high_performing_network_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Has there been a change to the OON
+                                            program?</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Change_to_OON_Program__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Change_to_OON_Program_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Has there been a change to the Stop Loss
+                                            Vendor?
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.X3rd_Party_Stop_Loss__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.X3rd_Party_Stop_Loss_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Has there been a change to the PPO
+                                            Network
+                                            &amp; Access Discounts? (Applies only to Out of Area Plans)
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.PPO_Network_Access__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.PPO_Network_Access_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Has there been a change to the Offshore
+                                            Provisions?
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Offshore_Provisions__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Offshore_Provisions_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                        <div style="padding: 0 23px 0 23px;
+                    word-break: break-word;
+                    margin-bottom: 10px;
+                    ">
+                            <div class="slds-m-bottom_small" style="width: 100%;">
+                                <h2><b>Additional Comments</b></h2>
+                            </div>
+                            <div style="width: 100%;">
+                                <p>
+                                    <lightning-formatted-text value={renewalChecklistData.Additional_Comments__c}>
+                                    </lightning-formatted-text>
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+
+                        </div>
+                    </template>
+
+                    <template if:true={isEdit}>
+                        <div>
+                            <div
+                                class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+                                <p>
+                                    <strong>Additional Information</strong>
+                                </p>
+                            </div>
+                            <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+                                style="background-color:#F7F8E0; margin-bottom: 1rem;">
+                                {label.Renewal_Checklist_Additional_Information_instruction}
+                            </p>
+                            <div class="slds-float_right slds-m-right_large slds-m-top_x-small slds-m-bottom_x-small">
+                                <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleCancel}
+                                    icon-name="action:remove">
+                                </lightning-button>
+                                <lightning-button variant="brand" label="Save" class="slds-m-left_x-small"
+                                    onclick={handleSave} icon-name="utility:save">
+                                </lightning-button>
+                            </div>
+                            <br>
+                            <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-no-row-hover">
+                                <colgroup>
+                                    <col style="width:30%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:40%;" />
+                                </colgroup>
+                                <tbody>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Supplemental Compensation Payee</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"><lightning-combobox
+                                                value={renewalChecklistData.Supplemental_Compensation_Payee__c}
+                                                placeholder="---None---" variant="label-hidden"
+                                                options={supplimentalCompensationPickListOptions}
+                                                onchange={handleChange} data-api="Supplemental_Compensation_Payee__c">
+                                            </lightning-combobox></td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Are PGs confirmed as final? Please note
+                                            PGs
+                                            that sold. (If NO - please specify in comments)
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.PGs_confirmed__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="PGs_confirmed__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In"
+                                                value={renewalChecklistData.PGs_confirmed_Write_In__c}
+                                                data-api="PGs_confirmed_Write_In__c" onchange={handleChange}
+                                                max-length="1000" class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.pgChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Did the Client move to a high-performing
+                                            network?
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.High_performing_network__c}
+                                                data-api="High_performing_network__c" placeholder="---None---"
+                                                options={comboboxOptions} onchange={handleChange}>
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <template if:true={isDisplayAdditional}>
+
+                                                <span>
+                                                    <lightning-combobox
+                                                        value={renewalChecklistData.High_performing_network_Additional__c}
+                                                        data-api="High_performing_network_Additional__c"
+                                                        placeholder="---None---" options={additionalOptions}
+                                                        onchange={handleChange}>
+                                                    </lightning-combobox>
+                                                </span>
+
+                                            </template>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                data-api="high_performing_network_Write_In__c"
+                                                value={renewalChecklistData.high_performing_network_Write_In__c}
+                                                onchange={handleChange} class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.highPerformingChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Has there been a change to the OON
+                                            program?</td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.Change_to_OON_Program__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="Change_to_OON_Program__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                value={renewalChecklistData.Change_to_OON_Program_Write_In__c}
+                                                data-api="Change_to_OON_Program_Write_In__c" onchange={handleChange}
+                                                class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.oonChangeChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Has there been a change to the Stop Loss
+                                            Vendor?
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.X3rd_Party_Stop_Loss__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="X3rd_Party_Stop_Loss__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                value={renewalChecklistData.X3rd_Party_Stop_Loss_Write_In__c}
+                                                data-api="X3rd_Party_Stop_Loss_Write_In__c" onchange={handleChange}
+                                                class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.thirdPartyChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Has there been a change to the PPO
+                                            Network
+                                            &amp; Access Discounts? (Applies only to Out of Area Plans)
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.PPO_Network_Access__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="PPO_Network_Access__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                value={renewalChecklistData.PPO_Network_Access_Write_In__c}
+                                                data-api="PPO_Network_Access_Write_In__c" onchange={handleChange}
+                                                class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.ppoChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Has there been a change to the Offshore
+                                            Provisions?
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.Offshore_Provisions__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="Offshore_Provisions__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                value={renewalChecklistData.Offshore_Provisions_Write_In__c}
+                                                data-api="Offshore_Provisions_Write_In__c" onchange={handleChange}
+                                                class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.offShoreChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                        <div class="slds-m-bottom_large" style="padding: 0 23px 0 23px;
+                    word-break: break-word;">
+                            <div class="slds-m-bottom_small" style="width: 100%;">
+                                <h2><b>Additional Comments</b></h2>
+                            </div>
+                            <div style="width: 100%;">
+                                <p>
+                                    <lightning-textarea name="Write In" max-length="4000"
+                                        value={renewalChecklistData.Additional_Comments__c}
+                                        data-api="Additional_Comments__c" onchange={handleChange} class="text-area">
+                                    </lightning-textarea>
+                                </p>
+                                <p class="slds-float_right counter-background">
+                                    {renewalChecklistData.additionalCommentsChar}/4000</p>
+                            </div>
+                        </div>
+                        <div class="slds-m-right_large" style="width: 100%;
+                    text-align: right;
+                    padding: .5rem 2%;">
+                            <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleCancel}
+                                icon-name="action:remove">
+                            </lightning-button>
+                            <lightning-button variant="brand" label="Save" class="slds-m-left_x-small"
+                                onclick={handleSave} icon-name="utility:save">
+                            </lightning-button>
+                        </div>
+                        <br>
+                    </template>
+                    <!-- Added by spoorthy - 3834 - Start -->
+                    <template if:true={showAISurestSec}>
+                    <template if:false={isEditSurestAI}>
+                        <div>
+                            <div
+                                class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+                                <p>
+                                    <strong>Additional Information - Surest</strong>
+                                </p>
+                            </div>
+                            <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+                                style="background-color:#F7F8E0; margin-bottom: 1rem;">
+                                {label.Renewal_Checklist_Additional_Information_instruction}
+                            </p>
+                            <template if:true={isEditAISec}>
+                            <div class="slds-float_right slds-m-top_x-small">
+                                <lightning-button variant="brand" label="Edit" class="slds-m-left_x-small"
+                                    onclick={handleAISecEdit} icon-name="action:edit">
+                                </lightning-button>
+                            </div>
+                            </template>
+                            <br>
+                            <table class="slds-table slds-table_cell-buffer slds-no-row-hover border-bottom">
+                                <colgroup>
+                                    <col style="width:30%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:40%;" />
+                                </colgroup>
+                                <tbody>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Surest Policy Number</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={policyNumbersSurest}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Medical Policy Number</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={policyNumbers}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">VPCR / RVP</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={VPCRRVP}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Account Partner</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={AP}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">SCE</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={CMSCE}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Account Associate</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={AA}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Client Manager</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={CM}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Business Line</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={businessLine}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Join Surest Go Live Date</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-date-time
+                                                    value={renewalChecklistData.Join_Surest_Go_Live_Date__c}
+                                                    year="numeric" month="2-digit" day="2-digit">
+                                                </lightning-formatted-date-time>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Join Surest URL</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <a href={renewalChecklistData.Join_Surest_URL__c}
+                                                target="_blank"
+                                                style="color: #0563c1; text-decoration: underline;">
+                                                    {renewalChecklistData.Join_Surest_URL__c}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Access Code</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Access_Code__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Open Enrollment Date</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-date-time
+                                                    value={renewalChecklistData.Open_Enrollment_Date__c}
+                                                    year="numeric" month="2-digit" day="2-digit">
+                                                </lightning-formatted-date-time>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Structure Changes</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text value={renewalChecklistData.Structure_Changes__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Structure_Changes_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Changes in Rx</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Changes_in_Rx__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td> 
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Rx_Changes_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Addition or removal of a Surest Benefit Plan</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Sures_Benefit_Plan__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Surest_Benefit_Plan_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Benefit Admin Vendor changes?</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Benefit_Admin_Vendor_changes__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Benefit_Admin_Vendor_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Client Specific Programs (HelloHeart, Kindbody, EdisonHealth, etc) that need to be featured in Surest app?</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Client_Specific_Programs__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Client_Specific_Programs_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Change in/or addition Surest Products (i.e. Surest Flex to Surest, Surest HSA)?</td>
+                                        <td class="slds-cell-wrap" scope="col" style="text-align: center;">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Surest_Product_Change__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap slds-truncate" scope="col">
+                                            <p>
+                                                <lightning-formatted-text
+                                                    value={renewalChecklistData.Surest_Product_Change_Write_In__c}>
+                                                </lightning-formatted-text>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <template if:true={isEditSurestAI}>
+                        <div>
+                            <div
+                                class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+                                <p>
+                                    <strong>Additional Information - Surest</strong>
+                                </p>
+                            </div>
+                            <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+                                style="background-color:#F7F8E0; margin-bottom: 1rem;">
+                                {label.Renewal_Checklist_Additional_Information_instruction}
+                            </p>
+                            <div class="slds-float_right slds-m-right_large slds-m-top_x-small slds-m-bottom_x-small">
+                                <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleAISecCancel}
+                                    icon-name="action:remove">
+                                </lightning-button>
+                                <lightning-button variant="brand" label="Save" class="slds-m-left_x-small"
+                                    onclick={handleSave} icon-name="utility:save">
+                                </lightning-button>
+                            </div>
+                            <br>
+                            <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-no-row-hover">
+                                <colgroup>
+                                    <col style="width:30%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:40%;" />
+                                </colgroup>
+                                <tbody>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Surest Policy Number</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">{policyNumbersSurest}</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Medical Policy Number</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">{policyNumbers}</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">VPCR / RVP</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">{VPCRRVP}
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Account Partner</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">{AP}</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">SCE</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">{CMSCE}</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Account Associate</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">{AA}</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Client Manager</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">{CM}</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Business Line</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">{businessLine}</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Join Surest Go Live Date</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-input type="date" value={renewalChecklistData.Join_Surest_Go_Live_Date__c} date-style="short"
+                                            onchange={handleChange} data-api="Join_Surest_Go_Live_Date__c" variant="label-hidden"> </lightning-input>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Join Surest URL</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-input type="url" value={renewalChecklistData.Join_Surest_URL__c}
+                                            onchange={handleChange} data-api="Join_Surest_URL__c" variant="label-hidden"> </lightning-input>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Access Code</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"><lightning-textarea
+                                                value={renewalChecklistData.Access_Code__c}
+                                                onchange={handleChange} data-api="Access_Code__c">
+                                            </lightning-textarea></td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Open Enrollment Date</td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-input type="date" value={renewalChecklistData.Open_Enrollment_Date__c} date-style="short"
+                                            onchange={handleChange} data-api="Open_Enrollment_Date__c" variant="label-hidden"> </lightning-input>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Structure Changes</td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.Structure_Changes__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="Structure_Changes__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In"
+                                                value={renewalChecklistData.Structure_Changes_Write_In__c} placeholder={placeHolderSC}
+                                                data-api="Structure_Changes_Write_In__c" onchange={handleChange}
+                                                max-length="1000" class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.strucChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Changes in Rx</td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.Changes_in_Rx__c}
+                                                data-api="Changes_in_Rx__c" placeholder="---None---"
+                                                options={comboboxOptions} onchange={handleChange}>
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>    
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                data-api="Rx_Changes_Write_In__c" placeholder={placeHolderRx}
+                                                value={renewalChecklistData.Rx_Changes_Write_In__c}
+                                                onchange={handleChange} class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.rxChangeChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Addition or removal of a Surest Benefit Plan</td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.Sures_Benefit_Plan__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="Sures_Benefit_Plan__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                value={renewalChecklistData.Surest_Benefit_Plan_Write_In__c} placeholder={placeHolderSBP}
+                                                data-api="Surest_Benefit_Plan_Write_In__c" onchange={handleChange}
+                                                class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.surestPlanChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Benefit Admin Vendor changes?</td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.Benefit_Admin_Vendor_changes__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="Benefit_Admin_Vendor_changes__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                value={renewalChecklistData.Benefit_Admin_Vendor_Write_In__c} placeholder={placeHolderBAV}
+                                                data-api="Benefit_Admin_Vendor_Write_In__c" onchange={handleChange}
+                                                class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.benefitAdminChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Client Specific Programs (HelloHeart, Kindbody, EdisonHealth, etc) that need to be featured in Surest app?</td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.Client_Specific_Programs__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="Client_Specific_Programs__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                value={renewalChecklistData.Client_Specific_Programs_Write_In__c} placeholder={placeHolderCSP}
+                                                data-api="Client_Specific_Programs_Write_In__c" onchange={handleChange}
+                                                class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.clientPgrmChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="slds-cell-wrap" scope="col">Change in/or addition Surest Products (i.e. Surest Flex to Surest, Surest HSA)?</td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-combobox value={renewalChecklistData.Surest_Product_Change__c}
+                                                placeholder="---None---" options={comboboxOptions}
+                                                onchange={handleChange} data-api="Surest_Product_Change__c">
+                                            </lightning-combobox>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col"></td>
+                                        <td class="slds-cell-wrap" scope="col">
+                                            <lightning-textarea name="Write In" max-length="1000"
+                                                value={renewalChecklistData.Surest_Product_Change_Write_In__c} placeholder={placeHolderSPC}
+                                                data-api="Surest_Product_Change_Write_In__c" onchange={handleChange}
+                                                class="text-area">
+                                            </lightning-textarea>
+                                            <p class="slds-float_right counter-background">
+                                                {renewalChecklistData.surestProdChar}/1000</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                    </template>
+
+                    <template if:true={showCPWSection}>
+                        <c-pcc-clinical-program-section renewal-checklist-data-from-parent ={renewalChecklistData} hide-edit={isEditCPWSurest} policy-names={policyInfoNameSurest} policy-numbers={policyInfoNumberSurest} existing-products={existingProducts} acc-id={accRecordId} selected-sales-season={selectedSalesSeason} onclinicalprogramdata ={handlePaymentIntegrityData} oncanceledit ={handleCPWCancel} onhidevalidation ={handleHideValidationCPW} >
+                        </c-pcc-clinical-program-section>  
+                    </template>
+                    <!-- Added by spoorthy - 3834 - end -->
+
+                </div>
+                <div class="border-top">
+                    <div>
+                        <template if:false={isEdit}>
+                            <div class=" slds-m-top_medium slds-m-bottom_x-small" style="background-color:#F7F8E0;">
+                                <p
+                                    class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small">
+                                    {label.Renewal_Checklist_validation_note}
+                                </p>
+                            </div>
+                        </template>
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                            <colgroup>
+                                <col style="width: 50%;" />
+                                <col style="width: 50%;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col">SCE Validated By</th>
+                                    <th scope="col">Date/Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="col">{validatedBy}</th>
+                                    <th scope="col">{validatedDateTime}</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <template if:true={showValidateButton}>
+                <div slot="footer">
+                    <lightning-button label="SCE Validation" class="slds-m-left_x-small" variant="Brand"
+                        data-apiname="Renewal_Checklist_Validated_By__c"
+                        data-apidate="Renewal_Checklist_Validated_Date__c" data-apivalidated="SCE_Validation__c"
+                        onclick={handleValidation} icon-name="utility:check">
+                    </lightning-button>
+                </div>
+            </template>
+            <div>
+                <template if:true={showModal}>
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <!-- Header Start -->
+                            <header class="slds-modal__header modal-warning">
+                                <lightning-button-icon class="slds-modal__close" title="Close" icon-name="utility:close"
+                                    icon-class="slds-button_icon-inverse" onclick={handleDialogClose}>
+                                </lightning-button-icon>
+
+                                <h2 class="slds-text-heading_medium slds-hyphenate header-string"
+                                    style="color: #47484a;">
+                                    No Product Changes Confirmation
+                                </h2>
+                            </header>
+                            <!-- Header End -->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                <slot>
+                                    <p>
+                                        {label.Renewal_Checklist_Missing_Products}
+                                    </p>
+                                </slot>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning-button label="Cancel" class="slds-m-around_x-small"
+                                    onclick={handleValidationCancel}></lightning-button>
+
+                                <lightning-button label="Validate" class="class= slds-m-around_x-small" variant="brand"
+                                    data-apiname="Renewal_Checklist_Validated_By__c"
+                                    data-apidate="Renewal_Checklist_Validated_Date__c"
+                                    data-apivalidated="SCE_Validation__c" onclick={handleModalValidation}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+            </div>
+            <div>
+                <template if:true={isExitEdit}>
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                        aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <!-- Header Start -->
+                            <header class="slds-modal__header modal-warning">
+                                <lightning-button-icon class="slds-modal__close" title="Close" icon-name="utility:close"
+                                    icon-class="slds-button_icon-inverse" onclick={handleDialogClose}>
+                                </lightning-button-icon>
+
+                                <h2 class="slds-text-heading_medium slds-hyphenate header-string"
+                                    style="color: #47484a;">
+                                    Alert
+                                </h2>
+                            </header>
+                            <!-- Header End -->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                                <slot>
+                                    <p>
+                                        {label.Renewal_Checklist_Exit_additional_info}
+                                    </p>
+                                </slot>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning-button label="Cancel" class="slds-m-around_x-small" variant="brand"
+                                    onclick={handleIgnoreChanges}></lightning-button>
+
+                                <template if:true={isCreateNewOpp}>
+                                    <lightning-button label="OK" class="class= slds-m-around_x-small"
+                                        onclick={createNewOpp}>
+                                    </lightning-button>
+                                </template>
+                                <template if:false={isCreateNewOpp}>
+                                    <lightning-button label="OK" class="class= slds-m-around_x-small"
+                                        onclick={handleContinueEditing}>
+                                    </lightning-button>
+                                </template>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+            </div>
+        </template>
+    </lightning-card>
+</template>

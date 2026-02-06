@@ -1,0 +1,200 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 01-03-2025
+  @last modified by  : Spoorthy
+-->
+<template>
+  <div class="is-relative">
+    <template if:false={isLoad}>
+      <lightning-spinner variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    <lightning-card title="">
+      <!-- <template if:false={Net_Results_Not_Zero}>
+        <p style="text-align: center;"><b>Sold Case Checklist NBEA will only be displayed for membership activities when new products are sold or when
+          there is NBEA growth on existing products.</b></p>
+      </template> -->
+      <!-- <template if:true={Net_Results_Not_Zero}> -->
+      <!-- style="font-size: 12px; position: fixed; width: 100%; bottom: 2px; z-index: 100;" -->
+      <div class="footer active" style="font-size: 12px; position: fixed; width: 98%; bottom: 3px; z-index: 100; background: #f3f2f2;
+      left: 13px; border-radius: 2px; padding: 5px; padding-left:24px;">
+        <div class="slds-grid slds-grid_align-center slds-wrap slds-size_7-of-7 slds-grid_reverse slds-p-right_large">
+          <template if:true={showSaveCancel}>
+            <div class="slds-no-flex">
+              <lightning-button type="submit" variant="brand" label="Save" class="slds-m-left_x-small"
+                onclick={disableEditButton}></lightning-button>
+            </div>
+            <div class="slds-no-flex">
+              <lightning-button type="submit" variant="Neutral" label="Cancel" class="slds-m-left_x-small"
+                onclick={Cancel}></lightning-button>
+            </div>
+          </template>
+          <template if:false={showSaveCancel}>
+            <lightning-button type="submit" variant="brand" label="Print" class="slds-m-left_x-small"
+              onclick={exportRecords}></lightning-button>
+            <template if:true={hasEditAccess}>
+              <template if:true={IsProductAvaiable}>
+                <lightning-button type="submit" variant="Neutral" label="Edit" class="slds-m-left_x-small"
+                  onclick={enableSaveCancel}></lightning-button>
+              </template>
+            </template>
+            <lightning-button label="Refresh" class="slds-m-left_x-small" onclick={handleRefreshButton} icon-name="utility:refresh">
+            </lightning-button>
+          </template>
+        </div>
+      </div>
+      <div class="button-position1">
+        <template if:true={showSaveCancel}>
+          <div class=" slds-p-left_x-small" style="position:absolute;top:-54px;right:0;">
+          <lightning-button type="submit" variant="Neutral" label="Cancel" class="slds-m-left_x-small" onclick={Cancel}>
+          </lightning-button>
+          <lightning-button type="submit" variant="brand" label="Save" class="slds-m-left_x-small"
+            onclick={disableEditButton}></lightning-button>
+          </div>
+        </template>
+        <template if:false={showSaveCancel}>
+          <div class="slds-grid1">
+            <div class="  slds-p-top_x-small" style="position: absolute;top: -98px;width: 100%;text-align: center;">
+              <p style="font-size:14px; ">
+                <span style="color:#444; background-color: #f6f8e0;">Please click the Refresh button to ensure you are seeing the most up-to-date product and company
+                information in the Sold Case Checklist.</span></p>
+            </div>
+            <div class=" slds-p-left_x-small" style="position:absolute;top:-54px;right:0;">
+              <lightning-button label="Refresh" onclick={handleRefreshButton} icon-name="utility:refresh">
+              </lightning-button>
+
+              <template if:true={hasEditAccess}>
+                <template if:true={IsProductAvaiable}>
+                  <!--Added Vignesh -- SC Letter -->
+                  <lightning-button type="submit" variant="brand" label="SC Letter Draft" class="slds-m-left_x-small"
+                    onclick={importSCLetterInfo}></lightning-button>
+                  <lightning-button type="submit" variant="Neutral" label="Edit" class="slds-m-left_x-small"
+                    onclick={enableSaveCancel}></lightning-button>
+                </template>
+              </template>
+              <lightning-button type="submit" variant="brand" label="Print" class="slds-m-left_x-small"
+                onclick={exportRecords}></lightning-button>
+            </div>
+          </div>
+
+
+        </template>
+      </div>
+      <p class="slds-p-horizontal_large">
+        <template if:true={onCancel}>
+          <template if:true={ClientDataRecord}>
+            <c-sold-check-client-detail-comp editmode={showSaveCancel} checkdetail={ClientDataRecord}
+              onprogressvaluechange={clientdataupdate} onaccountupdate={accountdataupdate}
+              sold-case-check-list-instructions={soldCaseCheckListInstructions}
+              opportunity-field-labels={opportunityFieldLabels} account-field-labels={accountFieldLabels}
+              is-surest-product={isSurestProdAll} company-address={getFormattedCompanyAddress}
+              user-time-zone={userTimeZone} is-traditional-product={isTraditionalProdAll}
+              sold-case-object-data={soldCaseObjectData} complete-data-from-parent={resultSoldchecklist}
+              meddisp-value={meddispValue} dentdisp-value={dentdispValue} other-products-status={otherProductsStatus}
+              pharmdisp-value={pharmdispValue} visiondisp-value={visiondispValue} cm-type={isCM}>
+            </c-sold-check-client-detail-comp>
+          </template>
+        </template>
+      </p>
+
+      <p class="slds-p-horizontal_small">
+        <template if:true={onCancel}>
+          <template if:true={onCancelPharmacyProd}>
+            <template if:true={Opplineitemrecords}>
+              <c-sold-case-products-comp sold-case-check-list-instructions={soldCaseCheckListInstructions}
+                meddisp-value={meddispValue} dentdisp-value={dentdispValue} other-products-status={otherProductsStatus}
+                pharmdisp-value={pharmdispValue} visiondisp-value={visiondispValue} editmode={showSaveCancel}
+                picklistvalue={picklistvalue} pharmarecords={pharmacyrecords} visionrecords={visionrecords}
+                medicalrecords={Mediarray} otherrecords={otherrecarray} dentalrecords={Dentalrecords}
+                opplineitems={Opplineitemrecords} tiered-benefit-value={tieredBenefitValue}
+                is-surest-product-med={isSurestProductMed} bridge2health-opt-out-value={bridge2HealthOptOutValue}
+                is-traditional-product-med={isTraditionalProductMed}
+                bridge2health-opt-out-vision-value={bridge2healthOptOutVisionValue}
+                is-surest-sold-other={isSurestSoldOther} is-trad-sold-other={isTradSoldOther}
+                onprogressvaluechange={clientdataupdate} recordid={recordId} sold-case-object-data={soldCaseObjectData}
+                engage-sol={engageSol} well-rall={wellRall} advocacy={advocacy} e-services={eServices}
+                complete-data-from-parent={resultSoldchecklist} onpharmalevel2change={updatePharmaLevel2}
+                cm-type={isCM}>
+              </c-sold-case-products-comp>
+            </template>
+          </template>
+        </template>
+      </p>
+
+      <p class="slds-p-horizontal_small">
+        <template if:true={onCancel}>
+          <template if:true={ClientDataRecord}>
+            <template if:true={showCPWSection}>
+              <c-sold-case-clinical-program editmode={showSaveCancel} checkdetail={ClientDataRecord}
+                is-surest-product={isSurestProdAll} sold-case-check-list-instructions={soldCaseCheckListInstructions}
+                opplineitems={Opplineitemrecords} opportunity-field-labels={opportunityFieldLabels}
+                account-field-labels={accountFieldLabels} company-address={getFormattedCompanyAddress}
+                user-time-zone={userTimeZone} sold-case-object-data={soldCaseObjectData}
+                complete-data-from-parent={resultSoldchecklist} onprogressvaluechange={clientdataupdate}>
+              </c-sold-case-clinical-program>
+            </template>
+          </template>
+        </template>
+      </p>
+
+      <p class="slds-p-horizontal_small">
+        <template if:true={onCancel}>
+          <template if:true={ClientDataRecord}>
+            <c-sold-case-vendor-partners editmode={showSaveCancel} checkdetail={ClientDataRecord}
+              sold-case-check-list-instructions={soldCaseCheckListInstructions}
+              opportunity-field-labels={opportunityFieldLabels} account-field-labels={accountFieldLabels}
+              company-address={getFormattedCompanyAddress} user-time-zone={userTimeZone}
+              sold-case-object-data={soldCaseObjectData} complete-data-from-parent={resultSoldchecklist}
+              onprogressvaluechange={clientdataupdate}>
+            </c-sold-case-vendor-partners>
+          </template>
+        </template>
+      </p>
+
+      <p class="slds-p-horizontal_small">
+        <template if:true={onCancel}>
+          <template if:true={ClientDataRecord}>
+            <c-sold-case-network-comp sold-case-check-list-instructions={soldCaseCheckListInstructions}
+              editmode={showSaveCancel} networkflag={networkflag} checkdetail={ClientDataRecord}
+              onprogressvaluechange={clientdataupdate} opportunity-field-labels={opportunityFieldLabels}
+              account-field-labels={accountFieldLabels} sold-case-object-data={soldCaseObjectData}>
+            </c-sold-case-network-comp>
+          </template>
+        </template>
+      </p>
+
+      <p class="slds-p-horizontal_small">
+        <template if:true={onCancel}>
+          <template if:true={ClientDataRecord}>
+            <c-sold-case-performance-guarantees editmode={showSaveCancel} checkdetail={ClientDataRecord}
+              sold-case-check-list-instructions={soldCaseCheckListInstructions}
+              opportunity-field-labels={opportunityFieldLabels} account-field-labels={accountFieldLabels}
+              company-address={getFormattedCompanyAddress} user-time-zone={userTimeZone}
+              sold-case-object-data={soldCaseObjectData} complete-data-from-parent={resultSoldchecklist}
+              onprogressvaluechange={clientdataupdate} meddisp-value={meddispValue} dentdisp-value={dentdispValue}
+              other-products-status={otherProductsStatus} pharmdisp-value={pharmdispValue}
+              is-surest-product-med={isSurestProductMed} is-traditional-product-med={isTraditionalProductMed}
+              visiondisp-value={visiondispValue} is-surest-product-pharmacy={isSurestProductPharmacy}
+              is-traditional-product-pharmacy={isTraditionalProductPharmacy}>
+            </c-sold-case-performance-guarantees>
+          </template>
+        </template>
+      </p>
+
+      <p class="slds-p-horizontal_small">
+        <template if:true={onCancel}>
+          <template if:true={ClientDataRecord}>
+            <c-sold-case-general-comp sold-case-check-list-instructions={soldCaseCheckListInstructions}
+              editmode={showSaveCancel} checkdetail={ClientDataRecord} onprogressvaluechange={clientdataupdate}
+              is-surest-product={isSurestProdAll} opportunity-field-labels={opportunityFieldLabels}
+              user-time-zone={userTimeZone} meddisp-value={meddispValue} is-traditional-product={isTraditionalProdAll}
+              sold-case-object-data={soldCaseObjectData} complete-data-from-parent={resultSoldchecklist}>
+            </c-sold-case-general-comp>
+          </template>
+        </template>
+      </p>
+      <!-- </template> -->
+    </lightning-card>
+  </div>
+</template>

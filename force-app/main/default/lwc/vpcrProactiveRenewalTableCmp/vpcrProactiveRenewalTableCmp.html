@@ -1,0 +1,42 @@
+<template>
+    <td  data-label="Company" class="slds-cell-wrap txtVerticleAlign fontColor" title="Company">
+        {proactiveRenewalRec.accountName}
+    </td>
+    <td  data-label="Effective Date" class="slds-cell-wrap txtVerticleAlign fontColor" title="Effective Date">
+    
+        <lightning-formatted-date-time value={proactiveRenewalRec.effectiveDate} year="numeric" day="numeric" month="numeric"
+        time-zone="UTC"></lightning-formatted-date-time>
+    </td>
+
+    <td  data-label="Sold\Retained Members" class="slds-cell-wrap txtVerticleAlign fontColor" title="Sold\Retained Members">
+            
+                <lightning-formatted-number value={proactiveRenewalRec.soldRetainedMembers}></lightning-formatted-number>
+            
+        </td>
+        <td  data-label="Retention %" class="slds-cell-wrap txtVerticleAlign fontColor" title="Retention %">
+                {proactiveRenewalRec.retentionPercentage}
+                <template if:true={hasRetenionPercentage}>
+                    %
+                </template>
+            </td>
+            
+            <td  data-label="Current SCE" class="slds-cell-wrap txtVerticleAlign fontColor" title="Current SCE">
+                {proactiveRenewalRec.currentSCE}
+            </td>
+
+    
+       <!-- <td  data-label="SCE(s) Receiving Compensation" class="slds-cell-wrap txtVerticleAlign fontColor" title="SCE(s) Receiving Compensation">
+                
+            <div class={addClass} title="SCE(s) Receiving Compensation">{proactiveRenewalRec.opportunityOwnerName}</div>
+        </td> -->
+        <td  data-label="SCE(s) Receiving Compensation" class="slds-cell-wrap txtVerticleAlign fontColor" title="SCE(s) Receiving Compensation">
+                
+            <div class={addClass} title="SCE(s) Receiving Compensation">{scesReceivingCompensation}</div>
+        </td>
+        <td data-label="Membership Activity Name" class="slds-cell-wrap txtVerticleAlign fontColor" title="Membership Activity">
+            <p class="slds-cell-wrap"><a href="javascript:void(0);" variant="base" value={proactiveRenewalRec.Id} target="_blank"
+                    onclick={handleOpportunityRecordView}>{proactiveRenewalRec.opportunityName}</a></p>
+
+        </td>
+    
+</template>

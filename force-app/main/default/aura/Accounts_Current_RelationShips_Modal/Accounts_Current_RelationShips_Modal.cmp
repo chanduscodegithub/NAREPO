@@ -1,0 +1,152 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="Accounts_and_MembershipActivity">
+    <aura:attribute name="accountDataArray" type="AccountCFJunction__c[]"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="accountContactRelationArray" type="String[]"/>
+    <aura:attribute name="allRecordsList" type="String[]"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="sortAccountName" type="Boolean" default="true"/>
+    <aura:attribute name="sortAccountType" type="Boolean" default="true"/>
+    <aura:attribute name="sortAccountOwner" type="Boolean" default="true"/>
+    <aura:attribute name="Child_Data" type="Object"/>
+    <aura:attribute name="isDesktop" type="boolean" default="false"/>
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    <aura:attribute name="lastSortField" type="String" default=""/>
+    
+    <aura:handler name="Sorting_Mobile_Event" event="c:Sorting_Mobile_Event" action="{!c.sortFieldsMobile}"/>
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    {!v.body}
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div aura:id="Account_Showfull_List_Modal" class="slds-section slds-is-open ipadbottom modal_main-content">
+        <article class="">
+            <div class="slds-section__content slds-is-relative slds-p-top_none">
+                <div class="slds-spinner_container slds-hide" aura:id="spinner">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--medium spinner-fixed-small-device" role="status">
+                        <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                
+                <div class="slds-p-vertical_small slds-p-horizontal_medium">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-has-flexi-truncate">
+                            <div class="slds-media slds-no-space slds-grow">
+                                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                                    <div class="">
+                                        <p class="slds-text-title--caps slds-line-height--reset"><b>{!$Label.c.Accounts_Current_RelationShips}</b></p>
+                                    </div>
+                                    <div class="slds-card__header headerHeight slds-grid">
+                                        <div class="slds-is-relative slds-grid slds-grid--vertical-align-center xs-tooltip">
+                                            <c:tooltip helpLink="Help" helpText="{!$Label.c.Accounts_Current_RelationShips_Help_Text}"/>
+                                        </div>
+                                    </div>
+                                    <aura:if isTrue="{!$Browser.isPhone}">
+                                        <button class="slds-button slds-button--neutral sorting-in-mobile" onclick="{!c.openSortingPopup}"><lightning:icon iconName="utility:sort" size="small" alternativeText="Sort"/></button>
+                                        <aura:set attribute="else">
+                                            <button class="slds-button slds-button--neutral sorting-in-mobile" onclick="{!c.openSortingPopup}">Sort</button>
+                                        </aura:set>
+                                    </aura:if>
+                                </header>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-card__body fixed-body-height">
+                    <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                    <div class="slds-table--header-fixed_container">
+                        <div class="slds-scrollable_y data-table--scroll-wrapper">
+                            <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout slds-table--header-fixed data-table">
+                                <thead>
+                                    <tr class="slds-text-title--caps">
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                            <div class="slds-cell-fixed">
+                                            <a onclick="{!c.sortFields}" data-record="AccountFirm__r.Name" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                <span class="slds-assistive-text">Sort </span>
+                                                <span class="slds-truncate" title="Account Name"><b>{!$Label.c.Account_Name}</b></span>
+                                                <div class="slds-icon_container">
+                                                    <aura:if isTrue="{!v.sortAccountName}">
+                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </div>
+                                                <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                            </a>                                            
+                                            </div>
+                                        </th>
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                            <div class="slds-cell-fixed">
+                                            <a onclick="{!c.sortFields}" data-record="RecordType" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                <span class="slds-assistive-text">Sort </span>
+                                                <span class="slds-truncate" title="Account Type"><b>{!$Label.c.Account_Type}</b></span>
+                                                <div class="slds-icon_container">
+                                                    <aura:if isTrue="{!v.sortAccountType}">
+                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </div>
+                                                <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                            </a>
+                                            </div>
+                                        </th>
+                                        
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                            <div class="slds-cell-fixed">
+                                            <a onclick="{!c.sortFields}" data-record="Owner" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                <span class="slds-assistive-text">Sort </span>
+                                                <span class="slds-truncate" title="Owner"><b>{!$Label.c.Owner}</b></span>
+                                                <div class="slds-icon_container">
+                                                    <aura:if isTrue="{!v.sortAccountOwner}">
+                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </div>
+                                                <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                            </a>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.accountDataArray}" var="accountHistoryDataobj" indexVar="index">
+                                        
+                                        <c:Accounts_Current_Relationships_Table AccountIndex="{!index}" accountHistoryDataobj="{!accountHistoryDataobj}" isModalBody="{!v.Child_Data.isModalBody}"></c:Accounts_Current_Relationships_Table>
+                                        
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

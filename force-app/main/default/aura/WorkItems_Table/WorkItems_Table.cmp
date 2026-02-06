@@ -1,0 +1,80 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 04-02-2024
+  @last modified by  : Spoorthy
+-->
+<aura:component controller="workItemsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="WorkItemsDataobj" type="Opportunity"/>
+    <aura:attribute name="WorkItemsIndex" type="String"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="maCommets" type="String" />
+    <aura:attribute name="opportunityMap" type="Map" />
+    <aura:attribute name="remainingCharacter" type="String" />
+    <aura:attribute name="loggedInUserName" type="String" />
+    <aura:attribute name="saveUpdatedWorkItemList" type="Opportunity[]" />
+    <aura:attribute name="oldComments" type="String"/>
+    
+    <aura:registerEvent name='workItemEvents' type="c:WorkItems_Events" />
+    <aura:handler name="WorkItemsCloseComponent" event="c:WorkItemsCloseComponent" action="{!c.WorkItemsCloseComponent}"/>
+    
+    <aura:method name="closeEditPopup" action="{!c.closeAllEditPopup}" access="PUBLIC"/>
+    <lightning:spinner aura:id="childSpinner" alternativeText="Loading.." title="" variant="brand" size="large" class="slds-hide"/>
+    
+    <tr class="slds-hint-parent">
+        <th scope="row" data-label="Account Name">
+            <span class="slds-grid slds-grid--align-spread"><a onclick="{!c.navigateToAccountPage}" class="slds-truncate" tabindex="0" title="{!v.WorkItemsDataobj.Account.Name}">{!v.WorkItemsDataobj.Account.Name}</a></span>
+        </th>
+        <aura:if  isTrue="{!or(v.loggedInUserName == 'CRM Administrator',v.loggedInUserName == 'CM CSAD',v.loggedInUserName == 'CM SCE',v.loggedInUserName == 'Surest CM SCE',v.loggedInUserName == 'Surest CM SVP')}" >
+            <th scope="row" data-label="RVP/VPCR">
+                <div class="slds-truncate" title="">{!v.WorkItemsDataobj.CM_VPCR_RVP__r.Name}</div>
+            </th>
+        </aura:if>
+        <aura:if  isTrue="{!or(v.loggedInUserName == 'CRM Administrator',v.loggedInUserName == 'CM CSAD',v.loggedInUserName == 'CM VPCR/RVP')}" >
+            <th scope="row" data-label="SCE">
+                <div class="slds-truncate" title="">{!v.WorkItemsDataobj.Owner}</div>
+            </th>
+        </aura:if>
+        <th scope="row" data-label="Membership Activity Name">
+            <span class="slds-grid slds-grid--align-spread"><a onclick="{!c.navigateToMAPage}" class="slds-truncate" tabindex="0" title="{!v.WorkItemsDataobj.Name}">{!v.WorkItemsDataobj.Name}</a></span>
+        </th>
+        <th scope="row" data-label=" Comments Last Modified">
+            <ui:outputDateTime format="M/d/yyyy hh:mm a" value="{!v.WorkItemsDataobj.Comments_Last_Modified__c}" />
+        </th>
+        <th scope="row" data-label="Membership Activity Comments">
+            <div class="slds-truncate" title="">{!v.WorkItemsDataobj.Comments__c}</div>
+        </th>
+        
+        <th scope="row" data-label="Edit" >
+            <div class=" slds-is-relative" title="">                  
+                <section aura:id ="updateComment" class="slds-popover slds-nubbin_right-top slds-is-absolute slds-edit slds-hide" role="dialog" aria-labelledby="dialog-heading-id-3" aria-describedby="dialog-body-id-3">                                            
+                    <div class="slds-popover__body slds-p-top_medium" id="dialog-body-id-3">
+                        <lightning:textarea class="textarea-edit" name="" label="" rows="4" value="{!v.WorkItemsDataobj.Comments__c}" maxlength="25000"/>
+                        <aura:if isTrue="{!v.WorkItemsDataobj.Comments__c}">
+                             <span class="floatToRight">{!25000-v.WorkItemsDataobj.Comments__c.length} characters remaining</span>
+                            <aura:set attribute="else">
+                                <span class="floatToRight">{!25000-0} characters remaining</span>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                    <footer class="slds-popover__footer slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                        <div>
+                            <button class="slds-button slds-button_icon slds-button_icon-border-filled" onclick="{!c.confirmCancel}" >
+                                <lightning:icon class="slds-button__icon" iconName="utility:close" size="x-small" />
+                            </button>
+                            <button class="slds-button slds-button_icon slds-button_icon-brand icon-brand" onclick="{!c.updateChanges}" >
+                                <lightning:icon class="slds-button__icon" iconName="utility:check" size="x-small" />
+                            </button>  
+                        </div>
+                    </footer>
+                </section>
+                <button class="slds-button slds-text-body--regular boxShadow" aura:id="editItem" onclick="{!c.editPopUp}" >
+                    <lightning:icon class="slds-icon slds-icon--small" iconName="utility:edit" size="x-small" />
+                </button>
+            </div>               
+        </th>
+    </tr>
+    
+</aura:component>

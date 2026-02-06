@@ -1,0 +1,194 @@
+<!--
+  @description       : 
+  @author            : Thanushree
+  @group             : 
+  @last modified on  : 01-30-2024
+  @last modified by  : Thanushree
+-->
+<template>
+    <div>
+        <div class="section-header">
+            <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small">
+                <span><b>{headerLabel}</b></span>
+            </div>
+        </div>
+
+    </div>
+    <div>
+
+        <div class="slds-p-top_xx-small  slds-p-left_x-small slds-text-body_small">
+            <span><i>{label.instText}</i></span>
+        </div>
+
+
+    </div>
+    <div class="slds-p-top_x-small ">
+        <table
+            class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <thead>
+
+
+                <tr class="slds-hint-parent thBorderLeft divider header-color">
+                    <td class="slds-border_right">
+                        <div class="slds-truncate">
+                            <span><b>&nbsp;</b></span>
+                        </div>
+                    </td>
+                    <!-- <td class="slds-border_right">
+                            <div class="slds-truncate">
+                                <span><b>{year4}</b></span>
+                            </div>
+                        </td>
+                        <td class="slds-border_right">
+                            <div class="slds-truncate">
+                                <span><b>{year3}</b></span>
+                            </div>
+                        </td>
+                        <td class="slds-border_right">
+                            <div class="slds-truncate">
+                                <span><b>{year2}</b></span>
+                            </div>
+                        </td>
+                        <td class="slds-border_right">
+                            <div class="slds-truncate">
+                                <span><b>{year1}</b></span>
+                            </div>
+                        </td> -->
+                        
+                        <template for:each={yearlist} for:item="year">
+                            <td class="slds-border_right"  key={year}>
+                            <div class="slds-truncate">
+                                <span><b>{year}</b></span>
+                            </div>
+                            </td>
+                        </template>
+                    <!-- <td class="slds-border_right">
+                        <template if:true={year4Value}>
+                            <div class="slds-truncate">
+                                <span><b>{year4}</b></span>
+                            </div>
+                        </template>
+                    </td>
+
+
+                    <td class="slds-border_right">
+                        <template if:true={year3Value}>
+                            <div class="slds-truncate">
+                                <span><b>{year3}</b></span>
+                            </div>
+                        </template>
+                    </td>
+
+
+                    <td class="slds-border_right">
+                        <template if:true={year2Value}>
+                            <div class="slds-truncate">
+                                <span><b>{year2}</b></span>
+                            </div>
+                        </template>
+                    </td>
+
+
+                    <td class="slds-border_right">
+                        <template if:true={year1Value}>
+                            <div class="slds-truncate">
+                                <span><b>{year1}</b></span>
+                            </div>
+                        </template>
+                    </td> -->
+
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td class="slds-border_right">
+                        <span><strong>Policy Level Medical Trend</strong></span>
+                    </td>
+                    <template for:each={yearValueList} for:item="yearValue">
+                        <td class="slds-border_right" key={yearValue}>
+                            <span >{yearValue}</span>
+                        </td>
+                    </template>
+                    <!-- <td class="slds-border_right">
+                        <template if:true={year4Value}>
+                            <span>{year4Value}
+                            </span>
+                        </template>
+                    </td>
+
+
+                    <td class="slds-border_right">
+                        <template if:true={year3Value}>
+                            <span>{year3Value}</span>
+                        </template>
+                    </td>
+
+
+                    <td class="slds-border_right">
+                        <template if:true={year2Value}>
+                            <span>{year2Value}</span>
+                        </template>
+                    </td>
+
+
+                    <td class="slds-border_right">
+                        <template if:true={year1Value}>
+                            <span>{year1Value}</span>
+                        </template>
+                    </td> -->
+                    <!-- <td class="slds-border_right">
+                            <span>{year4Value}
+                            </span>
+                        </td>
+                        <td class="slds-border_right">
+                            <span>{year3Value}</span>
+                        </td>
+                        <td class="slds-border_right">
+                            <span>{year2Value}</span>
+                        </td>
+                        <td class="slds-border_right">
+                            <span>{year1Value}</span>
+                        </td> -->
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <!-- <template if:false={medList}>
+        <table
+            class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <thead>
+
+
+                <tr class="slds-hint-parent thBorderLeft divider header-color">
+                    <td class="slds-border_right">
+                        <div class="slds-truncate">
+                            <span><b>&nbsp;</b></span>
+                        </div>
+                    </td>
+                    <td class="slds-border_right">
+                        <div class="slds-truncate">
+                            <span><b></b></span>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="slds-border_right">
+                        <span><strong>Policy Level Medical Trend</strong></span>
+                    </td>
+                    <td class="slds-border_right" style='white-space: break-spaces;'>
+                        <span>
+                            The data for this section is not available. If you believe that this is incorrect, please
+                            contact the Merit HelpDesk.
+
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </template> -->
+</template>

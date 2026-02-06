@@ -1,0 +1,43 @@
+<aura:component >
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="fieldNameToSort" type="String"/>
+    <aura:attribute name="isChildComponent" type="boolean" default="false"/>
+    <aura:attribute name="fieldOrderToSort" type="String"/>
+    <aura:attribute name="lastSortField" type="String"/>
+    <aura:attribute name="FieldsToSort" type="Object[]"/>
+    <aura:handler name="changeFieldClasses" event="c:changeFieldClasses" action="{!c.changeOtherFields}"/>
+    <aura:registerEvent name="Sorting_Mobile_Event" type="c:Sorting_Mobile_Event"/>
+    <div tabindex="-1" role="dialog" aura:id="sorting_Modal_PHONE" class="uiPanel--default uiPanel forceMobileOverlay active" data-aura-class="uiPanel--default uiPanel forceMobileOverlay" aria-hidden="false" style="z-index: 3; visibility: visible;">
+        <div class="IOS container">
+            <span class="assistiveText">Start of Dialog</span>
+            <div class="panel-content scrollable" data-scoped-scroll="true">
+                <div class="uiListSorter" data-aura-class="uiListSorter">
+                    <div>
+                    </div>
+                    <div class="listSorterContainer open PHONE" style="width: 375px; height: 667px">
+                        <div class="headerBar">
+                            <a class="cancel button" onclick="{!c.sortingModalClose}">Cancel</a>
+                            <span class="title">Sort</span>
+                            <a class="apply button" onclick="{!c.applySorting}">Apply</a>
+                        </div>
+                        <div class="body">
+                            <div class="sorterMenu uiMenu" data-aura-class="uiMenu">
+                                <div class="sorterMenuList scrollable popupTargetContainer uiPopupTarget uiMenuList uiMenuList--default visible positioned" data-aura-class="uiPopupTarget uiMenuList uiMenuList--default" data-scoped-scroll="true" style="height: 625px;">
+                                    <div class="sorterMenuList scrollable" role="presentation" data-scoped-scroll="true">
+                                        <ul class="scrollable" role="presentation" data-scoped-scroll="true">
+                                           <aura:iteration items="{!v.FieldsToSort}" var="FieldsToSortObj" indexVar="index">                                           	                                               
+                                               <c:SortingField lastSortField="{!v.lastSortField}" fieldNameToSort="{!v.fieldNameToSort}" fieldOrderToSort="{!v.fieldOrderToSort}" obj="{!FieldsToSortObj}" aura:id="SortingFieldId" indexVal="{!index}"></c:SortingField>                                                                                     	
+                                            </aura:iteration>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+            </div>
+        </div>
+    </div>
+</aura:component>

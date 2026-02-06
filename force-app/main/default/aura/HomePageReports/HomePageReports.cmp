@@ -1,0 +1,227 @@
+<aura:component controller="HomePageReportController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" >
+    
+    <aura:attribute name="WorkItemsDataArray" type="String[]"/>
+    <aura:attribute name="ReportByFirmMaster" type="String[]"/>
+    <aura:attribute name="ReportByBLMaster" type="String[]"/>
+    <aura:attribute name="ReportByFirm" type="String[]"/>
+    <aura:attribute name="ReportByFirmEmpty" type="Boolean" default="false"/>
+    <aura:attribute name="WorkItemsEmptyList" type="Boolean" default="false" />
+    <aura:attribute name="saveDraftValues" type="Object" />
+    <aura:attribute name="saveUpdatedWorkItemList" type="Opportunity[]" />
+    <aura:attribute name="errors" type="Object" />
+    <aura:attribute name="allSCEsDefaultArray" type="String[]" />
+    <aura:attribute name="vpcrSceOwnerMap" type="Map" />
+    <aura:attribute name="loggedInUserRoleName" type="String" />
+    <aura:attribute name="isFiltered" type="Boolean" default="false" />
+    <aura:attribute name="opportunityMap" type="Map" />
+    
+    <!-- Variables for sorting -->
+    <aura:attribute name="sortCompanyAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortRVPVPCRAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortSCEAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortMANameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortCommentsLastModifiedAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortMAComments" type="Boolean" default="true"/>
+    <aura:attribute name="sortedColumn" type="String" />
+    <aura:attribute name="sortedType" type="String" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit }"/>
+    <aura:handler name="workItemEvents" event="c:WorkItems_Events" action="{!c.handleUpdatedOppAndSave}" />
+     <article aura:id="articleClass" class="slds-card slds-m-bottom_medium" ><!--onscroll="{!c.scrollBottom}"-->        
+        <div class="slds-card__body slds-card__body_inner slds-p-horizontal_none slds-m-bottom_none slds-is-relative slds-p-bottom_small">
+            <lightning:spinner aura:id="tableSpinner" alternativeText="Loading.." title="" variant="brand" size="large" class="slds-hide"/>
+            <div class="slds-grid slds-wrap slds-p-horizontal_medium slds-theme_shade slds-p-vertical_medium slds-border_top slds-border_bottom">               
+                <div aura:Id="hideEntireFilter" class="slds-size_1-of-1">
+                    <fieldset class="slds-form-element">
+                        <div class="slds-form-element__group">
+                            <div class="slds-form-element__row slds-grid slds-grid_align-center">
+                                <div aura:Id="hideVPCRFilter" class="slds-form-element slds-size_1-of-1 slds-large-size_2-of-12">
+                                    <ui:inputSelect class="inputSelectoption slds-input" aura:id="VPCRRVPsDropDown" multiple="false" change="{!c.changeOnVPCRList}"/>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-1 slds-large-size_2-of-12 slds-m-horizontal_small">
+                                    <ui:inputSelect class="inputSelectoption1 slds-input" aura:id="SCEsDropDown" multiple="false" change="{!c.changeOnSCEList}"/>
+                                </div>
+                                <div class="slds-form-element slds-size_1-of-2 slds-large-size_1-of-12">
+                                    <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="goBtn" press="{!c.handleFilters}">{!$Label.c.Go}</ui:button>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="slds-grid slds-wrap">
+                <div class="slds-size_1-of-2 mw-50 slds-p-right_xx-small">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-size_1-of-1">
+                            <h4 class="slds-text-align_center table-title slds-p-horizontal_x-small slds-p-vertical_x-small slds-text-heading_small title-align">Client Membership Summary By Business Line</h4>
+                        </div>
+                        <div class="slds-size_1-of-1">
+                            <div class="slds-data-table-container no-edit" aura:Id="onEdit">               
+                                <div class="slds-modal slds-fade-in-open slds-modal_prompt slds-hide"></div>
+                                <div aura:Id="dataProcessing" class="slds-scrollable_y slds-hide" style="height:100%;"> 
+                                    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal data-table">                            
+                                        <thead>
+                                            <tr>
+                                                <th class="slds-is-sortable slds-is-resizable" scope="col" style="padding:0.5rem 0.5rem;width:180px;">
+                                                    <span class="slds-truncate" title="Company"><b>Business Line</b></span>    
+                                                </th>                                
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="RVP/VPCR"><b>UHC Medical Members</b></span>
+                                                </th>
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="RVP/VPCR"><b>Surest Members</b></span>
+                                                </th>
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="Comments Last Modified"><b>Optum Rx Members</b></span>
+                                                </th>
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="SCE"><b>UHC Dental Members</b></span>
+                                                </th>                                                                        
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="Membership Activity Name"><b>UHC Vision Members</b></span>
+                                                </th>                                               
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="Membership Activity Comments"><b># of Clients</b></span>
+                                                </th>
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" style="padding-right:0.5rem;border-right: 1px solid rgb(221, 219, 218);" scope="col">
+                                                    <span class="slds-truncate" title="Membership Activity Comments"><b>% by # of Clients</b></span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <p></p>
+                                        <tbody>
+                                            <tr>
+                                                <aura:if isTrue="{!v.WorkItemsEmptyList}">
+                                                    <th colspan="8" class="emptyListLine">
+                                                        <div class="slds-text-align--center">No Results Found</div>
+                                                    </th>
+                                                </aura:if>                                        
+                                            </tr>
+                                        </tbody>                                                                
+                                        <tbody>
+                                            <aura:iteration items="{!v.WorkItemsDataArray}" var="WorkItemsDataobj" indexVar="index">
+                                                
+                                                <tr class="slds-hint-parent">
+                                                    <th scope="row" data-label="Account Name">
+                                                        <span class="slds-grid slds-grid--align-spread">{!WorkItemsDataobj.FirmName}</span>
+                                                    </th>                                    
+                                                    <th scope="row" data-label="RVP/VPCR" class="slds-text-align_right">
+                                                        <span class="slds-truncate" title=""><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.medicalMembers}"/></span>
+                                                    </th>
+                                                    <th scope="row" data-label="Surest Members" class="slds-text-align_right">
+                                                        <span class="slds-truncate" title=""><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.surestMembers}"/></span>
+                                                    </th>
+                                                    
+                                                    <th scope="row" data-label=" Comments Last Modified" class="slds-text-align_right">
+                                                        <span class="slds-truncate"><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.optumLine}"/></span>
+                                                    </th>
+                                                    <th scope="row" data-label="SCE" class="slds-text-align_right">
+                                                        <span class="slds-truncate" title=""><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.dentalMembers}"/></span>
+                                                    </th>                                    
+                                                    <th scope="row" data-label="Membership Activity Name" class="slds-text-align_right">
+                                                        <span class="slds-truncate"><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.visionMembers}"/></span>
+                                                    </th>                                                    
+                                                    <th scope="row" data-label="Membership Activity Comments" class="slds-text-align_right">
+                                                        <span class="slds-truncate"><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.noOfClients}"/></span>
+                                                    </th>
+                                                    <th scope="row" data-label="Membership Activity Comments" class="slds-text-align_right" style="border-right: 1px solid rgb(221, 219, 218);">
+                                                        <span class="slds-truncate">{!WorkItemsDataobj.percentOfClients}</span>
+                                                    </th>
+                                                </tr>
+                                                
+                                            </aura:iteration>
+                                        </tbody>                                                      
+                                    </table>   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-size_1-of-2 mw-50 slds-p-left_xx-small">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-size_1-of-1">
+                            <h4 class="slds-text-align_center table-title slds-p-horizontal_x-small slds-p-vertical_x-small slds-text-heading_small">Client Membership Summary By Firm</h4>
+                        </div>
+                        <div class="slds-size_1-of-1">
+                            <div class="slds-data-table-container no-edit" aura:Id="onEdit1">               
+                                <div class="slds-modal slds-fade-in-open slds-modal_prompt slds-hide"></div>
+                                <div aura:Id="dataProcessing1" class="slds-scrollable_y slds-hide" style="height:100%;"> 
+                                    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal data-table">                            
+                                        <thead>
+                                            <tr>
+                                                <th class="slds-is-sortable slds-is-resizable" scope="col" style="padding:0.5rem 0.5rem;width:180px;border-left: 1px solid rgb(221, 219, 218);">
+                                                    <span class="slds-truncate" title="Company"><b>Consulting Firm (group)</b></span>    
+                                                </th>                                
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="RVP/VPCR"><b>UHC Medical Members</b></span>
+                                                </th>
+                                                 <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" ><b>Surest Members</b></span>
+                                                </th>
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="Comments Last Modified"><b>Optum Rx Members</b></span>
+                                                </th>
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="SCE"><b>UHC Dental Members</b></span>
+                                                </th>                                                                        
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="Membership Activity Name"><b>UHC Vision Members</b></span>
+                                                </th>                                                
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" scope="col">
+                                                    <span class="slds-truncate" title="Membership Activity Comments"><b># of Clients</b></span>
+                                                </th>
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-align_right" style="padding-right:0.5rem" scope="col">
+                                                    <span class="slds-truncate" title="Membership Activity Comments"><b>% by # of Clients</b></span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <p></p>
+                                        <tbody>
+                                            <tr>
+                                                <aura:if isTrue="{!v.ReportByFirmEmpty}">
+                                                    <th colspan="8" class="emptyListFirm">
+                                                        <div class="slds-text-align--center">No Results Found</div>
+                                                    </th>
+                                                </aura:if>                                        
+                                            </tr>
+                                        </tbody>                                                                
+                                        <tbody>
+                                            <aura:iteration items="{!v.ReportByFirm}" var="WorkItemsDataobj" indexVar="index">                               
+                                                <tr class="slds-hint-parent">
+                                                    <th scope="row" data-label="Account Name" style="border-left: 1px solid rgb(221, 219, 218);">
+                                                        <span class="slds-truncate">{!WorkItemsDataobj.FirmName}</span>
+                                                    </th>                                    
+                                                    <th scope="row" data-label="RVP/VPCR" class="slds-text-align_right">
+                                                        <div class="slds-truncate" title=""><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.medicalMembers}"/></div>
+                                                    </th>
+                                                     <th scope="row" data-label="Surest Members" class="slds-text-align_right">
+                                                        <span class="slds-truncate" title=""><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.surestMembers}"/></span>
+                                                    </th>
+                                                    <th scope="row" data-label=" Comments Last Modified" class="slds-text-align_right">
+                                                        <span class="slds-truncate"><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.optumLine}"/></span>
+                                                    </th>
+                                                    <th scope="row" data-label="SCE" class="slds-text-align_right">
+                                                        <div class="slds-truncate" title=""><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.dentalMembers}"/></div>
+                                                    </th>                                    
+                                                    <th scope="row" data-label="Membership Activity Name" class="slds-text-align_right">
+                                                        <span class="slds-truncate"><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.visionMembers}"/></span>
+                                                    </th>                                                   
+                                                    <th scope="row" data-label="Membership Activity Comments" class="slds-text-align_right">
+                                                        <span class="slds-truncate"><ui:outputNumber format="#,###,##0" value="{!WorkItemsDataobj.noOfClients}"/></span>
+                                                    </th>
+                                                    <th scope="row" data-label="Membership Activity Comments" class="slds-text-align_right">
+                                                        <span class="slds-truncate">{!WorkItemsDataobj.percentOfClients}</span>
+                                                    </th> 
+                                                </tr>                                
+                                            </aura:iteration>
+                                        </tbody>                                                      
+                                    </table>   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+        </div>           
+    </article>
+</aura:component>

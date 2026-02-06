@@ -1,0 +1,226 @@
+<apex:page controller="ExecutiveDashboardDownloadCtrl"  
+           standardStylesheets="false" showHeader="false" applyHtmlTag="false" applyBodyTag="false"
+           readOnly="true"
+           renderAs="pdf"
+           > 
+    
+    <html>
+        <head>
+            
+        </head>
+        
+        <body style='font-family:"Arial",sans-serif;color:black'>
+            
+            
+            <apex:repeat value="{!projectIds}" var="project">
+                <table style="width:100%">
+                    <tr>
+                        <td style="width:50%">
+                            <h2>{!idVsProjectTemplate[project].Account__r.Name}</h2>    <br/>
+                            
+                            <h3 style="margin:0 ">Implementation Dashboard </h3>
+                            As of &nbsp;
+                            <apex:outputText value="{0,date,M'/'d'/'yyyy}">
+                                <apex:param value="{!todayDate}" /> 
+                            </apex:outputText>
+                        </td>
+                        <td align="right">
+                            <img src="{!$Resource.ExecutiveDashboardHeaderImg}" />
+                        </td>
+                    </tr>
+                     <tr>
+                        <td colspan="2">
+                           <b>Overall Status:</b>  {!idVsProjectTemplate[project].Overall_Project_Status__c}
+                        </td>
+                    </tr>
+                    
+                </table>
+                <br/>
+                
+                <table style="width:100%;border: 1px solid #cac1c1;	" border="1" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            Effective Date
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;">
+                            <apex:outputText value="{0,date,M'/'d'/'yyyy}">
+                                <apex:param value="{!idVsProjectTemplate[project].Effective_Date__c}" /> 
+                            </apex:outputText>
+                            
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            Members
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;">
+                            {!idVsProjectTemplate[project].Number_of_Lives__c}
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            Impl PGs
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;">
+                            {!idVsProjectTemplate[project].Impl_PGs__c}
+                        </td>
+                    </tr>
+                    <tr> <td colspan="6" style="font-size: 12px;padding: 8px;font-weight: bold;background: #413fa0;color: #fff;">Core AMT</td></tr>
+                    <tr>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            SCE
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;">
+                            {!projectVsTeam[project].sce}
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            Optum Client Executive/Manager
+                        </td>
+                        <td style="padding: 10px;border: 1px solid #cac1c1;font-size:12px;" colspan="3">
+                            {!projectVsTeam[project].optumSAE}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            IPM
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;">
+                            {!projectVsTeam[project].implementationProjectManager}
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            Optum IPM
+                        </td>
+                        <td style="padding: 10px;border: 1px solid #cac1c1;font-size:12px;" colspan="3">
+                            {!projectVsTeam[project].optumIPM}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            CM
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;">
+                            {!projectVsTeam[project].clientManager}
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            CMC
+                        </td>
+                        <td style="padding: 10px;border: 1px solid #cac1c1;font-size:12px;" colspan="3">
+                            {!projectVsTeam[project].cmc}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            IT CRM
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;">
+                            {!projectVsTeam[project].itCrm}
+                        </td>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            SOL. ENGINEER
+                        </td>
+                        <td style="padding: 10px;border: 1px solid #cac1c1;font-size:12px;" colspan="3">
+                            {!projectVsTeam[project].solEngineer}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:13%;padding: 10px;border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            Scope
+                        </td>
+                        
+                        <td style="padding: 10px;border: 1px solid #cac1c1;font-size:12px;" colspan="5">
+                            <apex:outputText value="{!idVsProjectTemplate[project].Description__c}" escape="false" />
+                            
+                        </td>
+                    </tr>
+                    
+                </table>
+                <br/><br/>
+                
+                <!--apex:repeat value="{!projectVsTasks[project]}" var="parentTask" -->
+                  <apex:repeat value="{!projectVsSection[project]}" var="section">
+                    <table style="width:100%;margin-bottom:20px;border: 1px solid #cac1c1;"  border="1" cellpadding="0" cellspacing="0" bordercolor="#ccc">
+                        
+                        <tr style="font-size: 11px;font-weight: bold;background: #413fa0;border: 1px solid #cac1c1;"> 
+                            <td style="width:35%;padding: 7px;color: #fff;text-align:center;border: 1px solid #cac1c1;">
+                                {!projectVsTasks[project][section][0].Project_Task_Name__c} 
+                            </td>
+                            <td style="width:35%;padding: 7px;color: #fff;text-align:center;border: 1px solid #cac1c1;">{!projectVsTasks[project][section][0].Notes__c}</td>
+                            <td style="width:15%;padding: 7px;color: #fff;text-align:center;border: 1px solid #cac1c1;">Overall</td>
+                            <apex:outputPanel layout="none" rendered="{!IF(projectVsTasks[project][section][0].predecessors__c= 'Y', true,false)}">
+                                <td style="width:15%;padding: 7px;color: #fff;font-size: 9px;background: #ffcc00;border: 1px solid #cac1c1;">{!projectVsTasks[project][section][0].predecessors__c}</td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!IF(projectVsTasks[project][section][0].predecessors__c= 'R', true,false)}">
+                                <td style="width:15%;padding: 7px;color: #fff;font-size: 9px;background:#e01b1b;border: 1px solid #cac1c1;">{!projectVsTasks[project][section][0].predecessors__c}</td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!IF(projectVsTasks[project][section][0].predecessors__c= 'G', true,false)}">
+                                <td style="width:15%;padding: 7px;color: #fff;font-size: 9px;background:#00B050;border: 1px solid #cac1c1;">{!projectVsTasks[project][section][0].predecessors__c}</td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!IF(projectVsTasks[project][section][0].predecessors__c= 'B', true,false)}">
+                                <td style="width:15%;padding: 7px;color: #fff;font-size: 9px;background:#3813AD;border: 1px solid #cac1c1;">{!projectVsTasks[project][section][0].predecessors__c}</td>
+                            </apex:outputPanel>
+                        </tr>
+                        
+                        <tr style="border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#acaaaa">
+                            <td style="width:35%;padding: 7px;text-align:center;border: 1px solid #cac1c1;">Task Name</td>
+                            <td style="width:35%;padding: 7px;text-align:center;border: 1px solid #cac1c1;">Task Comments</td>
+                            <td style="width:15%;padding: 7px;text-align:center;border: 1px solid #cac1c1;">Due</td>
+                            <td style="width:15%;padding: 7px;text-align:center;border: 1px solid #cac1c1;">Status</td>
+                        </tr>
+                        
+                        <apex:repeat value="{!projectVsTasks[project][section]}" first="1" var="childTask">
+                            <tr style="border: 1px solid #cac1c1;font-size:12px;font-weight:bold;">
+                                <td style="width:35%;padding: 7px;border: 1px solid #cac1c1;">{!childTask.Project_Task_Name__c}</td>
+                                <td style="width:35%;padding: 7px;border: 1px solid #cac1c1;">{!childTask.Notes__c}</td>
+                                <td style="width:15%;padding: 7px;border: 1px solid #cac1c1;">
+                                    <apex:outputText value="{0,date,M'/'d'/'yyyy}">
+                                        <apex:param value="{!childTask.End_Date_Form__c}" /> 
+                                    </apex:outputText>
+                                </td>
+                                <apex:outputPanel layout="none" rendered="{!IF(childTask.predecessors__c= 'Y', true,false)}">
+                                    <td style="width:15%;padding: 7px;color: #fff;font-size: 9px;background: #ffcc00;border: 1px solid #cac1c1;">{!childTask.predecessors__c}</td>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!IF(childTask.predecessors__c= 'R', true,false)}">
+                                    <td style="width:15%;padding: 7px;color: #fff;font-size: 9px;background:#e01b1b;border: 1px solid #cac1c1;">{!childTask.predecessors__c}</td>
+                                </apex:outputPanel>
+                            </tr>
+                        </apex:repeat>
+                        
+                    </table>
+                    
+                </apex:repeat>
+                <apex:outputPanel layout="none" rendered="{!IF(idVsProjectTemplate[project].IRADs__r.size>0,true,false)}">
+                    
+                    <h3 style="margin:0 ">Implementation Issues/Risks</h3>
+                    <br/>
+                    <table style="width:100%;margin-bottom:20px;border: 1px solid #cac1c1;" border="1" cellpadding="0" cellspacing="0" bordercolor="#ccc">
+                        <tr style="border: 1px solid #cac1c1;font-size:12px;font-weight:bold;background:#413fa0;color:#fff">
+                            <td style="width:10%;padding: 7px;border: 1px solid #cac1c1;">Item#</td>
+                            <td style="width:10%;padding: 7px;border: 1px solid #cac1c1;">Issue/Risks</td>
+                            <td style="width:35%;padding: 7px;border: 1px solid #cac1c1;">Description</td>
+                            <td style="width:30%;padding: 7px;border: 1px solid #cac1c1;">Resolution Plan</td>
+                            <td style="width:15%;padding: 7px;border: 1px solid #cac1c1;">Due Date</td>
+                        </tr>
+                        <apex:variable var="cnt" value="{!0}" /> 
+                        <apex:repeat value="{!idVsProjectTemplate[project].IRADs__r}"  var="IRAD">
+                            <apex:variable var="cnt" value="{!cnt+1}"/>
+                            <tr style="border: 1px solid #cac1c1;font-size:12px;font-weight:bold;">
+                                <td style="padding: 7px;border: 1px solid #cac1c1;">{!cnt}</td>
+                                <td style="padding: 7px;border: 1px solid #cac1c1;">{!IRAD.Type__c}</td>
+                                <td style="padding: 7px;border: 1px solid #cac1c1;">{!IRAD.Description__c}</td>
+                                <td style="padding: 7px;border: 1px solid #cac1c1;">{!IRAD.Resolution_Plan__c}</td>
+                                <td style="padding: 7px;border: 1px solid #cac1c1;">
+                                    <apex:outputText value="{0,date,M'/'d'/'yyyy}">
+                                        <apex:param value="{!IRAD.Current_Due_Date__c}" /> 
+                                    </apex:outputText>
+                                </td>
+                                
+                            </tr>
+                        </apex:repeat>
+                        
+                    </table>
+                </apex:outputPanel>
+                
+                <br/><br/>
+                <div style="page-break-after:always;"> </div>
+            </apex:repeat>
+            
+        </body>
+        
+    </html>
+</apex:page>

@@ -1,0 +1,1506 @@
+<!--
+  @description       : 
+  @author            : Thanushree
+  @group             : 
+  @last modified on  : 11-08-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <lightning-accordion class="section-header-style" allow-multiple-sections-open onsectiontoggle={handleSectionToggle}
+        active-section-name={activeSections}>
+        <lightning-accordion-section class="section-header" name="Performance Guarantees and Credits/Allowances"
+            label="Performance Guarantees and Credits/Allowances">
+            <div>
+                <b style="color:black;">
+                    &nbsp;&nbsp;&nbsp;&nbsp;Please indicate whether the PGs and Credits listed below are included or
+                    not. Use “N/A” if the PG or Credit does not apply.</b>
+            </div>
+            <template if:true={medicalOrPhramaSold}>
+                <template if:true={medicalOrPhramaProdTrad}>
+                <lightning-accordion-section class="section-header-sub" name="Guarantees - Traditional" label="Guarantees - Traditional">
+                    <template if:true={isDataReceived}>
+                        <div class="slds-grid slds-wrap slds-grid--vertical-align-start slds-p-left_medium client-detail-sec-style"
+                            style="font-size: 12px;">
+                            <template if:true={medSold}>
+                                <table class="slds-table slds-no-row-hover" style="width:50%;">
+                                    <template if:true={medSold}>
+                                        <tr>
+                                            <td class="left">
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-cell-wrap">
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                        <span><b>Medical Performance Guarantee</b></span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Medical_Performance_Guarantee__c}>
+                                                                    {soldCaseDataCopy.Medical_Performance_Guarantee__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Medical_Performance_Guarantee__c"
+                                                                    value={soldCaseDataCopy.Medical_Performance_Guarantee__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+
+                                    <template if:true={medSold}>
+                                        <tr>
+                                            <td class="left">
+                                                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                        <span><b>Clinical Performance Guarantee</b></span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Clinical_Performance_Guarantee__c}>
+                                                                    {soldCaseDataCopy.Clinical_Performance_Guarantee__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Clinical_Performance_Guarantee__c"
+                                                                    value={soldCaseDataCopy.Clinical_Performance_Guarantee__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+
+                                    <template if:true={medSold}>
+                                        <tr>
+                                            <td class="left">
+                                                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                        <span><b>Discount Guarantee</b></span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Discount_Guarantee__c}>
+                                                                    {soldCaseDataCopy.Discount_Guarantee__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Discount_Guarantee__c"
+                                                                    value={soldCaseDataCopy.Discount_Guarantee__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </table>
+                            </template>
+
+                            <table class="slds-table slds-no-row-hover" style="width:50%;">
+                                <template if:true={medSold}>
+                                    <tr>
+                                        <td class="right">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>Claim Trend Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template
+                                                                if:true={soldCaseDataCopy.Claim_Trend_Guarantee__c}>
+                                                                {soldCaseDataCopy.Claim_Trend_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.Claim_Trend_Guarantee__c"
+                                                                value={soldCaseDataCopy.Claim_Trend_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="right">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>Total Cost of Care Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template
+                                                                if:true={soldCaseDataCopy.Total_Cost_of_Care_Guarantee__c}>
+                                                                {soldCaseDataCopy.Total_Cost_of_Care_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.Total_Cost_of_Care_Guarantee__c"
+                                                                value={soldCaseDataCopy.Total_Cost_of_Care_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+
+                                <template if:true={pharmSold}>
+                                    <tr>
+                                        <td class="right">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>Pharmacy Performance Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template
+                                                                if:true={soldCaseDataCopy.Pharmacy_Performance_Guarantee__c}>
+                                                                {soldCaseDataCopy.Pharmacy_Performance_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.Pharmacy_Performance_Guarantee__c"
+                                                                value={soldCaseDataCopy.Pharmacy_Performance_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </table>
+                            <table class="slds-table slds-no-row-hover" style="width:100%;">
+                                <template if:true={medSold}>
+                                    <template for:each={otherCustomGuaranteeMedLst} for:item="otherCustomGuarantee"
+                                        for:index="index">
+                                        <tr key={otherCustomGuarantee.value}>
+                                            <td class="border-bottom">
+                                                <div class="slds-grid slds-grid--vertical-align-center">
+                                                    <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small">
+                                                        <span><b>{otherCustomGuarantee.rowHeading}</b></span>
+                                                    </div>
+                                                    <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small">
+                                                        <span style="white-space:break-spaces;word-break:break-word;">
+                                                            <template if:false={enableEdit}>
+                                                                <div class="slds-grid slds-grid--vertical-align-center"
+                                                                    style="margin-left:8%;">
+                                                                    <div class="slds-col slds-size_3-of-8 "
+                                                                        style="width:16rem; text-align: right;">
+                                                                        {otherCustomGuarantee.writeIn}
+                                                                    </div>
+                                                                    <div class="slds-col slds-size_1-of-8 "
+                                                                        style="width:2.5rem;">
+                                                                    </div>
+                                                                    <div class="slds-col slds-size_3-of-8 "
+                                                                        style="text-align: right;">
+                                                                        {otherCustomGuarantee.mainField}
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <div class="slds-grid slds-grid--vertical-align-center"
+                                                                    style="margin-left:8%;">
+                                                                    <div class="slds-col slds-size_3-of-8"
+                                                                        style="width:16rem;">
+                                                                        <lightning-input type="text"
+                                                                            variant="label-hidden" data-index={index}
+                                                                            data-type="writeIn"
+                                                                            data-fieldreference={otherMedical}
+                                                                            value={otherCustomGuarantee.writeIn}
+                                                                            onchange={handleDynamicInputChange}
+                                                                            max-length="200"
+                                                                            placeholder="Specify PG">
+                                                                        </lightning-input>
+                                                                    </div>
+                                                                    <div class="slds-col slds-size_1-of-8 "
+                                                                        style="width:2.5rem;">
+                                                                    </div>
+                                                                    <div class="slds-col slds-size_3-of-8 ">
+                                                                        <lightning-input type="text"
+                                                                            variant="label-hidden" data-index={index}
+                                                                            data-type="mainField"
+                                                                            data-fieldreference={otherMedical}
+                                                                            value={otherCustomGuarantee.mainField}
+                                                                            onchange={handleDynamicInputChange}
+                                                                            max-length="25"
+                                                                            placeholder="Included">
+                                                                        </lightning-input>
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+                                                        <template if:true={otherCustomGuarantee.showAddButton}>
+                                                            <lightning-button variant="brand" label="Add Another PG"
+                                                                data-buttonindex={index} onclick={addGuaranteeFunction}
+                                                                title="Add Another PG" class="slds-m-left_x-small"
+                                                                data-fieldreference={otherMedical}
+                                                                disabled={disableButtons}>
+                                                            </lightning-button>
+                                                        </template>
+                                                        <template if:true={otherCustomGuarantee.showRemoveButton}>
+                                                            <lightning-button-icon variant="destructive"
+                                                                icon-name="utility:delete" alternative-text="Delete"
+                                                                onclick={deleteGuaranteeFunction}
+                                                                data-buttonindex={index}
+                                                                data-fieldreference={otherMedical}
+                                                                class="slds-m-left_xx-small doNotDeleteVendor"
+                                                                title="Delete" disabled={disableButtons}>
+                                                            </lightning-button-icon>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </template>
+                            </table>
+                        </div>
+                    </template>
+                </lightning-accordion-section>
+                </template>
+            </template>
+            <template if:true={medicalOrPhramaProdSurest}>
+                <c-sold-case-guarantees-surest record-detail={recordDetail} editmode={enableEdit} is-surest-product-med={isSurestProductMed} is-surest-product-pharmacy={isSurestProductPharmacy} medical-or-pharma-prod-surest={medicalOrPhramaProdSurest}
+                    sold-case-object-data={soldCaseDataCopy} onguaranteesurestchange={handleCreAndAllChanges} med-sold={medSold} pharm-sold={pharmSold}>
+                </c-sold-case-guarantees-surest>
+            </template>
+
+            <template if:true={dentVisOrBuyupSold}>
+                <lightning-accordion-section class="section-header-sub" name="Specialty Performance Guarantees"
+                    label="Specialty Performance Guarantees">
+                    <template if:true={isDataReceived}>
+                        <div class="slds-grid slds-wrap slds-grid_vertical-align-start slds-p-left_medium client-detail-sec-style"
+                            style="font-size: 12px;">
+                            <template if:true={dentVisSold}>
+                                <table class="slds-table slds-no-row-hover" style='width:50%'>
+                                    <template if:true={dentSold}>
+                                        <tr>
+                                            <td class="left">
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-cell-wrap">
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                        <span><b>Dental Performance Guarantees</b></span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Dental_Performance_Guarantees__c}>
+                                                                    {soldCaseDataCopy.Dental_Performance_Guarantees__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Dental_Performance_Guarantees__c"
+                                                                    value={soldCaseDataCopy.Dental_Performance_Guarantees__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-cell-wrap">
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                        <span><b>Dental Network Recruitment Guarantees</b></span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Dental_Ntwk_Recruitment_Guarantees__c}>
+                                                                    {soldCaseDataCopy.Dental_Ntwk_Recruitment_Guarantees__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Dental_Ntwk_Recruitment_Guarantees__c"
+                                                                    value={soldCaseDataCopy.Dental_Ntwk_Recruitment_Guarantees__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-cell-wrap">
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                        <span><b>Dental In Network Utilization Guarantee</b></span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Dental_In_Network_Utilization_Guarantee__c}>
+                                                                    {soldCaseDataCopy.Dental_In_Network_Utilization_Guarantee__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Dental_In_Network_Utilization_Guarantee__c"
+                                                                    value={soldCaseDataCopy.Dental_In_Network_Utilization_Guarantee__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    
+                                    <template if:true={visSold}>
+                                        <tr>
+                                            <td class="left">
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-cell-wrap">
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                        <span><b>Vision Performance Guarantees</b></span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Vision_Performance_Guarantees__c}>
+                                                                    {soldCaseDataCopy.Vision_Performance_Guarantees__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Vision_Performance_Guarantees__c"
+                                                                    value={soldCaseDataCopy.Vision_Performance_Guarantees__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-cell-wrap">
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                        <span><b>Vision Network Recruitment Guarantees</b></span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Vision_Ntwk_Recruitment_Guarantees__c}>
+                                                                    {soldCaseDataCopy.Vision_Ntwk_Recruitment_Guarantees__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Vision_Ntwk_Recruitment_Guarantees__c"
+                                                                    value={soldCaseDataCopy.Vision_Ntwk_Recruitment_Guarantees__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left">
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-cell-wrap">
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                        <span><b>Vision In Network Utilization Guarantee</b></span>
+                                                    </div>
+                                                    <div
+                                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Vision_In_Network_Utilization_Guarantee__c}>
+                                                                    {soldCaseDataCopy.Vision_In_Network_Utilization_Guarantee__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Vision_In_Network_Utilization_Guarantee__c"
+                                                                    value={soldCaseDataCopy.Vision_In_Network_Utilization_Guarantee__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </table>
+                            </template>
+
+                            <table class="slds-table slds-no-row-hover" style='width:50%'>
+                                <template if:true={otherSold}>
+                                    <tr>
+                                        <td class="right">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>Acc/CI/HI Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template if:true={soldCaseDataCopy.Acc_Ci_Hi_Guarantee__c}>
+                                                                {soldCaseDataCopy.Acc_Ci_Hi_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.Acc_Ci_Hi_Guarantee__c"
+                                                                value={soldCaseDataCopy.Acc_Ci_Hi_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="right">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>Life Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template if:true={soldCaseDataCopy.Life_Guarantee__c}>
+                                                                {soldCaseDataCopy.Life_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.Life_Guarantee__c"
+                                                                value={soldCaseDataCopy.Life_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="right">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>STD Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template if:true={soldCaseDataCopy.STD_Guarantee__c}>
+                                                                {soldCaseDataCopy.STD_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.STD_Guarantee__c"
+                                                                value={soldCaseDataCopy.STD_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="right">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>LTD Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template if:true={soldCaseDataCopy.LTD_Guarantee__c}>
+                                                                {soldCaseDataCopy.LTD_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.LTD_Guarantee__c"
+                                                                value={soldCaseDataCopy.LTD_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="right">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>FMLA Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template if:true={soldCaseDataCopy.FMLA_Guarantee__c}>
+                                                                {soldCaseDataCopy.FMLA_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.FMLA_Guarantee__c"
+                                                                value={soldCaseDataCopy.FMLA_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </table>
+
+                            <!--WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN-->
+                            <table class="slds-table slds-no-row-hover" style="width:100%;">
+                                <template if:true={otherSold}>
+                                    <template for:each={otherCustomGuaranteeLst} for:item="otherCustomGuarantee"
+                                        for:index="index">
+                                        <tr key={otherCustomGuarantee.value}>
+                                            <td class="border-bottom">
+                                                <div class="slds-grid slds-grid--vertical-align-center slds-cell-wrap">
+                                                    <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small">
+                                                        <span><b>{otherCustomGuarantee.rowHeading}</b></span>
+                                                    </div>
+
+                                                    <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small">
+                                                        <span style="white-space:break-spaces;word-break:break-word;">
+                                                            <template if:false={enableEdit}>
+                                                                <div class="slds-grid slds-grid--vertical-align-center"
+                                                                    style="margin-left:8%;">
+                                                                    <div class="slds-col slds-size_3-of-8 "
+                                                                        style="width:16rem; text-align: right;">
+                                                                        {otherCustomGuarantee.writeIn}
+                                                                    </div>
+                                                                    <div class="slds-col slds-size_1-of-8 "
+                                                                        style="width:2.5rem;">
+                                                                    </div>
+                                                                    <div class="slds-col slds-size_3-of-8 "
+                                                                        style="text-align: right;">
+                                                                        {otherCustomGuarantee.mainField}
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <div class="slds-grid slds-grid--vertical-align-center "
+                                                                    style="margin-left:8%;">
+                                                                    <div class="slds-col slds-size_3-of-8 "
+                                                                        style="width:16rem;">
+                                                                        <lightning-input type="text"
+                                                                            variant="label-hidden" data-index={index}
+                                                                            data-type="writeIn"
+                                                                            data-fieldreference={otherSpeciality}
+                                                                            value={otherCustomGuarantee.writeIn}
+                                                                            onchange={handleDynamicInputChange}
+                                                                            max-length="200"
+                                                                            placeholder="Specify PG">
+                                                                        </lightning-input>
+                                                                    </div>
+                                                                    <div class="slds-col slds-size_1-of-8 "
+                                                                        style="width:2.5rem;">
+                                                                    </div>
+                                                                    <div class="slds-col slds-size_3-of-8 ">
+                                                                        <lightning-input type="text"
+                                                                            variant="label-hidden" data-index={index}
+                                                                            data-type="mainField"
+                                                                            data-fieldreference={otherSpeciality}
+                                                                            value={otherCustomGuarantee.mainField}
+                                                                            onchange={handleDynamicInputChange}
+                                                                            max-length="200"
+                                                                            placeholder="Included">
+                                                                        </lightning-input>
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+
+                                                    <div
+                                                        class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+                                                        <template if:true={otherCustomGuarantee.showAddButton}>
+                                                            <lightning-button variant="brand" label="Add Another PG"
+                                                                data-buttonindex={index} onclick={addGuaranteeFunction}
+                                                                title="Add Another PG" class="slds-m-left_x-small"
+                                                                data-fieldreference={otherSpeciality}
+                                                                disabled={disableButtons}>
+                                                            </lightning-button>
+                                                        </template>
+                                                        <template if:true={otherCustomGuarantee.showRemoveButton}>
+                                                            <lightning-button-icon variant="destructive"
+                                                                icon-name="utility:delete" alternative-text="Delete"
+                                                                onclick={deleteGuaranteeFunction}
+                                                                data-buttonindex={index}
+                                                                data-fieldreference={otherSpeciality}
+                                                                class="slds-m-left_xx-small doNotDeleteVendor"
+                                                                title="Delete" disabled={disableButtons}>
+                                                            </lightning-button-icon>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </template>
+                            </table>
+                            <!--WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN WRITE IN-->
+                        </div>
+                    </template>
+                </lightning-accordion-section>
+            </template>
+
+            <template if:true={dentVisOrBuyupSold}>
+                <lightning-accordion-section class="section-header-sub" name="Specialty Integration Guarantees"
+                    label="Specialty Integration Guarantees">
+                    <template if:true={isDataReceived}>
+                        <div class="slds-grid slds-wrap  slds-p-left_medium client-detail-sec-style"
+                            style="font-size: 12px;">
+                            <table class="slds-table slds-no-row-hover" style='width:50%'>
+                                <template if:true={dentSold}>
+                                    <tr>
+                                        <td class="left">
+                                            <div
+                                                class="slds-grid slds-grid--vertical-align-center border-bottom slds-cell-wrap">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>Dental Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template if:true={soldCaseDataCopy.Dental_Guarantee__c}>
+                                                                {soldCaseDataCopy.Dental_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.Dental_Guarantee__c"
+                                                                value={soldCaseDataCopy.Dental_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+
+                                <template if:true={otherSold}>
+                                    <tr>
+                                        <td class="right">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>STD Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template if:true={soldCaseDataCopy.STD_Guarantee_B2H__c}>
+                                                                {soldCaseDataCopy.STD_Guarantee_B2H__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.STD_Guarantee_B2H__c"
+                                                                value={soldCaseDataCopy.STD_Guarantee_B2H__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+
+                                <template if:true={visSold}>
+                                    <tr>
+                                        <td class="left">
+                                            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                                    <span><b>Vision Guarantee</b></span>
+                                                </div>
+                                                <div
+                                                    class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={enableEdit}>
+                                                            <template if:true={soldCaseDataCopy.Vision_Guarantee__c}>
+                                                                {soldCaseDataCopy.Vision_Guarantee__c}
+                                                            </template>
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                name="Sold_Case_Checklist__c.Vision_Guarantee__c"
+                                                                value={soldCaseDataCopy.Vision_Guarantee__c}
+                                                                onchange={FieldChangeHandler} max-length="25">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </table>
+                        </div>
+                    </template>
+                </lightning-accordion-section>
+            </template>
+
+            <template if:true={medSold}>
+                <c-sold-case-credits-and-allowances record-detail={recordDetail} editmode={enableEdit}
+                    sold-case-data-copy={soldCaseDataCopy} oncreditsandallowanceschange={handleCreAndAllChanges}
+                    is-traditional-product-med={isTraditionalProductMed} is-surest-product-med={isSurestProductMed}>
+                </c-sold-case-credits-and-allowances>
+            </template>
+
+            <template if:true={dentVisOrBuyupSold}>
+                <lightning-accordion-section class="section-header-sub" name="Specialty Credits &amp; Allowances"
+                    label="Specialty Credits &amp; Allowances">
+                    <template if:true={isDataReceived}>
+                        <div class="slds-grid slds-wrap slds-grid--vertical-align-center slds-p-left_medium client-detail-sec-style"
+                            style="font-size: 12px;">
+                            <table class="slds-table slds-no-row-hover slds-table_fixed-layout">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th style="text-align: center;"><b>Year 1</b></th>
+                                        <th style="text-align: center;"><b>Year 2</b></th>
+                                        <th style="text-align: center;"><b>Year 3</b></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template if:true={dentSold}>
+                                        <tr>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                                    <b>Dental Implementation</b>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <div class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4"
+                                                    style="min-height:2rem;">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Dental_Implementation_Year_1__c}>
+                                                                    {soldCaseDataCopy.Dental_Implementation_Year_1__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Dental_Implementation_Year_1__c"
+                                                                    value={soldCaseDataCopy.Dental_Implementation_Year_1__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class='grayOut'></span>
+                                            </td>
+                                            <td>
+                                                <span class='grayOut'></span>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                                    <b>Dental Cross Sell</b>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Dental_Cross_Sell_Year_1__c}>
+                                                                    {soldCaseDataCopy.Dental_Cross_Sell_Year_1__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Dental_Cross_Sell_Year_1__c"
+                                                                    value={soldCaseDataCopy.Dental_Cross_Sell_Year_1__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Dental_Cross_Sell_Year_2__c}>
+                                                                    {soldCaseDataCopy.Dental_Cross_Sell_Year_2__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Dental_Cross_Sell_Year_2__c"
+                                                                    value={soldCaseDataCopy.Dental_Cross_Sell_Year_2__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Dental_Cross_Sell_Year_3__c}>
+                                                                    {soldCaseDataCopy.Dental_Cross_Sell_Year_3__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Dental_Cross_Sell_Year_3__c"
+                                                                    value={soldCaseDataCopy.Dental_Cross_Sell_Year_3__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </template>
+                                    <template if:true={visSold}>
+                                        <tr>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                                    <b>Vision Implementation</b>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Vision_Implementation_Year_1__c}>
+                                                                    {soldCaseDataCopy.Vision_Implementation_Year_1__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Vision_Implementation_Year_1__c"
+                                                                    value={soldCaseDataCopy.Vision_Implementation_Year_1__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class='grayOut'></span></td>
+                                            <td><span class='grayOut'></span></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                                    <b>Vision Cross Sell</b>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Vision_Cross_Sell_Year_1__c}>
+                                                                    {soldCaseDataCopy.Vision_Cross_Sell_Year_1__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Vision_Cross_Sell_Year_1__c"
+                                                                    value={soldCaseDataCopy.Vision_Cross_Sell_Year_1__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Vision_Cross_Sell_Year_2__c}>
+                                                                    {soldCaseDataCopy.Vision_Cross_Sell_Year_2__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Vision_Cross_Sell_Year_2__c"
+                                                                    value={soldCaseDataCopy.Vision_Cross_Sell_Year_2__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Vision_Cross_Sell_Year_3__c}>
+                                                                    {soldCaseDataCopy.Vision_Cross_Sell_Year_3__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Vision_Cross_Sell_Year_3__c"
+                                                                    value={soldCaseDataCopy.Vision_Cross_Sell_Year_3__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </template>
+                                    <template if:true={otherSold}>
+                                        <tr>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                                    <b>Acc/CI/HI Implementation</b>
+                                                    <c-tooltip-lwc
+                                                        help-text={accCiHiHelpText}>
+                                                    </c-tooltip-lwc>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Acc_Ci_HI_Implementation_Year_1__c}>
+                                                                    {soldCaseDataCopy.Acc_Ci_HI_Implementation_Year_1__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Acc_Ci_HI_Implementation_Year_1__c"
+                                                                    value={soldCaseDataCopy.Acc_Ci_HI_Implementation_Year_1__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class='grayOut'></span></td>
+                                            <td><span class='grayOut'></span></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                                    <b>Acc/CI/HI Cross Sell</b>
+                                                    <c-tooltip-lwc
+                                                        help-text={accCiHiHelpText}>
+                                                    </c-tooltip-lwc>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Acc_CI_Hi_Cross_Sell_Year_1__c}>
+                                                                    {soldCaseDataCopy.Acc_CI_Hi_Cross_Sell_Year_1__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Acc_CI_Hi_Cross_Sell_Year_1__c"
+                                                                    value={soldCaseDataCopy.Acc_CI_Hi_Cross_Sell_Year_1__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Acc_CI_Hi_Cross_Sell_Year_2__c}>
+                                                                    {soldCaseDataCopy.Acc_CI_Hi_Cross_Sell_Year_2__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Acc_CI_Hi_Cross_Sell_Year_2__c"
+                                                                    value={soldCaseDataCopy.Acc_CI_Hi_Cross_Sell_Year_2__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Acc_CI_Hi_Cross_Sell_Year_3__c}>
+                                                                    {soldCaseDataCopy.Acc_CI_Hi_Cross_Sell_Year_3__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Acc_CI_Hi_Cross_Sell_Year_3__c"
+                                                                    value={soldCaseDataCopy.Acc_CI_Hi_Cross_Sell_Year_3__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                                    <b>Acc/CI/HI Employee</b>
+                                                    <c-tooltip-lwc
+                                                        help-text={accCiHiHelpText}>
+                                                    </c-tooltip-lwc>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Acc_Ci_Hi_Tech_Year_1__c}>
+                                                                    {soldCaseDataCopy.Acc_Ci_Hi_Tech_Year_1__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Acc_Ci_Hi_Tech_Year_1__c"
+                                                                    value={soldCaseDataCopy.Acc_Ci_Hi_Tech_Year_1__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Acc_Ci_Hi_Tech_Year_2__c}>
+                                                                    {soldCaseDataCopy.Acc_Ci_Hi_Tech_Year_2__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Acc_Ci_Hi_Tech_Year_2__c"
+                                                                    value={soldCaseDataCopy.Acc_Ci_Hi_Tech_Year_2__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Acc_Ci_Hi_Tech_Year_3__c}>
+                                                                    {soldCaseDataCopy.Acc_Ci_Hi_Tech_Year_3__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Acc_Ci_Hi_Tech_Year_3__c"
+                                                                    value={soldCaseDataCopy.Acc_Ci_Hi_Tech_Year_3__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                                    <b>Life/DI Implementation</b>
+                                                    <c-tooltip-lwc help-text={lifeDiHelpText}></c-tooltip-lwc>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Life_DI_Implementation_Year_1__c}>
+                                                                    {soldCaseDataCopy.Life_DI_Implementation_Year_1__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Life_DI_Implementation_Year_1__c"
+                                                                    value={soldCaseDataCopy.Life_DI_Implementation_Year_1__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class='grayOut'></span></td>
+                                            <td><span class='grayOut'></span></td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                                    <b>Life/DI Cross Sell</b>
+                                                    <c-tooltip-lwc help-text={lifeDiHelpText}></c-tooltip-lwc>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Life_Di_Cross_Sell_Year_1__c}>
+                                                                    {soldCaseDataCopy.Life_Di_Cross_Sell_Year_1__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Life_Di_Cross_Sell_Year_1__c"
+                                                                    value={soldCaseDataCopy.Life_Di_Cross_Sell_Year_1__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Life_Di_Cross_Sell_Year_2__c}>
+                                                                    {soldCaseDataCopy.Life_Di_Cross_Sell_Year_2__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Life_Di_Cross_Sell_Year_2__c"
+                                                                    value={soldCaseDataCopy.Life_Di_Cross_Sell_Year_2__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4">
+                                                    <div class="slds-col slds-cell-wrap">
+                                                        <span>
+                                                            <template if:false={enableEdit}>
+                                                                <template
+                                                                    if:true={soldCaseDataCopy.Life_Di_Cross_Sell_Year_3__c}>
+                                                                    {soldCaseDataCopy.Life_Di_Cross_Sell_Year_3__c}
+                                                                </template>
+                                                            </template>
+                                                            <template if:true={enableEdit}>
+                                                                <lightning-input type="text" variant="label-hidden"
+                                                                    name="Sold_Case_Checklist__c.Life_Di_Cross_Sell_Year_3__c"
+                                                                    value={soldCaseDataCopy.Life_Di_Cross_Sell_Year_3__c}
+                                                                    onchange={FieldChangeHandler} max-length="25">
+                                                                </lightning-input>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+
+                                        <template for:each={otherCustomCreditsLst} for:item="otherCredits"
+                                            for:index="index">
+                                            <tr key={otherCredits.value}>
+                                                <td><b>{otherCredits.rowHeading}</b></td>
+                                                <td>
+                                                    <div class="slds-col slds-cell-wrap border-bottom"
+                                                        style="min-height:22px;">
+                                                        <template if:false={enableEdit}>
+                                                            {otherCredits.writeIn}
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                data-index={index} data-type="writeIn"
+                                                                onchange={handleDynamicInputChange}
+                                                                data-fieldreference={otherCustomCreditsRef}
+                                                                value={otherCredits.writeIn} class="writeInInpt"
+                                                                max-length="200"
+                                                                placeholder="Specify Credit">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </div>
+
+                                                </td>
+                                                <td>
+                                                    <div class="slds-col slds-cell-wrap border-bottom"
+                                                        style="min-height:22px;">
+                                                        <template if:false={enableEdit}>
+                                                            {otherCredits.year1}
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                data-index={index} data-type="year1"
+                                                                onchange={handleDynamicInputChange}
+                                                                data-fieldreference={otherCustomCreditsRef}
+                                                                value={otherCredits.year1} class="yearoneInpt"
+                                                                max-length="200"
+                                                                placeholder="Included">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-col slds-cell-wrap border-bottom"
+                                                        style="min-height:22px;">
+                                                        <template if:false={enableEdit}>
+                                                            {otherCredits.year2}
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                data-index={index} data-type="year2"
+                                                                onchange={handleDynamicInputChange}
+                                                                data-fieldreference={otherCustomCreditsRef}
+                                                                value={otherCredits.year2} class="yeartwoInpt"
+                                                                max-length="200"
+                                                                placeholder="Included">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-col slds-cell-wrap border-bottom"
+                                                        style="min-height:22px;">
+                                                        <template if:false={enableEdit}>
+                                                            {otherCredits.year3}
+                                                        </template>
+                                                        <template if:true={enableEdit}>
+                                                            <lightning-input type="text" variant="label-hidden"
+                                                                data-index={index} data-type="year3"
+                                                                onchange={handleDynamicInputChange}
+                                                                data-fieldreference={otherCustomCreditsRef}
+                                                                value={otherCredits.year3} class="yearthreeInpt"
+                                                                max-length="200"
+                                                                placeholder="Included">
+                                                            </lightning-input>
+                                                        </template>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-grid slds-wrap">
+                                                        <div class="slds-col slds-size_10-of-12">
+                                                            <template if:true={otherCredits.showAddButton}>
+                                                                <lightning-button variant="brand"
+                                                                    label="Add Another Credit" data-buttonindex={index}
+                                                                    onclick={addGuaranteeFunction}
+                                                                    title="Add Another Credit"
+                                                                    data-fieldreference={otherCustomCreditsRef}
+                                                                    disabled={disableButtons}>
+                                                                </lightning-button>
+                                                            </template>
+                                                        </div>
+                                                        <div class="slds-col slds-size_2-of-12">
+                                                            <template if:true={otherCredits.showRemoveButton}>
+                                                                <lightning-button-icon variant="destructive"
+                                                                    icon-name="utility:delete" alternative-text="Delete"
+                                                                    onclick={deleteGuaranteeFunction}
+                                                                    data-buttonindex={index}
+                                                                    data-fieldreference={otherCustomCreditsRef}
+                                                                    class="doNotDeleteVendor" title="Delete"
+                                                                    disabled={disableButtons}>
+                                                                </lightning-button-icon>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                </lightning-accordion-section>
+            </template>
+        </lightning-accordion-section>
+    </lightning-accordion>
+</template>

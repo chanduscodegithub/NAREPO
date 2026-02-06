@@ -1,0 +1,43 @@
+<aura:component >
+    <aura:registerEvent name="ProductSearchComp" type="c:ProductSearch_Component_Event"/>
+    <aura:attribute name="ProductsList" type="PricebookEntry"/>
+    <aura:attribute name="isSurest" type="boolean"/>
+    <aura:attribute name="value" type="string"/>
+    <aura:attribute name="prodLine" type="string"/>
+    <aura:attribute name="isReadonly" type="boolean" default='false'/>
+    <aura:attribute name="BuyupProductList" type="List" default="[]"/>
+     <aura:attribute name="options" type="List" default="[]"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:method name="deSelectCheckBox" action="{!c.removeSelectedValue}"  description="Sample method with parameters"> 
+        <aura:attribute name="isProductsSelected" type="Boolean"/> 
+    </aura:method>
+    <tr>
+        <th scope="row" data-label="{!v.ProductsList.Name}">
+            <div class="slds-checkbox_add-button">
+                <ui:inputCheckbox aura:id="selectedProductId" change="{!c.onProductSelect}" />
+                <!--<input type="checkbox" class="slds-assistive-text" tabindex="-1" value="on" checked=""></input>-->
+                <label for="add-checkbox-17" class="slds-checkbox_faux"><span class="slds-assistive-text">Select item 1</span></label>
+            </div>
+        </th>
+        <th scope="row" data-label="{!v.ProductsList.Name}">
+            <div class="slds-truncate" >{!v.ProductsList.Product2.Name}</div>
+        </th>
+        <th scope="row" data-label="{!v.ProductsList.Family}">
+            <div class="slds-truncate" >{!v.ProductsList.Product2.Family}</div>
+        </th>
+        <aura:if isTrue="{!v.isSurest}">            
+            <th scope="row" data-label="{!v.ProductsList.Family}">
+                <div class="slds-truncate" >
+                    <lightning:combobox name="Buyup Product Type" label="Buyup Product Type"
+                                        value='{!v.value}' placeholder="Select" options='{!v.options}'
+                                        variant='label-hidden' readonly='{!v.isReadonly}' onchange="{!c.handleProductType}"/>
+                </div>
+            </th>
+            <th scope="row" data-label="{!v.ProductsList.Family}">
+                <div class="slds-truncate">{!v.ProductsList.Product2.Surest_Applicable_Products__c}</div>
+            </th>            
+        </aura:if>
+        
+    </tr>
+</aura:component>

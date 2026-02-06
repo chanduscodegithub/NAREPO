@@ -1,0 +1,267 @@
+<aura:component controller="MA_Consultants_Class" >
+    
+    <!-- For implementing in QA -->
+    <aura:attribute name="isFromQA" type="boolean" default="false" />
+    <aura:attribute name="existingConIds" type="String[]"/>
+    <aura:attribute name="opportunityData" type="Opportunity" />
+    
+    <aura:attribute name="consultingSearch" type="String[]"/>
+    <aura:attribute name="consultingFirmSearch" type="String[]"/>
+    <aura:attribute name="consultingHistoryIndex" type="String"/>
+    <aura:attribute name="selectedContacts" type="List"/>
+    <aura:attribute name="isSpinnertoLoad1"  type="Boolean"  default="false"/>
+    <aura:attribute name="isGoButtonClicked" type="Boolean" default="false"/>
+    <aura:attribute name="isPrimaryExists" type="Boolean" default="false"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+
+    <aura:attribute name="selectedContactIds" type="String[]"/>
+    <aura:attribute name="checkBoxCount" type="Integer" default="0"/>
+    
+    <aura:attribute name="isAllContactList" type="boolean" default="false" />
+    
+    <aura:attribute name="Child_Data" type="Object"/>
+    
+    <aura:attribute name="isConsultantsListDisplayed" type="boolean" default="true" />
+    <aura:attribute name="isConsultingFirmListDisplayed" type="boolean" default="false" />
+    
+    <aura:attribute name="isConsultantsListEmpty" type="boolean" default="false" />
+    <aura:attribute name="isConsultantFirmsListEmpty" type="Boolean" default="true"/>
+    <aura:attribute name="hideSelect" type="boolean" default="false" />
+    <aura:attribute name="showSelect" type="boolean" default="false" />
+    
+    <aura:handler name="maConsultantPopupEvent" event="c:MA_Consulants_Modal_Popup_Table_Event" action="{!c.addSelectedContactIds}"/>
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    
+    <!-- Pagination Attributes -->
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="contact_consulatntPickListValues" type="String[]" default="Last Name,First Name,Consulting Firm"/>
+    <aura:attribute name="contact_consulatntPickListValues1" type="String[]" default="Begins With,Equals To,Contains"/>
+    
+    <aura:attribute name="Search_Select_DropDown" type="String[]" default="Consultants Associated with the Company,All Consultants"/>
+    <aura:registerEvent name="accountConsultantSelectSearch" type="c:Account_Consultant_Select_Search_Event"/>
+    
+    <aura:registerEvent name="addSelectedConsultants" type="c:MA_addSelectedConsultant_Event"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    
+    <aura:handler name="modalCmpCloseEvent1" event="c:Modal_Closing_RR_Event" action="{!c.modelCloseComponentEvent}"/>
+    
+    {!v.body}
+    <article class="margin-pull modal-body-wrapper">
+        <div class="slds-page-header slds-grid slds-wrap consult-drop slds-grid_vertical-align-center">
+            <div aura:id="searchSelect" class="slds-size--1-of-1 slds-medium-size_5-of-12 slds-large-size_5-of-12 col-xs-auto w-sm-auto slds-p-right_medium">
+                <ui:inputSelect class="slds-form-control" aura:id="SearchSelect" multiple="false" change="{!c.onSelectChange}">
+                    <aura:iteration items="{!v.Search_Select_DropDown}" var="contact_consulatnt"> 
+                        <ui:inputSelectOption text="{!contact_consulatnt}"/> 
+                    </aura:iteration>
+                </ui:inputSelect>
+            </div>
+            <div aura:id="selCnsltCount" class="slds-col">
+            	<span class="selCnsltCount--item"><span class="count">{!v.checkBoxCount}</span> Consultant(s) Selected</span>                    
+            </div>
+            <div aura:id="linkId" class="slds-size--1-of-1 slds-medium-size_3-of-12 slds-large-size_6-of-12 col-xs-auto w-sm-auto slds-p-left_medium slds-grid slds-grid_align-end slds-grid_vertical-align-center">
+                <a onclick="{!c.openMailPopup}" class="slds-p-horizontal_small">{!$Label.c.MA_Consultant_Send_Email_Header}</a>
+                <ui:button class="slds-button slds-button_neutral" aura:id="cancelBtn" press="{!c.cancelNClose}">Cancel</ui:button>
+                <aura:if isTrue="{!v.isFromQA}">
+                    <ui:button class="slds-button slds-button_brand" aura:id="addBtn" disabled="true" press="{!c.saveSelectedConIds}">Save</ui:button>
+                    <aura:set attribute="else">
+                        <ui:button class="slds-button slds-button_brand" aura:id="saveBtn" disabled="true" press="{!c.saveSelectedConIds}">Save</ui:button>
+                    </aura:set>
+                </aura:if>
+            </div>
+            <div aura:id="pill-section" class="slds-size_1-of-1 slds-pill_container slds-pill_container_bare selected-pill slds-hide slds-wrap">
+                <aura:iteration items="{!v.selectedContacts}" var="selectedContactsObj">
+                    <aura:if isTrue="{!v.isAllContactList}">
+                        <lightning:pill label="{!selectedContactsObj.Name}" name="{!selectedContactsObj.Id}" onremove="{!c.handleRemoveOnly}">
+                            <aura:set attribute="media">
+                                <lightning:icon iconName="standard:product" alternativeText="Product"/>
+                            </aura:set>
+                        </lightning:pill>
+                        <aura:set attribute="else">
+                            <lightning:pill label="{!selectedContactsObj.Contact.Name}" name="{!selectedContactsObj.Contact.Id}" onremove="{!c.handleRemoveOnly}">
+                                <aura:set attribute="media">
+                                    <lightning:icon iconName="standard:product" alternativeText="Product"/>
+                                </aura:set>
+                            </lightning:pill>
+                        </aura:set>
+                    </aura:if>
+                </aura:iteration>
+            </div>
+            
+            <div class="slds-p-top_small slds-size_1-of-1">
+                <p class="slds-text-body_small slds-text-color_weak">
+                    <strong>Note</strong> : {!$Label.c.MA_Consultant_Popup_Instructional_Text}
+                </p>
+            </div>
+        </div>
+        
+        <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                        <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                        <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                    </button>
+                    <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <p style="text-align:center;">{!v.ErrorMessage}</p>
+                </div>
+                <div class="slds-modal__footer slds-theme--default">
+                    <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">{!$Label.c.OK}</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+        
+        <div class="ipadbottom container">
+            <article class="slds-card userList">
+                <div style="padding-top:0px;position:relative;">                    
+                        <div class="slds-grid uiInputSelect slds-p-horizontal_medium slds-p-vertical_small">
+                            <div class="uiInputSelect uiMenuList">
+                                <form aura:id="formAuraId" class="uiMenuList slds-form--inline slds-grid slds-grid--vertical-align-center account-team--popup">
+                                    <div class="slds-form-element search-align">
+                                        <div class="slds-form-element__control">
+                                            <span class="slds-truncate" title="Search Results Where">{!$Label.c.Search_Results_Where}</span>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element last-align">
+                                        <div class="slds-form-element__control nm-wdt">
+                                            <ui:inputSelect class="slds-form-control name-filter" aura:id="SearchFieldDropDown" multiple="false" change="{!c.clearSearchFilterField}">
+                                                <aura:iteration items="{!v.contact_consulatntPickListValues}" var="contact_consulatnt"> 
+                                                    <ui:inputSelectOption text="{!contact_consulatnt}" label="{!contact_consulatnt}"/> 
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element begin-align">
+                                        <div class="slds-form-element__control nm-wdt">
+                                            <ui:inputSelect class="slds-form-control begins-filter" aura:id="SearchFilterDropDown" multiple="false" change="{!c.clearSearchField}">
+                                                <aura:iteration items="{!v.contact_consulatntPickListValues1}" var="contact_consulatnt"> 
+                                                    <ui:inputSelectOption text="{!contact_consulatnt}"/> 
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element input-align mr-sm-0">
+                                        <div class="slds-form-element__control nm-wdt">
+                                            <div class="slds-hide">
+                                                <ui:inputText class="slds-form-control"></ui:inputText>
+                                            </div> 
+                                            <ui:inputText class="slds-form-control input-inline" updateOn="keyup" aura:id="searchKeywordForConsultants" keyup="{!c.enableGoBtn}"></ui:inputText>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element go-btn">
+                                        <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="goBtn" disabled="true" press="{!c.searchConsultants}">{!$Label.c.Go}</ui:button>
+                                    </div>
+                                    <div class="slds-form-element clr-btn">
+                                        <div class="slds-p-right--small seperator-md">
+                                            <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="clrBtn" disabled="true" press="{!c.doInit}">{!$Label.c.Clear}</ui:button>
+                                        </div>
+                                    </div>                                        
+                                    <div class="slds-col--bump-left prev-btn">    
+                                        <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-card__body fixed-body-height slds-m-bottom_none">
+                            <aura:if isTrue="{!v.isSpinnertoLoad1}">
+                                <div class="slds-spinner_container slds-is-fixed spinner-desktop" aura:id="spinner">
+                                    <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-fixed spinner-desktop" role="status">
+                                        <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </aura:if>
+                            <ui:scrollerWrapper class="scrollerSize">
+                                <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout consultant-table">
+                                    <thead>
+                                        <tr class="slds-text-title_caps">
+                                            
+                                            <th class="slds-is-sortable slds-is-resizable" scope="col" width="70">
+                                                &nbsp;
+                                            </th>
+                                            
+                                            <th class="bold" scope="col">
+                                                <div class="slds-truncate" tabindex="0">
+                                                    <span class="slds-truncate" title="Last Name">{!$Label.c.Last_Name}</span>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="bold" scope="col">
+                                                <div class="slds-truncate" tabindex="0">
+                                                    <span class="slds-truncate" title="First Name">{!$Label.c.First_Name}</span>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="bold" scope="col">
+                                                <div class="slds-truncate" tabindex="0">
+                                                    <span class="slds-truncate" title="Consulting Firm">{!$Label.c.Consulting_Firm}</span>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="bold" scope="col">
+                                                <div class="slds-truncate" tabindex="0">
+                                                    <span class="slds-truncate" title="City">{!$Label.c.City}</span>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="bold" scope="col">
+                                                <div class="slds-truncate" tabindex="0">
+                                                    <span class="slds-truncate" title="State">{!$Label.c.State}</span>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody style="">
+                                        <aura:if isTrue="{!v.isConsultantsListEmpty}">
+                                            <p></p>
+                                            <tr>
+                                                <th colspan="6">
+                                                    <div class="slds-text-align--center">{!$Label.c.No_Consultants_Found}</div>
+                                                </th>
+                                            </tr>
+                                            <aura:set attribute="else">
+                                                <p></p>
+                                                <aura:if isTrue="{!v.isAllContactList}">
+                                                    <aura:iteration items="{!v.consultingSearch}" var="consultingSearchobj" indexVar="index">
+                                                        <c:MA_Consultants_Modal_Popup_Table aura:id="ConsultantPopup" consultingSearchArray="{!consultingSearchobj}" consultantId="{!consultingSearchobj.Id}" isPrimaryExists="{!v.isPrimaryExists}" isAllContactList="{!v.isAllContactList}" selectedContactIds="{!v.selectedContactIds}"></c:MA_Consultants_Modal_Popup_Table>
+                                                    </aura:iteration>
+                                                    
+                                                    <aura:set attribute="else">
+                                                        <aura:iteration items="{!v.consultingSearch}" var="consultingSearchobj" indexVar="index">
+                                                            <c:MA_Consultants_Modal_Popup_Table aura:id="ConsultantPopup" consultingSearchArray="{!consultingSearchobj}" consultantId="{!consultingSearchobj.Contact.Id}" isPrimaryExists="{!v.isPrimaryExists}" isAllContactList="{!v.isAllContactList}" selectedContactIds="{!v.selectedContactIds}" isFromQA="{!v.isFromQA}"></c:MA_Consultants_Modal_Popup_Table>
+                                                        </aura:iteration>
+                                                    </aura:set>
+                                                </aura:if>
+                                                
+                                            </aura:set>
+                                        </aura:if>
+                                    </tbody>
+                                    
+                                </table>
+                            </ui:scrollerWrapper>
+                            <div class="ph-lg-0">
+                                <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                            </div>
+                        </div>    
+                </div>
+            </article>
+        </div>
+    </article>
+</aura:component>

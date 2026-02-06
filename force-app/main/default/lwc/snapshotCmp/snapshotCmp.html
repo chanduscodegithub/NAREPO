@@ -1,0 +1,1561 @@
+<template>
+    <span class={cssDisplay}>
+        <div class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </span>
+    <div class="slds-text-heading_medium">
+        {reportTitle}
+    </div>
+    <div class="container">
+        <div class="div-left">
+            <div class="inner-container">
+                <div class="inner-left">{salesSeasonLabel} </div>
+                <div class="inner-right">
+                    <template if:true={salesSeasonPicklist}>
+                        <lightning-combobox name='salesSeason' value={salesSeason} variant="label-hidden"
+                            options={salesSeasonPicklist} onchange={salesSeasonChangeHandler}>
+                        </lightning-combobox>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="div-right">
+            <lightning-button type="submit" variant="Neutral" label="Print" class="slds-m-left_x-small"
+                onclick={exportHandler} disabled={isButtonDisabled}></lightning-button>
+        </div>
+    </div>
+    <!-- CM SCE . CD SVP , SPCLTY REPORTS BEGIN -->
+    <template if:false={isSpecialtyUser}>
+        <template if:true={isRetentionVisible}>
+            <!-- CM SCE GROWTH NOT SENT WITH DATA BEGIN -->
+
+            <lightning-card>
+                <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}
+                    class="section-header-style">
+                    <!--allow-multiple-sections-open allows multiple sections to open and close-->
+                    <lightning-accordion-section name="A" label="Growth" class="section-header">
+                        <lightning-card>
+                            <template if:false={isGrowthNotSentDataEmpty}>
+                                <div class="slds-text-heading_small">
+                                    {gnsLabel} <span style="color:red">{actionNeededLabel}</span> <br />
+                                </div>
+                                <div class="slds-text-body_small">
+                                    {gnsInstructionText} <br />
+                                </div>
+                                <div class="slds-card__body slds-m-bottom_none">
+                                    <div class="scrollerSize table-scroll slds-p-bottom_small"
+                                        style="overflow: hidden; overflow-x: auto;">
+                                        <table
+                                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered fixed">
+                                            <colgroup>
+                                                <col style="width:15%;" />
+                                                <col style="width:20%;" />
+                                                <col style="width:25%;" />
+                                                <col style="width:20%;" />
+                                                <col style="width:20%;" />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 2px; padding-right: 2px ">
+                                                        <a data-record="company" onclick={handleGrowthNotSentSortdata}
+                                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                            <span class="slds-cell-wrap" title="Company">Company</span>
+                                                            <div class="slds-icon_container sortIconPadding">
+                                                                <template if:true={growthNotSentCompanySortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                                        alternative-text="Ascending"></lightning-icon>
+                                                                </template>
+                                                                <template if:false={growthNotSentCompanySortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowup" size="xx-small"
+                                                                        alternative-text="Descending"></lightning-icon>
+                                                                </template>
+                                                            </div>
+                                                        </a>
+                                                    </th>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 2px; padding-right: 2px ">
+                                                        <a data-record="effectiveDate"
+                                                            onclick={handleGrowthNotSentSortdata}
+                                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                            <span class="slds-cell-wrap"
+                                                                title="Effective Date">Effective Date</span>
+                                                            <div class="slds-icon_container sortIconPadding">
+                                                                <template
+                                                                    if:true={growthNotSentEffectiveDateSortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                                        alternative-text="Ascending"></lightning-icon>
+                                                                </template>
+                                                                <template
+                                                                    if:false={growthNotSentEffectiveDateSortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowup" size="xx-small"
+                                                                        alternative-text="Descending"></lightning-icon>
+                                                                </template>
+                                                            </div>
+                                                        </a>
+                                                    </th>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 2px; padding-right: 2px ">
+                                                        <a data-record="membershipActivityName"
+                                                            onclick={handleGrowthNotSentSortdata}
+                                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                            <span class="slds-cell-wrap"
+                                                                title="Membership Activity Name">Membership Activity
+                                                            </span>
+                                                            <div class="slds-icon_container sortIconPadding">
+                                                                <template
+                                                                    if:true={growthNotSentMembershipActivitySortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                                        alternative-text="Ascending"></lightning-icon>
+                                                                </template>
+                                                                <template
+                                                                    if:false={growthNotSentMembershipActivitySortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowup" size="xx-small"
+                                                                        alternative-text="Descending"></lightning-icon>
+                                                                </template>
+                                                            </div>
+                                                        </a>
+                                                    </th>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 10px; padding-right: 2px ">
+                                                        <div class="slds-cell-wrap" title="No of Products Not Yet Sent to Incentive Comp">
+                                                            # of Products Not Yet Sent to Incentive Comp</div>
+                                                    </th>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 10px; padding-right: 2px ">
+                                                        <div class="slds-cell-wrap" title="No of Products Sent to Incentive Comp"># of
+                                                            Products Sent to Incentive Comp</div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="FontSize">
+                                                <template for:each={growthNotSentData} for:item="row">
+                                                    <c-status-snapshot-child-row key={row} eachdata={row}
+                                                        type="GrowthNotSent"></c-status-snapshot-child-row>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </template>
+                            <!-- CM SCE GROWTH NOT SENT WITH DATA END -->
+                            <!-- CM SCE GROWTH NOT SENT WITHOUT DATA BEGIN -->
+
+                            <template if:true={isGrowthNotSentDataEmpty}>
+                                <div class="slds-text-heading_small">
+                                    {gnsLabel} {actionNeededLabel} <br />
+                                </div>
+                                <div class="slds-text-body_small">
+                                    {gnsInstructionText} <br />
+                                </div>
+                                <div class="scrollerSize table-scroll slds-p-bottom_small"
+                                    style="overflow: hidden; overflow-x: auto;">
+                                    <table
+                                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                                        <colgroup>
+                                            <col style="width:15%;" />
+                                            <col style="width:20%;" />
+                                            <col style="width:25%;" />
+                                            <col style="width:20%;" />
+                                            <col style="width:20%;" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Company">Company</div>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Effective Date">Effective Date
+                                                    </div>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Membership Activity Name">
+                                                        Membership Activity </div>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="No of Products Not Yet Sent to Incentive Comp"># of
+                                                        Products Not Yet Sent to Incentive Comp</div>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="No of Products Sent to Incentive Comp"># of
+                                                        Products Sent to Incentive Comp</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th colspan="5">
+                                                    <div class="slds-text-align--center">
+                                                        No Records Found
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                        </lightning-card>
+                        <!-- CM SCE GROWTH NOT SENT WITHOUT DATA END -->
+                        <!-- CM SCE GROWTH FULLY SENT WITH DATA BEGIN -->
+
+                        <lightning-card>
+                            <div class="slds-text-heading_small">
+                                {gsLabel} <br />
+                            </div>
+                            <template if:false={isGrowthSentDataEmpty}>
+                                <div class="scrollerSize table-scroll slds-p-bottom_small"
+                                    style="overflow: hidden; overflow-x: auto;">
+                                    <table
+                                        class="slds-table slds-table_cell-buffer slds-cell-wrap slds-table_bordered slds-table_col-bordered">
+                                        <colgroup>
+                                            <col style="width:15%;" />
+                                            <col style="width:20%;" />
+                                            <col style="width:25%;" />
+                                            <col style="width:20%;" />
+                                            <col style="width:20%;" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                    <a data-record="company" onclick={handleGrowthSentSortdata}
+                                                        class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                        <span class="slds-cell-wrap" title="Company">Company</span>
+                                                        <div class="slds-icon_container sortIconPadding">
+                                                            <template if:true={growthSentCompanySortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowdown" size="xx-small"
+                                                                    alternative-text="Ascending"></lightning-icon>
+                                                            </template>
+                                                            <template if:false={growthSentCompanySortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowup" size="xx-small"
+                                                                    alternative-text="Descending"></lightning-icon>
+                                                            </template>
+                                                        </div>
+                                                    </a>
+                                                </th>
+                                                <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                    <a data-record="effectiveDate" onclick={handleGrowthSentSortdata}
+                                                        class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                        <span class="slds-cell-wrap" title="Effective Date">Effective
+                                                            Date</span>
+                                                        <div class="slds-icon_container sortIconPadding">
+                                                            <template if:true={growthSentEffectiveDateSortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowdown" size="xx-small"
+                                                                    alternative-text="Ascending"></lightning-icon>
+                                                            </template>
+                                                            <template if:false={growthSentEffectiveDateSortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowup" size="xx-small"
+                                                                    alternative-text="Descending"></lightning-icon>
+                                                            </template>
+                                                        </div>
+                                                    </a>
+                                                </th>
+                                                <th class="slds-cell-wrap" scope="col"
+                                                    style="padding-left: 2px; padding-right: 2px ">
+                                                    <a data-record="membershipActivityName"
+                                                        onclick={handleGrowthSentSortdata}
+                                                        class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                        <span class="" title="Membership Activity Name"
+                                                            style="word-wrap: break-word;">Membership Activity </span>
+                                                        <div class="slds-icon_container sortIconPadding">
+                                                            <template
+                                                                if:true={growthSentMembershipActivitySortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowdown" size="xx-small"
+                                                                    alternative-text="Ascending"></lightning-icon>
+                                                            </template>
+                                                            <template
+                                                                if:false={growthSentMembershipActivitySortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowup" size="xx-small"
+                                                                    alternative-text="Descending"></lightning-icon>
+                                                            </template>
+                                                        </div>
+                                                    </a>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="No of Products Sent to Incentive Comp"># of
+                                                        Products Sent to Incentive Comp</div>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Has the Info Been Extracted by Incentive Comp?">Has
+                                                        the Info Been Extracted by Incentive Comp</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="FontSize">
+                                            <template for:each={growthSentData} for:item="row">
+                                                <c-status-snapshot-child-row key={row} eachdata={row} type="GrowthSent">
+                                                </c-status-snapshot-child-row>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                            <!-- CM SCE GROWTH FULLY SENT WITH DATA END -->
+                            <!-- CM SCE GROWTH FULLY SENT WITHOUT DATA BEGIN -->
+                            <template if:true={isGrowthSentDataEmpty}>
+                                <div class="scrollerSize table-scroll slds-p-bottom_small"
+                                    style="overflow: hidden; overflow-x: auto;">
+                                    <table
+                                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                                        <colgroup>
+                                            <col style="width:15%;" />
+                                            <col style="width:20%;" />
+                                            <col style="width:25%;" />
+                                            <col style="width:20%;" />
+                                            <col style="width:20%;" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Company">Company</div>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Effective Date">Effective Date
+                                                    </div>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Membership Activity Name">
+                                                        Membership Activity </div>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="No of Products Sent to Incentive Comp"># of
+                                                        Products Sent to Incentive Comp</div>
+                                                </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Has the Info Been Extracted by Incentive Comp?">Has
+                                                        the Info Been Extracted by Incentive Comp</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th colspan="5">
+                                                    <div class="slds-text-align--center">
+                                                        No Records Found
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                        </lightning-card>
+                        <!-- CM SCE GROWTH FULLY SENT WITHOUT DATA END -->
+
+
+
+
+
+                        <!-- CM SCE RENEWAL NOT SENT WITH DATA BEGIN -->
+
+                    </lightning-accordion-section>
+
+                    <lightning-accordion-section name="B" label="Renewal" class="section-header">
+                        <lightning-card>
+                            <template if:false={isRetentionNotSentDataEmpty}>
+
+                                <template if:true={isCmSceUser}>
+                                    <div class="slds-text-heading_small">
+                                        {rnsCMSCELabel} <span style="color:red">{actionNeededLabel}</span> <br />
+                                    </div>
+                                </template>
+                                <template if:false={isCmSceUser}>
+                                    <div class="slds-text-heading_small">
+                                        {rnsLabel} <span style="color:red">{actionNeededLabel}</span> <br />
+                                    </div>
+                                </template>
+
+                                <template if:false={isSbSceUser}>
+                                    <template if:true={isCmSceUser}>
+                                        <div class="slds-text-body_small">
+                                            {rnsCMSCEInstructionText} <br />
+                                        </div>
+                                    </template>
+                                    <template if:false={isCmSceUser}>
+                                        <div class="slds-text-body_small">
+                                            {rnsInstructionText} <br />
+                                        </div>
+                                    </template>
+                                </template>
+                                <template if:true={isSbSceUser}>
+                                    <div class="slds-text-body_small">
+                                        {rnsSBSCEInstructionText} <br />
+                                    </div>
+                                </template>
+                                <div class="slds-card__body slds-m-bottom_none">
+                                    <div class="scrollerSize table-scroll slds-p-bottom_small"
+                                        style="overflow: hidden; overflow-x: auto;">
+                                        <table
+                                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered fixed">
+                                            <template if:false={isSbSceUser}>
+                                                <template if:false={isCmSceUser}>
+                                                    <colgroup>
+                                                        <col style="width:15%;" />
+                                                        <col style="width:20%;" />
+                                                        <col style="width:25%;" />
+                                                        <col style="width:40%;" />
+                                                    </colgroup>
+                                                </template>
+                                                <template if:true={isCmSceUser}>
+                                                    <colgroup>
+                                                        <col style="width:20%;" />
+                                                        <col style="width:20%;" />
+                                                        <col style="width:20%;" />
+                                                        <col style="width:20%;" />
+                                                        <col style="width:20%;" />
+                                                    </colgroup>
+                                                </template>
+                                            </template>
+                                            <template if:true={isSbSceUser}>
+                                                <colgroup>
+                                                    <col style="width:15%;" />
+                                                    <col style="width:25%;" />
+                                                    <col style="width:15%;" />
+                                                    <col style="width:20%;" />
+                                                    <col style="width:25%;" />
+                                                </colgroup>
+                                            </template>
+                                            <thead>
+                                                <tr>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 2px; padding-right: 2px ">
+                                                        <a data-record="company"
+                                                            onclick={handleRetentionNotSentSortdata}
+                                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                            <span class="slds-cell-wrap" title="Company">Company</span>
+                                                            <div class="slds-icon_container sortIconPadding">
+                                                                <template
+                                                                    if:true={retentionNotSentCompanySortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                                        alternative-text="Ascending"></lightning-icon>
+                                                                </template>
+                                                                <template
+                                                                    if:false={retentionNotSentCompanySortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowup" size="xx-small"
+                                                                        alternative-text="Descending"></lightning-icon>
+                                                                </template>
+                                                            </div>
+                                                        </a>
+                                                    </th>
+                                                    <template if:true={isSbSceUser}>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap"
+                                                                title="Medical SCE on the Integrated Account">
+                                                                Medical SCE on the Integrated Account
+                                                            </div>
+                                                        </th>
+                                                    </template>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 2px; padding-right: 2px ">
+                                                        <a data-record="effectiveDate"
+                                                            onclick={handleRetentionNotSentSortdata}
+                                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                            <span class="slds-cell-wrap"
+                                                                title="Effective Date">Effective Date</span>
+                                                            <div class="slds-icon_container sortIconPadding">
+                                                                <template
+                                                                    if:true={retentionNotSentEffectiveDateSortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                                        alternative-text="Ascending"></lightning-icon>
+                                                                </template>
+                                                                <template
+                                                                    if:false={retentionNotSentEffectiveDateSortDirection}>
+                                                                    <lightning-icon
+                                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                        icon-name="utility:arrowup" size="xx-small"
+                                                                        alternative-text="Descending"></lightning-icon>
+                                                                </template>
+                                                            </div>
+                                                        </a>
+                                                    </th>
+                                                    <template if:true={isCmSceUser}>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap"
+                                                                title="No of Renewals Not Yet Confirmed">
+                                                                # of Renewals Not Yet Confirmed</div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px; border-right:4px solid #9CB3DD;">
+                                                            <div class="slds-cell-wrap"
+                                                                title="No of Confirmed Renewals Not Yet Sent to Incentive Comp">
+                                                                # of Confirmed Renewals Not Yet Sent to Incentive Comp</div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap"
+                                                                title="No of Confirmed Renewals Sent to Incentive Comp"># of Confirmed
+                                                                Renewals Sent to Incentive Comp</div>
+                                                        </th>
+                                                    </template>
+                                                    <template if:false={isCmSceUser}>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap"
+                                                                title="No of Confirmed Renewals Not Yet Sent to Incentive Comp">
+                                                                # of Confirmed Renewals Not Yet Sent to Incentive Comp</div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap" title="No of Confirmed Renewals Sent to Incentive Comp"># of 
+                                                                Confirmed Renewals Sent to Incentive Comp</div>
+                                                        </th>
+                                                    </template>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="FontSize">
+                                                <template for:each={retentionNotSentData} for:item="row">
+                                                    <c-status-snapshot-child-row key={row} eachdata={row}
+                                                        type="RetentionNotSent" issbsceuser={isSbSceUser}
+                                                        iscmsceuser={isCmSceUser}>
+                                                    </c-status-snapshot-child-row>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </template>
+                            <!-- CM SCE RENEWAL NOT SENT WITH DATA END -->
+                            <!-- CM SCE RENEWAL NOT SENT WITHOUT DATA BEGIN -->
+                            <template if:true={isRetentionNotSentDataEmpty}>
+
+                                <template if:true={isCmSceUser}>
+                                    <div class="slds-text-heading_small">
+                                        {rnsCMSCELabel} {actionNeededLabel}<br />
+                                    </div>
+                                </template>
+                                <template if:false={isCmSceUser}>
+                                    <div class="slds-text-heading_small">
+                                        {rnsLabel} {actionNeededLabel}<br />
+                                    </div>
+                                </template>
+
+                                <template if:false={isSbSceUser}>
+                                    <template if:true={isCmSceUser}>
+                                        <div class="slds-text-body_small">
+                                            {rnsCMSCEInstructionText} <br />
+                                        </div>
+                                    </template>
+                                    <template if:false={isCmSceUser}>
+                                        <div class="slds-text-body_small">
+                                            {rnsInstructionText} <br />
+                                        </div>
+                                    </template>
+                                </template>
+                                <template if:true={isSbSceUser}>
+                                    <div class="slds-text-body_small">
+                                        {rnsSBSCEInstructionText} <br />
+                                    </div>
+                                </template>
+                                <div class="slds-card__body slds-m-bottom_none">
+                                    <div class="scrollerSize table-scroll slds-p-bottom_small"
+                                        style="overflow: hidden; overflow-x: auto;">
+                                        <table
+                                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                                            <template if:false={isSbSceUser}>
+                                                <template if:false={isCmSceUser}>
+                                                    <colgroup>
+                                                        <col style="width:15%;" />
+                                                        <col style="width:20%;" />
+                                                        <col style="width:25%;" />
+                                                        <col style="width:40%;" />
+                                                    </colgroup>
+                                                </template>
+                                                <template if:true={isCmSceUser}>
+                                                    <colgroup>
+                                                        <col style="width:20%;" />
+                                                        <col style="width:20%;" />
+                                                        <col style="width:20%;" />
+                                                        <col style="width:20%;" />
+                                                        <col style="width:20%;" />
+                                                    </colgroup>
+                                                </template>
+                                            </template>
+                                            <template if:true={isSbSceUser}>
+                                                <colgroup>
+                                                    <col style="width:15%;" />
+                                                    <col style="width:25%;" />
+                                                    <col style="width:15%;" />
+                                                    <col style="width:20%;" />
+                                                    <col style="width:25%;" />
+                                                </colgroup>
+                                            </template>
+                                            <thead>
+                                                <tr>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 10px; padding-right: 2px ">
+                                                        <div class="slds-cell-wrap" title="Company">Company</div>
+                                                    </th>
+                                                    <template if:true={isSbSceUser}>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap"
+                                                                title="Medical SCE on the Integrated Account">
+                                                                Medical SCE on the Integrated Account
+                                                            </div>
+                                                        </th>
+                                                    </template>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 10px; padding-right: 2px ">
+                                                        <div class="slds-cell-wrap" title="Effective Date">Effective
+                                                            Date</div>
+                                                    </th>
+                                                    <template if:true={isCmSceUser}>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap"
+                                                                title="No of Renewals Not Yet Confirmed">
+                                                                # of Renewals Not Yet Confirmed</div>
+                                                        </th>
+
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px; border-right:4px solid #9CB3DD;">
+                                                            <div class="slds-cell-wrap"
+                                                                title="No of Confirmed Renewals Not Yet Sent to Incentive Comp">
+                                                                # of Confirmed Renewals Not Yet Sent to Incentive Comp</div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap"
+                                                                title="No of Confirmed Renewals Sent to Incentive Comp"># of Confirmed
+                                                                Renewals Sent to Incentive Comp</div>
+                                                        </th>
+                                                    </template>
+                                                    <template if:false={isCmSceUser}>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap"
+                                                                title="No of Confirmed Renewals Not Yet Sent to Incentive Comp">
+                                                                # of Confirmed Renewals Not Yet Sent to Incentive Comp</div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                            style="padding-left: 10px; padding-right: 2px ">
+                                                            <div class="slds-cell-wrap" title="No of Confirmed Renewals Sent to Incentive Comp"># of 
+                                                                Confirmed Renewals Sent to Incentive Comp</div>
+                                                        </th>
+                                                    </template>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <template if:false={isSbSceUser}>
+                                                        <template if:true={isCmSceUser}>
+                                                            <th colspan="5">
+                                                                <div class="slds-text-align--center">
+                                                                    No Records Found
+                                                                </div>
+                                                            </th>
+                                                        </template>
+                                                        <template if:false={isCmSceUser}>
+                                                            <th colspan="4">
+                                                                <div class="slds-text-align--center">
+                                                                    No Records Found
+                                                                </div>
+                                                            </th>
+                                                        </template>
+                                                    </template>
+                                                    <template if:true={isSbSceUser}>
+                                                        <th colspan="5">
+                                                            <div class="slds-text-align--center">
+                                                                No Records Found
+                                                            </div>
+                                                        </th>
+                                                    </template>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </template>
+                        </lightning-card>
+                        <!-- CM SCE RENEWAL NOT SENT WITHOUT DATA END -->
+                        <!-- CM SCE RENEWAL FULLY SENT WITH DATA BEGIN -->
+
+                        <lightning-card>
+                            <template if:true={isCmSceUser}>
+                                <div class="slds-text-heading_small">
+                                    {rsCMSCELabel} <br />
+                                </div>
+                            </template>
+                            <template if:false={isCmSceUser}>
+                                <div class="slds-text-heading_small">
+                                    {rsLabel} <br />
+                                </div>
+                            </template>
+                            <template if:false={isRetentionSentDataEmpty}>
+                                <div class="scrollerSize table-scroll slds-p-bottom_small"
+                                    style="overflow: hidden; overflow-x: auto;">
+                                    <table
+                                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered fixed">
+                                        <template if:false={isSbSceUser}>
+                                            <colgroup>
+                                                <col style="width:20%;" />
+                                                <col style="width:20%;" />
+                                                <col style="width:20%;" />
+                                                <col style="width:40%;" />
+                                            </colgroup>
+                                        </template>
+                                        <template if:true={isSbSceUser}>
+                                            <colgroup>
+                                                <col style="width:15%;" />
+                                                <col style="width:25%;" />
+                                                <col style="width:15%;" />
+                                                <col style="width:20%;" />
+                                                <col style="width:25%;" />
+                                            </colgroup>
+                                        </template>
+                                        <thead>
+                                            <tr>
+                                                <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                    <a data-record="company" onclick={handleRetentionSentSortdata}
+                                                        class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                        <span class="slds-cell-wrap" title="Company">Company</span>
+                                                        <div class="slds-icon_container sortIconPadding">
+                                                            <template if:true={retentionSentCompanySortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowdown" size="xx-small"
+                                                                    alternative-text="Ascending"></lightning-icon>
+                                                            </template>
+                                                            <template if:false={retentionSentCompanySortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowup" size="xx-small"
+                                                                    alternative-text="Descending"></lightning-icon>
+                                                            </template>
+                                                        </div>
+                                                    </a>
+                                                </th>
+                                                <template if:true={isSbSceUser}>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 10px; padding-right: 2px ">
+                                                        <div class="slds-cell-wrap"
+                                                            title="Medical SCE on the Integrated Account">
+                                                            Medical SCE on the Integrated Account
+                                                        </div>
+                                                    </th>
+                                                </template>
+                                                <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                    <a data-record="effectiveDate" onclick={handleRetentionSentSortdata}
+                                                        class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                        <span class="slds-cell-wrap" title="Effective Date">Effective
+                                                            Date</span>
+                                                        <div class="slds-icon_container sortIconPadding">
+                                                            <template if:true={retentionSentEffectiveDateSortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowdown" size="xx-small"
+                                                                    alternative-text="Ascending"></lightning-icon>
+                                                            </template>
+                                                            <template
+                                                                if:false={retentionSentEffectiveDateSortDirection}>
+                                                                <lightning-icon
+                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                    icon-name="utility:arrowup" size="xx-small"
+                                                                    alternative-text="Descending"></lightning-icon>
+                                                            </template>
+                                                        </div>
+                                                    </a>
+                                                </th>
+
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 10px; padding-right: 2px ">
+                                                        <div class="slds-cell-wrap"
+                                                            title="No of Confirmed Renewals Sent to Incentive Comp"># of
+                                                            Confirmed Renewals Sent to Incentive Comp</div>
+                                                    </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Has the Info Been Extracted by Incentive Comp?">Has
+                                                        the Info Been Extracted by Incentive Comp</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="FontSize">
+                                            <template for:each={retentionSentData} for:item="row">
+                                                <c-status-snapshot-child-row key={row} eachdata={row}
+                                                    type="RetentionSent" issbsceuser={isSbSceUser}
+                                                    iscmsceuser={isCmSceUser}>
+                                                </c-status-snapshot-child-row>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                            <!-- CM SCE RENEWAL FULLY SENT WITH DATA END -->
+                            <!-- CM SCE RENEWAL FULLY SENT WITHOUT DATA BEGIN -->
+
+                            <template if:true={isRetentionSentDataEmpty}>
+                                <div class="scrollerSize table-scroll slds-p-bottom_small"
+                                    style="overflow: hidden; overflow-x: auto;">
+                                    <table
+                                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                                        <template if:false={isSbSceUser}>
+                                            <colgroup>
+                                                <col style="width:20%;" />
+                                                <col style="width:20%;" />
+                                                <col style="width:20%;" />
+                                                <col style="width:40%;" />
+                                            </colgroup>
+                                        </template>
+                                        <template if:true={isSbSceUser}>
+                                            <colgroup>
+                                                <col style="width:15%;" />
+                                                <col style="width:25%;" />
+                                                <col style="width:15%;" />
+                                                <col style="width:20%;" />
+                                                <col style="width:25%;" />
+                                            </colgroup>
+                                        </template>
+                                        <thead>
+                                            <tr>
+                                                <!--class="slds-text-title_caps"-->
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Company">Company</div>
+                                                </th>
+                                                <template if:true={isSbSceUser}>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 10px; padding-right: 2px ">
+                                                        <div class="slds-cell-wrap"
+                                                            title="Medical SCE on the Integrated Account">
+                                                            Medical SCE on the Integrated Account
+                                                        </div>
+                                                    </th>
+                                                </template>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Effective Date">Effective Date
+                                                    </div>
+                                                </th>
+                                                    <th class="" scope="col"
+                                                        style="padding-left: 10px; padding-right: 2px ">
+                                                        <div class="slds-cell-wrap"
+                                                            title="No of Confirmed Renewals Sent to Incentive Comp"># of
+                                                            Confirmed Renewals Sent to Incentive Comp</div>
+                                                    </th>
+                                                <th class="" scope="col"
+                                                    style="padding-left: 10px; padding-right: 2px ">
+                                                    <div class="slds-cell-wrap" title="Has the Info Been Extracted by Incentive Comp?">Has
+                                                        the Info Been Extracted by Incentive Comp</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <template if:false={isSbSceUser}>
+                                                    <th colspan="4">
+                                                        <div class="slds-text-align--center">
+                                                            No Records Found
+                                                        </div>
+                                                    </th>
+                                                </template>
+                                                <template if:true={isSbSceUser}>
+                                                    <th colspan="5">
+                                                        <div class="slds-text-align--center">
+                                                            No Records Found
+                                                        </div>
+                                                    </th>
+                                                </template>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                        </lightning-card>
+                        <template if:false={isSbSceUser}>
+                            <c-med-renewal-status onproactivedatatransfer={handleDataFromProactiveRenewal}>
+                            </c-med-renewal-status>
+                        </template>
+
+                    </lightning-accordion-section>
+                </lightning-accordion>
+            </lightning-card>
+        </template>
+        <!-- CM SCE RENEWAL FULLY SENT WITHOUT DATA END -->
+
+
+
+        
+        <!-- CD SVP GROWTH NOT SENT WITH DATA BEGIN -->
+        <template if:false={isRetentionVisible}>
+            <lightning-card>
+                <template if:false={isGrowthNotSentDataEmpty}>
+                    <div class="slds-text-heading_small">
+                        {gnsLabel} <span style="color:red">{actionNeededLabel}</span><br />
+                    </div>
+                    <div class="slds-text-body_small">
+                        {gnsInstructionText} <br />
+                    </div>
+                    <div class="slds-card__body slds-m-bottom_none">
+                        <div class="scrollerSize table-scroll slds-p-bottom_small"
+                            style="overflow: hidden; overflow-x: auto;">
+                            <table
+                                class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered fixed">
+                                <colgroup>
+                                    <col style="width:15%;" />
+                                    <col style="width:20%;" />
+                                    <col style="width:25%;" />
+                                    <col style="width:20%;" />
+                                    <col style="width:20%;" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <a data-record="company" onclick={handleGrowthNotSentSortdata}
+                                                class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                <span class="slds-cell-wrap" title="Company">Company</span>
+                                                <div class="slds-icon_container sortIconPadding">
+                                                    <template if:true={growthNotSentCompanySortDirection}>
+                                                        <lightning-icon
+                                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                            icon-name="utility:arrowdown" size="xx-small"
+                                                            alternative-text="Ascending"></lightning-icon>
+                                                    </template>
+                                                    <template if:false={growthNotSentCompanySortDirection}>
+                                                        <lightning-icon
+                                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                            icon-name="utility:arrowup" size="xx-small"
+                                                            alternative-text="Descending"></lightning-icon>
+                                                    </template>
+                                                </div>
+                                            </a>
+                                        </th>
+                                        <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <a data-record="effectiveDate" onclick={handleGrowthNotSentSortdata}
+                                                class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                <span class="slds-cell-wrap" title="Effective Date">Effective
+                                                    Date</span>
+                                                <div class="slds-icon_container sortIconPadding">
+                                                    <template if:true={growthNotSentEffectiveDateSortDirection}>
+                                                        <lightning-icon
+                                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                            icon-name="utility:arrowdown" size="xx-small"
+                                                            alternative-text="Ascending"></lightning-icon>
+                                                    </template>
+                                                    <template if:false={growthNotSentEffectiveDateSortDirection}>
+                                                        <lightning-icon
+                                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                            icon-name="utility:arrowup" size="xx-small"
+                                                            alternative-text="Descending"></lightning-icon>
+                                                    </template>
+                                                </div>
+                                            </a>
+                                        </th>
+                                        <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <a data-record="membershipActivityName"
+                                                onclick={handleGrowthNotSentSortdata}
+                                                class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                <span class="slds-cell-wrap" title="Membership Activity Name">Membership
+                                                    Activity </span>
+                                                <div class="slds-icon_container sortIconPadding">
+                                                    <template if:true={growthNotSentMembershipActivitySortDirection}>
+                                                        <lightning-icon
+                                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                            icon-name="utility:arrowdown" size="xx-small"
+                                                            alternative-text="Ascending"></lightning-icon>
+                                                    </template>
+                                                    <template if:false={growthNotSentMembershipActivitySortDirection}>
+                                                        <lightning-icon
+                                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                            icon-name="utility:arrowup" size="xx-small"
+                                                            alternative-text="Descending"></lightning-icon>
+                                                    </template>
+                                                </div>
+                                            </a>
+                                        </th>
+                                        <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of
+                                                Products Not Yet Sent</div>
+                                        </th>
+                                        <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="FontSize">
+                                    <template for:each={growthNotSentData} for:item="row">
+                                        <c-status-snapshot-child-row key={row} eachdata={row} type="GrowthNotSent">
+                                        </c-status-snapshot-child-row>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </template>
+                <!-- CD SVP GROWTH NOT SENT WITH DATA BEGIN -->
+                <!-- CD SVP GROWTH NOT SENT WITHOUT DATA BEGIN -->
+                <template if:true={isGrowthNotSentDataEmpty}>
+                    <div class="slds-text-heading_small">
+                        {gnsLabel} {actionNeededLabel}<br />
+                    </div>
+                    <div class="slds-text-body_small">
+                        {gnsInstructionText} <br />
+                    </div>
+                    <div class="scrollerSize table-scroll slds-p-bottom_small"
+                        style="overflow: hidden; overflow-x: auto;">
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                            <colgroup>
+                                <col style="width:15%;" />
+                                <col style="width:20%;" />
+                                <col style="width:25%;" />
+                                <col style="width:20%;" />
+                                <col style="width:20%;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="Company">Company</div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="Effective Date">Effective Date</div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="Membership Activity Name">Membership Activity
+                                        </div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products
+                                            Not Yet Sent</div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="5">
+                                        <div class="slds-text-align--center">
+                                            No Records Found
+                                        </div>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+            </lightning-card>
+            <!-- CD SVP GROWTH NOT SENT WITHOUT DATA END -->
+            <!-- CD SVP GROWTH FULLY SENT WITH DATA BEGIN -->
+
+            <lightning-card>
+                <div class="slds-text-heading_small">
+                    {gsLabel} <br />
+                </div>
+                <template if:false={isGrowthSentDataEmpty}>
+                    <div class="scrollerSize table-scroll slds-p-bottom_small"
+                        style="overflow: hidden; overflow-x: auto;">
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered fixed">
+                            <colgroup>
+                                <col style="width:15%;" />
+                                <col style="width:20%;" />
+                                <col style="width:25%;" />
+                                <col style="width:20%;" />
+                                <col style="width:20%;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                        <a data-record="company" onclick={handleGrowthSentSortdata}
+                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                            <span class="slds-cell-wrap" title="Company">Company</span>
+                                            <div class="slds-icon_container sortIconPadding">
+                                                <template if:true={growthSentCompanySortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                        alternative-text="Ascending"></lightning-icon>
+                                                </template>
+                                                <template if:false={growthSentCompanySortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowup" size="xx-small"
+                                                        alternative-text="Descending"></lightning-icon>
+                                                </template>
+                                            </div>
+                                        </a>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                        <a data-record="effectiveDate" onclick={handleGrowthSentSortdata}
+                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                            <span class="slds-cell-wrap" title="Effective Date">Effective Date</span>
+                                            <div class="slds-icon_container sortIconPadding">
+                                                <template if:true={growthSentEffectiveDateSortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                        alternative-text="Ascending"></lightning-icon>
+                                                </template>
+                                                <template if:false={growthSentEffectiveDateSortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowup" size="xx-small"
+                                                        alternative-text="Descending"></lightning-icon>
+                                                </template>
+                                            </div>
+                                        </a>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                        <a data-record="membershipActivityName" onclick={handleGrowthSentSortdata}
+                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                            <span class="slds-cell-wrap" title="Membership Activity Name">Membership
+                                                Activity </span>
+                                            <div class="slds-icon_container sortIconPadding">
+                                                <template if:true={growthSentMembershipActivitySortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                        alternative-text="Ascending"></lightning-icon>
+                                                </template>
+                                                <template if:false={growthSentMembershipActivitySortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowup" size="xx-small"
+                                                        alternative-text="Descending"></lightning-icon>
+                                                </template>
+                                            </div>
+                                        </a>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="Has the Info Been Extracted?">Has the Info
+                                            Been Extracted</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="FontSize">
+                                <template for:each={growthSentData} for:item="row">
+                                    <c-status-snapshot-child-row key={row} eachdata={row} type="GrowthSent">
+                                    </c-status-snapshot-child-row>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <!-- CD SVP GROWTH FULLY SENT WITH DATA END -->
+                <!-- CD SVP GROWTH FULLY SENT WITHOUT DATA BEGIN -->
+
+                <template if:true={isGrowthSentDataEmpty}>
+                    <div class="scrollerSize table-scroll slds-p-bottom_small"
+                        style="overflow: hidden; overflow-x: auto;">
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                            <colgroup>
+                                <col style="width:15%;" />
+                                <col style="width:20%;" />
+                                <col style="width:25%;" />
+                                <col style="width:20%;" />
+                                <col style="width:20%;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="Company">Company</div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="Effective Date">Effective Date</div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="Membership Activity Name">Membership Activity
+                                        </div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="Has the Info Been Extracted?">Has the Info
+                                            Been Extracted</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="5">
+                                        <div class="slds-text-align--center">
+                                            No Records Found
+                                        </div>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+            </lightning-card>
+
+        </template>
+    </template>
+    <!-- CD SVP GROWTH FULLY SENT WITHOUT DATA END -->
+
+    <!-- CM SCE . CD SVP REPORTS END -->
+
+    <!-- SPCLTY REPORTS BEGIN -->
+    <template if:true={isSpecialtyUser}>
+        <lightning-card>
+            <template if:false={isGrowthNotSentDataEmpty}>
+                <div class="slds-text-heading_small">
+                    {gnsLabel} <span style="color:red">{actionNeededLabel}</span> <br />
+                </div>
+                <div class="slds-text-body_small">
+                    {gnsInstructionText} <br />
+                </div>
+                <div class="slds-card__body slds-m-bottom_none">
+                    <div class="scrollerSize table-scroll slds-p-bottom_small"
+                        style="overflow: hidden; overflow-x: auto;">
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered fixed">
+                            <colgroup>
+                                <col style="width:15%;" />
+                                <col style="width:13%;" />
+                                <col style="width:15%;" />
+                                <col style="width:20%;" />
+                                <col style="width:17%;" />
+                                <col style="width:20%;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                        <a data-record="company" onclick={handleGrowthNotSentSortdata}
+                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                            <span class="slds-cell-wrap" title="Company">Company</span>
+                                            <div class="slds-icon_container sortIconPadding">
+                                                <template if:true={growthNotSentCompanySortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                        alternative-text="Ascending"></lightning-icon>
+                                                </template>
+                                                <template if:false={growthNotSentCompanySortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowup" size="xx-small"
+                                                        alternative-text="Descending"></lightning-icon>
+                                                </template>
+                                            </div>
+                                        </a>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="Medical SVP or SCE">Medical SVP/SCE</div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                        <a data-record="effectiveDate" onclick={handleGrowthNotSentSortdata}
+                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                            <span class="slds-cell-wrap" title="Effective Date">Effective Date</span>
+                                            <div class="slds-icon_container sortIconPadding">
+                                                <template if:true={growthNotSentEffectiveDateSortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                        alternative-text="Ascending"></lightning-icon>
+                                                </template>
+                                                <template if:false={growthNotSentEffectiveDateSortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowup" size="xx-small"
+                                                        alternative-text="Descending"></lightning-icon>
+                                                </template>
+                                            </div>
+                                        </a>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                        <a data-record="membershipActivityName" onclick={handleGrowthNotSentSortdata}
+                                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                                            <span class="slds-cell-wrap" title="Membership Activity Name">Membership
+                                                Activity </span>
+                                            <div class="slds-icon_container sortIconPadding">
+                                                <template if:true={growthNotSentMembershipActivitySortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowdown" size="xx-small"
+                                                        alternative-text="Ascending"></lightning-icon>
+                                                </template>
+                                                <template if:false={growthNotSentMembershipActivitySortDirection}>
+                                                    <lightning-icon
+                                                        class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                        icon-name="utility:arrowup" size="xx-small"
+                                                        alternative-text="Descending"></lightning-icon>
+                                                </template>
+                                            </div>
+                                        </a>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products
+                                            Not Yet Sent</div>
+                                    </th>
+                                    <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                        <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="FontSize">
+                                <template for:each={growthNotSentData} for:item="row">
+                                    <c-status-snapshot-child-row key={row} eachdata={row} type="SpecialtyGrowthNotSent">
+                                    </c-status-snapshot-child-row>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </template>
+            <template if:true={isGrowthNotSentDataEmpty}>
+                <div class="slds-text-heading_small">
+                    {gnsLabel} {actionNeededLabel} <br />
+                </div>
+                <div class="slds-text-body_small">
+                    {gnsInstructionText} <br />
+                </div>
+                <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                    <table
+                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                        <colgroup>
+                            <col style="width:15%;" />
+                            <col style="width:13%;" />
+                            <col style="width:15%;" />
+                            <col style="width:20%;" />
+                            <col style="width:17%;" />
+                            <col style="width:20%;" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Company">Company</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Medical SVP or SCE">Medical SVP/SCE</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Effective Date">Effective Date</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Membership Activity Name">Membership Activity
+                                    </div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products Not
+                                        Yet Sent</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th colspan="6">
+                                    <div class="slds-text-align--center">
+                                        No Records Found
+                                    </div>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+        </lightning-card>
+
+        <lightning-card>
+            <div class="slds-text-heading_small">
+                {gsLabel} <br />
+            </div>
+            <template if:false={isGrowthSentDataEmpty}>
+                <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered fixed">
+                        <colgroup>
+                            <col style="width:15%;" />
+                            <col style="width:13%;" />
+                            <col style="width:15%;" />
+                            <col style="width:20%;" />
+                            <col style="width:17%;" />
+                            <col style="width:20%;" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                    <a data-record="company" onclick={handleGrowthSentSortdata}
+                                        class="slds-th__action slds-text-link--reset" tabindex="0">
+                                        <span class="slds-cell-wrap" title="Company">Company</span>
+                                        <div class="slds-icon_container sortIconPadding">
+                                            <template if:true={growthSentCompanySortDirection}>
+                                                <lightning-icon
+                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                    icon-name="utility:arrowdown" size="xx-small"
+                                                    alternative-text="Ascending"></lightning-icon>
+                                            </template>
+                                            <template if:false={growthSentCompanySortDirection}>
+                                                <lightning-icon
+                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                    icon-name="utility:arrowup" size="xx-small"
+                                                    alternative-text="Descending"></lightning-icon>
+                                            </template>
+                                        </div>
+                                    </a>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Medical SVP or SCE">Medical SVP/SCE</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                    <a data-record="effectiveDate" onclick={handleGrowthSentSortdata}
+                                        class="slds-th__action slds-text-link--reset" tabindex="0">
+                                        <span class="slds-cell-wrap" title="Effective Date">Effective Date</span>
+                                        <div class="slds-icon_container sortIconPadding">
+                                            <template if:true={growthSentEffectiveDateSortDirection}>
+                                                <lightning-icon
+                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                    icon-name="utility:arrowdown" size="xx-small"
+                                                    alternative-text="Ascending"></lightning-icon>
+                                            </template>
+                                            <template if:false={growthSentEffectiveDateSortDirection}>
+                                                <lightning-icon
+                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                    icon-name="utility:arrowup" size="xx-small"
+                                                    alternative-text="Descending"></lightning-icon>
+                                            </template>
+                                        </div>
+                                    </a>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                    <a data-record="membershipActivityName" onclick={handleGrowthSentSortdata}
+                                        class="slds-th__action slds-text-link--reset" tabindex="0">
+                                        <span class="slds-cell-wrap" title="Membership Activity Name">Membership
+                                            Activity </span>
+                                        <div class="slds-icon_container sortIconPadding">
+                                            <template if:true={growthSentMembershipActivitySortDirection}>
+                                                <lightning-icon
+                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                    icon-name="utility:arrowdown" size="xx-small"
+                                                    alternative-text="Ascending"></lightning-icon>
+                                            </template>
+                                            <template if:false={growthSentMembershipActivitySortDirection}>
+                                                <lightning-icon
+                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                    icon-name="utility:arrowup" size="xx-small"
+                                                    alternative-text="Descending"></lightning-icon>
+                                            </template>
+                                        </div>
+                                    </a>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Has the Info Been Extracted?">Has the Info Been
+                                        Extracted</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="FontSize">
+                            <template for:each={growthSentData} for:item="row">
+                                <c-status-snapshot-child-row key={row} eachdata={row} type="SpecialtyGrowthSent">
+                                </c-status-snapshot-child-row>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+            <template if:true={isGrowthSentDataEmpty}>
+                <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                    <table
+                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                        <colgroup>
+                            <col style="width:15%;" />
+                            <col style="width:13%;" />
+                            <col style="width:15%;" />
+                            <col style="width:20%;" />
+                            <col style="width:17%;" />
+                            <col style="width:20%;" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Company">Company</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Medical SVP or SCE">Medical SVP/SCE</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Effective Date">Effective Date</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Membership Activity Name">Membership Activity
+                                    </div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                </th>
+                                <th class="" scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                    <div class="slds-cell-wrap" title="Has the Info Been Extracted?">Has the Info Been
+                                        Extracted</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th colspan="6">
+                                    <div class="slds-text-align--center">
+                                        No Records Found
+                                    </div>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+        </lightning-card>
+    </template>
+    <!-- SPCLTY REPORTS END -->
+
+</template>

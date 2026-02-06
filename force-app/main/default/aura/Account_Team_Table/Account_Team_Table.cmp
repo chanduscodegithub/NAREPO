@@ -1,0 +1,42 @@
+<aura:component >
+    <aura:attribute name="accountTeamDataobj" type="AccountTeamMember"/>
+    <aura:attribute name="AccountTeamId" type="Id"/>
+    <aura:attribute name="userId" type="Id"/>
+    <aura:attribute name="isLoggedInUserrole" type="Boolean"/>
+    <aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>
+    <aura:registerEvent name="Account_Team_Table" type="c:Account_Team_Table_Event"/>
+    <tr class="slds-hint-parent">
+        <!--slds-p-left_x-large-->
+        <th scope="row" data-label="{!$Label.c.Last_Name}">
+            <div class="slds-truncate column-Header-text-padding" title="">{!v.accountTeamDataobj.LastName}</div>
+        </th>
+        <th scope="row" data-label="{!$Label.c.First_Name}">
+            <div class="slds-truncate" title="">{!v.accountTeamDataobj.FirstName}</div>
+        </th>
+        <th scope="row" data-label="{!$Label.c.Job_Title}">
+            <div class="slds-truncate" title="">{!v.accountTeamDataobj.Title}</div>
+        </th>
+        <th scope="row" data-label="{!$Label.c.User_Role}">
+            <div class="slds-truncate" title="">{!v.accountTeamDataobj.UserRole.Name}</div>
+        </th>
+        <aura:if isTrue="{!v.isLoggedInUserrole}">
+            <th scope="row" data-label="">
+                <div class=" slds-truncate" aura:id="deleteIcon" onclick="{!c.remove}" title="{!$Label.c.Remove}">
+                    <!--<a data-record="{!index}" onclick="{!c.remove}">{!$Label.c.Remove}</a>-->
+                    <button class="slds-button slds-text-body--regular">
+                        <lightning:icon class="slds-icon slds-icon--small"  iconName="utility:delete" size="x-small" alternativeText="Product" />
+                    </button>
+                </div>
+                <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                    <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </div>
+            </th>
+        </aura:if>
+    </tr>
+</aura:component>

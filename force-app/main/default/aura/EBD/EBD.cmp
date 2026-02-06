@@ -1,0 +1,198 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" 
+                controller="EBDApex">
+    <aura:attribute name="EBDdata" type="String[]"/>
+    <aura:attribute name="YearPicklist" type="String[]"/>
+    <aura:attribute name="copyUrlStr" type="String"/>
+    <aura:attribute name="colSpan" type="Integer"/>
+    <aura:attribute name="isEmpty" type="Boolean" default="false"/>
+    <aura:attribute name="isDelete" type="Boolean" default="false"/>
+    <aura:attribute name="ebdId" type="String"/>
+    <aura:attribute name="hasAccess" type="Boolean" default="false"/>
+    <aura:attribute name="hasUploadAccess" type="Boolean" default="false"/>
+    <aura:attribute name="EBDCount" type="Integer" default='0'/>
+    <aura:attribute name="DocumentLink" type="Map"/>
+    <aura:dependency resource="markup://force:recordSave" type="EVENT" />
+    <aura:handler event="force:refreshView" action="{!c.handleUpload}" />  
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="ebdEvent" event="c:EBDChildEvent" action="{!c.handelEvent}"/>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="EBDConfirm" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">Do you want to remove this EBD</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmDelete}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="EBDConfirm"></div>
+    
+    <div class="slds-hide" aura:id="modalHide">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New EBD</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-form" role="list">
+                        <div class="slds-grid slds-gutters_small">
+                            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                                    <label class="slds-form-element__label" for="status">Name
+                                        <span class="slds-required">*</span>
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <ui:inputText class="slds-input" maxlength='80' aura:id="EBDName"/>
+                                    </div>
+                                </div>
+                                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;">
+                                    <lightning:formattedRichText aura:id='nameerr'/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-has-flexi-truncate" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-hint-parent">
+                                    <label class="slds-form-element__label" for="status">Year
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <ui:inputSelect class="slds-select" aura:id="yearData">
+                                            <aura:iteration items="{!v.YearPicklist}" var="level">
+                                                <ui:inputSelectOption text="{!level}" label="{!level}"/>
+                                            </aura:iteration>
+                                        </ui:inputSelect>
+                                    </div>
+                                </div>
+                                <div class="slds-required slds-p-vertical_xx-small err-msg">
+                                    <span style="font-size: 0.75rem;">
+                                        <lightning:formattedRichText aura:id='yearerr' />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick="{!c.createEBD}">Save</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    
+    
+    <div aura:id="copuUrl" class="slds-hide">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.closeModal}">
+                        <lightning:icon iconName="utility:close" class="background" size="x-small" alternativeText="Indicates approval"/>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Copy Document Url</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-size_1-of-1 slds-m-bottom_medium">
+                            <div class="slds-form-element">    
+                                <div class="slds-form-element__control">
+                                    <input type="text" value="{!v.copyUrlStr}" id="holdtext" class="slds-input" placeholder="Placeholder Text" />
+                                </div>
+                            </div>                        	
+                        </div>
+                        <div class="slds-size_1-of-1 slds-text-align_right">
+                            <lightning:button variant="brand" label="Copy" iconName="utility:copy_to_clipboard" iconPosition="left" onclick="{! c.copyToClipBoard}" />
+                        </div>
+                    </div>                    
+                    
+                </div> 
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open slds-hide" aura:id="copuUrl"></div>
+    </div>
+    
+    <article class="slds-card slds-card_boundary">
+        <div class="slds-is-relative slds-p-top_none">
+            <div class="slds-spinner_container slds-hide" aura:id="userLoadingspinner">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                    <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>  
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-account" title="account">
+                            <span class="slds-assistive-text">account</span>
+                            <lightning:icon iconName="standard:file" size="small" alternativeText="Indicates approval"/>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title slds-grid slds-wrap slds-align-middle">                            
+                            <a href="javascript:void(0);" style="padding: 1px;" class="slds-card__header-link slds-truncate" title="Accounts">
+                                <span class="slds-text-heading_small">EBD ({!v.EBDCount})</span>
+                            </a>
+                            <div class="slds-is-relative helptext show-md-up slds-p-horizontal_x-small slds-p-bottom_small">
+                                <c:tooltip helpLink="Help" helpText="To add an EBD:  (1) Click the Add button, (2) Enter a Name and Year and click Save, (3) Click the Upload Files button to attach the EBD.  To modify an existing EBD, click the “Click Here to View or Replace the EBD” link and then click the Show More arrow at the top of the screen to upload a new version.   To change the name and year, click the Pencil icon."/>                                
+                            </div>
+                        </h2>
+                    </div>
+                    
+                </header>
+                <aura:if isTrue="{!v.hasAccess}">
+                    <div class="">             
+                        <button class="slds-button slds-button--neutral" onclick="{!c.AddCreateEbd}">{!$Label.c.Add}</button>
+                    </div>
+                </aura:if>
+            </div>
+            <div class="slds-card__body">
+                <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal data-table">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col">
+                                <div class="slds-truncate" title="Name">Name
+                                    <button class="slds-button slds-button_icon slds-button_icon" title="Sort">
+                                        <span class="slds-assistive-text">Sort</span>
+                                    </button>
+                                </div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Year">Year
+                                    <button class="slds-button slds-button_icon slds-button_icon" title="Sort">
+                                        <span class="slds-assistive-text">Sort</span>
+                                    </button>
+                                </div>
+                            </th>
+                            <th scope ="col"><div class="slds-truncate">&nbsp;</div></th>                            
+                            <th scope ="col"><div class="slds-truncate">&nbsp;</div></th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:if isTrue="{!v.isEmpty}">
+                            <tr>
+                                <th colspan="{!v.colSpan}">
+                                    <div class="slds-text-align--center">No EBDs have been added. Click the Add button to add an EBD.</div>
+                                </th>
+                            </tr>
+                        </aura:if>
+                        <aura:iteration items="{!v.EBDdata}" var="obj">
+                            <c:EBDChild EBDdata="{!obj}" hasAccess="{!v.hasAccess}" hasUploadAccess="{!v.hasUploadAccess}" YearPicklist="{!v.YearPicklist}"></c:EBDChild>
+                        </aura:iteration>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+</aura:component>

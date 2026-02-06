@@ -1,0 +1,373 @@
+<aura:component controller="ClientSurveyCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" >
+    <aura:attribute name="isclientManagersCheck" type="Boolean" default="false"/> <!--  Added Vignesh CR - 3847 -->  
+    <aura:attribute name="iscmsceCheck" type="Boolean" default="false"/> <!--  Added Vignesh CR - 3847 -->
+
+    
+    <aura:attribute name="WorkItemsDataArray" type="String[]"/>
+    <aura:attribute name="WorkItemsEmptyList" type="Boolean" default="false" />
+    <aura:attribute name="saveDraftValues" type="Object" />
+    <aura:attribute name="saveUpdatedWorkItemList" type="Opportunity[]" />
+    <aura:attribute name="errors" type="Object" />
+    <aura:attribute name="allSCEsDefaultArray" type="String[]" />
+    <aura:attribute name="vpcrSceOwnerMap" type="Map" />
+    <aura:attribute name="loggedInUserRoleName" type="String" />
+    <aura:attribute name="UMR_Client_Platform" type="String" />
+    <aura:attribute name="isFiltered" type="Boolean" default="false" />
+    <aura:attribute name="opportunityMap" type="Map" />
+    
+    <!-- Variables for sorting -->
+    <aura:attribute name="sortCompanyAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortRVPVPCRAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortSCEAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortMANameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortCommentsLastModifiedAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortMAComments" type="Boolean" default="true"/>
+    <aura:attribute name="sortedColumn" type="String" />
+    <aura:attribute name="sortedType" type="String" />
+    
+    <aura:attribute name="surveyContactsList" type="List" />
+    <aura:attribute name="surveyAMTList" type="List" />
+    <aura:attribute name="cpList" type="object" />
+    <aura:attribute name="cmsceFirstName" type="String" />
+    <aura:attribute name="cmsceLastName" type="String" />
+    <aura:attribute name="specialitySCE" type="String" />
+    <aura:attribute name="enableClientNPSSurvey" type="Boolean" default="false"/>
+    <aura:attribute name="isLoading" type="Boolean" default="true"/>
+    <aura:attribute name="dueDate" type="String" />
+    <aura:attribute name="softDate" type="String" />
+    <aura:attribute name="tabLabel" type="String" />
+    <aura:attribute name="isCustomTabVisible" type="Boolean" />
+    <aura:attribute name="isMATabVisible" type="Boolean" />
+    <aura:attribute name="hasTabAccess" type="Boolean" default="false"/>
+    <aura:attribute name="sceValidation" type="Boolean" default="true"/>
+    <aura:attribute name="cmValidation" type="Boolean" default="true"/>
+    <aura:attribute name="sce" type="Boolean" default="false"/>
+    <aura:attribute name="cmcmc" type="Boolean" default="false"/>
+    <aura:attribute name="CMCMCADMIN" type="Boolean" default="false"/>
+    <aura:attribute name="vpcrrvp" type="Boolean" default="false"/>
+    <aura:attribute name="isSce" type="Boolean" default="false"/>
+    <aura:attribute name="hasEditAccess" type="Boolean" default="false"/>
+    <aura:attribute name="hasEditAccessAdminOrSCE" type="Boolean" default="false"/>
+    <aura:attribute name="showMessage" type="Boolean" default="false"/> <!--SAMARTH-->
+    
+    
+    <aura:attribute name="CM_CMC_Validation_By__c" type="String" />
+    <aura:attribute name="CM_CMC_Validation_DateTime__c" type="String" />
+    <aura:attribute name="SCE_Validation_By__c" type="String" />
+    <aura:attribute name="SCE_Validation_DateTime__c" type="String" />
+    <aura:attribute name="isDataLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="hasCPaccess" type="Boolean" default="false"/>
+    
+    <aura:attribute name="CMValidationTime" type="Boolean" default="false"/>
+    <aura:attribute name="SCEValidationTime" type="Boolean" default="false"/>
+    <aura:attribute name="isVisible" type="Boolean" default="true"/>
+    <aura:attribute name="inputValueLwc" type="Boolean" default="false"/>
+    <aura:attribute name="inputValueLwcContact" type="Boolean" default="false"/>
+    <aura:attribute name="inputValueLwcAMT" type="Boolean" default="false"/>
+    
+    
+    <aura:attribute name="showConfirmDialog" type="Boolean" default="false"/>
+    <aura:attribute name="showNoSurveyContactDialog" type="Boolean" default="false"/>
+    <aura:attribute name="isSCEValidation" type="Boolean" default="false"/>
+    <aura:attribute name="isCMCMCValidation" type="Boolean" default="false"/>
+    <aura:attribute name="noPrimaryContact" type="Boolean" default="false"/>
+    <aura:attribute name="proceedWithoutSurveyContact" type="Boolean" default="false"/>
+    <aura:attribute name="proceedWithoutPrimaryContact" type="Boolean" default="false"/>
+    <aura:attribute name="proceedWithoutValidContacts" type="Boolean" default="false"/>
+    <aura:attribute name="showInvalidContactPopup" type="Boolean" default="false"/>
+    <aura:attribute name="excludeSpecialtyBenefitsSCESurvey" type="Boolean" default="false"/>
+    <aura:attribute name="clientSurveyCustomPermission" type="Boolean" default="false"/>
+    <aura:attribute name="businessLine" type="string"/>
+    <aura:attribute name="displayMsgSCE" type="string"/>
+    <aura:attribute name="displayMsgCSI" type="string"/>
+    <aura:attribute name="styleColor" type="string" default='color:black'/> 
+    
+    <aura:attribute name="cmsceId" type="String" />
+    <aura:handler name="workItemEvents" event="c:WorkItems_Events" action="{!c.handleUpdatedOppAndSave}" />
+    <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    <aura:if isTrue="{!v.isDataLoaded}">
+        <aura:if isTrue="{!v.isVisible}">
+            <!--ADDED BY SAMARTH-->
+            <aura:if isTrue="{!v.showMessage}">
+                <div class="validation" style="float: left;margin: 10px 0;width:100%;text-align: center;">
+                    <!--Removed Content from Client Survey Section for Case No:00003464 *****SHRUTI*******-->
+                    <p style='float: left;margin-top: 3px;margin-left: 13px;'>
+                        <!--b>The Client Survey Validation is now closed and information displayed below is read only. Please contact Emily Rice directly to make any changes.<br/></b-->
+                        <!--b>The Client Survey tab will be activated for SCEs from 9/3/24 thru 9/20/24. Please check back during that time period to review and validate your survey contacts.<br/></b-->
+                        <b style="{!v.styleColor}">{!v.displayMsgSCE}</b>
+                    </p>
+                </div>
+              <aura:set attribute="else">
+                <div class="validation" style="float: left;margin: 10px 0;width:100%;text-align: center;">
+                    <!--Removed Content from Client Survey Section for Case No:00003464 *****SHRUTI*******-->
+                    <p style='float: left;margin-top: 3px;margin-left: 13px;'>
+                        <!--b>The Client Survey Validation is now closed and information displayed below is read only. Please contact Emily Rice directly to make any changes.<br/></b-->
+                        <!--b>The Client Survey tab will be activated for SCEs from 9/3/24 thru 9/20/24. Please check back during that time period to review and validate your survey contacts.<br/></b-->
+                        <b style="{!v.styleColor}">{!v.displayMsgCSI}</b>
+                    </p>
+                </div>
+            </aura:set>
+            </aura:if>
+            
+            <!--ADDED BY SAMARTH-->
+            <!--div class="validation" style="float: left;margin: 10px 0;width:100%">
+                <p style='float: left;margin-top: 3px;margin-left: 13px;'>
+                    <b>Please review the information below carefully and complete the validation section at the bottom – note that the survey will not be considered complete until you click on the validation button.<br/></b>
+                </p>
+            </div-->
+            
+            <div>
+                <span class="section-header">
+                    <b>
+                        {!v.tabLabel}
+                    </b></span>
+                <c:clientNpsSurveyAcc onrefresh ='{!c.refresh}' onvaluechange="{!c.getValueFromLwcContact}" 
+                                      recordId='{!v.recordId}' hasTabAccess ="{!v.hasTabAccess}"
+                                      surveyContactsList="{!v.surveyContactsList}" loggedInUserRoleName="{!v.loggedInUserRoleName}" 
+                                      softDate="{!v.softDate}" cmc='{!v.cmcmc}' sce='{!v.sce}' vpcrrvp='{!v.vpcrrvp}'></c:clientNpsSurveyAcc>
+                
+            </div>  
+            <br/>
+            <div >
+                <span class="section-header">
+                    <b>
+                        Account Team Members Rated in Survey
+                    </b>
+                </span>
+                
+                <c:clientSurveyServiceAMT isCMCMCADMIN="{!v.CMCMCADMIN}"
+                                          onvaluechange="{!c.getValueFromLwcAMT}"
+                                          isSce="{!v.isSce}" 
+                                          onrefresh ="{!c.refresh}"
+                                          cmsceId="{!v.cmsceId}"
+                                          hasEditAccess ="{!v.hasEditAccess}" 
+                                          cmSCE="{!v.cmsceFirstName}" 
+                                          cmSCELastName="{!v.cmsceLastName}" 
+                                          specialitySCEIn="{!v.specialitySCE}" 
+                                          surveyAMTmembers="{!v.surveyAMTList}"  
+                                          recordId="{!v.recordId}"
+                                          excludeSpecialtyBenefitsSCESurvey="{!v.excludeSpecialtyBenefitsSCESurvey}"
+                                          userRole="{!v.loggedInUserRoleName.UserRole.Name}"
+                                          clientSurveyCustomPermission = "{!v.clientSurveyCustomPermission}"
+                                          businessLine='{!v.businessLine}'></c:clientSurveyServiceAMT>
+            </div>       
+            <br/>
+            <div >
+                <span class="section-header">
+                    <b>
+                        Products Held by the Client
+                    </b></span>
+                <br/>
+                <c:currentProductClientSurvey aura:id="currentProductCmp" 
+                                              onvaluechange="{!c.getValueFromLwc}" 
+                                              cpList="{!v.cpList}" 
+                                              recordId="{!v.recordId}" 
+                                              UMRClientPlatform="{!v.UMR_Client_Platform}" 
+                                              userRole="{!v.loggedInUserRoleName.UserRole.Name}"
+                                              clientSurveyCustomPermission = "{!v.clientSurveyCustomPermission}"
+                                              hasEditAccess ="{!v.hasEditAccessAdminOrSCE}"
+                                              
+                                              >
+                </c:currentProductClientSurvey>
+                <!--hasEditAccess ="{!v.hasEditAccess}" added by SAMARTH-->
+            </div>  
+            <div>
+                <span class="section-header">
+                    <b>
+                        Validation
+                    </b></span>
+                <br/>
+                <p style='margin: 0px 0px 15px 15px;'>Required Validation: Click the button below if all Contact, AMT and Product information
+                    provided above is accurate.
+                    <br/></p>
+                
+                <div style='text-align: center;'>
+                    
+                    <div style="width: 100%;margin-bottom: 13px;">
+                        <table class="slds-table slds-table--bordered slds-table--striped slds-table_col-bordered" style='    table-layout: fixed;'>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        CM/CMC Validated By
+                                    </th>
+                                    <th scope="col">
+                                        Date/Time
+                                    </th>
+                                    <th scope="col">
+                                        SCE Validated By
+                                    </th>
+                                    <th scope="col">
+                                        Date/Time
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        {!v.CM_CMC_Validation_By__c}
+                                    </td>
+                                    <td>
+                                        <lightning:formattedDateTime 
+                                                                     value="{!v.CM_CMC_Validation_DateTime__c}"
+                                                                     year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                                     minute="2-digit" timeZone="{!$Locale.timezone }" 
+                                                                     timeZoneName="short" hour12="true"/>
+                                        
+                                    </td>
+                                    <td>
+                                        {!v.SCE_Validation_By__c}
+                                    </td>
+                                    <td>
+                                        <lightning:formattedDateTime 
+                                                                     value="{!v.SCE_Validation_DateTime__c}" 
+                                                                     year="numeric" month="numeric" 
+                                                                     day="numeric" hour="2-digit"
+                                                                     minute="2-digit" timeZone="{!$Locale.timezone }" 
+                                                                     timeZoneName="short" hour12="true"/>
+                                        
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    
+                    <br/>
+                    <aura:if isTrue="{!v.hasTabAccess}">  
+                      <aura:if isTrue='{!v.isclientManagersCheck}'><!--  Added Vignesh CR - 3847 -->
+                        <aura:if isTrue='{!v.cmcmc}'>
+                            <lightning:button label="CM/CMC Validation" title="CM/CMC Validation" onclick="{!c.handleCMCMCValidation}"/>
+                            <br/>
+                        </aura:if>
+                        <aura:if isTrue='{!v.CMCMCADMIN}'>
+                            <lightning:button label="CM/CMC Validation" title="CM/CMC Validation" onclick="{!c.handleCMCMCValidation}"/>
+                            <br/>
+                        </aura:if>
+                       </aura:if> 
+                        <aura:if isTrue='{!v.iscmsceCheck}'><!--  Added Vignesh CR - 3847 -->
+                        <aura:if isTrue='{!v.isSce}'>
+                            <lightning:button label="SCE Validation" title="SCE Validation" onclick="{!c.handleSCEValidation}"/>
+                        </aura:if>
+                        </aura:if>
+                    </aura:if>
+                </div>
+                <br/>
+            </div>
+            <aura:set attribute="else">
+                <p> This tab was specifically designed to provide SCEs and CMs access to validate their contacts for the NPS Client Survey for Existing Clients. This tab will be blank for those who are not part of this group.</p>
+            </aura:set>
+        </aura:if>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.noPrimaryContact}">
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-labelledby="modal-heading-01" aria-modal="true">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header slds-theme--warning">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{!c.closeSCEAlert}">
+                        <lightning:icon iconName="utility:close" size="medium"></lightning:icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">
+                        Reminder
+                    </h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    Every account should have at least one Primary Contact - please add a primary contact to this account. To validate this account without a Primary Contact, click “OK”. To add a primary contact to the account, click “Close” and update the contacts section as needed, then validate.
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button variant="brand" label="OK" title="OK" onclick="{!c.proceedWithoutPrimaryContactCtrl}" />
+                    <lightning:button label="Close" title="Close" onclick="{!c.closeSCEAlert}"/>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showNoSurveyContactDialog}">
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-labelledby="modal-heading-01" aria-modal="true">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header slds-theme--warning">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{!c.closeCSIAlret}">
+                        <lightning:icon iconName="utility:close" size="medium"></lightning:icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">
+                        Reminder
+                    </h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    You should have at least one client survey contact tagged under the “CM/CMC Recommended Contact” checkbox. To validate this account without a CSI contact, click “OK”. To add a CSI contact, click “Cancel” and update the contact section as needed, then validate.
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button variant="brand" label="OK" title="OK" onclick="{!c.closeSurveyContactAlret}" />
+                    <lightning:button label="Cancel" title="Cancel" onclick="{!c.closeCSIAlret}"/>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showInvalidContactPopup}">
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-labelledby="modal-heading-01" aria-modal="true">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header slds-theme--error">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{!c.closeInvalidContactAlret}">
+                        <lightning:icon iconName="utility:close" size="medium"></lightning:icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">
+                        Error
+                    </h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    Correspondence Type, Survey Type and Email address must be filled out in the Contact Identification section. One or more of these fields are blank for this client. Please fill out the Contact Identification section completely and validate once complete.
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button variant="brand" label="OK" title="OK" onclick="{!c.closeInvalidContactAlret}" />
+                    
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+    
+    
+    
+    
+    <aura:if isTrue="{!v.showConfirmDialog}">
+        <!--Modal Box Start-->
+        <div role="dialog" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+                <!--Modal Box Header Start-->
+                <header class="slds-modal__header" style='    background: #ff0000;'>
+                    <h1 class="slds-text-heading--medium">Confirmation</h1>
+                </header>
+                <!--Modal Box Header End-->
+                
+                <!--Modal Box Content Start-->
+                <div class="slds-modal__content slds-p-around--medium">
+                    <b>You are currently in edit mode either in the Company Contacts or Products section or AMT section. Scroll up to those sections to finalize and save your work. Once you click on the Save button, you will be able to Validate.</b>
+                </div>
+                <!--Modal Box Content End-->
+                
+                <!--Modal Box Button Start-->
+                <footer class="slds-modal__footer">
+                    <lightning:button name='Cancel' label='Cancel' onclick='{!c.cancelValidation}'/>
+                    <!--lightning:button variant="brand" name='Continue Anyway' label='Continue Anyway' onclick='{!c.continueValidation}'/-->
+                </footer>
+                <!--Modal Box Button End-->
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>            
+    </aura:if>
+    
+</aura:component>

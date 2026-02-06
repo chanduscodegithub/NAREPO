@@ -1,0 +1,96 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global" controller="BusinessGroupsOnHealthClass">
+    <aura:attribute name="businessGroups" type="Account[]"/>
+    <aura:attribute name="Child_Data" type="Object"/>
+    <aura:attribute name="selectedAddPopupBGHIds" type="String[]"/>
+    <aura:attribute name="checkBoxCount" type="Integer" default="0"/>
+    <aura:attribute name="BusinessGroupAddPopupEmptyList" type="Boolean" default="false" />
+    <aura:attribute name="testObject" type="Object" default="" />
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="isContact" type="boolean"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:registerEvent name="addBGroupEvent" type="c:addBusinessGroupEvent"/>
+    <aura:handler name="BGHChildEvent" event="c:BGHChildEvent" action="{!c.addSelectedBGH}"/>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div aura:id="BGH_Modal" class="slds-section slds-is-open ipadbottom container forceRelatedListSingleContainer">
+        <article class="slds-card slds-card_boundary forceRelatedListCardDesktop">
+            <div class="slds-is-relative">
+                <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+                <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                    <div class="slds-spinner_container slds-hide" aura:id="spinner">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--medium spinner-fixed-small-device" role="status">
+                            <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                    <div class="slds-page-header ">
+                        <div class="slds-grid">
+                            <div class="slds-col slds-has-flexi-truncate">
+                                <div class="slds-media slds-no-space slds-grow alignheader">
+                                    <div class="slds-media__body">
+                                        <aura:if isTrue="{!v.isContact}">
+                                            <p class="slds-line-height--reset slds-text-body--regular"><b>{!$Label.c.BGH_Contact_Add_Popup_Instruction_Text}</b></p>
+                                            <aura:set attribute="else">
+                                        <p class="slds-line-height--reset slds-text-body--regular"><b>{!$Label.c.BGH_Add_Popup_Instruction_Text}</b></p>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                                <div class="modal-footer" style="float:right;">
+                                    <div class="forceModalActionContainer--footerAction forceModalActionContainer">
+                                        <ui:button class="slds-button slds-button--neutral uiButton--default uiButton--brand uiButton forceActionButton" aura:id="saveBGH" disabled="true" press="{!c.saveBgPopup}">
+                                            <span class=" label bBody truncate" dir="ltr">{!$Label.c.Save}</span>
+                                        </ui:button>                                            
+                                        <button class="slds-button slds-button--neutral uiButton forceActionButton" type="button" title="Cancel"  onclick="{!c.cancelBgPopup}">
+                                            <span class=" label bBody truncate">{!$Label.c.Cancel}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <table class="slds-table slds-no-row-hover slds-table--cell-buffer BGHCheckboxAlign" style="padding: 10px;">
+                            <tbody class="slds-grid">
+                                <aura:if isTrue="{!v.BusinessGroupAddPopupEmptyList}">
+                                    <p></p>
+                                    <tr style="width:100%;display:flex;">
+                                        <th class="NoRecordAlign">
+                                            <div class="slds-text-align--center">{!$Label.c.BGH_Add_Popup_No_Record_Msg}</div>
+                                        </th>
+                                    </tr>
+                                    <aura:set attribute="else">
+                                        <p></p>
+                                        <aura:iteration items="{!v.businessGroups}" var="businessGroupsobj" indexVar="index">
+                                            <c:BGH_Modal_Child businessGroupsobj="{!businessGroupsobj}" BGHId="{!businessGroupsobj.Id}"></c:BGH_Modal_Child>
+                                        </aura:iteration> 
+                                    </aura:set>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>  
+            </div>
+        </article>
+    </div> 
+</aura:component>

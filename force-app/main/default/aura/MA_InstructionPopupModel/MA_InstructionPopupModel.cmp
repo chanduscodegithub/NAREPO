@@ -1,0 +1,74 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction">
+    <aura:attribute name="recordtype" type="String" />
+    <div class="slds-show" aura:id="popup">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container popup-padding">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick = "{!c.onpresscancel}">
+                        <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="StepWise" />
+                        <span class="slds-assistive-text">{Close}</span>
+                        
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate bold-heading">INSTRUCTIONS</h2>
+                </header>
+                <aura:if isTrue="{!v.recordtype=='NBEA'}">
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div>
+                            <article class="slds-card">
+                                <div class="slds-card__body slds-card__body_inner">
+                                    <div class="slds-form-element slds-grid">                            
+                                        <div class="slds-size_1-of-1">
+                                            To update the information within this tab, click the Edit button near the Sales Stage graph or at the bottom of the screen.  To change the Sales Stage, either click within the graph or go to the Sales Stage field and select from the drop down.  Once you’ve completed your updates, <u>be sure to click Save at the bottom of the screen</u> . 
+                                            <br/><br/>
+                                            To add a new Product Type (Medical, Pharmacy, Dental, Vision, Other Buy Up Programs), click the “Add\Remove Products? Click Here” link above the Sales Stage graph.  
+                                            
+                                            <br/><br/>
+                                            <b>ADDITIONAL INSTRUCTIONS</b><br/>
+                                            For additional instructions, click the below link to access the complete Reference Guide.<br/>
+                                            
+                                            <a style="width:100%;" href='https://oneconnect.uhc.com/content/oneconnect/home/training-skills/course-calendar-and-programs/merit.html' target="_blank"> 
+                                                Click Here to Access the Reference Guide             </a>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </article>
+                        </div>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.recordtype=='NB'}">
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div>
+                            <article class="slds-card">
+                                <div class="slds-card__body slds-card__body_inner">
+                                    <div class="slds-form-element slds-grid">                            
+                                        <div class="slds-size_1-of-1">
+                                            
+                                            To update the information within this tab, click the Edit button near the Sales Stage graph or at the bottom of the screen.  To change the Sales Stage, either click within the graph or go to the Sales Stage field and select from the drop down.  Once you’ve completed your updates, <u>be sure to click Save at the bottom of the screen</u> . 
+                                            <br/><br/>
+                                            To add a new Product Type (Medical, Pharmacy, Dental, Vision, Other Buy Up Programs), click the “Add\Remove Products? Click Here” link above the Sales Stage graph.  
+                                            
+                                            <br/><br/>
+                                            <b>ADDITIONAL INSTRUCTIONS</b><br/>
+                                            For additional instructions, click the below link to access the complete Reference Guide.  <br/>
+                                            
+                                            <a style="width:100%;" href='https://oneconnect.uhc.com/content/oneconnect/home/training-skills/course-calendar-and-programs/merit.html' target="_blank"> 
+                                                Click Here to Access the Reference Guide               </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </article>
+                        </div>
+                    </div>
+                </aura:if>
+                
+                <footer class="slds-modal__footer">
+                    <ui:button buttonTitle="Cli" class=" slds-Show button" label="OK" press="{!c.onpresscancel}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

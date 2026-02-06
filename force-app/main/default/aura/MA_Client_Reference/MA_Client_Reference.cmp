@@ -1,0 +1,359 @@
+<aura:component controller="MA_Client_Reference_Class"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    access="global">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+
+    <aura:attribute name="refAccountsRecords" type="String[]" />
+    <aura:attribute name="backupRecords" type="Object[]" />
+    <aura:attribute name="isDesktop" type="boolean" default="false" />
+
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String" />
+
+    <aura:attribute name="scrollStyleForDevice" type="String"
+        default="@media screen and (min-width: 320px) and (max-width: 1199px){.panel-content.scrollable{overflow-y: hidden !important;-webkit-overflow-scrolling: auto !important ;}}" />
+
+    <aura:attribute name="sortCompanyName" type="Boolean" default="true" />
+
+    <aura:attribute name="isSpinnertoLoad" type="Boolean" default="false" />
+    <aura:attribute name="isLoggedInUserValid" type="Boolean" default="false" />
+    <aura:attribute name="ErrorMessage" type="String" />
+
+    <aura:attribute name="sortField" type="String" default="RefCompany__r.Name" />
+    <aura:attribute name="sortOrder" type="String" default="ASC" />
+    <aura:attribute name="isReferencedAccountListEmpty" type="Boolean" default="false" />
+    <aura:attribute name="accountObj" type="String[]" />
+    <aura:attribute name="lastSortField" type="String" default="" />
+
+    <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+    <aura:attribute name="isLoggedInUserInValid" type="Boolean" default="false" />
+    <aura:attribute name="isReferencedAccountListNotEmpty" type="Boolean" default="false" />
+    <aura:attribute name="isEditDisabled" type="Boolean" default="false" />
+    <aura:attribute name="editValueFromParent" type="Boolean" default="false" />
+    <aura:attribute name="isSaveCancelDisabled" type="Boolean" default="true" />
+    <aura:attribute name="refStatusList" type="Map" />
+    <aura:attribute name="applicableFor" type="Map" />
+
+    <aura:attribute name="refStatRec" type="Object[]" />
+    <aura:handler name="refStatEvent" event="c:refStatEvent" action="{!c.handleRefStatEvent}" />
+    <aura:handler name="MA_ClentReference_ValueChange_Event" event="c:MA_ClentReference_ValueChange_Event" action="{!c.handleRecordChange}" />
+    <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+
+    <aura:handler name="Sorting_Mobile_Event" event="c:Sorting_Mobile_Event" action="{!c.sortFieldsMobile}" />
+
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}" />
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}" />
+
+    <aura:handler name="addRefAccountsEvent" event="c:addRefAccountsEvent" action="{!c.addSelectedrefAccounts}" />
+
+    {!v.body}
+    <style>
+        @media (max-width: 767px) {
+            .cuf-scroller-inside {
+                padding: 0 !important;
+            }
+
+            .cuf-content {
+                background: #fafaf9;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .cuf-content {
+                padding: 0 !important;
+            }
+
+            .oneActionBar.actionButtons {
+                left: 0;
+            }
+        }
+    </style>
+    <div role="alertdialog" tabindex="-1" aura:id="MA_ClientReference" aria-labelledby="prompt-heading-id"
+        aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}"
+                    title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large" iconName="utility:close"
+                        size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">Do you want to remove this Company from the Reference Request?</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder"
+                    onclick="{!c.confirmDelete}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral buttonShadowBorder"
+                    onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="MA_ClientReference"></div>
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id"
+        aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}"
+                    title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large" iconName="utility:close"
+                        size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder"
+                    onclick="{!c.closeErrorModal}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+
+    <div aura:id="ma_Client_Reference" class="slds-section container forceRelatedListSingleContainer">
+        <article class="slds-card slds-card_boundary forceRelatedListCardDesktop slds-is-relative main-section">
+            <aura:if isTrue="{!v.isSpinnertoLoad}">
+                <div class="slds-spinner_container" aura:id="spinner1"></div>
+            </aura:if>
+            <div class="slds-card__header slds-grid slds-p-vertical--x-small flex-auto avoid-clicks appletHeader"
+                data-record="ma_Client_Reference" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular expand-in-mobile slds-p-right_xx-small">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon"
+                                aura:id="utilityToggle" iconName="utility:chevronright" size="x-small"
+                                alternativeText="Product" />
+                        </button>
+                        <aura:if isTrue="{!v.isSpinnertoLoad}">
+                            <div aura:id="spinner" class="dotsSpinnerContainer slds-is-relative">
+                                <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <aura:set attribute="else">
+                                <div>
+                                    <span class="slds-icon_container slds-icon-standard-contact"
+                                        title="description of icon when needed">
+                                        <lightning:icon class="slds-icon slds-icon--small" iconName="standard:account"
+                                            size="small" alternativeText="Product" />
+                                    </span>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-grid">
+                            <span class="slds-text-heading--small">Reference Requests</span>
+                        </h2>
+                    </div>
+                </header>
+               <div class="appletAddBtn">
+                    <div class="action-bar-mobile">
+                        <aura:if isTrue="{!v.isLoggedInUserValid}">
+                                <button class="slds-button slds-button--neutral"
+                                    onclick="{!c.openConsultantsPopup}" disabled='{!(!v.isSaveCancelDisabled)}'>{!$Label.c.Add}</button>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+                <aura:if isTrue="{!v.isReferencedAccountListNotEmpty}">
+                    <div style="text-align: right; padding-right: 14px;">
+                        <aura:if isTrue="{!v.isLoggedInUserValid}">
+                            <aura:if isTrue="{!v.isSaveCancelDisabled}">
+                                <button class="slds-button slds-button--neutral"
+                                    onclick="{!c.onEditParent}">Edit</button>
+                            </aura:if>
+                            <aura:if isTrue="{!v.isEditDisabled}">
+                                <button class="slds-button slds-button--neutral" onclick="{!c.onSave}">Save</button>
+                                <button class="slds-button slds-button--neutral" onclick="{!c.onCancel}">Cancel</button>
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                </aura:if>
+                <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+                <div class="slds-card__body">
+                    <table
+                        class="slds-table slds-table_resizable-cols slds-table_fixed-layout slds-table_bordered table-alignment-sort slds-max-medium-table_stacked-horizontal client-tab">
+                        <aura:if isTrue="{!v.isReferencedAccountListEmpty}">
+                            <colgroup>
+                                <col style="width:25%;" />
+                                <col style="width:25%;" />
+                                <col style="width:25%;" />
+                                <col style="width:25%;" />
+                            </colgroup>
+                        </aura:if>
+
+                        <aura:if isTrue="{!v.isReferencedAccountListNotEmpty}">
+                            <aura:if isTrue="{!v.isLoggedInUserValid}">
+                                <colgroup>
+                                    <col style="width:25%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:30%;" />
+                                </colgroup>
+                            </aura:if>
+                            <aura:if isTrue="{!v.isLoggedInUserInValid}">
+                                <colgroup>
+                                    <col style="width:25%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:15%;" />
+                                    <col style="width:30%;" />
+                                </colgroup>
+                            </aura:if>
+                        </aura:if>
+
+                        <thead>
+                            <aura:if isTrue="{!v.isReferencedAccountListEmpty}">
+                                <tr class="slds-text-title--caps empty-data">
+                                    <th class="font-weight-bold" scope="col" style="width:25%;">
+                                        <span title="Reference Company Name">Reference Company
+                                            Name</span>
+                                    </th>
+                                    <th class="font-weight-bold" scope="col" style="width:25%;">
+                                        <span class="slds-truncate" title="Reference Status">Reference Status</span>
+                                    </th>
+                                     <th class="font-weight-bold" scope="col" style="width:25%;">
+                                        <span class="slds-truncate" title="Applicable for?">Applicable for?</span>
+                                    </th>
+                                    <th class="font-weight-bold" scope="col" style="width:25%;">
+                                        <span class="slds-truncate" title="Reference Request Status">Created By</span>
+                                    </th>
+                                    <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+                                    <th class="font-weight-bold" scope="col" style="width:25%;">
+                                        <span class="slds-truncate" title="Notes">Notes</span>
+                                    </th>
+                                    <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+                                </tr>
+                                <aura:set attribute="else">
+                                    <tr class="slds-cell-wrap">
+                                        <th class="slds-text-title--caps slds-is-sortable font-weight-bold" scope="col">
+                                            <a class="slds-th__action slds-text-link_reset" onclick="{!c.sortFields}"
+                                                data-record="RefCompany__r.Name" role="button" tabindex="-1">
+                                                <span class="slds-assistive-text">Sort by: </span>
+                                                <span title="Reference Company Name">Reference
+                                                    Company Name</span>
+                                                <div class="slds-icon_container">
+                                                    <aura:if isTrue="{!v.sortCompanyName}">
+                                                        <lightning:icon
+                                                            class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                            iconName="utility:arrowup" size="xx-small"
+                                                            alternativeText="Ascending" />
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon
+                                                                class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                                iconName="utility:arrowdown" size="xx-small"
+                                                                alternativeText="Descending" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </div>
+                                            </a>
+                                        </th>
+                                        <th class="slds-text-title--caps slds-is-sortable font-weight-bold" scope="col">
+                                            <span class="slds-truncate" title="Reference Status">Reference Status</span>
+                                        </th>
+                                        <th class="slds-text-title--caps slds-is-sortable font-weight-bold" scope="col">
+                                            <span class="slds-truncate" title="Applicable for?">Applicable for?</span>
+                                        </th>
+                                        <th class="slds-text-title--caps slds-is-sortable font-weight-bold" scope="col">
+                                            <span class="slds-truncate" title="Created By">Created By</span>
+                                        </th>
+                                        <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+                                        <th class="slds-text-title--caps slds-is-sortable font-weight-bold" scope="col">
+                                            <span class="slds-truncate" title="Notes">Notes</span>
+                                        </th>
+                                        <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+                                        <th class="slds-text-title--caps slds-is-sortable font-weight-bold" scope="col">
+                                            <span class="slds-truncate" title="Delete"></span>
+                                        </th>
+                                    </tr>
+                                </aura:set>
+                            </aura:if>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.isReferencedAccountListEmpty}">
+                                <tr>
+                                    <th colspan="4">
+                                        <div class="slds-text-align--center">No Company is referenced for this
+                                            Membership Activity</div>
+                                    </th>
+                                </tr>
+                                <aura:set attribute="else">
+                                    <aura:iteration items="{!v.refAccountsRecords}" var="refAccountsRecordsObj"
+                                        indexVar="index">
+                                        <c:MA_Client_Reference_Table aura:id="maRefAccount_Table"
+                                                                     maRefAccountIndex="{!index}" maRefAccount='{!refAccountsRecordsObj}'
+                                                                     isLoggedInUserValid='{!v.isLoggedInUserValid}'
+                                                                     isEditDisabled='{!v.isEditDisabled}'
+                                                                     editValueFromParent='{!v.editValueFromParent}'
+                                                                     isSaveCancelDisabled='{!v.isSaveCancelDisabled}'
+                                                                     refStatusList='{!v.refStatusList}'
+                                                                     applicableFor='{!v.applicableFor}'>
+                                        </c:MA_Client_Reference_Table>
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="nav-footer" aura:id="pageFooter">
+                    <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}" />
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Mobile Dock Section-->
+    <aura:if isTrue="{!v.isReferencedAccountListEmpty}">
+        <aura:set attribute="else">
+            <div class="action-bar-mobile slds-hide" aura:id="action-bar-mobile">
+                <footer class="actionButtons oneActionBar forceActionsContainer sortEdit" aura:id="sortEdit"
+                    aria-hidden="false" data-aura-class="oneActionBar forceActionsContainer">
+                    <div class="actionButtonsWrapper">
+                        <div class="action" aria-hidden="false" id="actionBarItem_ListSort">
+                            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                                <button onclick="{!c.openSortingPopup}"
+                                    class="actionButton slds-button slds-button--icon uiButton" aria-live="off"
+                                    type="button" data-aura-class="uiButton">
+                                    <lightning:icon iconName="action:sort" size="xx-small" alternativeText="Sort" />
+                                    <p class="slds-truncate actionTitle" aria-hidden="true">Sort</p>
+                                </button>
+                            </div>
+                        </div>
+                        <aura:if isTrue="{!v.isLoggedInUserValid}">
+                            <div class="action" aria-hidden="false" id="actionBarItem_New">
+                                <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                                    <button onclick="{!c.openConsultantsPopup}"
+                                        class="actionButton slds-button slds-button--icon uiButton" aria-live="off"
+                                        type="button" data-aura-class="uiButton">
+                                        <lightning:icon iconName="action:new" size="xx-small" alternativeText="Add" />
+                                        <p class="slds-truncate actionTitle" aria-hidden="true"
+                                            data-aura-rendered-by="7985:0">{!$Label.c.Add}</p>
+                                    </button>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </div>
+                </footer>
+            </div>
+        </aura:set>
+    </aura:if>
+
+</aura:component>

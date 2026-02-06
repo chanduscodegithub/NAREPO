@@ -1,0 +1,311 @@
+<template>
+    <span class={cssDisplay}>
+
+        <div class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+
+    </span>
+
+    <!-- Pop up for Need help Click here - START -->
+    <template if:true={openPopUp}>
+        <div class="slds-show">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open popup-scroll">
+                <div class="slds-modal__container popup-padding popup-btn-close">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={closePopUp}>
+                            <lightning-icon icon-name="utility:close" size="medium">
+                            </lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate bold-heading">INSTRUCTIONS</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div>
+                            <article class="slds-card">
+                                <div class="slds-card__body slds-card__body_inner">
+                                    <div class="slds-form-element slds-grid">
+                                        <div class="slds-size_1-of-1">
+                                                To update the Client Plan:<br/><br/>
+
+                                                1. Click “Edit” <br/>
+                                                
+                                                2. Use the dropdown functionality to change an existing goal or strategy<br/>
+                                                
+                                                3. Use the “Add another Goal” button for additional goals and “Add Another Strategy for this Goal” button for additional strategies<br/>
+                                                
+                                                4. Write in the Action Steps Planned/Taken in the write in field<br/>
+                                                
+                                                5. To delete a goal or a strategy, use the trash can icon. Please keep in mind that the first two goals are mandatory and cannot be deleted.<br/>
+                                                
+                                                6. Make sure to hit ‘Save” once complete<br/>
+                                                
+                                                7. Click on “Print” to download and print a Word Document<br/><br/>
+                                                
+                                                 
+                                                
+                                                <b>ADDITIONAL INSTRUCTIONS</b><br/>
+                                                
+                                                For additional instructions, click the below link to access the complete Reference Guide<br/>
+
+                                            <a style="width:100%;" href='https://oneconnect.uhc.com/content/oneconnect/home/training-skills/course-calendar-and-programs/merit.html'
+                                                target="_blank">
+                                                Click Here to Access the Reference Guide </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </article>
+                        </div>
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="OK" variant="neutral" onclick={closePopUp}></lightning-button>
+                        <!--<ui:button class=" slds-Show button" label="OK" press="{!c.onpresscancel}"/> -->
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </template>
+    <!-- Pop up for Need help Click here - END -->
+
+    <!-- modal start -->
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- modal header start -->
+                <!-- <header class="slds-modal__header">
+             <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                <lightning-icon icon-name="utility:close"
+                   alternative-text="close"
+                   variant="inverse"
+                   size="small" ></lightning-icon>
+                <span class="slds-assistive-text">Close</span>
+             </button>
+             <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation</h2>
+          </header> -->
+                <header class="slds-modal__header slds-theme--error">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={confirmCancel}>
+                        <lightning-icon icon-name="utility:close" size="medium">
+                        </lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation</h2>
+                </header>
+
+                <!-- modal body start -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <!--<center>
+               <h2><b>Do you want to remove this {deleteObjName}?</b></h2><br /> 
+
+            </center>  -->
+                    <h2><b>{deleteMsgContent}</b></h2><br />
+                </div>
+                <!-- modal footer start-->
+                <footer class="slds-modal__footer slds-theme--default">
+                    <lightning-button label="Cancel" variant="neutral" onclick={confirmCancel}></lightning-button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <lightning-button label="Delete" variant="brand" onclick={confirmDelete}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- modal end -->
+
+    <!-- Empty strategy reminder modal start -->
+    <template if:true={showReminderModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- modal header start -->
+                <!-- <header class="slds-modal__header">
+                 <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                    <lightning-icon icon-name="utility:close"
+                       alternative-text="close"
+                       variant="inverse"
+                       size="small" ></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                 </button>
+                 <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation</h2>
+              </header> -->
+                <header class="slds-modal__header slds-theme--warning">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={confirmReminderCancel}>
+                        <lightning-icon icon-name="utility:close" size="medium">
+                        </lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Reminder</h2>
+                </header>
+
+                <!-- modal body start -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                    <!--<h2><b>Strategies are not available for these goals - {emptyStrategyGoalName}</b></h2><br /> -->
+                    <h2><b>
+                            <template if:true={isEmptyGoalWriteIn}>
+                                {emptyGoalWriteInContent}<br /><br />
+                            </template>
+                            <template if:true={isStrategyListEmptyForGoal}>
+                                {emptyStrategyReminderMsgContent}<br /><br />
+                            </template>
+                            <template if:true={isOtherPleaseSpecifyEmpty}>
+                                {otherPleaseSpecifyEmpty}<br /><br />
+                            </template>
+                            <template if:true={strategyRecHavingActionStepWithoutStrategy}>
+                                {actionStepWithoutStrategyReminderMsgContent}
+                            </template>
+
+                        </b></h2><br />
+                </div>
+                <!-- modal footer start-->
+                <footer class="slds-modal__footer slds-theme--default">
+                    <!--  <lightning-button label="Cancel" variant="neutral" onclick={confirmReminderCancel}></lightning-button>
+                &nbsp;&nbsp;&nbsp;&nbsp;-->
+                    <lightning-button class="slds-align_absolute-center" label="OK" variant="brand" onclick={confirmOk}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- modal end -->
+
+    <article class="slds-card slds-card_boundary">
+        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle}
+            active-section-name={activeSections} class="accordianClass"><br />
+
+            <div class="slds-grid slds-wrap">
+                <div class="" style="padding: 0.3rem 0.6rem;">
+                    <span>Choose Sales Cycle</span>
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                    <lightning-combobox name='salesSeason' value={salesSeason} variant="label-hidden"
+                        options={salesSeasonPicklist} onchange={salesSeasonChangeHandler}>
+                    </lightning-combobox>
+                </div>
+                <template if:false={isgoalListEmpty}>
+                    <div class="slds-grid slds-wrap slds-col slds-size_5-of-7 slds-grid_reverse">
+                        <div class="slds-p-right--medium">
+                            <div class="slds-p-right--medium">
+                                <lightning-button label="Expand/Collapse All" name="Expand/Collapse All" slot="actions"
+                                    onclick={expandCollapseRecords} icon-name={iconDirection}
+                                    class="slds-m-left_x-small">
+                                </lightning-button>
+                                <template if:true={hasEditAccess}>
+                                    <lightning-button label="Add another Goal" slot="actions"
+                                        class="slds-m-left_x-small" onclick={addGoal}
+                                        disabled={isAddGoalButtonDisabled}>
+                                    </lightning-button>
+                                    <!--<template if:false={isEdit}>-->
+                                    <lightning-button label="Edit" slot="actions" onclick={editClientPlanRecords}
+                                        class="slds-m-left_x-small" disabled={isEditButtonDisabled}>
+                                    </lightning-button>
+                                    <!--</template>-->
+                                    <template if:true={isEdit}>
+                                        <lightning-button label="Save" slot="actions" variant="brand"
+                                            onclick={saveClientPlanRecords} class="slds-m-left_x-small">
+                                        </lightning-button>
+                                        <lightning-button label="Cancel" slot="actions" onclick={cancelChanges}
+                                            class="slds-m-left_x-small">
+                                        </lightning-button>
+                                    </template>
+                                    <lightning-button label="Print" class="slds-m-left_x-small" slot="actions"
+                                        onclick={printClientPlan} disabled={isPrintButtonDisabled}>
+                                    </lightning-button>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="slds-p-right--medium slds-p-top_xx-small">
+                            <template if:true={hasEditAccess}>
+                                <a onclick={openHelpPopup} class="text_align">{Need_Help_Click_Here}</a>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+                <!-- Buttons to Create or Copy the Client Plan - START -->
+                <template if:true={hasEditAccess}>
+                    <template if:true={isgoalListEmpty}>
+                        <div class="slds-grid slds-wrap slds-col slds-size_5-of-7">
+                            <div class="slds-p-right--medium">
+                                <div class="slds-p-right--medium">
+                                    <lightning-button label="Create New Client Plan – Blank Template" name="Create New Client Plan – Blank Template"
+                                        onclick={createNewGoal} class="slds-m-left_x-small">
+                                    </lightning-button>
+                                    <lightning-button label="Create New Client Plan – Copy Last Year’s Data"
+                                        name="Create New Client Plan – Copy Last Year’s Data" onclick={fetchPreviousSalesCycleRecords}
+                                        disabled={disableCopyPreviousButton} class="slds-m-left_x-small">
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+                <!-- Buttons to Create or Copy the Client Plan - END -->
+            </div><br />
+
+            <template if:false={isgoalListEmpty}>
+                <template for:each={goalList} for:item="eachGoal" for:index="index">
+                    <div key={eachGoal.Name}>
+                        <!-- <c-goal-cmp goal={eachGoal} mandatory-goal-list={mandatoryGoalList}
+                        picklist-field-map={picklistFieldMap} is-edit={isEdit}
+                        goal-picklist={goalPicklist} goal-selected={eachGoal.Goal__c}></c-goal-cmp> -->
+                        <!--  <template if:true={isNewGoalLoaded}> -->
+                        <c-goal-cmp goal={eachGoal} mandatory-goal-list={mandatoryGoalList}
+                            picklist-field-map={picklistFieldMap} is-edit={isEdit} index={index}
+                            oncreateoreditgoal={createOrEditGoalHandler} goal-names={goalNames} ondeleteids={deleteids}
+                            goal-used-picklist-values={goalUsedPicklistValues} onaddstrategy={addStrategyHandler}
+                            has-edit-access={hasEditAccess}>
+                        </c-goal-cmp>
+                        <!--  </template>  -->
+                    </div>
+
+                </template>
+
+                <br /><br />
+            </template>
+
+        </lightning-accordion>
+
+        <template if:true={hasEditAccess}>
+            <template if:false={isgoalListEmpty}>
+                <lightning-button label="Add another Goal" class="slds-m-left_x-small" onclick={addGoal}
+                    disabled={isAddGoalButtonDisabled}>
+                </lightning-button>
+                <lightning-button label="Edit" slot="actions" onclick={editClientPlanRecords}
+                    class="slds-m-left_x-small" disabled={isEditButtonDisabled}>
+                </lightning-button>
+                <!--</template>-->
+                <template if:true={isEdit}>
+                    <lightning-button label="Save" slot="actions" variant="brand" onclick={saveClientPlanRecords}
+                        class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button label="Cancel" slot="actions" onclick={cancelChanges} class="slds-m-left_x-small">
+                    </lightning-button>
+                </template>
+                <lightning-button label="Print" class="slds-m-left_x-small" slot="actions" onclick={printClientPlan}
+                    disabled={isPrintButtonDisabled}>
+                </lightning-button><br /><br />
+            </template>
+        </template>
+        <template if:true={isgoalListEmpty}>
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-p-left_medium">
+                    <div class="slds-text-align_left slds-text-heading_x-small slds-size_23-of-24">{noGoalRecordsMessage}</div>
+                </div><br />
+            </div>
+        </template>
+    </article>
+    <div class=".scrollid">
+        <spann></spann>
+    </div><!-- This div is created to get scroll to bottom -->
+</template>

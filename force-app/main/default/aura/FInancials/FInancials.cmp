@@ -1,0 +1,256 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 02-09-2024
+  @last modified by  : Spoorthy
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="FinancialsApex" access="global" >
+    <aura:attribute name="medicalData" type="String[]"/>
+    <aura:attribute name="rxData" type="String[]"/>
+    <aura:attribute name="arrayOfYearsMed" type="String[]" default="['2016','2017','2018','2019']"/>
+    <aura:attribute name="arrayOfYearsRx" type="String[]" default="['2016','2017','2018','2019']"/>
+    <aura:attribute name="MeritId" type="String"/>
+    <aura:attribute name="LinkId" type="String"/>
+    <aura:attribute name="TableauLinkId" type="String"/>
+    <aura:attribute name="AccountType" type="String"/>
+    <aura:attribute name="ClientSurveyDashUrl" type="String" default="{!$Label.c.Client_Survey_Dashboard_Link_Url}" />
+    <aura:attribute name="AdditionalDetailsUrl" type="String" default="{!$Label.c.Client_Survey_Addional_Details_Url}" />
+    <aura:attribute name="AdditionalDetailsIframeProp" type="String" default="{!$Label.c.Client_Survey_Addional_Details_Iframe_Prop_Url}" />    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>  
+    <!--<ltng:require styles="{! $Resource.IpadResetCSS}"/>-->
+    
+    <div aura:id="client_Survey_Results" class="slds-section ipadbottom">
+        <article class="slds-card slds-card_boundary">
+            <div class="slds-card__header slds-grid avoid-clicks" data-record="client_Survey_Results" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" style="padding-right: 4px;"/>
+                        </button>
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Client_Survey_Results_Heading}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:poll" size="small" alternativeText="{!$Label.c.Client_Survey_Results_Heading}" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-grid flex-alignCenter">
+                            <!--<a href="javascript:void(0);" class="slds-card__header-link slds-truncate">-->
+                            <span class="slds-text-heading--small"></span>
+                            <span class="slds-text-heading--small" > Financials - Total </span>
+                            <!--</a>-->
+                            <div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small">
+                                    <c:tooltip helpLink="Help" helpText="{!$Label.c.Financials_AccountDetailsTab_HelpTxt}"/>
+                                </div>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-is-relative">
+                <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+                
+                <!--  Error PopUp STARTS --> 
+                <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                                <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                                <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                            </button>
+                            <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <p style="text-align:center;">{!v.ErrorMessage}</p>
+                        </div>
+                        <div class="slds-modal__footer slds-theme--default">
+                            <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="ErrorMessage"></div>
+                <!--  Error PopUp ENDS -->
+                
+                <div class="slds-section__content slds-p-top_none">   
+                    <div class="slds-card__body">  
+                        <h2 class="slds-p-horizontal_medium slds-p-vertical_small slds-theme_shade slds-border_top section-title">Medical :</h2>
+                        <table aura:id="clientSurveyTbl" id="clientSurveyTbl" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout slds-table_col-bordered clientSurveyTbl data-table">
+                            <thead>
+                                <tr class="slds-hint-parent">
+                                    <th width="20%" class="slds-is-resizable" scope="col"> 
+                                        <span class="slds-truncate header"><strong>Medical :</strong></span>  
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-align_center" scope="col">                                                                                                               
+                                        <span class="slds-truncate" title="{!v.arrayOfYearsMed[3]}"><strong>
+                                            <aura:if isTrue="{!v.arrayOfYearsMed[3] != 0}">
+                                                {!v.arrayOfYearsMed[3]}
+                                            </aura:if></strong>
+                                        </span>                                                    
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-align_center" scope="col">                                                                           
+                                        <span class="slds-truncate" title="{!v.arrayOfYearsMed[2]}"><strong>
+                                            <aura:if isTrue="{!v.arrayOfYearsMed[2] != 0}">
+                                                {!v.arrayOfYearsMed[2]}
+                                            </aura:if></strong>
+                                        </span>                                                                                                                        
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-align_center" scope="col">                                                                           
+                                        <span class="slds-truncate" title="{!v.arrayOfYearsMed[1]}"><strong>
+                                            <aura:if isTrue="{!v.arrayOfYearsMed[1] != 0}">
+                                                {!v.arrayOfYearsMed[1]}
+                                            </aura:if></strong>
+                                        </span>                                                                                         
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-align_center" scope="col">                                                                                                               
+                                        <span class="slds-truncate" title="{!v.arrayOfYearsMed[0]}"><strong>
+                                            <aura:if isTrue="{!v.arrayOfYearsMed[0] != 0}">
+                                                {!'Projected '+v.arrayOfYearsMed[0]}
+                                            </aura:if></strong>
+                                        </span>                                                                         
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.medicalData}" var="clientSurveysObj" indexVar="index">
+                                    <tr class="slds-hint-parent ">
+                                        <td class="slds-text-align_left text-align has-tooltip">                                                                                          
+                                            <aura:if isTrue="{!or(clientSurveysObj[0] == 'Membership',or(clientSurveysObj[0] == 'Revenue',clientSurveysObj[0] == 'Margin'))}">                                                 
+                                                <c:FinancialToolTip helpLink="{!clientSurveysObj[0]}" helpText="Financials data comes from the underwriting ‘A File’, which may vary from other data sources. Please contact your underwriter for specific questions."/>
+                                                <aura:set attribute="else">
+                                                    <div class="slds-truncate"><strong>{!clientSurveysObj[0]}</strong></div> 
+                                                </aura:set>
+                                            </aura:if>                                                
+                                        </td>
+                                        <td data-label="{!v.arrayOfYearsMed[3]}" class="">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-truncate" title="{!clientSurveysObj[1]}">{!clientSurveysObj[1]}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="{!v.arrayOfYearsMed[2]}" class="">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-truncate" title="{!clientSurveysObj[2]}">{!clientSurveysObj[2]}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="{!v.arrayOfYearsMed[1]}" class="">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-truncate" title="{!clientSurveysObj[3]}">{!clientSurveysObj[3]}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="{!'Projected '+v.arrayOfYearsMed[0]}" class=" ">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">                                                
+                                                    <div class="slds-truncate"  title="{!clientSurveysObj[4]}">{!clientSurveysObj[4]}</div>
+                                                </div>
+                                            </div>
+                                        </td>  
+                                    </tr>
+                                </aura:iteration>                                                           
+                            </tbody>
+                        </table>
+                    </div>
+                </div>    
+                <!-- Tracker No 3375 - Veera
+                <div class="slds-section__content slds-p-top_none">   
+                    <div class="slds-card__body">         
+                        <h2 class="slds-p-horizontal_medium slds-p-vertical_small slds-theme_shade slds-border_top section-title">OptumRx :</h2>
+						//Replace == with double - if uncomment the code for the below table classes
+                        <table aura:id="clientSurveyTbl" id="clientSurveyTbl" class="slds-table slds-table==bordered slds-max-medium-table==stacked-horizontal slds-table==resizable-cols slds-table==fixed-layout slds-table_col-bordered clientSurveyTbl data-table">
+                            <thead>
+                                <tr class="slds-hint-parent">
+                                    <th width="20%" class="slds-is-resizable" scope="col">
+                                        <span class="slds-truncate header"><strong>OptumRx :</strong></span> 
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-align_center" scope="col">                                                                                                               
+                                        <span class="slds-truncate" title="{!v.arrayOfYearsRx[3]}"><strong>
+                                            <aura:if isTrue="{!v.arrayOfYearsRx[3] != 0}">
+                                                {!v.arrayOfYearsRx[3]}
+                                            </aura:if></strong>
+                                        </span>                                                    
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-align_center" scope="col">                                                                           
+                                        <span class="slds-truncate" title="{!v.arrayOfYearsRx[2]}"><strong>
+                                            <aura:if isTrue="{!v.arrayOfYearsRx[2] != 0}">
+                                                {!v.arrayOfYearsRx[2]}
+                                            </aura:if></strong>
+                                        </span>                                                                                                                        
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-align_center" scope="col">                                                                           
+                                        <span class="slds-truncate" title="{!v.arrayOfYearsRx[1]}"><strong>
+                                            <aura:if isTrue="{!v.arrayOfYearsRx[1] != 0}">
+                                                {!v.arrayOfYearsRx[1]}
+                                            </aura:if></strong>
+                                        </span>                                                                                         
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-align_center" scope="col">                                                                                                               
+                                        <span class="slds-truncate" title="{!v.arrayOfYearsRx[0]}"><strong>
+                                            <aura:if isTrue="{!v.arrayOfYearsRx[0] != 0}">
+                                                {!'Projected '+v.arrayOfYearsRx[0]}
+                                            </aura:if></strong>
+                                        </span>                                                                         
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.rxData}" var="clientSurveysObj" indexVar="index">
+                                    <tr class="slds-hint-parent">
+                                        <td class="slds-text-align_left text-align has-tooltip">
+                                            <aura:if isTrue="{!or(clientSurveysObj[0] == 'Membership',or(clientSurveysObj[0] == 'Revenue',clientSurveysObj[0] == 'Margin'))}">
+                                                <c:FinancialToolTip helpLink="{!clientSurveysObj[0]}" helpText="Financials data comes from the underwriting ‘A File’, which may vary from other data sources. Please contact your underwriter for specific questions."/>
+                                                <aura:set attribute="else">
+                                                    <div class="slds-truncate"><strong>{!clientSurveysObj[0]}</strong></div> 
+                                                </aura:set>
+                                            </aura:if>                                                     
+                                        </td>
+                                        <td data-label="{!v.arrayOfYearsRx[3]}" class="">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-truncate" title="{!clientSurveysObj[1]}">{!clientSurveysObj[1]}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="{!v.arrayOfYearsRx[2]}" class="">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-truncate" title="{!clientSurveysObj[2]}">{!clientSurveysObj[2]}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="{!v.arrayOfYearsRx[1]}" class="">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-truncate" title="{!clientSurveysObj[3]}">{!clientSurveysObj[3]}</div>
+                                                </div>
+                                            </div>
+                                        </td> 
+                                        <td data-label="{!'Projected '+v.arrayOfYearsRx[0]}" class="">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-truncate" title="{!clientSurveysObj[4]}">{!clientSurveysObj[4]}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>                                    
+                                </aura:iteration>                                                           
+                            </tbody>
+                        </table>
+                    </div>
+                </div-->
+            </div>            
+        </article>
+    </div>
+</aura:component>

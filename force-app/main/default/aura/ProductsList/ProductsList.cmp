@@ -1,0 +1,595 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- Product List Aura Attributes -->
+    <aura:attribute name="productType" type="String" />
+    
+    <aura:attribute name="productObject" type="Object" />  
+    
+    <aura:attribute name="BuyupProductList" type="List" />
+    
+    <!-- Sort Fields -->
+    <aura:attribute name="nameSort" type="Boolean" default="true"/>
+    <aura:attribute name="isEditRecord" type="Boolean" default="false"/>   
+    <aura:attribute name="isExapand" type="Boolean" default="true"/>   
+    <aura:attribute name="maType" type="String" />
+    <aura:attribute name="account" type="Account" />    
+    <aura:attribute name="totalRecordObj" type="Object" />
+    <aura:attribute name="fundingTypePicklistVals" type="List" />
+    <aura:attribute name="SalesStage" type="String" default="Lead"/>
+    <aura:attribute name="isMedicalAndOthersTab" type="Boolean" default="false"/>
+    <aura:attribute name="Disposition" type="String" default=""/>
+    <aura:attribute name="dispositionPicklistVals" type="List" />
+    <aura:attribute name="isPendingTransfer" type="boolean" default="true"/>
+    <aura:attribute name="isPendingSpinOff" type="boolean" default="true"/>
+    <aura:attribute name="isSpecialityProduct" type="Boolean" default="false"/>
+    
+    <aura:method name="caluculateTotalRecords" action="{!c.doInit}"/>
+    <aura:attribute name="isQA" type="Boolean"/>
+    
+    <aura:attribute name="isReadOnly" type="Boolean" />        
+    
+    <aura:registerEvent name="ProductsListToProductCompEvent" type="c:ProductsListToProductCompEvent"/>
+    <aura:handler name="ProductsListCompEvent" event="c:ProductsListCompEvent" action="{!c.eachProductEvents}"/>
+    
+    <aura:method name="focusProductsSection" action="{!c.focusProducts}" access="PUBLIC" >
+        <aura:attribute name="isPdtsReviewReminder" type="boolean" default="false"/>
+    </aura:method>
+    
+    <article class="slds-card section-container">
+        <div class="slds-card__body slds-card__body_inner slds-p-horizontal_none">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-size_1-of-2 slds-p-left_medium slds-p-vertical_small products-title">
+                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                        <h4 class="sub-title" title="Other Buy Up Programs">Other Buy Up Programs</h4>                        
+                        <aura:set attribute="else">
+                            <h4 class="sub-title" title="{!v.productType}">{!v.productType}</h4>
+                        </aura:set>
+                    </aura:if>                    
+                </div> 
+                <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                    <div class="slds-size_1-of-2 slds-p-right_medium slds-p-vertical_small slds-grid slds-grid_align-end">
+                        <aura:if isTrue="{!v.productType == $Label.c.Medical}"><label class="head-label">Current UHC Medical Members : </label><ui:outputNumber value="{!v.account.UHC_Medical_Members__c}"/></aura:if>
+                        <aura:if isTrue="{!v.productType == $Label.c.Pharmacy}"><label class="head-label">Current Optum Rx Members : </label><ui:outputNumber value="{!v.account.Optum_Rx_Members__c}"/></aura:if>
+                        <aura:if isTrue="{!v.productType == $Label.c.Dental}"><label class="head-label">Current UHC Dental Members : </label><ui:outputNumber value="{!v.account.UHC_Dental_Members__c}"/></aura:if>
+                        <aura:if isTrue="{!v.productType == $Label.c.Vision}"><label class="head-label">Current UHC Vision Members : </label><ui:outputNumber value="{!v.account.UHC_Vision_Members__c}"/></aura:if>
+                        <aura:if isTrue="{!and(v.isMedicalAndOthersTab == false,v.productType == $Label.c.Other_Buy_Up_Program)}"><label class="head-label">Current UHC Medical Members : </label><ui:outputNumber value="{!v.account.UHC_Medical_Members__c}"/></aura:if>                    
+                    </div>      
+                </aura:if>                                          
+                <aura:if isTrue="{!v.isMedicalAndOthersTab}">                                
+                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                        <div class="slds-size_1-of-1 slds-p-vertical_small slds-p-horizontal_medium help-text">
+                            <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                <p class="slds-text-body_small slds-text-color_weak"><em><strong>Caution : </strong>Enter only the existing Other Buy Up Program members that are involved in the bid or at risk.  If the membership for an Other Buy Up Program is the same as Medical, click the Check to Synch with Medical box to pre-fill this information.</em></p>
+                                <aura:set attribute="else">
+                                    <p class="slds-text-body_small slds-text-color_weak"><em><strong>Note : </strong>If the membership information for an Other Buy Up Program is the same as Medical, check the box next to the Other Buy Up Program name to pre-fill this information.</em></p>
+                                </aura:set>
+                            </aura:if>                            
+                        </div>
+                    </aura:if>
+                </aura:if>                 
+                <div class="slds-size_1-of-1">
+                    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal table-cust pdt-table">
+                        <ui:inputSelect aura:id="focusInputFieldForProductsMedOthrs" class="slds-hide"/>
+                        <thead>
+                            <tr class="slds-text-title_caps">                                
+                                <aura:if isTrue="{!v.isMedicalAndOthersTab}">                                
+                                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                        <th scope="col" class="slds-cell-shrink" style="width: 4%;" aura:id="Class_check_to_synch_with_medical">
+                                            <div class="slds-size_1-of-1">
+                                                <p class="slds-text-body_small slds-text-color_weak copyMedicalFontSize"><em>CHECK <br/>TO<br/> SYNCH<br/> WITH <br/>MEDICAL</em></p>
+                                            </div>
+                                        </th>
+                                    </aura:if>
+                                </aura:if>                                 
+                                
+                                <th scope="col">
+                                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                        <div class="" title="Other Buy Up Programs Products">Other Buy Up Programs</div>
+                                        <aura:set attribute="else">
+                                            <div class="" title="{!v.productType}">{!v.productType} Products</div>
+                                        </aura:set>
+                                    </aura:if>                                    
+                                </th>
+                                <aura:if isTrue="{!OR(OR(v.productType == $Label.c.Other_Buy_Up_Program,v.productType == $Label.c.Dental),v.productType == $Label.c.Vision) }">
+                                    <th scope="col" style="width: 10%;">
+                                        <div class="" title="Other Buy Up Programs Products">Product Selection</div>                                                                      
+                                    </th>
+                                </aura:if> 
+                                <aura:if isTrue="{!or(v.maType == $Label.c.MA_CD_TYPE,v.isPendingTransfer)}">
+                                    <aura:if isTrue="{!v.isPendingSpinOff}">
+                                        <th scope="col" aura:id="Class_Mbrs_Transferred_From_To_Another_Segment__c">
+                                            <ui:inputSelect aura:id="Focus_Mbrs_Transferred_From_To_Another_Segment__c" class="slds-hide"/>
+                                            <div class="" title="">Members Transferred Or Spin-Off </div>
+                                        </th>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.isPendingSpinOff==false}">
+                                        <th scope="col" aura:id="Class_Mbrs_Transferred_From_To_Another_Segment__c">
+                                            <ui:inputSelect aura:id="Focus_Mbrs_Transferred_From_To_Another_Segment__c" class="slds-hide"/>
+                                            <div class="" title="">{!$Label.c.Porduct_Col_Member_Transferred_From_or_To_Another_Segment} </div>
+                                        </th>
+                                    </aura:if>
+                                </aura:if>
+                                <aura:if isTrue="{!v.isPendingTransfer == true}">
+                                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                        <th scope="col" >
+                                            <div class="" title="">{!$Label.c.Product_Col_Disposition}</div>
+                                        </th>
+                                    </aura:if>
+                                </aura:if>
+                                <aura:if isTrue="{!v.isPendingTransfer == false}">                                    
+                                    <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                        <th scope="col" aura:id="Class_Existing_Members_Involved_in_the_Bid__c" class="slds-is-relative has-tooltip">
+                                            <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                                <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                    <div class="slds-popover__body">How much of our current membership within each product is involved in this Membership Activity?</div>
+                                                </div>
+                                            </aura:if>                                            
+                                            <ui:inputSelect aura:id="Focus_Existing_Members_Involved_in_the_Bid__c" class="slds-hide"/>
+                                            <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                                <div class="" title="">Existing Other Buy Up Members Involved in the Bid</div>
+                                                <aura:set attribute="else">
+                                                    <div class="" title="">Existing {!v.productType} Members Involved in the Bid</div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </th>
+                                    </aura:if>
+                                    <th scope="col" aura:id="Class_Estimated_Additional_New_Members__c" class="slds-is-relative has-tooltip">
+                                        <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                            <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                <div class="slds-popover__body">How many new members are we likely to win/gain from other competitors for each product?</div>
+                                            </div>
+                                        </aura:if>                                        
+                                        <ui:inputSelect aura:id="Focus_Estimated_Additional_New_Members__c" class="slds-hide"/>
+                                        <div class="" title="">{!$Label.c.Product_Col_Estimated_Additional_New_Members}</div>
+                                    </th>
+                                    <th scope="col">                                        
+                                        <div class="" title="">{!$Label.c.Product_Col_Estimated_Existing_and_New}</div>
+                                    </th>
+                                    <!--added vignesh-->
+                                    <aura:if isTrue="{!and(v.productType == $Label.c.Medical,v.maType == $Label.c.MA_CM_TYPE)}">
+                                        
+                                        <th scope="col">
+                                            <div class="" title="">{!$Label.c.Product_Conversion_Product_Col}</div>
+                                        </th>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.maType == $Label.c.MA_CD_TYPE}">
+                                        <th scope="col" aura:id="Class_Members_Quoted_In_Proposal">
+                                            <ui:inputSelect aura:id="Focus_Members_Quoted_In_Proposal" class="slds-hide"/>
+                                            <div class="" title="">{!$Label.c.Product_Col_Members_Quoted_In_Proposal}</div>
+                                        </th>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">                                         
+                                        <th scope="col" aura:id="Class_Existing_Membership_at_Risk__c" class="slds-is-relative has-tooltip">
+                                            <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                <div class="slds-popover__body">How much of our existing membership is at risk for each product?</div>
+                                            </div> 
+                                            <ui:inputSelect aura:id="Focus_Existing_Membership_at_Risk__c" class="slds-hide"/> 
+                                            <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                                <div class="" title="">Existing Other Buy Up Membership at Risk</div>
+                                                <aura:set attribute="else">
+                                                    <div class="" title="">Existing {!v.productType} Membership at Risk</div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </th>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                        <th scope="col" >
+                                            <div class="" title="">{!$Label.c.Product_Col_Disposition}</div>
+                                        </th>
+                                    </aura:if>
+                                    <th scope="col" aura:id="Class_Sold_Retained_Members__c" class="slds-is-relative has-tooltip">
+                                        <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                            <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                <div class="slds-popover__body">How many members did we win\retain for each product(New Mbrs+Existing Mbrs Retained)?</div>
+                                            </div>
+                                        </aura:if>                                        
+                                        <ui:inputSelect aura:id="Focus_Sold_Retained_Members__c" class="slds-hide"/>
+                                        <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                            <div class="soldRetMemColWidth" title="">{!$Label.c.Product_Col_Sold_and_Retained_Members}</div>
+                                            <aura:set attribute="else">
+                                                <div  title="">{!$Label.c.Product_Col_Sold_and_Retained_Members}</div>
+                                            </aura:set>
+                                        </aura:if>                                        
+                                    </th>
+                                    <th scope="col" class="slds-is-relative has-tooltip" style="width:6%">
+                                        <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                            <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                <div class="slds-popover__body">Net Membership Change for Each Product</div>
+                                            </div>
+                                        </aura:if>                                        
+                                        <div class="" title="">{!$Label.c.Product_Col_Net_Results}</div>
+                                    </th>
+                                </aura:if>
+                                <aura:if isTrue="{!v.productType == $Label.c.Medical}">
+                                    <th scope="col">
+                                        <div class="" title="">{!$Label.c.Product_Col_Funding_Type}</div>
+                                    </th>
+                                    <aura:set attribute="else">
+                                        <th scope="col" style="width:9%">
+                                            <div class="" title="">{!$Label.c.Product_Col_Annual_Revenue_Or_Premium}</div>
+                                        </th>
+                                    </aura:set>
+                                </aura:if>
+                                <aura:if isTrue="{!v.isReadOnly == false}" >
+                                    <th scope="col" class="slds-cell-shrink">
+                                        <div class="" title="Delete Row">&nbsp;</div>
+                                    </th>
+                                </aura:if>
+                            </tr>
+                        </thead> 
+                        <ui:inputSelect aura:id="focusInputFieldForProductsMedOthrs1" class="slds-hide"/>
+                        <aura:if isTrue = "{!v.productObject.opportunityLineList.length > 0}">                            
+                            <tbody>
+                                <aura:iteration items="{!v.productObject.opportunityLineList}" var="OpportunityLineItemsObj" indexVar="index"> 
+                                    <aura:if isTrue="{!or(v.productType == $Label.c.Medical, v.productType == $Label.c.Other_Buy_Up_Program)}">   
+                                        <c:Product_List_Modal aura:id="eachProductRecordAuraId"
+                                                              index="{!index}" 
+                                                              isEditRecord="{!v.isEditRecord}"
+                                                              OpportunityLineItemsObj="{!OpportunityLineItemsObj}"
+                                                              productType="{!v.productType}"
+                                                              maType="{!v.maType}" 
+                                                              fundingTypePicklistVals="{!v.fundingTypePicklistVals}" 
+                                                              dispositionPicklistVals="{!v.dispositionPicklistVals}"
+                                                              SalesStage="{!v.SalesStage}"
+                                                              totalRecordObj="{!v.totalRecordObj}"
+                                                              isMedicalAndOthersTab="{!v.isMedicalAndOthersTab}"
+                                                              Disposition="{!v.Disposition}"
+                                                              isPendingTransfer="{!v.isPendingTransfer}"
+                                                              isPendingSpinOff="{!v.isPendingSpinOff}"
+                                                              isReadOnly="{!v.isReadOnly}"
+                                                              isQA="{!v.isQA}"
+                                                              BuyupProductList='{!v.BuyupProductList}'
+                                                              >
+                                        </c:Product_List_Modal>
+                                        <aura:set attribute="else">       
+                                            <c:Product_List_Modal aura:id="eachProductRecordAuraId" 
+                                                                  index="{!index}" 
+                                                                  isEditRecord="{!v.isEditRecord}" 
+                                                                  OpportunityLineItemsObj="{!OpportunityLineItemsObj}" 
+                                                                  productType="{!v.productType}" 
+                                                                  maType="{!v.maType}" 
+                                                                  fundingTypePicklistVals="{!v.fundingTypePicklistVals}"
+                                                                  dispositionPicklistVals="{!v.dispositionPicklistVals}" 
+                                                                  SalesStage="{!v.SalesStage}" 
+                                                                  Disposition="{!v.Disposition}"
+                                                                  isPendingTransfer="{!v.isPendingTransfer}"
+                                                                  isPendingSpinOff="{!v.isPendingSpinOff}"
+                                                                  isReadOnly="{!v.isReadOnly}" 
+                                                                  isQA="{!v.isQA}"
+                                                                  BuyupProductList='{!v.BuyupProductList}'>
+                                            </c:Product_List_Modal>
+                                        </aura:set>
+                                    </aura:if>                               
+                                </aura:iteration>                                
+                            </tbody>
+                            <tfoot>
+                                <aura:if isTrue="{!v.productType != $Label.c.Other_Buy_Up_Program}">                                   
+                                    <tr class="tfoot-total tfoot-border-top">                                        
+                                        <aura:if isTrue="{!v.isMedicalAndOthersTab}">                                
+                                            <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                                <th scope="col" class="slds-cell-shrink">
+                                                    <div class="slds-truncate" title="">&nbsp;</div>
+                                                </th>
+                                            </aura:if>
+                                        </aura:if>                                         
+                                        <th scope="row" data-label="Total">
+                                            <aura:if isTrue="{!v.productType == $Label.c.Pharmacy}">
+                                                <ui:outputText value="*Total"/>
+                                                
+                                                <aura:set attribute="else">
+                                                    <ui:outputText value="Total"/>
+                                                </aura:set>
+                                            </aura:if>                                            
+                                        </th>
+                                        <aura:if isTrue="{!OR(OR(v.productType == $Label.c.Other_Buy_Up_Program,v.productType == $Label.c.Dental),v.productType == $Label.c.Vision) }">
+                                            <th scope="col">
+                                                &nbsp;
+                                            </th>
+                                        </aura:if> 
+                                        <aura:if isTrue="{!or(v.maType == $Label.c.MA_CD_TYPE,v.isPendingTransfer)}">
+                                            <aura:if isTrue="{!v.isPendingSpinOff}">
+                                                <th class="slds-text-align--right" scope="row" data-label="Members Transferred Or Spin-Off" >
+                                                    <ui:outputNumber value="{!v.totalRecordObj.Mbrs_Transferred_From_To_Another_Segment__c}" class="members-output"/>
+                                                </th>
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.isPendingSpinOff==false}">
+                                                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Porduct_Col_Member_Transferred_From_or_To_Another_Segment}" >
+                                                    <ui:outputNumber value="{!v.totalRecordObj.Mbrs_Transferred_From_To_Another_Segment__c}" class="members-output"/>
+                                                </th>
+                                            </aura:if>
+                                            
+                                        </aura:if>
+
+                                        <aura:if isTrue="{!v.isPendingTransfer == false}">
+                                            <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Members_Involved_in_Bid}">
+                                                    <ui:outputNumber value="{!v.totalRecordObj.Existing_Members_Involved_in_the_Bid__c}"/>
+                                                </th>
+                                            </aura:if>
+                                            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Estimated_Additional_New_Members}">
+                                                <ui:outputNumber value="{!v.totalRecordObj.Estimated_Additional_New_Members__c}"/>
+                                            </th>
+                                            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Estimated_Existing_and_New}">
+                                                <aura:if isTrue="{!v.maType == $Label.c.MA_CD_TYPE}">
+                                                    <ui:outputNumber value="{!v.totalRecordObj.Estimated_Additional_New_Members__c+v.totalRecordObj.Mbrs_Transferred_From_To_Another_Segment__c}"/>
+                                                </aura:if>
+                                                <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                                    <ui:outputNumber value="{!v.totalRecordObj.Estimated_Additional_New_Members__c+v.totalRecordObj.Existing_Members_Involved_in_the_Bid__c}"/>
+                                                </aura:if>                                
+                                            </th>   
+                                            <!--added vignesh-->
+                                            <aura:if isTrue="{!and(v.productType == $Label.c.Medical,v.maType == $Label.c.MA_CM_TYPE)}">
+                                                
+                                                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Conversion_Product_Col}"> 
+                                                    <ui:outputNumber value="{!v.totalRecordObj.Product_Conversion__c}"/>
+                                                    
+                                                </th>  
+                                                
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.maType == $Label.c.MA_CD_TYPE}">
+                                                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Members_Quoted_In_Proposal}">
+                                                    <ui:outputNumber value="{!v.totalRecordObj.Members_Quoted_in_the_Proposal__c}"/>
+                                                </th>
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Membership_at_Risk}">
+                                                    <ui:outputNumber value="{!v.totalRecordObj.Existing_Membership_at_Risk__c}"/>
+                                                </th>
+                                            </aura:if>
+                                            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Sold_and_Retained_Members}">
+                                                <ui:outputNumber value="{!v.totalRecordObj.Sold_Retained_Members__c}"/>
+                                            </th>
+                                            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Net_Results}">
+                                                <ui:outputNumber value="{!v.totalRecordObj.Net_Results__c}" />
+                                            </th>
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.productType == $Label.c.Medical}">
+                                            <th scope="row" >
+                                                <ui:outputText value=""/>
+                                            </th>  
+                                            <aura:set attribute="else">
+                                                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Annual_Revenue_Or_Premium}">
+                                                    <ui:outputCurrency value="{!v.totalRecordObj.Annual_Revenue_Premium__c}" format="$#,##0"/>
+                                                </th>
+                                            </aura:set>
+                                        </aura:if>      
+                                        <aura:if isTrue="{!v.isReadOnly == false}" >
+                                            <th scope="row">
+                                                <div class="slds-truncate">&nbsp;</div>
+                                            </th>
+                                        </aura:if>
+                                    </tr>
+                                    <tr>
+                                        <aura:if isTrue="{!v.productType == $Label.c.Pharmacy}">
+                                            <th  colspan="11" scope="col" class="slds-cell-shrink">                                                
+                                                <div class="slds-truncate" title=""><strong>*(Buy up products are not included in Total membership)</strong></div><!--Total captures Core Pharmacy members only; b-->
+                                            </th>
+                                        </aura:if>
+                                    </tr>
+                                </aura:if>                               
+                            </tfoot>
+                            
+                            <aura:set attribute="else"> 
+                                <tfoot>
+                                    <tr class="tfoot-border-top">
+                                        <td colspan="11">
+                                            <div class="slds-p-horizontal_medium"><p class="slds-text-align_center slds-p-vertical_x-small no-records">No Products have been added. Click the Add button to add a Product.</p></div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </aura:set>
+                        </aura:if>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </article>
+    <aura:if isTrue="{!v.productObject.isSpecialityProduct}" >
+    <article class="slds-card section-container">
+        <div class="slds-card__body slds-card__body_inner slds-p-horizontal_none">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-size_1-of-2 slds-p-left_medium slds-p-vertical_small products-title">
+                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                        <h4 class="sub-title" title="Specialty Buy Up Programs">Specialty Buy Up Programs</h4>
+                    </aura:if>                    
+                </div> 
+                <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                    <div class="slds-size_1-of-2 slds-p-right_medium slds-p-vertical_small slds-grid slds-grid_align-end">
+                        <aura:if isTrue="{!and(v.isMedicalAndOthersTab == false,v.productType == $Label.c.Other_Buy_Up_Program)}"><label class="head-label">Current UHC Medical Members : </label><ui:outputNumber value="{!v.account.UHC_Medical_Members__c}"/></aura:if>                    
+                    </div>      
+                </aura:if>                                          
+                <aura:if isTrue="{!v.isMedicalAndOthersTab}">                                
+                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                        <div class="slds-size_1-of-1 slds-p-vertical_small slds-p-horizontal_medium help-text">
+                            <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                <p class="slds-text-body_small slds-text-color_weak"><em><strong>Caution : </strong>Enter only the existing SB-Other Buy Up Program members that are involved in the bid or at risk.  If the membership for an SB-Other Buy Up Program is the same as Medical, click the Check to Synch with Medical box to pre-fill this information.</em></p>
+                                <aura:set attribute="else">
+                                    <p class="slds-text-body_small slds-text-color_weak"><em><strong>Note : </strong>If the membership information for an SB-Other Buy Up Program is the same as Medical, check the box next to the Other Buy Up Program name to pre-fill this information.</em></p>
+                                </aura:set>
+                            </aura:if>                            
+                        </div>
+                    </aura:if>
+                </aura:if>                 
+                <div class="slds-size_1-of-1">
+                    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal table-cust pdt-table">
+                        <ui:inputSelect aura:id="focusInputFieldForProductsMedOthrs" class="slds-hide"/>
+                        <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                        <thead>
+                            <tr class="slds-text-title_caps">                                
+                                <aura:if isTrue="{!v.isMedicalAndOthersTab}">                                
+                                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                        <th scope="col" class="slds-cell-shrink" style="width: 4%;" aura:id="Class_check_to_synch_with_medical">
+                                            <div class="slds-size_1-of-1">
+                                                <p class="slds-text-body_small slds-text-color_weak copyMedicalFontSize"><em>CHECK <br/>TO<br/> SYNCH<br/> WITH <br/>MEDICAL</em></p>
+                                            </div>
+                                        </th>
+                                    </aura:if>
+                                </aura:if>                                 
+                                
+                                <th scope="col">
+                                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                        <div class="" title="Other Buy Up Programs Products">Other Buy Up Programs</div>
+                                    </aura:if>                                    
+                                </th>
+                                <aura:if isTrue="{!OR(OR(v.productType == $Label.c.Other_Buy_Up_Program,v.productType == $Label.c.Dental),v.productType == $Label.c.Vision) }">
+                                    <th scope="col" style="width: 10%;">
+                                        <div class="" title="Other Buy Up Programs Products">Product Selection</div>                                                                      
+                                    </th>
+                                </aura:if> 
+                                <aura:if isTrue="{!or(v.maType == $Label.c.MA_CD_TYPE,v.isPendingTransfer)}">
+                                    <aura:if isTrue="{!v.isPendingSpinOff}">
+                                        <th scope="col" aura:id="Class_Mbrs_Transferred_From_To_Another_Segment__c">
+                                            <ui:inputSelect aura:id="Focus_Mbrs_Transferred_From_To_Another_Segment__c" class="slds-hide"/>
+                                            <div class="" title="">Members Transferred Or Spin-Off </div>
+                                        </th>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.isPendingSpinOff==false}">
+                                        <th scope="col" aura:id="Class_Mbrs_Transferred_From_To_Another_Segment__c">
+                                            <ui:inputSelect aura:id="Focus_Mbrs_Transferred_From_To_Another_Segment__c" class="slds-hide"/>
+                                            <div class="" title="">{!$Label.c.Porduct_Col_Member_Transferred_From_or_To_Another_Segment} </div>
+                                        </th>
+                                    </aura:if>
+                                </aura:if>
+                                <aura:if isTrue="{!v.isPendingTransfer == true}">
+                                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                        <th scope="col" >
+                                            <div class="" title="">{!$Label.c.Product_Col_Disposition}</div>
+                                        </th>
+                                    </aura:if>
+                                </aura:if>
+                                <aura:if isTrue="{!v.isPendingTransfer == false}">                                    
+                                    <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                        <th scope="col" aura:id="Class_Existing_Members_Involved_in_the_Bid__c" class="slds-is-relative has-tooltip">
+                                            <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                                <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                    <div class="slds-popover__body">How much of our current membership within each product is involved in this Membership Activity?</div>
+                                                </div>
+                                            </aura:if>                                            
+                                            <ui:inputSelect aura:id="Focus_Existing_Members_Involved_in_the_Bid__c" class="slds-hide"/>
+                                            <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                                <div class="" title="">Existing Other Buy Up Members Involved in the Bid</div>
+                                            </aura:if>
+                                        </th>
+                                    </aura:if>
+                                    <th scope="col" aura:id="Class_Estimated_Additional_New_Members__c" class="slds-is-relative has-tooltip">
+                                        <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                            <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                <div class="slds-popover__body">How many new members are we likely to win/gain from other competitors for each product?</div>
+                                            </div>
+                                        </aura:if>                                        
+                                        <ui:inputSelect aura:id="Focus_Estimated_Additional_New_Members__c" class="slds-hide"/>
+                                        <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                            <div class="" title="">{!$Label.c.Product_Col_Estimated_Additional_New_Members}</div>
+                                        </aura:if>
+                                    </th>
+                                    <th scope="col">
+                                        <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                            <div class="" title="">{!$Label.c.Product_Col_Estimated_Existing_and_New}</div>
+                                        </aura:if>                                        
+                                    </th>
+                                    <aura:if isTrue="{!v.maType == $Label.c.MA_CD_TYPE}">
+                                        <th scope="col" aura:id="Class_Members_Quoted_In_Proposal">
+                                            <ui:inputSelect aura:id="Focus_Members_Quoted_In_Proposal" class="slds-hide"/>
+                                            <div class="" title="">{!$Label.c.Product_Col_Members_Quoted_In_Proposal}</div>
+                                        </th>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">                                         
+                                        <th scope="col" aura:id="Class_Existing_Membership_at_Risk__c" class="slds-is-relative has-tooltip">
+                                            <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                <div class="slds-popover__body">How much of our existing membership is at risk for each product?</div>
+                                            </div> 
+                                            <ui:inputSelect aura:id="Focus_Existing_Membership_at_Risk__c" class="slds-hide"/> 
+                                            <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                                <div class="" title="">Existing Other Buy Up Membership at Risk</div>
+                                            </aura:if>
+                                        </th>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                        <th scope="col" >
+                                            <div class="" title="">{!$Label.c.Product_Col_Disposition}</div>
+                                        </th>
+                                    </aura:if>
+                                    <th scope="col" aura:id="Class_Sold_Retained_Members__c" class="slds-is-relative has-tooltip">
+                                        <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                            <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                <div class="slds-popover__body">How many members did we win\retain for each product(New Mbrs+Existing Mbrs Retained)?</div>
+                                            </div>
+                                        </aura:if>                                        
+                                        <ui:inputSelect aura:id="Focus_Sold_Retained_Members__c" class="slds-hide"/>
+                                        <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                            <div class="soldRetMemColWidth" title="">{!$Label.c.Product_Col_Sold_and_Retained_Members}</div>
+                                        </aura:if>                                        
+                                    </th>
+                                    <th scope="col" class="slds-is-relative has-tooltip" style="width:6%">
+                                        <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                                            <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                                                <div class="slds-popover__body">Net Membership Change for Each Product</div>
+                                            </div>
+                                        </aura:if>   
+                                        <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                            <div class="" title="">{!$Label.c.Product_Col_Net_Results}</div>
+                                        </aura:if>                                     
+                                    </th>
+                                </aura:if>
+                                <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                                    <th scope="col" style="width:9%">
+                                        <div class="" title="">{!$Label.c.Product_Col_Annual_Revenue_Or_Premium}</div>
+                                    </th>
+                                </aura:if>
+                                <aura:if isTrue="{!v.isReadOnly == false}" >
+                                    <th scope="col" class="slds-cell-shrink">
+                                        <div class="" title="Delete Row">&nbsp;</div>
+                                    </th>
+                                </aura:if>
+                            </tr>
+                        </thead> 
+                        </aura:if>
+                        <ui:inputSelect aura:id="focusInputFieldForProductsMedOthrs1" class="slds-hide"/>
+                        <aura:if isTrue = "{!v.productObject.opportunitySpecialityLineList.length > 0}">                            
+                            <tbody>
+                                <aura:iteration items="{!v.productObject.opportunitySpecialityLineList}" var="OpportunityLineItemsObj" indexVar="index"> 
+                                    <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">   
+                                        <c:Product_List_Modal aura:id="eachProductRecordAuraId"
+                                                              index="{!index}" 
+                                                              isEditRecord="{!v.isEditRecord}"
+                                                              OpportunityLineItemsObj="{!OpportunityLineItemsObj}"
+                                                              productType="{!v.productType}"
+                                                              maType="{!v.maType}" 
+                                                              fundingTypePicklistVals="{!v.fundingTypePicklistVals}" 
+                                                              dispositionPicklistVals="{!v.dispositionPicklistVals}"
+                                                              SalesStage="{!v.SalesStage}"
+                                                              totalRecordObj="{!v.totalRecordObj}"
+                                                              isMedicalAndOthersTab="{!v.isMedicalAndOthersTab}"
+                                                              Disposition="{!v.Disposition}"
+                                                              isPendingTransfer="{!v.isPendingTransfer}"
+                                                              isPendingSpinOff="{!v.isPendingSpinOff}"
+                                                              isReadOnly="{!v.isReadOnly}"
+                                                              isSpecialityProduct="{!true}"
+                                                              isQA="{!v.isQA}"
+                                                              BuyupProductList='{!v.BuyupProductList}'
+                                                              >
+                                        </c:Product_List_Modal>
+                                       
+                                    </aura:if>                               
+                                </aura:iteration>                                
+                            </tbody>
+                           
+                            <aura:set attribute="else"> 
+                                <tfoot>
+                                    <tr class="tfoot-border-top">
+                                        <td colspan="11">
+                                            <div class="slds-p-horizontal_medium"><p class="slds-text-align_center slds-p-vertical_x-small no-records">No Products have been added. Click the Add button to add a Product.</p></div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </aura:set>
+                        </aura:if>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </article>
+    </aura:if>
+</aura:component>

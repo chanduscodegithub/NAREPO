@@ -1,0 +1,477 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="RiskApexController">
+    
+    <aura:attribute name="riskProfileAccount" type="Account"/>
+    
+    <aura:attribute name="isDesktop" type="boolean" default="false"/>
+    <aura:attribute name="isEditEnabled" type="boolean" default="false"/>
+    
+    <aura:attribute name="alertMesage" type="String"/>
+    <aura:attribute name="networkErrorMesage" type="String" default="You are currently offline."/>
+    <aura:attribute name="editIds" type="Object[]"/>
+    <aura:attribute name="riskProfileList" type="RiskProfile__c[]"/>
+    <aura:attribute name="riskProfileListNew" type="RiskProfile__c[]"/>
+    <aura:attribute name="NewRiskRecord" type="String"/>
+    <aura:attribute name="riskProfileAddRiskList" type="RiskProfile__c[]"/>
+    
+    <aura:attribute name="saveIds" type="Id[]"/>
+    
+    <aura:attribute name="isScrollStop" type="Boolean" default="true"/>
+    <aura:attribute name="isStop" type="Integer" default="1"/>
+    <aura:attribute name="lastCount" type="Integer" default="1"/>
+    <aura:attribute name="nextLastCount" type="Integer" default="1"/>   
+    
+    <aura:attribute name="noRecords" type="boolean" default="true"/>
+    <aura:attribute name="overAllRiskScore" type="Double" default="1.00"/>    
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>     
+    
+    <aura:attribute name="RiskHelptTextSet" type="Set" default=""/>
+    <aura:attribute name="RiskTypeValues" type="Set" default=""/>
+    <aura:attribute name="RiskTypeMap" type="Map" default=""/>
+    <aura:attribute name="rowCount" type="Integer" default="0"/>
+    <aura:attribute name="riskProfileIdArr" type="String[]" />
+    <aura:attribute name="riskProfileId" type="Id" />
+    <aura:attribute name="isEditAccess" type="Boolean" default="false"/>
+    <aura:attribute name="isParitalAccess" type="Boolean" default="false"/>
+    <aura:attribute name="canUpdateReviewOnSave" type="Boolean" default="false"/>
+    
+    <aura:attribute name="isGenericEventTriggered" type="Boolean" default="false"/>
+    
+    <aura:attribute name="BidRiskValues" type="String[]" default="Yes,No"/>
+    <aura:attribute name="AddlInfoKeyContact" type="String[]" default="Director,SVP,VP,Manager,Other"/>
+    <aura:attribute name="AddlInfoCsuiteExec" type="String[]" default="CEO,CFO,COO,Other"/>
+    <aura:attribute name="AddlInfoMAActivity" type="String[]" default="Client being acquired,Client acquiring company division,Client divesting company division,Merger with other company,Other"/>
+    <aura:attribute name="AddlInfoEconomicFinancial" type="String[]" default="Bankruptcy,Industry downturn,Layoffs,Stock price decline,Other"/>
+    <aura:attribute name="AddlInfoExchangeRisk" type="String[]" default="Cost,Employee flexibility,Other"/>
+    <aura:attribute name="AddlInfoKeyConsultant" type="String[]" default="Consultant/Broker change,Consulting Firm change,Other"/>
+    
+    <aura:attribute name="scrollStyleForDevice" type="String" default="@media screen and (min-width: 320px) and (max-width: 1199px){.panel-content.scrollable{overflow-y: hidden !important;-webkit-overflow-scrolling: auto !important ;}}"/>
+    
+    <aura:attribute name="RPRemoveIndex" type="String"/>
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
+    <aura:handler name="RPRemove" event="c:RPRemove_Event" action="{!c.removeRecords}"/>
+    <aura:handler name="addorCancelRiskEvent" event="c:addorCancelRiskEvent" action="{!c.addorCancelRiskEvent}"/>
+    <aura:handler name="riskProfileEvent" event="c:Risk_Profile_Event" action="{!c.riskProfileEventMethod}"/>
+    
+    <aura:handler event="c:GeneralInfoAccountApplicationEvent" action="{!c.setGeneralValues}"/>        
+    
+    
+    {!v.body}
+    <style>
+        @media (max-width: 1199px){
+            .cuf-scroller-inside{
+                padding: 0 !important;
+            }
+        }                 
+        @media (min-width: 768px) and (max-width: 1199px){            
+            .oneActionBar.actionButtons{
+                left: 0;
+            }
+        }        
+     </style>
+    <style>
+        {!v.scrollStyleForDevice}
+    </style>    
+    <div role="alertdialog" tabindex="-1" aura:id="RiskProfile" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">Do you want to remove this Risk?</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmDelete}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="RiskProfile"></div>
+    
+    
+    <div role="alertdialog" tabindex="-1" aura:id="RiskProfileSaveAlert" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Alert}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.alertMesage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default ">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeSaveAlert}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="RiskProfileSaveAlert"></div>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div aura:id="Risk_Profile" class="slds-section  container forceRelatedListSingleContainer">
+        <article aura:id="articleClass" class="slds-card forceRelatedListCardDesktop slds-is-relative slds-card_boundary" onscroll="{!c.scrollBottom}">
+            <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+            <div class="slds-card__header slds-grid slds-p-vertical--x-small slds-m-bottom--none appletHeader flex-auto" data-record="Risk_Profile" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile" >
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                        </button>
+                        
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="description of icon when needed">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:account" size="small" alternativeText="Product" />
+                            </span>
+                        </div>                        
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-is-relative">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>                           
+                    </div>
+                    <div class="">                        
+                        <h2 class="slds-grid flex-alignCenter">                             
+                            <span class="slds-text-heading--small">{!$Label.c.Risk_Profile}</span>
+                            <div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small">
+                                <!--<c:RiskProfileToolTip helpLink="Help" helpText="Risks Tracked by the SCE" RiskHelptTextSet="{!v.RiskHelptTextSet}"/>-->
+                                <c:tooltip helpLink="Help" helpText="{!$Label.c.Risk_Profile_Header_Text}"/>
+                            </div>
+                        </h2>                                                
+                    </div>                    
+                </header>                
+                <div class="slds-media__body appletAddBtn" style="text-align:right;">
+                    <div class="slds-is-relative flex-alignCenter helptext show-md-down slds-p-horizontal_x-small">
+                        <!--<c:RiskProfileToolTip helpLink="Help" helpText="Risks Tracked by the SCE" RiskHelptTextSet="{!v.RiskHelptTextSet}"/> -->
+                        <c:tooltip helpLink="Help" helpText="{!$Label.c.Risk_Profile_Header_Text}"/>
+                    </div>                                        
+                    <aura:if isTrue="{!v.isDesktop}">
+                        <div>
+                            <aura:if isTrue="{!v.isParitalAccess || v.isEditAccess}">
+                                <lightning:button class="slds-button slds-button--neutral" aura:id="addRiskProfile" onclick="{!c.addRiskProfile}">{!$Label.c.Add}</lightning:button>
+                            </aura:if>                
+                        </div>  
+                        <aura:set attribute="else">
+                            <div class="action-bar-mobile">
+                                <aura:if isTrue="{!v.isParitalAccess || v.isEditAccess}">
+                                    <lightning:button class="slds-button slds-button--neutral" aura:id="addRiskProfile" disabled="false" onclick="{!c.addRiskProfile}">{!$Label.c.Add}</lightning:button>
+                                </aura:if>                
+                            </div>
+                        </aura:set>
+                    </aura:if>                                                
+                </div>                
+            </div>
+            
+            <div class="slds-section__content " style="padding-top:0px;position:relative;">
+                <div class="slds-card__body d-inline-block">
+                    <div class="slds-page-header subHeaderHeight">                                        
+                        <header class="slds-media slds-media--center HeaderContentAlign slds-float--right" style="padding-top:4px">  
+                            <aura:if isTrue="{!v.isParitalAccess || v.isEditAccess}">                                    
+                                <aura:if isTrue="{!v.isDesktop}">
+                                    <div class="slds-media__body ButtonAlign" style="padding-bottom:3px">
+                                        <lightning:button class="slds-button slds-button--neutral" aura:id="editRiskProfile" disabled="false" onclick="{!c.editRiskProfile}">{!$Label.c.Edit}</lightning:button>
+                                        <lightning:button class="slds-button slds-button--neutral hideShow" aura:id="saveCancelButton" onclick="{!c.saveRiskProfile}">{!$Label.c.Save}</lightning:button>
+                                        <lightning:button class="slds-button slds-button--neutral hideShow" aura:id="cancelRiskProfile" onclick="{!c.cancelRiskProfile}">{!$Label.c.Cancel}</lightning:button>                                                                                    
+                                        <lightning:button class="slds-button slds-button--neutral" aura:id="UpdateReviewDate" disabled="false" onclick="{!c.UpdateReviewDate}">{!$Label.c.Risk_Profile_Update_Review_Date}</lightning:button>
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-media__body ButtonAlign" style="padding-bottom:3px">                                            
+                                            <lightning:button class="slds-button slds-button--neutral action-bar-mobile" aura:id="editRiskProfile" disabled="false" onclick="{!c.editRiskProfile}">{!$Label.c.Edit}</lightning:button>
+                                            <lightning:button class="slds-button slds-button--neutral hideShow action-bar-mobile" aura:id="saveCancelButton" onclick="{!c.saveRiskProfile}">{!$Label.c.Save}</lightning:button>
+                                            <lightning:button class="slds-button slds-button--neutral hideShow action-bar-mobile" aura:id="cancelRiskProfile" onclick="{!c.cancelRiskProfile}">{!$Label.c.Cancel}</lightning:button>                                                                                    
+                                            <lightning:button class="slds-button slds-button--neutral" aura:id="UpdateReviewDate" disabled="false" onclick="{!c.UpdateReviewDate}">{!$Label.c.Risk_Profile_Update_Review_Date}</lightning:button>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:if>                                                         
+                        </header>                            
+                        
+                    </div>      
+                    <div class="subHeaderHeight RPBackground ">
+                        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                            <tr>
+                                <th scope="row" class="slds-p-top--small slds-p-bottom--none slds-align_absolute-center slds-m-around_xxx-small">
+                                    <label class="slds-p-right--small"><b>SCE Review Date</b></label>
+                                    <ui:inputDate class="dateAlign1" format="M/d/yyyy" value="{!v.riskProfileAccount.SCEReviewedDate__c}" disabled="true"/>                                   
+                                    <label for="overall-risk-score" class="slds-p-right--small slds-m-left--xx-small marginLabel"><b>{!$Label.c.Risk_Profile_Field_Overall_Risk_Score}</b></label>
+                                    <ui:outputNumber class="RPSection1 slds-input--bare bold" value="{!v.riskProfileAccount.OverallRiskScore__c}" format="0.00"/>
+                                </th>
+                            </tr>
+                        </table>                     
+                    </div>                    
+                    <ui:scrollerWrapper class="scrollerSize">
+                        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                            <thead>
+                                <tr class="slds-text-title--caps">                                
+                                    <th class="slds-is-resizable slds-text-title_caps" scope="col" style="padding:0.5rem 0.5rem;">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <div class="slds-icon_container slds-grid slds-grid_vertical-align-center table-tooltip">  
+                                            <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Risks_Tracked_by_the_SCE}">{!$Label.c.Risk_Profile_Col_Risks_Tracked_by_the_SCE}</span>
+                                            <div class="slds-is-relative slds-m-left_x-small">
+                                            	<c:RiskProfileToolTip helpLink="Help" helpText="Risks Tracked by the SCE" RiskHelptTextSet="{!v.RiskHelptTextSet}"/>
+                                            </div>
+                                        </div>                                        
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>                                       
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" scope="col" style="padding:0.5rem 0.5rem;width:8%">          
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Impact}">{!$Label.c.Risk_Profile_Col_Impact}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" width="150" scope="col" style="padding:0.5rem 0.5rem">
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Additional_Information}">{!$Label.c.Risk_Profile_Col_Additional_Information}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                        
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" scope="col" style="padding:0.5rem 0.5rem;">         
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Comments}">{!$Label.c.Risk_Profile_Col_Comments}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" scope="col" style="padding:0.5rem 0.5rem;width:8%">
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Date_Risk_Added}">{!$Label.c.Risk_Profile_Col_Date_Risk_Added}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" scope="col" style="padding:0.5rem 0.5rem;width:8%">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Date_Risk_Modified}">{!$Label.c.Risk_Profile_Col_Date_Risk_Modified}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                        
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" scope="col" style="padding:0.5rem 0.5rem;width: 14%;">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Date_Risk_Closed}">{!$Label.c.Risk_Profile_Col_Date_Risk_Closed}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" scope="col" style='width:8%;padding:0.5rem 0.5rem;width:6%'>                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Risk_Score}">{!$Label.c.Risk_Profile_Col_Risk_Score}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>                                
+                                    <aura:if isTrue="{!v.isParitalAccess || v.isEditAccess}">
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:5%"></th>
+                                    </aura:if>                                                                
+                                </tr>
+                            </thead>                        
+                            <tbody>                            
+                                <aura:if isTrue="{!v.noRecords}">
+                                    <tr>
+                                        <aura:if isTrue="{!v.isParitalAccess || v.isEditAccess}">
+                                            <th colspan="9">
+                                                <div class="slds-text-align--center">{!$Label.c.Risk_Profile_No_Records}</div>
+                                            </th>
+                                            <aura:set attribute="else">
+                                                <th colspan="8">
+                                                    <div class="slds-text-align--center">{!$Label.c.Risk_Profile_No_Records}</div>
+                                                </th>
+                                            </aura:set>
+                                        </aura:if>                                                                         
+                                    </tr>
+                                    <aura:set attribute="else">                                        
+                                        <aura:iteration items="{!v.riskProfileList}" var="RiskProfileObj" indexVar="index"> 
+                                            <c:Risk_Profile_Table_Data aura:id="riskProfileAllData" RiskProfileObj='{!RiskProfileObj}' RiskTypeMap='{!v.RiskTypeMap}' RiskTypeValues='{!v.RiskTypeValues}' index="{!index}" isEditAccess="{!v.isEditAccess}" isParitalAccess="{!v.isParitalAccess}" RiskHelptTextSet="{!v.RiskHelptTextSet}"></c:Risk_Profile_Table_Data>
+                                        </aura:iteration>                                        
+                                    </aura:set>
+                                </aura:if>       
+                                
+                            </tbody>                       
+                        </table>                              
+                        <div class="slds-page-header subHeaderHeight" style='padding-left: 10px;'>
+                            <div class="slds-card__header headerHeight slds-grid" style="margin: 0px;padding-bottom: 5px;padding-top: 5px;">		
+                                <div class="RPInstructionText">
+                                    <p><b>{!$Label.c.Risk_Profile_Additional_Risk_Factors_Name}</b></p>
+                                </div>
+                            </div>	
+                        </div>                       
+                        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols">
+                            <thead>                                                                                    
+                                <tr class="slds-text-title--caps">                                
+                                    <th class="slds-is-resizable slds-text-title_caps" style ='width:25% !important;padding:0.5rem 0.5rem;background:rgb(244, 246, 249)' scope="col">
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap slds-float_right" title="{!$Label.c.Risk_Profile_Col_Additional_Risk_Factors}">{!$Label.c.Risk_Profile_Col_Additional_Risk_Factors}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>
+                                    <th class="slds-text-title_caps" style ='width:18% !important;padding:0.5rem 0.5rem;background:rgb(244, 246, 249)' scope="col">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Value}">{!$Label.c.Risk_Profile_Col_Value}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" style ='width:18% !important;padding:0.5rem 0.5rem;background:rgb(244, 246, 249)' scope="col">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Data_As_Of}">{!$Label.c.Risk_Profile_Col_Data_As_Of}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" style ='width:25% !important;padding:0.5rem 0.5rem;background:rgb(244, 246, 249)' scope="col">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Comments}">{!$Label.c.Risk_Profile_Col_Comments}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-resizable slds-text-title_caps" style ='width:15% !important;padding:0.5rem 0.5rem;background:rgb(244, 246, 249)' scope="col">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Risk_Score}">{!$Label.c.Risk_Profile_Col_Risk_Score}</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>                                                             
+                                </tr>
+                            </thead>
+                            <tbody>                   
+                                <aura:iteration items="{!v.riskProfileAddRiskList}" var="RiskProfileObj" indexVar="index">  
+                                    <c:Risk_Profile_Additional_Risk_Table aura:id="riskprofileAdditionalRiskId" RiskProfileObj='{!RiskProfileObj}' RiskTypeMap='{!v.RiskTypeMap}' RiskTypeValues='{!v.RiskTypeValues}' index="{!index}"></c:Risk_Profile_Additional_Risk_Table>
+                                </aura:iteration>                            
+                            </tbody>
+                        </table>
+                    </ui:scrollerWrapper>
+                </div>
+            </div>            
+        </article>
+    </div>    
+    <aura:if isTrue="{!v.isParitalAccess || v.isEditAccess}">
+        <div class="action-bar-mobile slds-hide" aura:id="action-bar-mobile">
+            <footer class="actionButtons oneActionBar forceActionsContainer sortEdit" aura:id="sortEdit" aria-hidden="false" data-aura-class="oneActionBar forceActionsContainer">
+                <div class="actionButtonsWrapper">
+                    
+                    <aura:if isTrue="{!v.isParitalAccess || v.isEditAccess}">
+                        <div class="action" id="actionBarItem_Edit">
+                            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                                <button disabled="false" onclick="{!c.editRiskProfile}" class="actionButton slds-button slds-button--icon  uiButton" aria-live="off" type="button" data-aura-class="uiButton">	
+                                    <lightning:icon iconName="action:edit" size="xx-small" alternativeText="Edit"/>
+                                    <p class="slds-truncate actionTitle" aria-hidden="true">{!$Label.c.Edit}</p>
+                                </button>
+                            </div>
+                        </div>
+                    </aura:if>
+                    
+                    <aura:if isTrue="{!v.isParitalAccess || v.isEditAccess}">
+                        <div class="action" aria-hidden="false" id="actionBarItem_New">
+                            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                                <button onclick="{!c.addRiskProfile}" class="actionButton slds-button slds-button--icon uiButton" aria-live="off" type="button" data-aura-class="uiButton">
+                                    <lightning:icon iconName="action:new" size="xx-small" alternativeText="Add"/>
+                                    <p class="slds-truncate actionTitle" aria-hidden="true" data-aura-rendered-by="7985:0">{!$Label.c.Add}</p>
+                                </button>
+                            </div>
+                        </div>
+                    </aura:if> 
+                    
+                </div>                     
+            </footer>
+            <div class="actionButtons oneActionBar forceActionsContainer saveCancel hide" aura:id="saveCancel">
+                <div class="actionButtonsWrapper save-cancel-bg">
+                    <div class="action">
+                        <div class="oneActionButtonIcon">
+                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancelRiskProfile}">{!$Label.c.Cancel}</button>
+                        </div>
+                    </div>
+                    <div class="action">
+                        <div class="oneActionButtonIcon"> 
+                            <button type="button" class="slds-button slds-button_brand" onclick="{!c.saveRiskProfile}">{!$Label.c.Save}</button>            
+                        </div>
+                    </div>              			
+                </div>
+            </div>   
+        </div>
+    </aura:if>
+</aura:component>

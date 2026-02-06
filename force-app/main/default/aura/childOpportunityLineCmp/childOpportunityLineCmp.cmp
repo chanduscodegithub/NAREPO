@@ -1,0 +1,264 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global"
+                controller="QueryOppLineItems">
+    <aura:attribute name="OpportunityLineData" type="OpportunityLineItem" />
+    <aura:attribute name="childId" type="String" /> 
+    <aura:attribute name="isIncentiveEdit" type="Boolean" default='false'/> 
+    <aura:attribute name="isSplitEdit" type="Boolean" default="false"/> 
+    <aura:attribute name="isBulkEdit" type="Boolean" default="false"/> 
+    <aura:attribute name="SalesPersonPercentageValues" type="List" /> 
+    <aura:attribute name="SalesPerson2PercentageValues" type="List" /> 
+    <aura:attribute name="SalesIncentive" type="List" /> 
+    <aura:attribute name="uidateTime" type="String" />
+    <aura:attribute name="checked" type="boolean" default="false" />
+    <aura:attribute name="removeUnderWriter" type="boolean" default="false" />
+    <aura:attribute name="underWriterEnable" type="boolean" default="false" />
+    <aura:attribute name="saveUnderWriterData" type="boolean" default="false" />
+    <aura:attribute name="UnderwriterData" type="List" /> 
+    <aura:attribute name="salesPerson1" type="List" />
+    <aura:attribute name="otherBuyUpId" type="Id" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="timeZone" type="String" />
+    
+    <aura:handler name="init" action="{!c.doInitChildAction}" value="{!this}" />
+    <aura:registerEvent name="OppDataEvent" type="c:OppDataEvent"/>
+    
+    <aura:attribute name="selectedRecord" type="sObject" default="{}" />
+    <aura:attribute name="listOfSearchRecords" type="List" />
+    <aura:attribute name="SearchKeyWord" type="string"/>
+    <aura:attribute name="IconName" type="string" default=""/>
+    <aura:attribute name="Message" type="String" default=""/>
+    
+    <aura:attribute name="selectedRecordSalesPerson1" type="sObject" default="{}" />
+    <aura:attribute name="listOfSearchRecordsSalesPerson1" type="List" />
+    <aura:attribute name="SearchKeyWordSalesPerson1" type="string"/>
+    <aura:attribute name="enableSalesPerson1" type="boolean" default="false" />
+    
+    <aura:attribute name="selectedUnderWriter" type="sObject" default="{}" />
+    <aura:attribute name="listOfUnderWriters" type="List" />
+    <aura:attribute name="SearchUnderWriter" type="string"/>
+    
+    <aura:handler name="onSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}"/>
+   <aura:handler name="UnderWriterEvent" event="c:underWritersObjectRecordEvent" action="{!c.onSelectUnderWriter}"/>
+    
+    <tr class="slds-hint-parent" aura:id="addThemeShade">          
+        <th scope="row" class="slds-cell-shrink" aura:id="addThemeShade">
+            <div class="slds-cell-wrap" title="{!v.OpportunityLineData.Product_Line__c}">
+                {!v.OpportunityLineData.Product_Line__c}
+            </div>
+        </th>
+        <th scope="row" class="slds-hint-parent" aura:id="nonEditableFields">
+            <div class="slds-truncate" title="{!v.OpportunityLineData.Net_Results__c}">
+                {!v.OpportunityLineData.Net_Results__c}
+            </div>
+        </th>
+        <th scope="row" class="slds-cell-wrap slds-cell-shrink" aura:id="addThemeShade">
+            <div  class="slds-truncate" title=" ">
+                <aura:if isTrue="{!v.isBulkEdit}">
+                    <ui:inputCheckbox aura:id="Submit_for_sales_incentives__c"  disabled="false" change="{!c.onCheck}" value="{!v.OpportunityLineData.Submit_for_sales_incentives__c}">{!v.OpportunityLineData.Submit_for_sales_incentives__c}</ui:inputCheckbox>
+                    <aura:set attribute="else">
+                        <ui:outputCheckbox aura:id="Submit_for_sales_incentives__cOutputCheckBox" value="{!v.OpportunityLineData.Submit_for_sales_incentives__c}">{!v.OpportunityLineData.Submit_for_sales_incentives__c}</ui:outputCheckbox>
+                    </aura:set>
+                </aura:if>
+            </div>	          
+        </th>
+        <th scope="row">
+            <div class="slds-cell-wrap">
+                <aura:if isTrue="{!v.isSplitEdit}">
+                    <div class="slds-form-element__control" aura:id="Will_Sales_Incentive_be_split__c">
+                        <ui:inputSelect  aura:id="InputSelectSingle" change="{!c.onSingleSelectChange}" class="slds-form-control slds-select">
+                            <aura:iteration items="{!v.SalesIncentive}" var="option" >
+                                <option text="{!option}" value="{!option}" selected="{!option==v.OpportunityLineData.Will_Sales_Incentive_be_split__c}"/>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <aura:set attribute="else">
+                        {!v.OpportunityLineData.Will_Sales_Incentive_be_split__c}
+                    </aura:set>
+                </aura:if>
+            </div>	
+        </th>
+        
+        
+        
+        <th scope="row">
+            <div class="slds-cell-wrap slds-form-element__control" title="" aura:id="Sales_Person_1__c">
+                <aura:if isTrue="{!v.enableSalesPerson1}">
+                    <div onmouseleave="{!c.onblurSalesPerson1}" aura:id="searchResSalesPerson1" class="slds-form-element slds-lookup slds-is-close" data-select="single">
+                        <!-- <label class="slds-form-element__label" for="lookup-348">{!v.label}</label> -->
+                        <div class="slds-form-element__control">
+                            <div class="slds-input-has-icon slds-input-has-icon--right">
+                                <lightning:icon class="slds-input__icon slds-hide" aura:id="removeSearchSalesPerson1" iconName="utility:search" size="x-small" alternativeText="search"/> 
+                                <div aura:id="lookup-pillSalesPerson1" class="slds-pill-container slds-hide">
+                                    <lightning:pill class="pillSize" label="{!v.selectedRecordSalesPerson1.Name}" name="{!v.selectedRecordSalesPerson1.Name}" onremove="{! c.clearSalesPerson1 }">
+                                        <aura:set attribute="media">
+                                            <!-- <lightning:icon iconName="{!v.IconName}" size="x-small" alternativeText="{!v.IconName}"/> -->
+                                        </aura:set>
+                                    </lightning:pill>
+                                </div>
+                                <div aura:id="userLookUpField1SalesPerson1" class="slds-show">
+                                    <ui:inputText click="{!c.onfocusSalesPerson1}" updateOn="keyup" keyup="{!c.keyPressControllerSalesPerson1}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWordSalesPerson1}" placeholder="search.."/>
+                                </div>   
+                            </div>
+                        </div>
+                        <ul style="min-height:40px;margin-top:0px !important" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+                            <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+                            <center> {!v.Message}</center>
+                            <aura:iteration items="{!v.listOfSearchRecordsSalesPerson1}" var="singleRec">
+                                <c:customLookupResult recordName="{!singleRec}" IconName="{!v.IconName}" LookupValId="SalesPerson1Id" />
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                    <aura:set attribute="else">
+                        {!v.OpportunityLineData.Sales_Person_1__r.Name}
+                    </aura:set>
+                </aura:if>
+            </div>
+        </th>
+        
+        
+        
+       <!-- <th scope="row" class="slds-hint-parent" aura:id="nonEditableFields">
+            <div class="slds-cell-wrap" title="{!v.OpportunityLineData.Opportunity.Owner_Name__c}">
+                {!v.OpportunityLineData.Opportunity.Owner_Name__c}
+            </div>
+        </th> -->
+        <th scope="row">
+            <div class="slds-show sp2" title="" >
+                <aura:if isTrue="{!v.isIncentiveEdit}">
+                    <div class="slds-form-element__control" aura:id="Sales_Person_1_split_percentage__c">
+                      <!--  <ui:inputSelect  change="{!c.onSelectChange}" class="slds-form-control slds-select">
+                            <aura:iteration items="{!v.SalesPersonPercentageValues}" var="option" >
+                                <option text="{!option}" value="{!option}" selected="{!option==v.OpportunityLineData.Sales_Person_1_split_percentage__c}"/>
+                            </aura:iteration>
+                        </ui:inputSelect> -->
+                        <lightning:input name="input" value="{!v.OpportunityLineData.Sales_Person_1_split_percentage__c}" aura:id="Sales_Person_1_input" autocomplete="off" onchange="{!c.removeWarning}" />
+                    </div>
+                    <aura:set attribute="else">
+                        {!v.OpportunityLineData.Sales_Person_1_split_percentage__c}
+                    </aura:set>
+                </aura:if>
+            </div>
+        </th>
+        <th scope="row">
+          <!-- <div class="slds-cell-wrap slds-form-element__control sp2" aura:id="Sales_Person_2__c" title="">
+                <aura:if isTrue="{!v.isIncentiveEdit}">
+                    <lightning:input name="input" value="{!v.OpportunityLineData.Sales_Person_2__c}" onkeypress="{!c.removeWarning}"/>
+                    <aura:set attribute="else">
+                        {!v.OpportunityLineData.Sales_Person_2__c}
+                    </aura:set>
+                </aura:if>
+            </div> -->
+            <div class="slds-cell-wrap slds-form-element__control" title="" aura:id="Sales_Person_2__c">
+                <aura:if isTrue="{!v.isIncentiveEdit}">
+                    <!--	<lightning:input name="input" value="{!v.OpportunityLineData.Sales_Person_2__r.Name}" /> -->
+                    <div onmouseleave="{!c.onblur}" aura:id="searchRes" class="slds-form-element slds-lookup slds-is-close" data-select="single">
+                        <!-- <label class="slds-form-element__label" for="lookup-348">{!v.label}</label> -->
+                        <div class="slds-form-element__control">
+                            <div class="slds-input-has-icon slds-input-has-icon--right">
+                                <lightning:icon class="slds-input__icon slds-hide" aura:id="removeSearch" iconName="utility:search" size="x-small" alternativeText="search"/> 
+                                <div aura:id="lookup-pill" class="slds-pill-container slds-hide">
+                                    <lightning:pill class="pillSize" label="{!v.selectedRecord.Name}" name="{!v.selectedRecord.Name}" onremove="{! c.clear }">
+                                        <aura:set attribute="media">
+                                            <!-- <lightning:icon iconName="{!v.IconName}" size="x-small" alternativeText="{!v.IconName}"/> -->
+                                        </aura:set>
+                                    </lightning:pill>
+                                </div>
+                                <div aura:id="userLookUpField1" class="slds-show">
+                                    <ui:inputText click="{!c.onfocus}" updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord}" placeholder="search.."/>
+                                </div>   
+                            </div>
+                        </div>
+                        <ul style="min-height:40px;margin-top:0px !important" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+                            <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+                            <center> {!v.Message}</center>
+                            <aura:iteration items="{!v.listOfSearchRecords}" var="singleRec">
+                                <c:customLookupResult recordName="{!singleRec}" IconName="{!v.IconName}" LookupValId="SalesPerson2Id" />
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                    <aura:set attribute="else">
+                        {!v.OpportunityLineData.Sales_Person_2__r.Name}
+                    </aura:set>
+                </aura:if>
+            </div>
+        </th>
+        <th scope="row">
+            <div class="slds-cell-wrap sp2" title="">
+                <aura:if isTrue="{!v.isIncentiveEdit}">
+                    <div class="slds-form-element__control" aura:id="Sales_Person_2_split_percentage__c">
+                  <!--  <div class="slds-form-element__control" aura:id="Sales_Person_2_split_percentage__c">
+                        <ui:inputSelect  change="{!c.onSelectChange2}" class="slds-form-control slds-select">
+                            <aura:iteration items="{!v.SalesPerson2PercentageValues}" var="option" >
+                                <option text="{!option}" value="{!option}" selected="{!option==v.OpportunityLineData.Sales_Person_2_split_percentage__c}"/>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div> -->
+                    <lightning:input name="input" value="{!v.OpportunityLineData.Sales_Person_2_split_percentage__c}" aura:id="Sales_Person_2_input" autocomplete="off" onchange="{!c.removeWarning1}" /> 
+                    </div>
+                    <aura:set attribute="else">
+                        {!v.OpportunityLineData.Sales_Person_2_split_percentage__c}
+                    </aura:set>
+                </aura:if>
+            </div>
+        </th>
+        <th scope="row" class="slds-hint-parent" aura:id="UnderWriterThemeShade">
+            <div class="slds-cell-wrap" aura:id="underWriterValidationCheck">
+            <aura:if isTrue="{!v.underWriterEnable}">
+                    <div class="slds-form-element__control" aura:id="Underwriter_Name__c">
+                    <!--    <ui:inputSelect  aura:id="InputSelectSingle" change="{!c.onSelectUnderWriter}" class="slds-form-control slds-select">
+                            <option text="" value="" />
+                            <aura:iteration items="{!v.UnderwriterData}" var="option" >
+                                <option text="{!option.Underwriter_Name__c}" value="{!option.Underwriter_Name__c}" selected="{!option.Underwriter_Name__c==v.OpportunityLineData.Underwriter__c}"/>
+                            </aura:iteration>
+                        </ui:inputSelect> -->
+                        
+                        
+                        <div onmouseleave="{!c.onblur1}" aura:id="searchResUnderWriter" class="slds-form-element slds-lookup slds-is-close" data-select="single">
+                        <!-- <label class="slds-form-element__label" for="lookup-348">{!v.label}</label> -->
+                        <div class="slds-form-element__control">
+                            <div class="slds-input-has-icon slds-input-has-icon--right">
+                                <lightning:icon class="slds-input__icon slds-hide" aura:id="removeSearchUW" iconName="utility:search" size="x-small" alternativeText="search"/> 
+                                <div aura:id="lookup-pillUW" class="slds-pill-container slds-hide">
+                                    <lightning:pill class="pillSize" label="{!v.selectedUnderWriter.Underwriter_Name__c}" name="{!v.selectedUnderWriter.Underwriter_Name__c}" onremove="{! c.clearUnderWriter}">
+                                        <aura:set attribute="media">
+                                            <!-- <lightning:icon iconName="{!v.IconName}" size="x-small" alternativeText="{!v.IconName}"/> -->
+                                        </aura:set>
+                                    </lightning:pill>
+                                </div>
+                                <div aura:id="userLookUpField2" class="slds-show">
+                                    <ui:inputText click="{!c.onfocus1}" updateOn="keyup" keyup="{!c.searchUnderWriter}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchUnderWriter}" placeholder="search.." />
+                                </div>    
+                            </div>
+                        </div>
+                        <ul style="min-height:40px;margin-top:0px !important" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+                            <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner1"/>
+                            <center> {!v.Message}</center>
+                            <aura:iteration items="{!v.listOfUnderWriters}" var="singleRec">
+                                <c:customUnderWriterLookUp recordName="{!singleRec}" IconName="{!v.IconName}" UnderwriterData="{!v.UnderwriterData}"/>
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                        
+                        
+                    </div>
+                    <aura:set attribute="else">
+                        {!v.OpportunityLineData.Underwriter__c}
+                    </aura:set>
+                </aura:if>
+            </div>
+        <!--    <div class="slds-cell-wrap" title="{!v.OpportunityLineData.Underwriter__r.Name}">
+                {!v.OpportunityLineData.Underwriter__r.Name}
+            </div> -->
+        </th>
+    <!-- <th scope="row" class="slds-hint-parent" aura:id="nonEditableFields">
+            <div class="slds-cell-wrap" title=" ">
+                <ui:outputDateTime format="M/d/yyyy h:mm a" value="{!v.OpportunityLineData.Date_Submitted_for_Incentives__c}" class="form-control" timezone="{!v.timeZone}"/>
+            </div>
+        </th> -->
+        <th scope="row" class="slds-hint-parent" aura:id="nonEditableFields">
+            <div class="slds-cell-wrap" title=" ">
+                <ui:outputDateTime format="M/d/yyyy h:mm a" value="{!v.OpportunityLineData.Date_sent_to_ISI_Site__c}" class="form-control" timezone="{!v.timeZone}"/>
+            </div>
+        </th>
+    </tr>
+</aura:component>

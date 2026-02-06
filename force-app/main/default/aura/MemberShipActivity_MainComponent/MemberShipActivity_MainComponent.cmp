@@ -1,0 +1,155 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="memberShipActivityProductCategory" access="global" >
+    <aura:attribute name="productCategory" type="Object" />
+    <aura:attribute name="productCategoryCmp" type="String" />
+    <aura:attribute name="productCategoryName" type="String" default=''/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="MAChildAttrObj" type="Object"/>
+    <aura:attribute name="fieldSets" type="String[]"/>
+    <aura:attribute name="selectedProductTab" type="String"/>
+    <aura:attribute name="fieldsItag" type="String[]"/>
+    <aura:attribute name="progressionfeildItagList" type="String[]"/>
+    <aura:attribute name="requiredFieldsItag" type="Map"/>
+    <aura:attribute name="readOnlyFieldsItag" type="Map"/>
+    <aura:attribute name="requiredFieldsItagMO" type="Map"/>
+    <aura:attribute name="readOnlyFieldsItagMO" type="Map"/>
+    <aura:attribute name="genreadOnlyFieldsItag" type="Map"/>
+    <aura:attribute name="genreadOnlyFieldsItagMO" type="Map"/>
+    <aura:attribute name="medicalFieldsList" type="String[]"/>
+    <aura:attribute name="othersFieldsList" type="String[]"/>
+    <aura:attribute name="possibleSalesStageValues" type="String[]"/>
+    <aura:attribute name="possibleSalesMOStageValues" type="String[]"/>
+    <aura:attribute name="initailValues" type="String[]"/>
+    <aura:attribute name="MAGlobalData" type="Object"/>
+    <aura:attribute name="DispositonMap" type="Object"/>
+    <aura:attribute name="DispositonItag" type="String" default=''/>
+    <aura:attribute name="isDataLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="isComments" type="Boolean" default="false"/>
+    <aura:attribute name="isProdCat" type="Boolean" default="false"/>
+    <aura:attribute name="isAdditionalInfo" type="Boolean" default="false"/>
+    <aura:attribute name="isAdditionalInfo2" type="Boolean" default="false"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="ErrorList" type="String[]"/>
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="initailMOValues" type="String[]"/>
+    <aura:attribute name="PreviousSelectedStage" type="String"/>
+    <aura:attribute name="CurrentSelectedStage" type="String"/>
+    <aura:attribute name="PreviousSelectedStageMO" type="String"/>
+    <aura:attribute name="CurrentSelectedStageMO" type="String"/>
+    <aura:attribute name="MA_Type" type="String"/>
+    <aura:attribute name="isProdCatLink" type="Boolean" default="false"/>
+    <aura:attribute name="clearValueMap" type="Object"/>
+    <aura:attribute name="selectedCategoryMap" type="Object"/>
+    <aura:attribute name="accessVal" type="String" default="VIEW"/>
+    <aura:attribute name="possItag" type="String"/>
+    <aura:attribute name="isRendered" type="Boolean" default="false"/>
+    <aura:attribute name="isSystemAdmin" type="Boolean" default="false"/>
+    <aura:attribute name="accessObj" type="Object"/>
+    <aura:attribute name="isRefreshedMAData" type="Boolean" default="false"/>
+    <aura:attribute name="InitialOpportunityData" type="Object"/>
+    <aura:attribute name="oldProductCategory" type="String"/>
+    <aura:attribute name="maActivityType" type="String"/>
+    <aura:attribute name="isDataServiceTrasaction" type="Boolean" default="false"/>
+    <aura:attribute name="isReset" type="boolean" default="false"/>
+    <aura:attribute name="isproductInvolvedEmpty" type="boolean" default="false"/>
+    <aura:attribute name="queryError" type="Boolean" default="false"/>
+    <aura:dependency resource="markup://force:recordSave" type="EVENT" />
+    <aura:handler event="force:refreshView" action="{!c.handleMultiPickList}" />   
+    <aura:handler name="refreshTab" event="c:Refresh_Tab_Event" action="{!c.refreshTab}"/>
+    <force:recordData aura:id="MADataId"
+                      recordId="{!v.recordId}"
+                      layoutType=""
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.InitialOpportunityData}"
+                      targetError="{!v.recordError}"
+                      fields="['MACategory__c',
+                              'Sales_Stage_Medical__c',
+                              'Progression_Sales_Stage_Medical__c',
+                              'Inital_Selected_Sales_Stage_Medical__c',
+                              'Product_Type_Involved_in_Opp__c',
+                              'Sales_Stage_Other__c',
+                              'Progression_Sales_Stage_Other__c',
+                              'Inital_Selected_Sales_Stage_Other__c',
+                              'Sales_Stage_Pharmacy__c',
+                              'Progression_Sales_Stage_Pharmacy__c',
+                              'Inital_Selected_Sales_Stage_Pharmacy__c',
+                              'Sales_Stage_Dental__c',
+                              'Progression_Sales_Stage_Dental__c',
+                              'Inital_Selected_Sales_Stage_Dental__c',
+                              'Sales_Stage_Vision__c',
+                              'Progression_Sales_Stage_Vision__c',
+                              'Inital_Selected_Sales_Stage_Vision__c',
+                              'Reason_for_the_Opportunity_Risk__c',
+                              'Membership_Activity_Type__c',
+                              'Reconciliation_Complete_Record_Locked__c',
+                              'Copy_Pharmacy_sec1_Data_from_Med__c',
+                              'Copy_Pharmacy_sec2_Data_from_Med__c',
+                              'Copy_Pharmacy_sec3_Data_from_Med__c',
+                              'Copy_Dental_sec1_Data_from_Med__c',
+                              'Copy_Dental_sec2_Data_from_Med__c',
+                              'Copy_Dental_sec3_Data_from_Med__c',
+                              'Copy_Vision_sec1_Data_from_Med__c',
+                              'Copy_Vision_sec2_Data_from_Med__c',
+                              'Copy_Vision_sec3_Data_from_Med__c',
+                              'Sales_Season1__c']"
+                      recordUpdated="{!c.handleRecordUpdated}"
+                      />
+    
+    <aura:if isTrue="{!not(empty(v.recordError))}">
+        <div class="recordError">
+            <ui:message title="Error" severity="error" closable="true">
+                Main Component {!v.recordError}
+            </ui:message>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.queryError}">
+        <div class="recordError">
+            <ui:message title="Error" severity="error" closable="true">
+                Contact your Admin Internal Server Occured
+            </ui:message>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.isproductInvolvedEmpty}">
+        <div class="recordError">
+            <ui:message title="Error" severity="error" closable="true">
+                Products Involved in Opportunity Risk Value is missing.
+            </ui:message>
+        </div>
+    </aura:if>
+    <div aura:id="MA_CUSTOM" class="slds-tabs_card uiTabset--base uiTabset--default uiTabset slds-is-relative">
+        <lightning:spinner aura:id="mySpinner" class="slds-hide zIndexClass"/>
+        <ul class="slds-accordion">
+            <div class="slds-section slds-is-open" aura:id="MemberShipActivity_MainComponent">
+                <li>                    
+                    <div class="slds-section__content" style="padding-top:0px;">
+                        <div class="slds-tabs_default">
+                            <ul class="slds-tabs_default__nav resp-tab" aura:id="TabView" role="tablist">
+                                <li class="slds-tabs_default__item slds-hide" title="Item Two" id="Medical_And_Other_Buy_Up" aura:id="Medical_And_Other_Buy_Up" role="presentation">
+                                    <a class="slds-tabs_default__link"  role="tab" tabindex="-1" aria-selected="false" data-tab="Medical_Others_Tab" data-record="Medical_And_Other_Buy_Up" onclick="{!c.tabChange}">Medical and Other Buy Up Programs</a>
+                                </li>
+                                <li class="slds-tabs_default__item slds-hide" id="Medical" aura:id="Medical" title="Item One" role="presentation">
+                                    <a class="slds-tabs_default__link" role="tab" data-record="Medical" data-tab="Medical_Tab" onclick="{!c.tabChange}">Medical</a>
+                                </li>
+                                <li class="slds-tabs_default__item slds-hide" title="Item Two" id="Pharmacy" aura:id="Pharmacy" role="presentation">
+                                    <a class="slds-tabs_default__link" role="tab"    data-record="Pharmacy" data-tab="Pharmacy_Tab" onclick="{!c.tabChange}">Pharmacy</a>
+                                </li>
+                                <li class="slds-tabs_default__item slds-hide" title="Item Three" id="Dental" aura:id="Dental" role="presentation">
+                                    <a class="slds-tabs_default__link" role="tab"    data-record="Dental" data-tab="Dental_Tab" onclick="{!c.tabChange}">Dental</a>
+                                </li>
+                                <li class="slds-tabs_default__item slds-hide" title="Item One"  id="Vision" aura:id="Vision" role="presentation">
+                                    <a class="slds-tabs_default__link" role="tab"   data-record="Vision" data-tab="Vision_Tab" onclick="{!c.tabChange}">Vision</a>
+                                </li>
+                                <li class="slds-tabs_default__item slds-hide" title="Item Two" id="Other_Buy_Up_Programs" aura:id="Other_Buy_Up_Programs" role="presentation">
+                                    <a class="slds-tabs_default__link"  role="tab" tabindex="-1" aria-selected="false"  data-tab="Others_Tab" data-record="Other_Buy_Up_Programs" onclick="{!c.tabChange}">Other Buy Up Programs</a>
+                                </li>                               
+                            </ul>
+                            <div class="slds-tabs_default__content slds-show" id="Comments_Tab_Content" aura:id="Comments_Tab_Content" role="tabpanel" aria-labelledby="tab-default__item">
+                                {!v.body}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </div>
+        </ul>
+    </div>    
+</aura:component>

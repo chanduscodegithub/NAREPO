@@ -1,0 +1,19 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="accountHistoryDataobj" type="AccountCFJunction__c"/>
+    <aura:attribute name="AccountIndex" type="String"/>
+    
+    <tr class="slds-hint-parent">
+        <th scope="row" data-label="Account Name">
+            <span class="slds-grid slds-grid--align-spread"><a onclick="{!c.navigateToAccountPage}" class="slds-truncate" tabindex="0" title="{!accountHistoryDataobj.AccountFirm__r.Name}">{!accountHistoryDataobj.AccountFirm__r.Name}</a></span>
+        </th>
+        
+        <th scope="row" data-label="Account Type">
+            <div class="slds-truncate" title="4/14/2015">{!accountHistoryDataobj.AccountFirm__r.Category__c}</div>
+        </th>
+        <th scope="row" data-label="Owner">
+            <div class="slds-truncate" title="Prospecting">{!accountHistoryDataobj.AccountFirm__r.Owner.Name}</div>
+        </th>
+    </tr>
+    
+</aura:component>

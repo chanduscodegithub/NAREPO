@@ -1,0 +1,914 @@
+<template>
+        <span class={cssDisplay}>
+
+                <div class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                                role="status">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                        </div>
+                </div>
+
+        </span>
+        <div class="slds-col slds-size_2-of-3 slds-text-heading_large aligntext">
+                {label.ICM_Growth_Report_Title}
+        </div><br />
+        <!-- <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-24 slds-p-left_medium">
+                        <span>Choose Sales Cycle</span>
+                </div>
+                <div class="slds-col slds-size_1-of-6 slds-p-left_medium">
+                        <lightning-combobox name='salesCycle' value={salesCycle} variant="label-hidden"
+                                options={salesCyclePicklist} onchange={salesCycleChangeHandler}>
+                        </lightning-combobox>
+                </div>
+                <div class="slds-col slds-grid_align-end">
+                        <lightning-button type="submit" variant="Neutral" label="Print"
+                                class="slds-m-left_x-small alignPrintButton" onclick={print}
+                                disabled={disablePrintButton}></lightning-button>
+                </div>
+        </div>-->
+        <div class="container">
+                <div class="div-left">
+                        <div class="inner-container">
+                                <div class="inner-left" style="padding-top: 6px;">{label.ICM_SalesCycleLabel}</div>
+                                <div class="inner-right">
+
+                                        <lightning-combobox name='salesCycle' value={salesCycle} variant="label-hidden"
+                                                options={salesCyclePicklist} onchange={salesCycleChangeHandler}>
+                                        </lightning-combobox>
+
+                                </div>
+                        </div>
+                </div>
+                <div class="div-right">
+                        <lightning-button type="submit" variant="Neutral" label={label.Print} class="slds-m-left_x-small"
+                                onclick={print} disabled={disablePrintButton}></lightning-button>
+                </div>
+        </div>
+        <br />
+        <div class="slds-form-element__group">
+                <div class="slds-form-element__row slds-grid">
+                        <!--<div class="slds-col slds-size_1-of-6 slds-p-left_medium">
+<lightning-input date-style="short" type="date" name="effectiveDate" label="Effective Date" message-when-bad-input="Please enter the date in m/d/yyyy format." 
+                value={filterByEffectiveDate} onchange={effectiveDateFilterChangeHandler}>
+</lightning-input></div>&nbsp;-->
+                        <div class="slds-col slds-size_1-of-6 slds-p-left_medium">
+                                <lightning-combobox name="Company" label="Company" value={filterByCompanyName}
+                                        options={companyNamePicklist} onchange={companyFilterChangeHandler}>
+                                </lightning-combobox>
+                        </div>&nbsp;
+                        <div class="slds-col slds-size_1-of-6 slds-p-left_medium">
+                                <lightning-combobox name="Current SCE" label="Current SCE" value={filterBySCE}
+                                        options={scePicklist} onchange={sceFilterChangeHandler}>
+                                </lightning-combobox>
+                        </div>&nbsp;&nbsp;&nbsp;
+                        <div class="slds-form-element slds-size_1-of-2 slds-large-size_1-of-12"
+                                style="margin-top: 1.5%">
+                                <lightning-button type="submit" variant="brand" label={label.Go} class="slds-m-left_x-small"
+                                        onclick={fetchFilteredGrowthData} disabled={disableGoAndClearButton}>
+                                </lightning-button>
+
+                        </div>
+                        <div class="slds-form-element slds-size_1-of-2 slds-large-size_1-of-12"
+                                style="margin-top: 1.5%;margin-left: -3%;">
+                                <lightning-button type="submit" variant="brand" label={label.Clear}
+                                        class="slds-m-left_x-small" onclick={clearFilters}
+                                        disabled={disableGoAndClearButton}></lightning-button>
+
+                        </div>
+                </div>
+        </div>
+        <br /><br/>
+        <lightning-accordion class="section-header-style-vpcr-rvp-growth" allow-multiple-sections-open
+                         active-section-name={activeSections}>
+                <lightning-accordion-section class="section-header-vpcr-rvp-growth" name="A" label={label.ICM_VPCR_RVP_Growth_Currently_Managing_Table_Title}>
+        <!--<div class="slds-col slds-size_2-of-3 slds-text-heading_small aligntext1">
+
+                &nbsp;&nbsp;{label.ICM_VPCR_RVP_Growth_Currently_Managing_Table_Title}
+        </div>-->
+        <lightning-card>
+        <div class="slds-card__body slds-m-bottom_none">
+                <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                        <table
+                                class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+                                <template if:true={isCurrentlyManagingGrowthDataListEmpty}>
+                                        <colgroup>
+                                                <col width="16%" />
+                                                <col width="12%" />
+                                                <col width="16%" />
+                                                <col width="11%" />
+                                                <col width="20%" />
+                                                <col width="9%" />
+                                                <col width="16%" />
+
+                                        </colgroup>
+                                </template>
+                                <template if:false={isCurrentlyManagingGrowthDataListEmpty}>
+                                        <colgroup>
+                                                <col width="16%" />
+                                                <col width="12%" />
+                                                <col width="16%" />
+                                                <col width="11%" />
+                                                <col width="20%" />
+                                                <col width="9%" />
+                                                <col width="16%" />
+
+                                        </colgroup>
+                                </template>
+                                <thead>
+                                        <template if:true={isCurrentlyManagingGrowthDataListEmpty}>
+                                                <tr><!--class="slds-text-title_caps"-->
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Company">Company
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Effective Date">
+                                                                        Effective Date</div>
+
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Product Name">Product
+                                                                        Name
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Current SCE">Current
+                                                                        SCE
+
+                                                                </div>
+                                                        </th>
+                                                        <!-- <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="Date Sent to the Incentive Comp Team">
+                                                                        Date Sent
+                                                                        to the Incentive Comp Team</div>
+                                                        </th>-->
+
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" style="text-transform: none;"
+                                                                        title="SCE(s) Receiving Compensation">SCE(s) Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" style="text-align: center;"
+                                                                        title="New Membership">New
+                                                                        Membership
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Membership Activity">
+                                                                        Membership Activity
+                                                                </div>
+                                                        </th>
+
+                                                        <!-- <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Family">
+                                                            Product Family
+                                                    </div>
+                                            </th>-->
+
+
+
+                                                        <!--  <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE Receiving Compensation">
+                                                                        SCE Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE 1 Split Percentage">
+                                                                        SCE 1 Split Percentage</div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="Additional SCE Receiving Compensation">
+                                                                        Additional SCE Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE 2 Split Percentage">
+                                                                        SCE 2 Split Percentage</div>
+                                                        </th>
+                                                         <th class="" scope="col">
+                                                    <div class="slds-truncate"
+                                                            title="Date Incentive Comp Team Extracted Data">
+                                                            Date
+                                                            Incentive Comp Team Extracted Data
+                                                    </div>
+                                            </th>-->
+
+                                                </tr>
+                                        </template>
+                                        <template if:false={isCurrentlyManagingGrowthDataListEmpty}>
+                                                <tr><!--class="slds-text-title_caps"-->
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields}
+                                                                        data-record="Opportunity.Account.Name"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                title="Company">Company</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template
+                                                                                        if:true={sortByCompanyNameAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByCompanyNameAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+
+
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields}
+                                                                        data-record="Opportunity.EffectiveDate__c"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                title="Effective Date">Effective
+                                                                                Date</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template
+                                                                                        if:true={sortByEffectiveDateAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByEffectiveDateAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields} data-record="Product2.Name"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                title="Product Name">Product Name</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template
+                                                                                        if:true={sortByProductNameAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByProductNameAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields}
+                                                                        data-record="Opportunity.Account.Owner.Name"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                title="Current SCE">Current SCE</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template if:true={sortByCurrentSCEAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByCurrentSCEAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+                                                        <!-- <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="Date Sent to the Incentive Comp Team">
+                                                                        Date Sent
+                                                                        to the Incentive Comp Team</div>
+                                                        </th>-->
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" style="text-align: center;text-transform: none;"
+                                                                        title="SCE(s) Receiving Compensation">SCE(s) Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" style="text-align: center;"
+                                                                        title="New Membership">New
+                                                                        Membership
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields} data-record="Opportunity.Name"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                style="text-align: center;"
+                                                                                title="Membership Activity">Membership
+                                                                                Activity</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template
+                                                                                        if:true={sortByMembershipActivityNameAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByMembershipActivityNameAsc}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+
+
+
+
+
+
+
+                                                        <!--  <th class="" scope="col">
+                                                    <a onclick={sortFields} data-record="Product2.Family"
+                                                            class="slds-th__action slds-text-link--reset"
+                                                            tabindex="0" style="display: inline-block;">
+                                                            <span class="slds-truncate"
+                                                                    title="Product Family">Product
+                                                                    Family</span>
+                                                            <div class="slds-icon_container">
+                                                                    <template
+                                                                            if:true={sortByProductFamilyAsc}>
+                                                                            <lightning-icon
+                                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                    icon-name="utility:arrowup"
+                                                                                    size="xx-small"
+                                                                                    alternative-text="Indicates approval">
+                                                                            </lightning-icon>
+                                                                    </template>
+                                                                    <template
+                                                                            if:false={sortByProductFamilyAsc}>
+                                                                            <lightning-icon
+                                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                    icon-name="utility:arrowdown"
+                                                                                    size="xx-small"
+                                                                                    alternative-text="Indicates approval">
+                                                                            </lightning-icon>
+                                                                    </template>
+                                                            </div>
+                                                    </a>
+                                            </th>-->
+
+
+
+
+
+
+                                                        <!--  <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE Receiving Compensation">
+                                                                        SCE Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE 1 Split Percentage">
+                                                                        SCE 1 Split Percentage</div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="Additional SCE Receiving Compensation">
+                                                                        Additional SCE Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE 2 Split Percentage">
+                                                                        SCE 2 Split Percentage</div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                    <div class="slds-truncate"
+                                                            title="Date Incentive Comp Team Extracted Data">
+                                                            Date
+                                                            Incentive Comp Team Extracted Data
+                                                    </div>
+                                            </th>-->
+
+                                                </tr>
+
+                                        </template>
+                                </thead>
+                                <tbody class="FontSize">
+                                        <template if:true={isCurrentlyManagingGrowthDataListEmpty}>
+                                                <tr>
+                                                        <th colspan="7">
+                                                                <div class="slds-text-align--center">
+                                                                        No Records Found
+                                                                </div>
+
+                                                        </th>
+                                                </tr>
+                                        </template>
+                                        <template if:false={isCurrentlyManagingGrowthDataListEmpty}>
+                                                <template for:each={currentlyManagingGrowthDataList}
+                                                        for:item="eachGrowthData" for:index="index">
+                                                        <c-growth-data-table key={eachGrowthData.Id}
+                                                                growth-data={eachGrowthData}
+                                                                logged-in-user-time-zone={loggedInUserTimeZone}
+                                                                logged-in-user-role={loggedInUserRole}
+                                                                logged-in-user-id={loggedInUserId}>
+                                                        </c-growth-data-table>
+                                                </template>
+                                        </template>
+                                </tbody>
+                        </table>
+                </div>
+        </div>
+        </lightning-card>
+        </lightning-accordion-section>
+        
+        <lightning-accordion-section class="section-header-vpcr-rvp-growth" name="B" label={label.ICM_VPCR_RVP_Growth_Previously_Managed_Table_Title}>
+        <!--<div class="slds-col slds-size_2-of-3 slds-text-heading_small aligntext1">
+
+                &nbsp;&nbsp;{label.ICM_VPCR_RVP_Growth_Previously_Managed_Table_Title}
+        </div>-->
+        <lightning-card>
+        <div class="slds-card__body slds-m-bottom_none">
+                <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                        <table
+                                class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+                                <template if:true={isPreviouslyManagedGrowthDataListEmpty}>
+                                        <colgroup>
+                                                <col width="16%" />
+                                                <col width="12%" />
+                                                <col width="16%" />
+                                                <col width="11%" />
+                                                <col width="20%" />
+                                                <col width="9%" />
+                                                <col width="16%" />
+
+                                        </colgroup>
+                                </template>
+                                <template if:false={isPreviouslyManagedGrowthDataListEmpty}>
+                                        <colgroup>
+                                                <col width="16%" />
+                                                <col width="12%" />
+                                                <col width="16%" />
+                                                <col width="11%" />
+                                                <col width="20%" />
+                                                <col width="9%" />
+                                                <col width="16%" />
+
+                                        </colgroup>
+                                </template>
+                                <thead>
+                                        <template if:true={isPreviouslyManagedGrowthDataListEmpty}>
+                                                <tr><!--class="slds-text-title_caps"-->
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Company">Company
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Effective Date">
+                                                                        Effective Date</div>
+
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Product Name">Product
+                                                                        Name
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Current SCE">Current
+                                                                        SCE
+
+                                                                </div>
+                                                        </th>
+                                                        <!--  <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="Date Sent to the Incentive Comp Team">
+                                                                        Date Sent
+                                                                        to the Incentive Comp Team</div>
+                                                        </th>-->
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" style="text-transform: none;"
+                                                                        title="SCE(s) Receiving Compensation">
+                                                                        SCE(s) Receiving Compensation</div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" style="text-align: center;"
+                                                                        title="New Membership">New
+                                                                        Membership
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:6px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" title="Membership Activity">
+                                                                        Membership Activity
+                                                                </div>
+                                                        </th>
+
+                                                        <!-- <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Product Family">
+                                                            Product Family
+                                                    </div>
+                                            </th>
+                                                       
+                                                        
+                                                        
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE Receiving Compensation">
+                                                                        SCE Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE 1 Split Percentage">
+                                                                        SCE 1 Split Percentage</div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="Additional SCE Receiving Compensation">
+                                                                        Additional SCE Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE 2 Split Percentage">
+                                                                        SCE 2 Split Percentage</div>
+                                                        </th>
+                                                       <th class="" scope="col">
+                                                    <div class="slds-truncate"
+                                                            title="Date Incentive Comp Team Extracted Data">
+                                                            Date
+                                                            Incentive Comp Team Extracted Data
+                                                    </div>
+                                            </th>-->
+
+                                                </tr>
+                                        </template>
+                                        <template if:false={isPreviouslyManagedGrowthDataListEmpty}>
+                                                <tr><!--class="slds-text-title_caps"-->
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields1}
+                                                                        data-record="Opportunity.Account.Name"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                title="Company">Company</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template
+                                                                                        if:true={sortByCompanyNameAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByCompanyNameAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+
+
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields1}
+                                                                        data-record="Opportunity.EffectiveDate__c"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                title="Effective Date">Effective
+                                                                                Date</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template
+                                                                                        if:true={sortByEffectiveDateAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByEffectiveDateAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields1} data-record="Product2.Name"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                title="Product Name">Product Name</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template
+                                                                                        if:true={sortByProductNameAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByProductNameAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields1}
+                                                                        data-record="Opportunity.Account.Owner.Name"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                title="Current SCE">Current SCE</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template
+                                                                                        if:true={sortByCurrentSCEAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByCurrentSCEAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+                                                        <!-- <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="Date Sent to the Incentive Comp Team">
+                                                                        Date Sent
+                                                                        to the Incentive Comp Team</div>
+                                                        </th>-->
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" style="text-align: center;text-transform: none;"
+                                                                        title="SCE(s) Receiving Compensation">SCE(s) Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <div class="slds-cell-wrap" style="text-align: center;"
+                                                                        title="New Membership">New
+                                                                        Membership
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col"
+                                                                style="padding-left:2px;padding-right:2px;">
+                                                                <a onclick={sortFields1} data-record="Opportunity.Name"
+                                                                        class="slds-th__action slds-text-link--reset"
+                                                                        tabindex="0">
+                                                                        <span class="slds-cell-wrap"
+                                                                                style="text-align: center;"
+                                                                                title="Membership Activity">Membership
+                                                                                Activity</span>
+                                                                        <div
+                                                                                class="slds-icon_container sortIconPadding">
+                                                                                <template
+                                                                                        if:true={sortByMembershipActivityNameAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowup"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                                <template
+                                                                                        if:false={sortByMembershipActivityNameAsc1}>
+                                                                                        <lightning-icon
+                                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                                icon-name="utility:arrowdown"
+                                                                                                size="xx-small"
+                                                                                                alternative-text="Indicates approval">
+                                                                                        </lightning-icon>
+                                                                                </template>
+                                                                        </div>
+                                                                </a>
+                                                        </th>
+
+
+
+
+
+
+
+                                                        <!-- <th class="" scope="col">
+                                                    <a onclick={sortFields1} data-record="Product2.Family"
+                                                            class="slds-th__action slds-text-link--reset"
+                                                            tabindex="0" style="display: inline-block;">
+                                                            <span class="slds-truncate"
+                                                                    title="Product Family">Product
+                                                                    Family</span>
+                                                            <div class="slds-icon_container">
+                                                                    <template
+                                                                            if:true={sortByProductFamilyAsc1}>
+                                                                            <lightning-icon
+                                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                    icon-name="utility:arrowup"
+                                                                                    size="xx-small"
+                                                                                    alternative-text="Indicates approval">
+                                                                            </lightning-icon>
+                                                                    </template>
+                                                                    <template
+                                                                            if:false={sortByProductFamilyAsc1}>
+                                                                            <lightning-icon
+                                                                                    class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                                                    icon-name="utility:arrowdown"
+                                                                                    size="xx-small"
+                                                                                    alternative-text="Indicates approval">
+                                                                            </lightning-icon>
+                                                                    </template>
+                                                            </div>
+                                                    </a>
+                                            </th>
+
+
+
+                                                        
+                                                        
+                                                        
+
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE Receiving Compensation">
+                                                                        SCE Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE 1 Split Percentage">
+                                                                        SCE 1 Split Percentage</div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="Additional SCE Receiving Compensation">
+                                                                        Additional SCE Receiving Compensation
+                                                                </div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                                <div class="slds-truncate"
+                                                                        title="SCE 2 Split Percentage">
+                                                                        SCE 2 Split Percentage</div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                    <div class="slds-truncate"
+                                                            title="Date Incentive Comp Team Extracted Data">
+                                                            Date
+                                                            Incentive Comp Team Extracted Data
+                                                    </div>
+                                            </th>-->
+
+                                                </tr>
+
+                                        </template>
+                                </thead>
+                                <tbody class="FontSize">
+                                        <template if:true={isPreviouslyManagedGrowthDataListEmpty}>
+                                                <tr>
+                                                        <th colspan="7">
+                                                                <div class="slds-text-align--center">
+                                                                        No Records Found
+                                                                </div>
+
+                                                        </th>
+                                                </tr>
+                                        </template>
+                                        <template if:false={isPreviouslyManagedGrowthDataListEmpty}>
+                                                <template for:each={previouslyManagedGrowthDataList}
+                                                        for:item="eachGrowthData" for:index="index">
+                                                        <c-growth-data-table key={eachGrowthData.Id}
+                                                                growth-data={eachGrowthData}
+                                                                logged-in-user-time-zone={loggedInUserTimeZone}
+                                                                logged-in-user-role={loggedInUserRole}
+                                                                logged-in-user-id={loggedInUserId}>
+                                                        </c-growth-data-table>
+                                                </template>
+                                        </template>
+                                </tbody>
+                        </table>
+                </div>
+        </div>
+        </lightning-card>
+        </lightning-accordion-section>
+        </lightning-accordion>
+        
+        <div class="slds-text-body_small">
+                {label.ICM_VPCR_RVP_Growth_Instruction_Text}
+        </div>
+</template>

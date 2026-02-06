@@ -1,0 +1,121 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 08-29-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+
+    <div class="slds-border_top contentSection">
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="12" class="slds-theme_shade slds-theme--shade slds-p-around_x-small">
+                <div class="slds-text-heading_medium">Top Market Information - <span class="links-and-texts header-instruction">Data loaded from the <a href="https://app.powerbi.com/reportEmbed?reportId=19965f03-f10c-4966-b120-a45a38bd32ee&appId=2129daff-eee2-4551-91b5-3f2917986905&autoAuth=true&ctid=db05faca-c82a-4b9d-b9c5-0f64b6755421"><u>Opportunity Dashboard</u></a>, 
+                    based on data source included in the most recent date updated in table below.</span></div>
+            </lightning-layout-item>
+        </lightning-layout>
+        <template if:false={showEdit}>
+            <lightning-record-view-form object-api-name="Account" record-id={recordId} density="comfy">
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket1__c"></lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket2__c"></lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket3__c"></lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket4__c"></lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket5__c"></lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2"></lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket1Records__c"
+                            class="slds-p-top_none"></lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket2Records__c"
+                            class="slds-p-top_none"></lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket3Records__c"
+                            class="slds-p-top_none"></lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket4Records__c"
+                            class="slds-p-top_none"></lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-output-field field-name="TopMarket5Records__c"
+                            class="slds-p-top_none"></lightning-output-field>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-record-view-form>
+        </template>
+
+        <template if:true={showEdit}>
+            <lightning-record-edit-form object-api-name="Account" record-id={recordId} onsubmit={onSubmitHandler}
+                onsuccess={handleOnSuccess} onerror={handleError} onload={handleOnLoad} density="comfy">
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-input-field field-name="TopMarket1__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-input-field field-name="TopMarket2__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-input-field field-name="TopMarket3__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-input-field field-name="TopMarket4__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2">
+                        <lightning-input-field field-name="TopMarket5__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2"></lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2" class="slds-p-top_none">
+                        <lightning-input-field field-name="TopMarket1Records__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2" class="slds-p-top_none">
+                        <lightning-input-field field-name="TopMarket2Records__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2" class="slds-p-top_none">
+                        <lightning-input-field field-name="TopMarket3Records__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2" class="slds-p-top_none">
+                        <lightning-input-field field-name="TopMarket4Records__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="2" class="slds-p-top_none">
+                        <lightning-input-field field-name="TopMarket5Records__c"></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small" size="12" class="slds-hide">
+                        <lightning-button variant="brand" type="submit" class="submitbutton"
+                            label="Save"></lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
+
+
+            </lightning-record-edit-form>
+        </template>
+        <!-- <lightning-layout multiple-rows="true">
+            <lightning-layout-item padding="around-small" size="12">
+                <p class="test-id__field-label slds-form-element__label">Opportunity Dashboard</p>
+                <div class="slds-form-element__control slds-grid itemBody">
+                    <span class="test-id__field-value slds-form-element__static slds-grow">
+                        <a href="https://dora.appservice.elr01.optum.com/na/op/accounts">Click here to view the
+                            Opportunity Dashboard</a>
+                    </span>
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item padding="around-small" size="12">
+                <lightning-record-view-form object-api-name="Account" record-id={recordId}>
+                    <lightning-output-field field-name="Bic_and_Top_Market_Last_Modified_Date__c"></lightning-output-field>
+                </lightning-record-view-form>
+            </lightning-layout-item>
+        </lightning-layout> -->
+    </div>
+</template>

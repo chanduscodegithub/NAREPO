@@ -1,0 +1,50 @@
+<aura:component >
+    <aura:attribute name="opportunitySearchArray" type="String[]"/>
+    <aura:attribute name="BusinessType" type="String[]"/>
+    <aura:attribute name="DentalActivityStage" type="String[]"/>
+    <aura:attribute name="VisionActivityStage" type="String[]"/> 
+    <aura:attribute name="OtherBuyUpProgramActivityStage" type="String"/>
+    <aura:attribute name="CompanyName" type="String"/>
+    
+    <aura:attribute name="oppId" type="String[]"/>
+    <aura:attribute name="opportunitySearchArrayIndex" type="String[]"/>
+    <aura:attribute name="index" type="Integer"/>
+    <aura:attribute name="selectedrefoppt" type="Boolean" />
+    <aura:registerEvent name="refoppPopUpChildEvent" type="c:refoppPopUpChildEvent"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <tr class="slds-hint-parent">
+        <td class="slds-cell-shrink" data-label="">
+            <div class="slds-truncate" title="">
+                <ui:inputCheckbox aura:id="refopportunity" change="{!c.select}"/>
+                <label class="slds-checkbox__label">
+                    <span class="slds-checkbox--faux"></span>
+                </label>
+            </div>
+        </td>
+        <th scope="row" data-label="">
+            <div class="slds-truncate" title="">{!v.index+1}</div>
+        </th>
+        
+        <th scope="row" data-label="Membership Activity Name">
+            <div class="slds-truncate" title="Membership Activity Name">{!v.opportunitySearchArray}</div>
+        </th>
+        <th scope="row" data-label="Business Type">
+            <div class="slds-truncate" title="Business Type">{!v.BusinessType}</div>
+        </th>
+        <th scope="row" data-label="Dental Activity Stage">
+            <div class="slds-truncate" title="Dental Activity Stage">{!v.DentalActivityStage}</div>
+        </th>
+        <th scope="row" data-label="Vision Activity Stage">
+            <div class="slds-truncate" title="Vision Activity Stage">{!v.VisionActivityStage}</div>
+        </th>
+        <th scope="row" data-label="Other Buy Up Program Activity Stage">
+            <div class="slds-truncate" title="Other Buy Up Program Activity Stage">{!v.OtherBuyUpProgramActivityStage}</div>
+        </th>
+        <th scope="row" data-label="Company Name">
+            <div class="slds-truncate" title="Company Name">{!v.CompanyName}</div>
+        </th>
+        
+    </tr>
+</aura:component>

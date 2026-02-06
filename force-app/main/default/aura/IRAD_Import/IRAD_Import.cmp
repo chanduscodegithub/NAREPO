@@ -1,0 +1,168 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,force:hasSObjectName" access="global" 
+                controller="IRAD_LOG_Controller">
+    
+    <ltng:require scripts="{!join(',', 
+                           $Resource.ExcelConverterJs + '/ExcelConverter/jquery.min.js', 
+                           $Resource.ExcelConverterJs + '/ExcelConverter/jszip.js',
+                           $Resource.ExcelConverterJs + '/ExcelConverter/xlsx.js')}"  />
+    
+    <aura:attribute name="fieldLabelMap" type="Map" />
+    <aura:attribute name="iradRecordList" type="IRAD__c[]"/>
+    <aura:attribute name="isIRADListEmpty" type="boolean" default="false"/>
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    <aura:attribute name="sortField" type="String" default="Status__c"/>
+    <aura:attribute name="sortOrder" type="String" default="ASC"/>
+    <aura:attribute name="sortStatus__cAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortType__cAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortCurrent_Due_Date__cAsc" type="Boolean" default="true"/>
+    <aura:attribute name="pcLstMap" type="Map"/>
+    <aura:attribute name="Status__cPicklistOption" type="String[]"/>
+    <aura:attribute name="Type__cPicklistOption" type="String[]"/>
+    <aura:attribute name="Internal_External__cPicklistOption" type="String[]"/>
+    <aura:attribute name="Priority__cPicklistOption" type="String[]"/>
+    <aura:attribute name="Category__cPicklistOption" type="String[]"/>
+    <aura:attribute name="Applicable_To__cPicklistOption" type="String[]"/>
+    <aura:attribute name="isDelete" type="Boolean" default="false"/>
+    <aura:attribute name="iradId" type="String"/>
+    <aura:attribute name="iradRecord" type="IRAD__c"/>
+    <aura:attribute name="recordsCount" type="boolean" default="false"/>
+    <aura:attribute name="FieldSetMap" type="Map" />
+    <aura:attribute name="isValidImport" type="boolean" default="false"/>
+    <aura:attribute name='companyId' type='Id' />
+    <aura:attribute name='ownerId' type='Id' />
+    <aura:attribute name='projectId' type='Id' />
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="failureRecords" type="Object"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    
+    
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:handler name="iradLogTableEvent" event="c:IRAD_LOG_Table_Event" action="{!c.handelEvent}"/>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="IRADConfirm" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                
+                <h2 id="header43" class="slds-text-heading--medium">Confirmation</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">Do you want to remove this IRAD?</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmDelete}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="IRADConfirm"></div>
+    
+    
+    <div  class="slds-section" aura:id="IRAD">
+        <article class="slds-card slds-card_boundary">
+            <div class="slds-spinner_container slds-hide" aura:id="loadingSpinner">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+            <div class="slds-card__header slds-grid" data-record="IRAD" id="utilityToggle" >
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    
+                    <div class="slds-media__body">
+                        <!-- <h2 class="slds-card__header-title">
+                            <div class="slds-card__header-link slds-truncate" title="Card Header">
+                                <span>IRAD</span>
+                            </div>
+                        </h2>-->
+                        <h2 class="slds-grid flex-alignCenter">
+                            <span class="slds-text-heading--small">IRAD Import</span> 
+                        </h2>
+                    </div>
+                    <div class="slds-no-flex">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.importRecord}">Import</button>
+                        <input type="file" id="my_file_input" onchange="{!c.selectedFile}" onclick="{!c.clickSelectedfile}" aura:id="my_file_input" style="display:none" />
+                    </div>
+                </header>
+            </div>
+            <footer class="slds-card__footer"></footer>
+                  
+        </article>
+       	
+        
+    </div>
+    <div class="slds-m-around_xx-large">
+        
+        <!--Use aura:if tag to display/hide popup based on isModalOpen value-->  
+        <aura:if isTrue="{!v.isModalOpen}">
+             
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Failure Records</h2>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    
+                    
+                    		<div class="slds-table--header-fixed_container" style="height:100%;">
+   								 <div class="slds-scrollable_y" style="height:100%;">
+                                    <table class="slds-table slds-table_bordered slds-table--header-fixed">
+                                        <thead>
+                                            <tr class="slds-hint-parent">
+                                                <th scope="row">
+                                                    <div  title="">Record No</div>
+                                                </th>
+                                                <th scope="row">
+                                                    <div  title="">&nbsp;</div>
+                                                </th>
+                                            <th scope="row">
+                                                    <div  title="">Failure Reason</div>
+                                            </th>
+                                         </tr>
+                                        </thead>
+                                        <tbody>
+                                                <aura:iteration items="{!v.failureRecords}" var="failureRecord">
+                                                             <tr class="slds-hint-parent">
+                                                                <th scope="row">
+                                                                    <div class="slds-cell-wrap" title="">{!failureRecord.rowNumber}</div>
+                                                                </th>
+                                                                 <th scope="row">
+                                                                    <div  title="">&nbsp;</div>
+                                                                </th>
+                                                                <th scope="row">
+                                                                    <div class="slds-cell-wrap" title="">{!failureRecord.failureReason}</div>
+                                                                </th>
+                                                             </tr>
+                                                </aura:iteration>
+                                        </tbody>
+                                    </table>
+
+			    	</div>
+					</div>
+                    
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                       
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </div>
+</aura:component>

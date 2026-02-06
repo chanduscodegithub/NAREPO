@@ -1,0 +1,223 @@
+<template>
+    <!--      SPINNER     -->
+    <template if:true={isLoad}>
+      <span class={cssDisplay}>
+        <div class="slds-spinner_container">
+          <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+            role="status">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+          </div>
+        </div>
+      </span>
+    </template>
+      <!--      SPINNER     -->
+  <div class="slds-card__body slds-m-bottom_none ">
+    <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+
+
+      <!--IF THE TABLE IS EMPTY-->
+      <template if:true={isProactiveDataListEmpty}>
+        <!--isProactiveDataListEmpty will be true if null data comes from backend-->
+        <table
+          class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+          <colgroup>
+            <col style="width:16%;" />
+            <col style="width:10%;" />
+            <col style="width:14%;" />
+            <col style="width:16%;" />
+            <col style="width:14%;" />
+            <col style="width:13%;" />
+            <col style="width:17%;" />
+          </colgroup>
+          <thead>
+            <tr><!--class="slds-text-title_caps"-->
+
+              <th class="slds-cell-wrap" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap" data-record="Company__r.name" title="Company">Company</div>
+              </th>
+
+              <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap" title="Effective Date">Effective Date</div>
+              </th>
+
+              <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap" title="Sold\Retained Members">Sold\Retained Members</div>
+              </th>
+
+              <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap" title="Incentive Status">Incentive Status</div>
+              </th>
+
+              <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap" title="Retention %">Retention %</div>
+              </th>
+
+              <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap" title="Are Documents Attached">Are Documents Attached</div>
+              </th>
+
+              <!--THIS SHOULD BE A HYPERLINK-->
+              <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                <div class="slds-cell-wrap" data-record="Opportunity.name"
+                  title="Membership Activity">Membership Activity</div>
+              </th>
+              <!--THIS SHOULD BE A HYPERLINK-->
+            </tr>
+          </thead>
+
+          <tbody class="FontSize">
+            <template if:true={isProactiveDataListEmpty}>
+              <!-- IF TABLE IS EMPTY -->
+              <tr>
+                <th colspan="12">
+                  <div class="slds-text-align--center">
+                    No Records Found
+                  </div>
+                </th>
+              </tr>
+            </template>
+
+            <template if:false={isProactiveDataListEmpty}>
+              <!-- FOR SHOWING THE DATA IN THE TABLE, ANOTHER COMPONENT IS CALLED -->
+              <template for:each={proActiveRenewalData} for:item="row">
+                <c-renewal-sce-child key={row} eachdata={row} type="proactive"></c-renewal-sce-child>
+              </template>
+              <!-- FOR SHOWING THE DATA IN THE TABLE, ANOTHER COMPONENT IS CALLED -->
+            </template>
+          </tbody>
+        </table>
+      </template>
+      <!--IF THE TABLE IS EMPTY-->
+
+
+
+
+
+
+
+
+
+      <!--IF THE TABLE IS NOT EMPTY-->
+      <template if:false={isProactiveDataListEmpty}>
+        <!--isProactiveDataListEmpty will be true if null data comes from backend-->
+        <table
+          class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+          <colgroup>
+            <col style="width:16%;" />
+            <col style="width:10%;" />
+            <col style="width:14%;" />
+            <col style="width:16%;" />
+            <col style="width:14%;" />
+            <col style="width:13%;" />
+            <col style="width:17%;" />
+          </colgroup>
+
+          <thead>
+            <tr><!--class="slds-text-title_caps"-->
+              <th class="slds-cell-wrap" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                <a onclick={sortFields} data-record="Account.name" class="slds-th__action slds-text-link--reset"
+                  tabindex="0">
+                  <span class="slds-truncate" title="Company">Company</span>
+                  <div class="slds-icon_container sortIconPadding">
+                    <template if:true={sortCompanyAsc}>
+                      <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                        icon-name="utility:arrowdown" size="xx-small" alternative-text="Indicates approval">
+                      </lightning-icon>
+                    </template>
+                    <template if:false={sortCompanyAsc}>
+                      <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                        icon-name="utility:arrowup" size="xx-small" alternative-text="Indicates approval">
+                      </lightning-icon>
+                    </template>
+                  </div>
+                </a>
+              </th>
+
+
+
+              <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                <a onclick={sortFields} data-record="EffectiveDate__c" class="slds-th__action slds-text-link--reset"
+                  tabindex="0">
+                  <span class="slds-cell-wrap" title="Effective Date">Effective Date</span>
+                  <div class="slds-icon_container sortIconPadding">
+                    <template if:true={sortEffectiveDateAsc}>
+                      <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                        icon-name="utility:arrowdown" size="xx-small" alternative-text="Indicates approval">
+                      </lightning-icon>
+                    </template>
+                    <template if:false={sortEffectiveDateAsc}>
+                      <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                        icon-name="utility:arrowup" size="xx-small" alternative-text="Indicates approval">
+                      </lightning-icon>
+                    </template>
+                  </div>
+                </a>
+              </th>
+
+
+              <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap" title="Sold\Retained Members">Sold\Retained Members</div>
+              </th>
+
+              <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap" title="Incentive Status">Incentive Status</div>
+                <!--THIS IS A HYPERLINK-->
+              </th>
+
+              <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap" title="Retention %">Retention %</div>
+              </th>
+
+
+              <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                <div class="slds-cell-wrap slds-truncate" title="Are Documents Attached">Are Documents Attached</div>
+              </th>
+
+
+              <th class="slds-cell-wrap" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                <a onclick={sortFields} data-record="Name" class="slds-th__action slds-text-link--reset" tabindex="0">
+                  <span class="slds-cell-wrap slds-truncate" title="Membership Activity">Membership Activity</span>
+                  <div class="slds-icon_container sortIconPadding">
+                    <template if:true={sortMembActAsc}>
+                      <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                        icon-name="utility:arrowdown" size="xx-small" alternative-text="Indicates approval">
+                      </lightning-icon>
+                    </template>
+                    <template if:false={sortMembActAsc}>
+                      <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                        icon-name="utility:arrowup" size="xx-small" alternative-text="Indicates approval">
+                      </lightning-icon>
+                    </template>
+                  </div>
+                </a>
+              </th>
+            </tr>
+          </thead>
+
+
+          <tbody class="FontSize">
+            <template if:true={isProactiveDataListEmpty}>
+              <tr>
+                <th colspan="12">
+                  <div class="slds-text-align--center">
+                    No Records Found
+                  </div>
+
+                </th>
+              </tr>
+            </template>
+            <template if:false={isProactiveDataListEmpty}>
+              <template for:each={proActiveRenewalData} for:item="row">
+                <c-renewal-sce-child key={row} eachdata={row} type="proactive"></c-renewal-sce-child>
+              </template>
+            </template>
+          </tbody>
+        </table>
+      </template>
+      <!--      TABLE FOR RENEWAL DATA SHEET      -->
+      <!--IF THE TABLE IS NOT EMPTY-->
+    </div>
+  </div>
+</template>

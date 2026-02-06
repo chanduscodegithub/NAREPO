@@ -1,0 +1,182 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="Medical_Membership_History_Policy_Surest">
+    <aura:attribute name="accMembershipData" type="Object[]"/>
+    <aura:attribute name="previousYearRevenueList" type="Object[]"/>
+    <aura:attribute name="membershipByMarket" type="Object[]"/>
+    <aura:attribute name="currentGlDate" type="String" />
+    <aura:attribute name="startingGLdate" type="Double" />
+    <aura:attribute name="PolicyEmptyList" type="Boolean" default="false" />
+    <aura:attribute name="totalStartingGLdate" type="Double" default="0"/>
+    <aura:attribute name="totalCurrentGlDate" type="Double" default="0"/>
+    <aura:attribute name="totalYTD" type="Double" default="0"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="isDesktop" type="boolean" default="false"/>
+    <aura:attribute name="isScrollStop" type="Boolean" default="true"/>
+    <aura:attribute name="isStop" type="Integer" default="1"/>
+    <aura:attribute name="lastCount" type="Integer" default="1"/>
+    <aura:attribute name="nextLastCount" type="Integer" default="1"/> 
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>   
+   
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div aura:id="Policy_Accounts" class="slds-section ipadbottom container forceRelatedListSingleContainer">
+        <article aura:id="articleClass" class="slds-card slds-card_boundary forceRelatedListCardDesktop" onscroll="{!c.scrollBottom}">
+            <div class="slds-card__header slds-grid slds-p-vertical--x-small slds-m-bottom--none appletHeader flex-auto" data-record="Policy_Accounts" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                        </button>
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Medical_Membership_History_and_Policy_Detail_Surest}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:record" size="small" alternativeText="{!$Label.c.Medical_Membership_History_and_Policy_Detail_Surest}" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2>
+                            <span class="slds-text-heading--small">{!$Label.c.Medical_Membership_History_and_Policy_Detail_Surest}</span>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-is-relative">
+                <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+                <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                    <div class="slds-card__body slds-m-bottom_none">
+                        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout table-input--resp policyRevenueTable">
+                            <aura:if isTrue="{!v.PolicyEmptyList}">
+                                <aura:set attribute="else">
+                                    <tr class="slds-hint-parent leftPadding" style="line-height: 2em;">
+                                        <aura:iteration items="{!v.previousYearRevenueList}" var="previousYearRevenue" indexVar="index">                                        
+                                            <th scope="row" data-label="">
+                                                <label class="slds-form-element__label slds-text-title--caps" for="input-unique-id"><b>Feb {!previousYearRevenue.glDate}</b></label>
+                                                <ui:outputNumber class="slds-textarea textboxWidth alignLeftNumber" value="{!previousYearRevenue.previusYear}"></ui:outputNumber>
+                                            </th>
+                                        </aura:iteration>                                                                                                         
+                                    </tr>
+                                </aura:set>
+                            </aura:if>  
+                        </table>
+                        
+                        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout medi-memHist-tab medical-mem-history">
+                            <aura:if isTrue="{!v.PolicyEmptyList}">
+                                <thead>                           
+                                    <tr class="slds-hint-parent slds-text-title--caps" style="line-height: 35px;">
+                                        <th class="slds-is-resizable slds-text-title--caps bold align-left" scope="col">
+                                            <span class="bold" title="Policy No">{!$Label.c.Policy_No}</span>                                       
+                                        </th>
+                                        <th class="slds-is-resizable slds-text-title--caps bold align-left" scope="col">
+                                            <span class="bold" title="Policy Name">{!$Label.c.Policy_Name}</span>                                       
+                                        </th>
+                                        <th class="slds-is-resizable slds-text-title--caps bold align-center" scope="col">
+                                            <span class="bold" title="Starting GL Membership">{!$Label.c.Starting_GL_Membership}</span>                                       
+                                        </th>
+                                        <th class="slds-is-resizable slds-text-title--caps bold align-center" scope="col">
+                                            <span class="bold" title="Current Month GL Membership">{!$Label.c.Current_Month_GL_Membership}</span>
+                                        </th>                                
+                                        <th class="slds-is-resizable slds-text-title--caps bold align-center" scope="col">
+                                            <span class="bold" title="YTD Change">{!$Label.c.YTD_Change}</span>                                       
+                                        </th>                                                                                                                                
+                                    </tr>
+                                </thead>
+                                <p></p>
+                                <tbody>
+                                    <tr>
+                                        <th colspan="5">
+                                            <div class="slds-text-align--center">{!$Label.c.No_Record_Found}</div>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                                <aura:set attribute="else">
+                                    <thead>                           
+                                        <tr class="slds-hint-parent slds-text-title--caps" style="line-height: 35px;">
+                                            <th class="slds-is-resizable slds-text-title--caps bold align-left" scope="col">
+                                                <span class="bold" title="Policy No">{!$Label.c.Policy_No}</span>                                       
+                                            </th>
+                                            <th class="slds-is-resizable slds-text-title--caps bold align-left" scope="col">
+                                                <span class="bold" title="Policy Name">{!$Label.c.Policy_Name}</span>                                       
+                                            </th>
+                                            <th class="slds-is-resizable slds-text-title--caps bold align-center" scope="col">
+                                                <span class="bold" title="Starting GL Membership">{!$Label.c.Starting_GL_Membership} <br></br>Feb {!v.startingGLdate}</span>                                       
+                                            </th>
+                                            <th class="slds-is-resizable slds-text-title--caps bold align-center" scope="col">
+                                                <span class="bold" title="Current Month GL Membership">{!$Label.c.Current_Month_GL_Membership} <br></br> {!v.currentGlDate}</span>
+                                            </th>                                
+                                            <th class="slds-is-resizable slds-text-title--caps bold align-center" scope="col">
+                                                <span class="bold" title="YTD Change">{!$Label.c.YTD_Change}</span>                                       
+                                            </th>                                                                                                                                
+                                        </tr>
+                                    </thead>
+                                    <tbody class="AlignDataItems">	
+                                        <aura:iteration items="{!v.accMembershipData}" var="accMembershipDataObject" indexVar="index">
+                                            <tr class="slds-hint-parent">
+                                                <th scope="row" data-label="Policy No.">
+                                                    <div class="slds-truncate" title="Policy No">{!accMembershipDataObject.policyNumber}</div>
+                                                </th>
+                                                <th scope="row" data-label="Policy Name">
+                                                    <div class="slds-truncate" title="Policy Name">{!accMembershipDataObject.policyName}</div>
+                                                </th>
+                                                <th scope="row" data-label="{!'Starting GL Membership FEB'+' '+ v.startingGLdate}" style="text-align: right;">
+                                                    <ui:outputNumber value="{!accMembershipDataObject.glRevenueFeb}"></ui:outputNumber>
+                                                </th>
+                                                <th scope="row" data-label="{!'Current Month GL Membership'+' '+ v.currentGlDate}" style="text-align: right;">
+                                                    <ui:outputNumber value="{!accMembershipDataObject.glRevenueLatest}"></ui:outputNumber>
+                                                </th>
+                                                <th scope="row" data-label="YTD Change" style="text-align: right;">
+                                                    <ui:outputNumber value="{!accMembershipDataObject.YTD}"></ui:outputNumber>
+                                                </th>
+                                            </tr>
+                                        </aura:iteration>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="row" colspan="2" data-label="">
+                                                <div class="slds-truncate bold" title="Total GL Membership" style="float:left;">{!$Label.c.Total_GL_Membership}</div>
+                                            </th>                                    
+                                            <th scope="row" data-label="{!'Starting GL Membership FEB'+' '+ v.startingGLdate}" style="text-align: right;">
+                                                <ui:outputNumber class="fontWeight" value="{!v.totalStartingGLdate}"></ui:outputNumber>
+                                            </th>
+                                            <th scope="row" data-label="{!'Current Month GL Membership'+' '+ v.currentGlDate}" style="text-align: right;">
+                                                <ui:outputNumber class="fontWeight" value="{!v.totalCurrentGlDate}"></ui:outputNumber>
+                                            </th>
+                                            <th scope="row" data-label="YTD Change" style="text-align: right;">
+                                                <ui:outputNumber class="fontWeight" value="{!v.totalYTD}"></ui:outputNumber>
+                                            </th>
+                                        </tr>                            
+                                    </tbody>
+                                </aura:set>
+                            </aura:if>
+                        </table>
+                        <div style="text-align:right;padding-right:17px;">                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

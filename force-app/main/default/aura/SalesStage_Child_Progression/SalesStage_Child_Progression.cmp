@@ -1,0 +1,29 @@
+<aura:component >
+    <aura:attribute name="index" type="Integer"/>
+    <aura:attribute name="Stage_Name" type="String"/>
+    <aura:attribute name="ProgressionSalesStage" type="String[]"/>
+    <aura:attribute name="progressionIndicator" type="String[]"/>
+    <aura:attribute name="Selected_Stage_Name" type="String"/>
+    <aura:attribute name="SalesStageLead" type="String[]"/>
+    <aura:attribute name="progression" type="String[]"/>
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:registerEvent name="SalesStageProgressionEvt" type="c:SalesStage_Progression_Event"/>
+    <aura:method name="selectActStage" action="{!c.selectActiveStage}">
+        <aura:attribute name="addActiveStage" type="Boolean" default="false"/>
+    </aura:method>
+    <li class="slds-progress__item">
+        <aura:if isTrue="{!v.Stage_Name == v.Selected_Stage_Name}">
+            <button class="slds-button slds-progress__marker progress-complete step-progress--link selected" aura:id="progression_marker" onclick="{!c.onActive}">
+                <span class="slds-assistive-text">{!v.Stage_Name}</span>
+                <span class="item-label">{!v.Stage_Name}</span>
+            </button>
+            <aura:set attribute="else">
+                <button class="slds-button slds-progress__marker step-progress--link" aura:id="progression_marker" onclick="{!c.onActive}">
+                    <span class="slds-assistive-text">{!v.Stage_Name}</span>
+                    <span class="item-label">{!v.Stage_Name}</span>
+                </button>
+            </aura:set>
+        </aura:if>
+        
+    </li>
+</aura:component>

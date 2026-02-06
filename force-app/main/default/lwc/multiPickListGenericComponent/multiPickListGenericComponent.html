@@ -1,0 +1,41 @@
+<template>
+  <div
+    class="slds-box slds-col slds-scrollable"
+    style="height: 7rem; padding: initial; background-color: white;"
+  >
+    <ul role="menu" style="min-width: 100%; width: fit-content;">
+      <template
+        for:each={pickListValues}
+        for:item="eachPickList"
+        for:index="index"
+      >
+        <div key={eachPickList}>
+          <li
+            onclick={handleSelection}
+            data-value={eachPickList}
+            data-selected={eachPickList}
+            class="highlightRow"
+          >
+            <div role="option">
+              <span class="slds-media__figure" style="margin-right: 0.25rem;">
+                <lightning-icon
+                  name="checkIcon"
+                  variant="inverse"
+                  icon-name="utility:check"
+                  size="xx-small"
+                  class="addOrRemoveCheck slds-p-left_xx-small"
+                ></lightning-icon>
+              </span>
+
+              <span class="slds-media__body">
+                <span class="slds-truncate" title={eachPickList}
+                  >{eachPickList}</span
+                >
+              </span>
+            </div>
+          </li>
+        </div>
+      </template>
+    </ul>
+  </div>
+</template>

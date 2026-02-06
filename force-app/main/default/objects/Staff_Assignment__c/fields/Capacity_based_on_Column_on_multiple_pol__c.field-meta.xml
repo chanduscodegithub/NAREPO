@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Capacity_based_on_Column_on_multiple_pol__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(Role_on_Case__c, &apos;Client Management Consultant&apos;),
+
+IF(NOT(ISNULL(Staffing_Assignment__r.CMC_Override_Current_Weight__c)),
+Staffing_Assignment__r.CMC_Override_Current_Weight__c - CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c,
+IF(NOT(ISNULL(Staffing_Assignment__r.CMC_Current_Weight__c)),
+Staffing_Assignment__r.CMC_Current_Weight__c - CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c, 0 - CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c)),
+			
+ IF(ISPICKVAL(Role_on_Case__c, &apos;Specialty Benefits Client Manager&apos;), 
+				
+IF(NOT(ISNULL(Staffing_Assignment__r.SBC_Override_Current_Weighting__c	)),
+Staffing_Assignment__r.SBC_Override_Current_Weighting__c	 - CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c,
+IF(NOT(ISNULL(Staffing_Assignment__r.SBC_Current_Weighting__c)),
+Staffing_Assignment__r.SBC_Current_Weighting__c - CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c, 0 - CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c)), 
+				
+				
+IF(NOT(ISPICKVAL(Role_on_Case__c, &apos;Client Management Consultant&apos;)),
+IF(NOT(ISNULL(Staffing_Assignment__r.Override_Current_Weight_User__c)),
+Staffing_Assignment__r.Override_Current_Weight_User__c - CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c,
+IF(NOT(ISNULL(Staffing_Assignment__r.Current_Weighting__c)),
+Staffing_Assignment__r.Current_Weighting__c - CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c, 0 - CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c )),0)))</formula>
+    <label>Capacity based on Adj Case FTE-Outlier</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,108 @@
+<template>
+  <template if:true={isEdit}>
+    <td data-label="Company" class="companyDiv">
+      <div class="slds-cell-wrap">
+        {eachcontactRecord.Account.Name}
+      </div>
+    </td>
+    <td data-label="Last Name" class="LastNameDiv">
+      <div class="slds-cell-wrap">
+        <a onclick={navigateToObjectHome}>{eachcontactRecord.LastName}</a>
+      </div>
+    </td>
+    <td data-label="First Name" class="FirstNameDiv">
+      <div class="slds-cell-wrap">
+        {eachcontactRecord.FirstName}
+      </div>
+    </td>
+    <td class="CorrespondenceTypeDiv">
+      <lightning-combobox
+        name="Correspondence_Type__c"
+        variant="label-hidden"
+        options={correspondanceTypePickListValues}
+        value={correspondenceTypeValue}
+        onchange={updateChanges}
+      ></lightning-combobox>
+      <template if:true={showCorrespondenceErrorMessage}>
+        <span class="fontColorAndSize">
+          *Complete this field
+        </span>
+      </template>
+    </td>
+    <td data-label="Survey Type" class="SurveyTypeDiv">
+      <lightning-combobox
+        name="Survey_Type__c"
+        variant="label-hidden"
+        options={surveyTypePickListValues}
+        value={eachcontactRecord.Survey_Type__c}
+        onchange={updateChanges}
+      ></lightning-combobox>
+      <template if:true={showSurveyTypeErrorMessage}>
+        <span class="fontColorAndSize">
+          *Complete this field
+        </span>
+      </template>
+    </td>
+    <td data-label="Email Address" class="EmailDiv">
+      <lightning-input
+        name="Email"
+        variant="label-hidden"
+        type="text"
+        value={eachcontactRecord.Email}
+        onchange={updateChanges}
+      ></lightning-input>
+      <template if:true={showEmailErrorMessage}>
+        <span class="fontColorAndSize">
+          *Complete this field
+        </span>
+      </template>
+      <template if:true={showvalidationMessage}>
+        <span class="fontColorAndSize">
+          Enter a valid Email Address
+        </span>
+      </template>
+    </td>
+    <td data-label="Delete" class="slds-text-align_center" style="width: 4%;">
+      <lightning-icon
+        icon-name="utility:delete"
+        name="Delete"
+        size="xx-small"
+        onclick={updateChanges}
+      >
+      </lightning-icon>
+    </td>
+  </template>
+  <template if:false={isEdit}>
+    <td data-label="Company">
+      <div class="slds-cell-wrap">
+        {eachcontactRecord.Account.Name}
+      </div>
+    </td>
+    <td data-label="Last Name">
+      <a onclick={navigateToObjectHome}>{eachcontactRecord.LastName}</a>
+    </td>
+    <td data-label="First Name">
+      <div class="slds-cell-wrap">
+        {eachcontactRecord.FirstName}
+      </div>
+    </td>
+    <td data-label="Correspondence Type">
+      <div class="slds-cell-wrap">{correspondenceTypeValue}</div>
+    </td>
+    <td data-label="Survey Type">
+      <div class="slds-cell-wrap">{eachcontactRecord.Survey_Type__c}</div>
+    </td>
+    <td data-label="Email Address">
+      <div class="slds-cell-wrap">{eachcontactRecord.Email}</div>
+    </td>
+    <td data-label="Delete" class="slds-text-align_center" style="width: 4%;">
+      <lightning-icon
+        name="Delete"
+        icon-name="utility:delete"
+        size="xx-small"
+        onclick={updateChanges}
+      >
+      </lightning-icon>
+    </td>
+  </template>
+</template>

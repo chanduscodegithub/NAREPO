@@ -1,0 +1,174 @@
+<aura:component controller="BGH_Member_Contacts_Class">
+    <aura:attribute name="bghContactMebers" type="String[]"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="Child_Data" type="Object"/>
+    <aura:attribute name="isSpinnertoLoad"  type="Boolean"  default="false"/>
+    <aura:attribute name="isGoButtonClicked" type="Boolean" default="false"/>
+    <aura:attribute name="isBGHMemberListEmpty" type="boolean" default="false" />
+    
+    <aura:attribute name="contact_PickListValues" type="String[]" default="Last Name,First Name"/>
+    <aura:attribute name="contact_PickListValues1" type="String[]" default="Begins With,Equals To,Contains"/>
+    
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    
+    <!-- Pagination Attributes -->
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div class="slds-section ipadbottom container forceRelatedListSingleContainer">
+        <article class="slds-card userList">
+            <div style="padding-top:0px;position:relative;">
+                <div class="slds-grid uiInputSelect slds-p-around--small">
+                    <div class="uiInputSelect uiMenuList">
+                        <form class="uiMenuList slds-form--inline slds-grid slds-grid--vertical-align-center account-team--popup">
+                            <div class="slds-form-element search-align">
+                                <div class="slds-form-element__control">
+                                    <span class="slds-truncate" title="Search Results Where">{!$Label.c.Search_Results_Where}</span>
+                                </div>
+                            </div>
+                            <div class="slds-form-element last-align">
+                                <div class="slds-form-element__control nm-wdt">
+                                    <ui:inputSelect class="slds-form-control" aura:id="SearchFieldDropDown" multiple="false" change="{!c.clearSearchFilterField}">
+                                        <aura:iteration items="{!v.contact_PickListValues}" var="contact"> 
+                                            <ui:inputSelectOption text="{!contact}" label="{!contact}"/> 
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                            <div class="slds-form-element begin-align">
+                                <div class="slds-form-element__control nm-wdt">
+                                    <ui:inputSelect class="slds-form-control" aura:id="SearchFilterDropDown" multiple="false" change="{!c.clearSearchField}">
+                                        <aura:iteration items="{!v.contact_PickListValues1}" var="contact"> 
+                                            <ui:inputSelectOption text="{!contact}"/> 
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                            <div class="slds-form-element input-align mr-sm-0">
+                                <div class="slds-form-element__control nm-wdt">
+                                    <div class="slds-hide">
+                                        <ui:inputText class="slds-form-control"></ui:inputText>
+                                    </div> 
+                                    <!--<ui:inputText aura:id="searchKeywordForConsultants" class="slds-form-control"></ui:inputText>-->
+                                    <ui:inputText class="slds-form-control" updateOn="keyup" aura:id="searchKeywordForConsultants" keyup="{!c.enableGoBtn}"></ui:inputText>
+                                </div>
+                            </div>
+                            <div class="slds-form-element go-btn">
+                                <!--<button type="button" class="slds-button slds-button-brand" onclick="{!c.searchConsultants}">{!$Label.c.Go}</button>-->
+                                <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="goBtn" disabled="true" press="{!c.searchConsultants}">{!$Label.c.Go}</ui:button>
+                            </div>
+                            <div class="slds-form-element clr-btn">
+                                <div class="slds-p-right--small seperator-md">
+                                	<ui:button class="slds-button slds-button--brand mt-md-0" aura:id="clrBtn" press="{!c.doInit}">{!$Label.c.Clear}</ui:button>
+                                </div>
+                                <!--<button type="button" class="slds-button slds-button-brand" onclick="{!c.doInit}">{!$Label.c.Clear}</button>-->
+                            </div>
+                            <div class="slds-col--bump-left prev-btn">
+                                <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="slds-card__body fixed-body-height slds-m-bottom--none">
+                    <aura:if isTrue="{!v.isSpinnertoLoad}">
+                        <div class="slds-spinner_container slds-is-fixed spinner-desktop" aura:id="spinner">
+                            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium spinner-desktop" role="status">
+                                <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <ui:scrollerWrapper class="scrollerSize">
+                        <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th class="slds-is-sortable slds-is-resizable" scope="col" width="70">
+                                        &nbsp;
+                                    </th>
+                                    <th class="bold" scope="col">
+                                        <div class="slds-truncate" tabindex="0">
+                                            <span class="slds-truncate" title="Last Name">{!$Label.c.Last_Name}</span>
+                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                        </div>
+                                    </th>
+                                    
+                                    <th class="bold" scope="col">
+                                        <div class="slds-truncate" tabindex="0">
+                                            <span class="slds-truncate" title="First Name">{!$Label.c.First_Name}</span>
+                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                        </div>
+                                    </th>
+                                    
+                                    <th class="bold" scope="col">
+                                        <div class="slds-truncate" tabindex="0">
+                                            <span class="slds-truncate" title="Job Title Name">{!$Label.c.Job_Title}</span>
+                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                        </div>
+                                    </th>
+                                    
+                                   
+                                    <th class="bold" scope="col">
+                                        <div class="slds-truncate" tabindex="0">
+                                            <span class="slds-truncate" title="Email">{!$Label.c.Email}</span>
+                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                
+                                <aura:if isTrue="{!v.isBGHMemberListEmpty}">
+                                    <p></p>
+                                    <tr>
+                                        <th colspan="5">
+                                            <div class="slds-text-align--center">{!$Label.c.No_Contacts_Found}</div>
+                                        </th>
+                                    </tr>
+                                    <aura:set attribute="else">
+                                        <p></p>
+                                        
+                                        <aura:iteration items="{!v.bghContactMebers}" var="bghContactMebersobj" indexVar="index">
+                                            <c:BGH_Member_Contacts_Modal_Popup_Table contactSearchArray="{!bghContactMebersobj}"></c:BGH_Member_Contacts_Modal_Popup_Table>
+                                        </aura:iteration>
+                                    </aura:set>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </ui:scrollerWrapper>
+                    <div class="slds-p-horizontal--small ph-lg-0">
+                    	<c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </article>
+    </div>
+	
+</aura:component>

@@ -1,0 +1,32 @@
+<aura:component controller="Accounts_and_MembershipActivity">
+    <aura:attribute name="membershipActivitiesData" type="sObject"/>
+    <aura:attribute name="MembershipActivityCFIndex" type="String"/>
+    <aura:attribute name="isModalBody" type="Boolean" default="false"/>
+    <aura:registerEvent name="modalCmpCloseEvent" type="c:Model_Closing_Event"/>
+    <tr class="slds-hint-parent">
+        <th scope="row" data-label="Membership Activity Name">
+            <a data-record="{!v.membershipActivitiesData.Opportunity.Id}" class="slds-truncate" tabindex="0" onclick="{!c.navToMADetailPage}" title="{!v.membershipActivitiesData.Opportunity.Name}">{!v.membershipActivitiesData.Opportunity.Name}</a>
+        </th>
+        <th scope="row" data-label="Company Name">
+            <div class="slds-truncate">{!v.membershipActivitiesData.Opportunity.Account.Name}</div>        	
+        </th>
+       <!-- <th scope="row" data-label="Type">
+            <div class="slds-truncate">{!v.membershipActivitiesData.Opportunity.Membership_Activity_Type__c}</div>
+        </th>-->
+        <th scope="row" data-label="Effective Date">
+            <ui:outputDate value="{!v.membershipActivitiesData.Opportunity.EffectiveDate__c}" format="M/d/yyyy"/>
+        </th>
+        <th scope="row" data-label="Owner">
+            <div class="slds-truncate">{!v.membershipActivitiesData.Opportunity.Owner.Name}</div>
+        </th>
+        <th scope="row" data-label="Status">
+            <div class="slds-truncate">{!v.membershipActivitiesData.Opportunity.Status__c}</div>
+        </th>
+        <th scope="row" data-label="Disposition(Medical)">
+            <div class="slds-truncate">{!v.membershipActivitiesData.Opportunity.Disposition_Medical__c}</div>
+        </th>
+        <th scope="row" data-label="Products Involved in Oppty/ Risk">
+            <div class="slds-truncate">{!v.membershipActivitiesData.Opportunity.Product_Type_Involved_in_Opp__c }</div>
+        </th>
+    </tr>
+</aura:component>

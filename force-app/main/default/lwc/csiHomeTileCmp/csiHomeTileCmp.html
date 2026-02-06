@@ -1,0 +1,62 @@
+<template>
+    <lightning-card title="Hot Topics">
+
+        <template if:true={showButtons}>
+            <lightning-button slot="actions" label="Add" variant="neutral" onclick={openModal}></lightning-button>
+        </template>
+
+        <template if:true={addNewLink}>
+            <div class="slds-modal slds-fade-in-open slds-backdrop">
+                <div class="slds-modal__container">
+
+                    <div class="slds-modal__header">
+                        <lightning-button-icon icon-name="utility:close" alternative-text="Close this window"
+                            size="large" variant="bare-inverse" onclick={closeModal} class="slds-modal__close">
+                        </lightning-button-icon>
+                    </div>
+
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-input class="labelClass" type="text" label="Label" value={labelValue}>
+                        </lightning-input>
+                        <lightning-textarea class="linkClass" type="text" label="Link" value={linkValue}>
+                        </lightning-textarea>
+                    </div>
+
+                    <div class="slds-modal__footer">
+                        <lightning-button label="Save" variant="brand" onclick={saveLinkToHotTopics}>
+                        </lightning-button>
+
+                        <lightning-button label="Cancel" onclick={closeModal}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <div class="slds-p-around_medium slds-scrollable_y" style="height:15rem;">
+            <template for:each={listOfHotTopics} for:item="ht">
+                <div key={ht.Id} class="slds-p-around_xx-small">
+                    <lightning-icon icon-name="standard:file"></lightning-icon>
+
+                    <a href={ht.Link__c} data-objname='ContentDocument' style="padding-left: 0.9rem;"> {ht.Name}
+                    </a>
+
+                    <template if:true={showButtons}>
+                        <lightning-button-icon class="slds-float_right slds-p-around_xxx-small"
+                            icon-name="utility:delete" alternative-text="Delete" title="Delete" onclick={deleteHomeTile}
+                            data-recordidvalue={ht.Id}>
+                        </lightning-button-icon>
+                    </template>
+
+                    <template if:true={showButtons}>
+                        <lightning-button-icon class="slds-float_right slds-p-around_xxx-small"
+                            icon-name="utility:edit_form" alternative-text="Edit" title="Edit" data-labelvalue={ht.Name}
+                            data-linkvalue={ht.Link__c} data-recordidvalue={ht.Id} data-whichbutton="editButton"
+                            onclick={openModal}>
+                        </lightning-button-icon>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

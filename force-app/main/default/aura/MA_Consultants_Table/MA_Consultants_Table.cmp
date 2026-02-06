@@ -1,0 +1,131 @@
+<aura:component controller="Account_Consultants_Class">
+    
+    <!-- For implementing in QA -->
+    <aura:attribute name="isFromQA" type="boolean" />
+    
+    <aura:attribute name="maConsultant" type="String[]"/>
+    <aura:attribute name="maConsulatantIndex" type="Integer"/>
+    <aura:attribute name="maConsulatantTableColumns" type="boolean"/>
+    <aura:attribute name="isMAPrimary" type="boolean" default="false"/>
+    <aura:attribute name="isPrimaryThen" type="boolean" default="false"/>
+    <aura:attribute name="isLoggedInUserValid" type="boolean" default="true"/>
+    
+    <aura:attribute name="primaryId" type="String"/>
+    <aura:attribute name="accountId" type="String"/>
+    
+    <aura:registerEvent name="removeMAConsultant" type="c:MA_Consultants_Table_Event"/>
+    <aura:registerEvent name="updatePrimaryId" type="c:MA_Consultants_Primary_Update_Event"/>
+    <aura:registerEvent name="cancelEditingPrimaryId" type="c:Account_Primary_Id_Editing_Event"/>
+    
+    <aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>
+    
+    <aura:method name="remvEditCancel" action="{!c.removeEditCancel}" access="PUBLIC">
+        <aura:attribute name="enablePrimary" type="Boolean"/>
+        <aura:attribute name="fromEdit" type="Boolean"/>
+        <aura:attribute name="fromCancel" type="Boolean"/>
+    </aura:method>
+    
+    <tr class="slds-hint-parent">
+        <aura:if isTrue="{!v.isFromQA == false}">
+            <aura:if isTrue="{!v.isLoggedInUserValid}">
+                <th scope="row" aura:id="thAuraId" class="slds-cell-shrink">
+                    <div class="slds-truncate" title="">
+                        <div class="slds-p-left--medium" data-record="{!index}" aura:id="editIcon" title="{!$Label.c.Edit_Primary}">
+                            <button onclick="{!c.editPrimary}" class="slds-button slds-text-body--regular">
+                                <lightning:icon class="slds-icon slds-icon--small"  iconName="utility:edit" size="x-small" alternativeText="Product" />
+                            </button>
+                        </div>
+                        
+                        <div aura:id="inlineEdit" class="slds-p-left--medium slds-hide">
+                            <button type="button" class="slds-button slds-text-body--regular" onclick="{!c.cancelPrimary}" title="{!$Label.c.Cancel}">
+                                <lightning:icon class="slds-icon slds-icon--small"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                            </button>
+                            <button type="button" class="slds-button slds-text-body--regular" onclick="{!c.savePrimary}"  title="{!$Label.c.Save}" data-record="{!v.maConsultant.ContactId}">
+                                <lightning:icon class="slds-icon slds-icon--small"  iconName="utility:check" size="x-small" alternativeText="Product" />
+                            </button>
+                        </div>
+                    </div>
+                </th>
+            </aura:if>
+        </aura:if>
+        
+        <th scope="row" data-label="Primary">
+            <aura:if isTrue="{!v.isFromQA}">
+                <ui:inputRadio text="MAPrimary" name="MAPrimary" aura:id="MAPrimary" disabled="false" click="{!c.QARadioClick}" value="{!v.maConsultant.IsPrimary}" />
+                <aura:set attribute="else">
+                    <ui:inputRadio text="MAPrimary" name="MAPrimary" aura:id="MAPrimary" disabled="true" click="{!c.checkVal}" value="{!v.maConsultant.IsPrimary}" />    
+                </aura:set>
+            </aura:if>
+        </th>
+        
+        <th scope="row" data-label="Last Name">
+            <aura:if isTrue="{!v.isFromQA}">
+                <div class="slds-truncate" title="{!v.maConsultant.LastName}">{!v.maConsultant.LastName}</div>
+                <aura:set attribute="else">
+                    <div class="slds-truncate" title="{!v.maConsultant.Contact.LastName}">
+                        <a data-record="{!v.maConsultant.ContactId}" onclick="{!c.navToRecord}">{!v.maConsultant.Contact.LastName}</a>
+                    </div>    
+                </aura:set>
+            </aura:if>
+        </th>
+        
+        <th scope="row" data-label="First Name">
+            <aura:if isTrue="{!v.isFromQA}">
+                <div class="slds-truncate" title="{!v.maConsultant.FirstName}">{!v.maConsultant.FirstName}</div>
+                <aura:set attribute="else">
+                    <div class="slds-truncate" title="{!v.maConsultant.Contact.FirstName}">{!v.maConsultant.Contact.FirstName}</div>
+                </aura:set>
+            </aura:if>
+        </th>
+        
+        <th scope="row" data-label="Firm">
+            <aura:if isTrue="{!v.isFromQA}">
+                <div class="slds-truncate" title="{!v.maConsultant.Account.Name}">{!v.maConsultant.Account.Name}</div>
+                <aura:set attribute="else">
+                    <div class="slds-truncate" title="{!v.maConsultant.Contact.Account.Name}">
+                        <a data-record="{!v.maConsultant.Contact.Account.Id}" onclick="{!c.navToRecord}">{!v.maConsultant.Contact.Account.Name}</a>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </th>
+        
+        <th scope="row" data-label="City">
+            <aura:if isTrue="{!v.isFromQA}">
+                <div class="slds-truncate" title="{!v.maConsultant.MailingCity}">{!v.maConsultant.MailingCity}</div>
+                <aura:set attribute="else">
+                    <div class="slds-truncate" title="{!v.maConsultant.Contact.MailingCity}">{!v.maConsultant.Contact.MailingCity}</div>
+                </aura:set>
+            </aura:if> 
+        </th>
+        
+        
+        <aura:if isTrue="{!v.isLoggedInUserValid}">
+            <th scope="row">
+                <aura:if isTrue="{!v.isFromQA}">
+                    <div class="" data-record="{!v.maConsultant.Id}" aura:id="deleteIcon" onclick="{!c.remove}" title="{!$Label.c.Remove}">
+                        <button class="slds-button slds-text-body--regular">
+                            <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                        </button>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="" data-record="{!v.maConsultant.ContactId}" aura:id="deleteIcon" onclick="{!c.remove}" title="{!$Label.c.Remove}">
+                            <button class="slds-button slds-text-body--regular">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                            </button>
+                        </div>
+                    </aura:set>
+                </aura:if>
+                
+                <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                    <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </div>
+            </th>
+        </aura:if>
+    </tr>
+</aura:component>

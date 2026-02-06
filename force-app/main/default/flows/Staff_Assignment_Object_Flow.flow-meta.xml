@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <decisions>
+        <name>List_View_Search_staff_user_assignment</name>
+        <label>List View Search staff user assignment</label>
+        <locationX>182</locationX>
+        <locationY>923</locationY>
+        <defaultConnector>
+            <targetReference>Role_BC_Company_non_Mercer_Exchange_business</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT list view search staff user assignment</defaultConnectorLabel>
+        <rules>
+            <name>IF_list_view_search_staff_user_assignment</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Staff_User_Assignment__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>update_the_staff_assignment_list_view_field</targetReference>
+            </connector>
+            <label>IF list view search staff user assignment</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>New_StaffAssignment</name>
+        <label>New StaffAssignment</label>
+        <locationX>182</locationX>
+        <locationY>2423</locationY>
+        <defaultConnector>
+            <targetReference>New_StaffAssignment_mercer</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT New StaffAssignment</defaultConnectorLabel>
+        <rules>
+            <name>IF_New_StaffAssignment</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>NewStaffAssFormula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>update_of_Case</targetReference>
+            </connector>
+            <label>IF New StaffAssignment</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>New_StaffAssignment_mercer</name>
+        <label>New StaffAssignment mercer</label>
+        <locationX>182</locationX>
+        <locationY>2723</locationY>
+        <defaultConnector>
+            <targetReference>New_StaffAssignment_non_mercer</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT New StaffAssignment mercer</defaultConnectorLabel>
+        <rules>
+            <name>IF_New_StaffAssignment_mercer</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>NewStaffAssmercerFormula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>update_of_case_copy_1</targetReference>
+            </connector>
+            <label>IF New StaffAssignment mercer</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>New_StaffAssignment_non_mercer</name>
+        <label>New StaffAssignment non mercer</label>
+        <locationX>182</locationX>
+        <locationY>3023</locationY>
+        <defaultConnector>
+            <targetReference>Role_Specialty_Benefits_Client_Manager</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT New StaffAssignment non mercer</defaultConnectorLabel>
+        <rules>
+            <name>IF_New_StaffAssignment_non_mercer</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>NewStaffAssnonmercerFormula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>update_of_case_copy_2</targetReference>
+            </connector>
+            <label>IF New StaffAssignment non mercer</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Rol_CM</name>
+        <label>Rol= CM</label>
+        <locationX>182</locationX>
+        <locationY>1823</locationY>
+        <defaultConnector>
+            <targetReference>Role_Client_Manager_Consultant</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT Rol= CM</defaultConnectorLabel>
+        <rules>
+            <name>IF_Rol_CM</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Role_on_Case__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Client Manager</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Role_on_Case__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_of_case_0_75</targetReference>
+            </connector>
+            <label>IF Rol= CM</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Role_BC_Company_Mercer_Business</name>
+        <label>Role= BC &amp; Company=Mercer Business</label>
+        <locationX>182</locationX>
+        <locationY>1523</locationY>
+        <defaultConnector>
+            <targetReference>Rol_CM</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT Role= BC &amp; Company=Mercer Business</defaultConnectorLabel>
+        <rules>
+            <name>IF_Role_BC_Company_Mercer_Business</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Role_on_Case__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Benefit Consultant</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Customer_Name__r.Private_Exchange_Client__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Mercer Marketplace</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Role_on_Case__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_of_case_0_05</targetReference>
+            </connector>
+            <label>IF Role= BC &amp; Company=Mercer Business</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Role_BC_Company_non_Mercer_Exchange_business</name>
+        <label>Role= BC &amp; Company= non Mercer Exchange business</label>
+        <locationX>182</locationX>
+        <locationY>1223</locationY>
+        <defaultConnector>
+            <targetReference>Role_BC_Company_Mercer_Business</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT Role= BC &amp; Company= non Mercer Exchange business</defaultConnectorLabel>
+        <rules>
+            <name>IF_Role_BC_Company_non_Mercer_Exchange_business</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Role_on_Case__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Benefit Consultant</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Customer_Name__r.Private_Exchange_Client__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Mercer Marketplace</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Role_on_Case__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Of_case_0_25</targetReference>
+            </connector>
+            <label>IF Role= BC &amp; Company= non Mercer Exchange business</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Role_Client_Manager_Consultant</name>
+        <label>Role= Client Manager Consultant</label>
+        <locationX>182</locationX>
+        <locationY>2123</locationY>
+        <defaultConnector>
+            <targetReference>New_StaffAssignment</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT Role= Client Manager Consultant</defaultConnectorLabel>
+        <rules>
+            <name>IF_Role_Client_Manager_Consultant</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RoleCMCformula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_of_case_null</targetReference>
+            </connector>
+            <label>IF Role= Client Manager Consultant</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Role_Specialty_Benefits_Client_Manager</name>
+        <label>Role = Specialty Benefits Client Manager</label>
+        <locationX>182</locationX>
+        <locationY>3323</locationY>
+        <defaultConnector>
+            <targetReference>Role_UMR_Client_Manager</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Role_Specialty_Benefits_Client_Manager</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RoleSBCformula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_of_case_SBC</targetReference>
+            </connector>
+            <label>If Role = Specialty Benefits Client Manager</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Role_UMR_Client_Manager</name>
+        <label>Role = UMR Client Manager</label>
+        <locationX>182</locationX>
+        <locationY>3623</locationY>
+        <defaultConnectorLabel>IF NOT Role = UMR Client Manager</defaultConnectorLabel>
+        <rules>
+            <name>IF_Role_UMR_Client_Manager</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RoleUMRCMFormula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Of_Case_copy_3</targetReference>
+            </connector>
+            <label>IF Role = UMR Client Manager</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Update_Service_AMT_Record</name>
+        <label>Update Service AMT Record</label>
+        <locationX>182</locationX>
+        <locationY>623</locationY>
+        <defaultConnector>
+            <targetReference>List_View_Search_staff_user_assignment</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT Update Service AMT</defaultConnectorLabel>
+        <rules>
+            <name>IF_Update_Service_AMT</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Who_is_being_replaced__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Who_is_being_replaced__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_End_date_with_Start_date</targetReference>
+            </connector>
+            <label>IF Update Service AMT</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Update_Should_Extended_AMT_be_updated</name>
+        <label>Update Should Extended AMT be updated</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Update_Service_AMT_Record</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IF NOT Update Should Extended AMT be updated=Y</defaultConnectorLabel>
+        <rules>
+            <name>IF_Update_Should_Extended_AMT_be_updated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>UpdatedAMTFormula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CreateAndUpdateServiceAMT_Flow</targetReference>
+            </connector>
+            <label>IF Update Should Extended AMT be updated</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>EndDateFormula</name>
+        <dataType>Date</dataType>
+        <expression>IF(ISNULL({!$Record.Start_Date__c}),today() -1,{!$Record.Start_Date__c} -1)</expression>
+    </formulas>
+    <formulas>
+        <name>ListViewSearchFomula</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.Staff_User_Assignment__r.LastName} + &apos; &apos; + {!$Record.Staff_User_Assignment__r.FirstName}</expression>
+    </formulas>
+    <formulas>
+        <name>NewStaffAssFormula</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <name>NewStaffAssmercerFormula</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW() &amp;&amp; TEXT( {!$Record.Customer_Name__r.Private_Exchange_Client__c}) = &apos;Mercer Marketplace&apos;</expression>
+    </formulas>
+    <formulas>
+        <name>NewStaffAssnonmercerFormula</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW() &amp;&amp; TEXT( {!$Record.Customer_Name__r.Private_Exchange_Client__c}) != &apos;Mercer Marketplace&apos;</expression>
+    </formulas>
+    <formulas>
+        <name>RoleCMCformula</name>
+        <dataType>Boolean</dataType>
+        <expression>ISPICKVAL({!$Record.Role_on_Case__c} , &apos;Client Management Consultant&apos;)  &amp;&amp;(ISCHANGED({!$Record.Role_on_Case__c}) ||  ISNEW() )</expression>
+    </formulas>
+    <formulas>
+        <name>RoleSBCformula</name>
+        <dataType>Boolean</dataType>
+        <expression>ISPICKVAL({!$Record.Role_on_Case__c} , &apos;Specialty Benefits Client Manager&apos;)  &amp;&amp;(ISCHANGED({!$Record.Role_on_Case__c}) ||  ISNEW() )</expression>
+    </formulas>
+    <formulas>
+        <name>RoleUMRCMFormula</name>
+        <dataType>Boolean</dataType>
+        <expression>(ISPICKVAL({!$Record.Role_on_Case__c} , &apos;UMR Client Manager&apos;) || ISPICKVAL({!$Record.Role_on_Case__c} , &apos;Surest Client Manager&apos;)) &amp;&amp;(ISCHANGED({!$Record.Role_on_Case__c}) ||  ISNEW() )</expression>
+    </formulas>
+    <formulas>
+        <name>UpdatedAMTFormula</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+	AND(ISCHANGED({!$Record.Staff_User_Assignment__r.Id} ),  {!$Record.Should_Extended_AMT_be_updated__c} = TRUE,{!$Record.Staff_User_Assignment__r.Id!=} null),
+	AND(ISCHANGED({!$Record.Should_Extended_AMT_be_updated__c} ),  {!$Record.Should_Extended_AMT_be_updated__c} = TRUE,{!$Record.Staff_User_Assignment__r.Id!=} null),
+	AND(ISNEW(),{!$Record.Staff_User_Assignment__r.Id}  != null,{!$Record.Should_Extended_AMT_be_updated__c} = True) 
+)</expression>
+    </formulas>
+    <interviewLabel>Staff Assignment Object Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Staff Assignment Object Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_End_date_with_Start_date</name>
+        <label>Update End date with Start date</label>
+        <locationX>50</locationX>
+        <locationY>731</locationY>
+        <connector>
+            <targetReference>List_View_Search_staff_user_assignment</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Case_Management_End_Date__c</field>
+            <value>
+                <elementReference>EndDateFormula</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Who_is_being_replaced__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>update_of_Case</name>
+        <label>update % of Case</label>
+        <locationX>50</locationX>
+        <locationY>2531</locationY>
+        <connector>
+            <targetReference>New_StaffAssignment_mercer</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Role_on_Case__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Client Manager</stringValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>of_case__c</field>
+            <value>
+                <numberValue>0.75</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_of_case_0_05</name>
+        <label>Update % of case= 0.05</label>
+        <locationX>50</locationX>
+        <locationY>1631</locationY>
+        <connector>
+            <targetReference>Rol_CM</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>of_case__c</field>
+            <value>
+                <numberValue>0.05</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Of_case_0_25</name>
+        <label>Update % Of case=0.25</label>
+        <locationX>50</locationX>
+        <locationY>1331</locationY>
+        <connector>
+            <targetReference>Role_BC_Company_Mercer_Business</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>of_case__c</field>
+            <value>
+                <numberValue>0.25</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_of_case_0_75</name>
+        <label>Update % of case=0.75</label>
+        <locationX>50</locationX>
+        <locationY>1931</locationY>
+        <connector>
+            <targetReference>Role_Client_Manager_Consultant</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>of_case__c</field>
+            <value>
+                <numberValue>0.75</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>update_of_case_copy_1</name>
+        <label>update % of case copy 1</label>
+        <locationX>50</locationX>
+        <locationY>2831</locationY>
+        <connector>
+            <targetReference>New_StaffAssignment_non_mercer</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Role_on_Case__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Benefit Consultant</stringValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>of_case__c</field>
+            <value>
+                <numberValue>0.05</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>update_of_case_copy_2</name>
+        <label>update % of case copy 2</label>
+        <locationX>50</locationX>
+        <locationY>3131</locationY>
+        <connector>
+            <targetReference>Role_Specialty_Benefits_Client_Manager</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Role_on_Case__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Benefit Consultant</stringValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>of_case__c</field>
+            <value>
+                <numberValue>0.25</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Of_Case_copy_3</name>
+        <label>Update % Of Case copy 3</label>
+        <locationX>50</locationX>
+        <locationY>3731</locationY>
+        <inputAssignments>
+            <field>of_case__c</field>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_of_case_null</name>
+        <label>Update % of case = null</label>
+        <locationX>50</locationX>
+        <locationY>2231</locationY>
+        <connector>
+            <targetReference>New_StaffAssignment</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>of_case__c</field>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_of_case_SBC</name>
+        <label>Update % of case SBC</label>
+        <locationX>50</locationX>
+        <locationY>3431</locationY>
+        <connector>
+            <targetReference>Role_UMR_Client_Manager</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>of_case__c</field>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>update_the_staff_assignment_list_view_field</name>
+        <label>update the staff assignment list view field</label>
+        <locationX>50</locationX>
+        <locationY>1031</locationY>
+        <connector>
+            <targetReference>Role_BC_Company_non_Mercer_Exchange_business</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Staffing_Assignment__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Staff_assignment_list_search__c</field>
+            <value>
+                <elementReference>ListViewSearchFomula</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Should_Extended_AMT_be_updated</targetReference>
+        </connector>
+        <object>Staff_Assignment__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>CreateAndUpdateServiceAMT_Flow</name>
+        <label>CreateAndUpdateServiceAMT Flow</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>Update_Service_AMT_Record</targetReference>
+        </connector>
+        <flowName>CreateAndUpdateServiceAMT</flowName>
+        <inputAssignments>
+            <name>companyid</name>
+            <value>
+                <elementReference>$Record.Customer_Name__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>email</name>
+            <value>
+                <elementReference>$Record.Staff_User_Assignment__r.Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>firstname</name>
+            <value>
+                <elementReference>$Record.Staff_User_Assignment__r.FirstName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>lastname</name>
+            <value>
+                <elementReference>$Record.Staff_User_Assignment__r.LastName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>phone</name>
+            <value>
+                <elementReference>$Record.Staff_User_Assignment__r.Phone</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>policy</name>
+            <value>
+                <elementReference>$Record.Related_Policy__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>rolename</name>
+            <value>
+                <elementReference>$Record.Role_on_Case__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>startdatefromstaffassignment</name>
+            <value>
+                <elementReference>$Record.Start_Date__c</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <variables>
+        <name>PolicyVar</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

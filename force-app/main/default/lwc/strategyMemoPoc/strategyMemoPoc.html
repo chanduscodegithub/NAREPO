@@ -1,0 +1,1084 @@
+<template>
+    <header class="slds-modal__header">
+        <template if:true={isEditMode}>
+            <div class="slds-grid slds-grid_align-end slds-gutters">
+
+                <lightning-button label="Cancel" variant="Neutral" onclick={handleCancel} class="slds-m-left_x-small">
+                </lightning-button>
+                <lightning-button label="Save" variant="brand" onclick={handleSave} class="slds-m-left_x-small">
+                </lightning-button>
+
+            </div>
+        </template>
+        <template if:false={isEditMode}>
+            <div class="slds-grid slds-grid_align-end slds-gutters">
+                <template if:true={isButtonVisibile}>
+                    <lightning-button label="Edit" variant="Neutral" onclick={handleClickEdit}
+                        class="slds-m-left_x-small"></lightning-button>
+                </template>
+                <lightning-button label="Print" variant="brand" onclick={handleClickPrint} class="slds-m-left_x-small">
+                </lightning-button>
+            </div>
+        </template>
+    </header>
+    <div class="footer active" style="font-size: 12px; position: fixed; width: 98%; bottom: 3px; z-index: 100; background: #f3f2f2;
+      left: 13px; border-radius: 2px; padding: 5px; padding-left:24px;">
+        <div class="slds-grid slds-grid_align-center slds-wrap slds-size_7-of-7 slds-grid_reverse slds-p-right_large">
+            <template if:true={isEditMode}>
+                <div class="slds-grid slds-grid_align-end slds-gutters">
+                    <lightning-button label="Cancel" variant="Neutral" onclick={handleCancel}
+                        class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button label="Save" variant="brand" onclick={handleSave} class="slds-m-left_x-small">
+                    </lightning-button>
+                </div>
+            </template>
+            <template if:false={isEditMode}>
+                <div class="slds-grid slds-grid_align-end slds-gutters">
+                    <template if:true={isButtonVisibile}>
+                        <lightning-button label="Edit" variant="Neutral" onclick={handleClickEdit}
+                            class="slds-m-left_x-small"></lightning-button>
+                    </template>
+                    <lightning-button label="Print" variant="brand" onclick={handleClickPrint}
+                        class="slds-m-left_x-small"></lightning-button>
+                </div>
+            </template>
+        </div>
+    </div>
+    <!-- Modal Body to display record details -->
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading..." size="large" variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={isLoading}>
+        <div class="slds-modal__content slds-p-around_large" id="modal-content-id-1">
+            <table
+                class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <tbody>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Strategy Call Date:</td>
+                        <td class="slds-text-align_left value">
+                            <template if:true={strategyCallDat}>
+                                <span>{strategyCallDat}</span>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left custom-td">Strategy Call Time:</td>
+                        <td class="slds-text-align_left value">
+                            <template if:true={isEditMode}>
+                                <lightning-input class="slds-p-around_xxx-small" variant="label-hidden"
+                                    value={strategyMemo.Strategy_Call_Time__c} name="Strategy_Call_Time__c"
+                                    max-length="255" onchange={handleChange}></lightning-input>
+
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Strategy_Call_Time__c}>
+                                    <span>{strategyMemo.Strategy_Call_Time__c}</span>
+                                </template>
+
+                            </template>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Proposal Date Received:</td>
+                        <td class="slds-text-align_left value"><template if:true={proposalDateReceived}>
+                                <span>{proposalDateReceived}</span>
+                            </template></td>
+                        <td class="slds-text-align_left custom-td">Proposal Date Due:</td>
+                        <td class="slds-text-align_left value"><template if:true={proposalDueDate}>
+                                <span>{proposalDueDate}</span>
+                            </template></td>
+
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Company Name as per RFP:</td>
+                        <td class="slds-text-align_left value"><template if:true={isEditMode}>
+                                <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                                    max-length="255" value={strategyMemo.Company_Name_as_per_RFP__c}
+                                    name="Company_Name_as_per_RFP__c" onchange={handleChange}>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Company_Name_as_per_RFP__c}>
+                                    <span>{strategyMemo.Company_Name_as_per_RFP__c}</span>
+                                </template>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left custom-td">Targeted People as Per RFP:</td>
+                        <td class="slds-text-align_left value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="255" value={strategyMemo.People__c}
+                                    name="People__c" onchange={handleChange}>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.People__c}>
+                                    <span>{strategyMemo.People__c}</span>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                     <tr>
+                        <td class="slds-text-align_left">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label custom-td" for="myInput">
+                                        RFP Strategy Question #'s:
+                                        <div class="slds-form-element__icon slds-m-left_x-small">
+                                            <button class="slds-button slds-button_icon slds-button_icon-bare"
+                                                    aria-live="assertive"
+                                                    aria-describedby="help-text-id"
+                                                    onmouseover={handleHelpTextHover}
+                                                    onmouseout={handleHelpTextLeave}>
+                                                <lightning-icon icon-name="utility:info" size="x-small" alternative-text="Help" style="margin-top: -5px;"></lightning-icon>
+                                                <span class="slds-assistive-text">Help</span>
+                                            </button>
+                                        </div>
+                                    </label>
+                                    
+                                    <div if:true={showHelpText} class="slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-size_medium" role="tooltip" id="help-text-id" style="position:absolute; bottom: 20px;">
+                                        <div class="slds-popover__body">
+                                             <lightning-formatted-rich-text value={questNoFormat}></lightning-formatted-rich-text> 
+                                            <!-- Please use the following format to add strategic questions (q)<br/>
+                                            <b>Word:</b> q1,q2,q3<br/>
+                                            <b>Excel:</b> SheetName(q1,q2,q3), SheetName2(q1,q2,q3) -->
+                                        </div>
+                                    </div>
+                                </div>
+                            <!-- <lightning-helptext content={questNoFormat} style="padding: inherit;"></lightning-helptext> -->
+                        </td>
+                        <td colspan="3" class="value"> <template if:true={isEditMode}>
+                                <lightning-textarea class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                                    value={strategyMemo.Strategic_Question_No__c} name="Strategic_Question_No__c"
+                                    onchange={handleChange}>
+                                </lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Strategic_Question_No__c}>
+                                    <span>{strategyMemo.Strategic_Question_No__c}</span>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Salesforce Opportunity ID:</td>
+                        <td colspan="3" class="slds-text-align_left value">
+                            <template if:true={oppId}>
+                                <span>{oppId}</span>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td ">Reference Attributes:</td>
+                        <td colspan="3" class="slds-p-around_xxx-small value">
+                            <template if:true={isEditMode}>
+                                <lightning-textarea class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                                    max-length="32768" value={strategyMemo.Reference_Attributes__c}
+                                    name="Reference_Attributes__c" onchange={handleChange}></lightning-textarea>
+                                <!--<lightning-dual-listbox class="slds-p-around_xxx-small" variant="label-hidden"
+                                name="referencelist" source-label="Available" selected-label="Selected"
+                                value={selectedValues} options={multiOptions} onchange={handleChange}>
+                            </lightning-dual-listbox>-->
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Reference_Attributes__c}>
+                                    <lightning-formatted-text value={strategyMemo.Reference_Attributes__c}>
+                                    </lightning-formatted-text>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td ">Spotlight RFP:</td>
+                        <td colspan="3" class="slds-text-align_left value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="checkbox" checked={strategyMemo.Spotlight_RFP__c}
+                                    name="Spotlight_RFP__c" onchange={handleChange}> </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <lightning-input type="checkbox" checked={strategyMemo.Spotlight_RFP__c} disabled>
+                                </lightning-input>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Health Plan Manager Industry:</td>
+                        <td colspan="3" class="value"><template if:true={healthPlan}>
+                                <span>{healthPlan}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Annual Revenue:</td>
+                        <td colspan="3" class="value"><template if:true={annualRevenue}>
+                                <span>${annualRevenue}</span>
+                            </template></td>
+                    </tr>
+
+                    <tr>
+                        <td class="slds-text-align_left custom-td">File Passwords? If so, please provide:</td>
+                        <td colspan="3" class="slds-text-align_left value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="password" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="175"
+                                    value={strategyMemo.File_Passwords_If_so_please_provide__c}
+                                    name="File_Passwords_If_so_please_provide__c" onchange={handleChange}>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.File_Passwords_If_so_please_provide__c}>
+                                    <lightning-formatted-text
+                                        value={strategyMemo.File_Passwords_If_so_please_provide__c}>
+                                    </lightning-formatted-text>
+                                    <!-- <span>{strategyMemo.File_Passwords_If_so_please_provide__c}</span>-->
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- End of Strategy Info Table-->
+            <!--Client Information -->
+            <div class="section-header ">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h5> CLIENT INFORMTION:</h5>
+                </div>
+            </div>
+            <table
+                class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <tbody>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Headquarters City</td>
+                        <td colspan="3" class="value"><template if:true={billingCity}>
+                                <span>{billingCity}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Primary Situs State</td>
+                        <td colspan="3" class="value"><template if:true={primarySitusState}>
+                                <span>{primarySitusState}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Contact Name(s)</td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="255" value={strategyMemo.Contact_Names__c}
+                                    name="Contact_Names__c" onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Contact_Names__c}>
+                                    <span>{strategyMemo.Contact_Names__c}</span>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Address</td>
+                        <td colspan="3" class="value"><template if:true={billingAddress}>
+                                <span>{billingAddress}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Website URL</td>
+                        <td colspan="3" class="value"><template if:true={webAddress}>
+                                <span>{webAddress}</span>
+                            </template></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--End of Client Information-->
+            <!--CONSULTANT INFORMATION: Start -->
+            <div class="section-header ">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h3>PRIMARY CONSULTANT : </h3>
+                </div>
+            </div>
+            <table
+                class="slds-text-body_small slds-table slds-border_left slds-border_right slds-border_top slds-border_bottom slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <tbody>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Consultant Firm-Loc</td>
+                        <td colspan="3" class="value"><template if:true={corporateMailingCity}>
+                                <span>{corporateMailingCity}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">RFP Primary Consultant(s)</td>
+                        <td colspan="3" class="value"><template if:true={consultantName}>
+                                <span>{consultantName}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Address</td>
+                        <td colspan="3" class="value"><template if:true={corporateMailingAddress}>
+                                <span>{corporateMailingAddress}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Phone Number</td>
+                        <td colspan="3" class="value"><template if:true={primaryConsultantPhone}>
+                                <span>{primaryConsultantPhone}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">E-Mail</td>
+                        <td colspan="3" class="value"><template if:true={primaryConsultantEmail}>
+                                <span>{primaryConsultantEmail}</span>
+                            </template></td>
+
+                    </tr>
+                </tbody>
+            </table>
+            <!--END : CONSULTANT INFORMATION -->
+            <!--Secondary Consultant -->
+            <!-- SECONDARY CONSULTANT SECTION -->
+<div class="section-header">
+    <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+        <h3>SECONDARY CONSULTANTS :</h3>
+    </div>
+</div>
+
+<table class="slds-text-body_large  slds-table slds-border_left slds-border_right slds-border_top slds-border_bottom slds-table--bordered slds-table--resizable-cols slds-table--fixed-layout">
+    <thead>
+        <tr>
+            <th class="slds-text-align_left  custom-td left-align-for" style="height: 30px;">Last Name</th>
+            <th class="slds-text-align_left custom-td left-align-for">First Name</th>
+            <th class="slds-text-align_left custom-td left-align-for">Consulting Firm</th>
+            <th class="slds-text-align_left custom-td left-align-for">City</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template if:true={secondaryConsultants}>
+            <template if:true={secondaryConsultants.length}>
+                <template for:each={secondaryConsultants} for:item="secondary">
+                    <tr key={secondary.Id}>
+                        <td class="value left-align-for">{secondary.Contact.LastName}</td>
+                        <td class="value left-align-for">{secondary.Contact.FirstName}</td>
+                        <td class="value left-align-for">{secondary.Contact.Account.Name}</td>
+                        <td class="value left-align-for">{secondary.Contact.MailingCity}</td>
+                    </tr>
+                </template>
+            </template>
+            <template if:false={secondaryConsultants.length}>
+                <tr>
+                    <td class="slds-p-around_small slds-text-body_regular" colspan="4">
+                       No Records Found.
+                    </td>
+                </tr>
+            </template>
+        </template>
+        <template if:false={secondaryConsultants}>
+            <tr>
+                <td class="slds-p-around_small slds-text-body_regular" colspan="4">
+                    Secondary consultants not available for this Company.
+                </td>
+            </tr>
+        </template>
+    </tbody>
+</table>
+
+
+            <!--Secondray end --->
+            <!--Start : RFP TEAM CONTACTS: -->
+            <div class="section-header ">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>RFP TEAM CONTACTS:</h4>
+                </div>
+            </div>
+            <c-rfp-team-contacts record-id={recordId} strategy-memo={strategyMemo}
+                onstrategymemochange={handleStrategyMemoChange} is-edit-mode={isEditMode} owner-name={ownerName}
+                coveted-account={covetedAccount} surest-svp-involved={surestSvpInvolved}
+                speciality-benefits={specialityBenefits} sce-assignment={sceAssignment}
+                financial-strategy-lead={financialStrategyLead} executive-sponsor={executiveSponsor}
+                deal-sponsor={dealSponsor}></c-rfp-team-contacts>
+            <!-- END : RFP TEAM CONTACTS-->
+
+            <!-- Start : TIMELINE  DUE DATES -->
+            <div class="section-header ">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>TIMELINE / DUE DATES: Deliverables will be managed to the internal due dates specified </h4>
+                </div>
+            </div>
+            <c-strategy-memo-timeline strategy-memo={strategyMemo} onstrategymemochange={handleStrategyMemoChange}
+                record-id={recordId} is-edit-mode={isEditMode} formatted-intent-to-bid-due={formattedIntentToBidDue}
+                formatted-intent-to-bidder={formattedIntentToBidder}
+                formatted-intent-to-questions={formattedIntentToQuestions} formatted-intent-to-qa={formattedIntentToQa}
+                formatted-intent-to-nac={formattedIntentToNac} formatted-intent-to-nps={formattedIntentToNps}
+                formatted-intent-to-exe={formattedIntentToExe} formatted-intent-to-eship={formattedIntentToEship}
+                formatted-intent-to-imp={formattedIntentToImp} finalist-date={finalistDate}
+                effective-date={effectiveDate} proposal-due-date={proposalDueDate}
+                anticipated-actual-close-date={anticipatedActualCloseDate}
+                related-opportunities-info={relatedOpportunitiesInfo}></c-strategy-memo-timeline>
+            <!--END : TIMELINE DUE DATES -->
+            <!--START : NDA Requirements-->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-xx_small">
+                    <h4>NDA REQUIREMENTS:</h4>
+                </div>
+            </div>
+            <table
+                class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <tbody>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">RFP Release NDA</td>
+                        <td colspan="3" class="value"> <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="255" value={strategyMemo.RFP_Release_NDA__c}
+                                    name="RFP_Release_NDA__c" onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.RFP_Release_NDA__c}>
+                                    <span>{strategyMemo.RFP_Release_NDA__c}</span>
+                                </template>
+                            </template>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Repricing NDA for Line by Line</td>
+                        <td colspan="3" class="value"> <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="255"
+                                    value={strategyMemo.Repricing_NDA_for_Line_by_Line__c}
+                                    name="Repricing_NDA_for_Line_by_Line__c" onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Repricing_NDA_for_Line_by_Line__c}>
+                                    <span>{strategyMemo.Repricing_NDA_for_Line_by_Line__c}</span>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Other NDA</td>
+                        <td colspan="3" class="value"> <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="255" value={strategyMemo.Other_NDA__c}
+                                    name="Other_NDA__c" onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Other_NDA__c}>
+                                    <span>{strategyMemo.Other_NDA__c}</span>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--END :  NDA Requirements -->
+
+            <!--START : FEDERAL BANKING SECURITY ACT REQUIREMENT:-->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>FEDERAL BANKING SECURITY ACT REQUIREMENT:</h4>
+                </div>
+            </div>
+            <table
+                class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <tbody>
+                    <tr>
+                        <td class="slds-text-align_left custom-th-wrap custom-td">Is the Client in the Cannabis Business
+                        </td>
+                        <td colspan="3" class="value">
+                            <template if:true={isClientCannabisBusiness}>
+                                <span>{isClientCannabisBusiness}</span>
+
+                                <!--<template if:true={isEditMode}>
+                                <lightning-input type="checkbox" checked={isClientCannabisBusiness}
+                                    ></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Spotlight_RFP__c}>
+                                <lightning-input type="checkbox" checked={isClientCannabisBusiness} disabled>
+                                </lightning-input>
+                                </template>-->
+
+
+                                <!--<lightning-input type="checkbox" 
+                                checked={isClientCannabisBusiness} disabled>
+                            </lightning-input>-->
+
+                            </template>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--END : FEDERAL BANKING SECURITY ACT REQUIREMENT-->
+            <!--START : DIVERSITY, EQUITY and INCLUSION (DEI):-->
+
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>DIVERSITY, EQUITY AND INCLUSION (DEI):</h4>
+                </div>
+            </div>
+            <div class="slds-box ">
+                <span><!--Add context from RFP or company web site.-->
+                    <template if:true={isEditMode}>
+                        <lightning-textarea class="slds-p-around_xxx-small value cramp-line" variant="label-hidden"
+                            value={strategyMemo.DIVERSITY_EQUITY_and_INCLUSION_DEI__c} max-length="32768"
+                            name="DIVERSITY_EQUITY_and_INCLUSION_DEI__c" onchange={handleChange}></lightning-textarea>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template class="value" if:true={strategyMemo.DIVERSITY_EQUITY_and_INCLUSION_DEI__c}>
+                            <lightning-formatted-text
+                                value={strategyMemo.DIVERSITY_EQUITY_and_INCLUSION_DEI__c}></lightning-formatted-text>
+                        </template>
+                    </template>
+                </span>
+            </div>
+
+            <!-- END : DIVERSITY, EQUITY and INCLUSION (DEI):-->
+            <!-- START:  MINORITY WOMEN-OWNED BUSINESS ENTERPRISE (MWBE) REQUIREMENTS:-->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>MINORITY WOMEN-OWNED BUSINESS ENTERPRISE (MWBE) REQUIREMENTS:</h4>
+                </div>
+            </div>
+            <div class="slds-box">
+                <div class="slds-grid slds-align-items-center text-color">
+                    <div class="slds-m-right_small custom-td">
+                        Are there MWBE requirements for this opportunity?
+                    </div>
+                    <template if:true={isEditMode}>
+                        <lightning-input class="value" type="checkbox" checked={strategyMemo.MWBE_Requirements__c}
+                            name="MWBE_Requirements__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input class="value" type="checkbox" checked={strategyMemo.MWBE_Requirements__c}
+                            disabled>
+                        </lightning-input>
+                    </template>
+                </div>
+            </div>
+            <!-- Blue Bid Comments -->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>ELIGIBLE FOR SECOND BLUES BID?</h4>
+                </div>
+            </div>
+            <div class="slds-box ">
+                <div class="text-color custom-td">
+                    Eligible for Second Blues Bid : <span class="text-black value " style="font-weight: normal;">
+                        {eligible}</span>
+                </div>
+                <div class="text-color custom-td">
+                    If Yes, Which Blues plans are bidding : <span class="text-black value" style="font-weight: normal;">
+                        {bluesBidComments}</span>
+                </div>
+
+            </div>
+            <!-- End Blue Bid Comments -->
+
+            <!-- END MINORITY WOMEN-OWNED BUSINESS ENTERPRISE (MWBE) REQUIREMENTS:-->
+            <!-- Start: RFP:-->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>RFP:</h4>
+                </div>
+            </div>
+            <template if:true={isCDRecordType}>
+                <!--  RFP Strategy Memo Component -->
+                <c-rfp-strategy-memo strategy-memo={strategyMemo} is-edit-mode={isEditMode}
+                    onstrategymemochange={handleStrategyMemoChange} record-id={recordId} bid-strategy={bidStrategy}
+                    medical-products-info={medicalProductsInfo} pharmacy-products={pharmacyProducts}
+                    vision-products={visionProducts} dental-products={dentalProducts}
+                    other-products-info={otherProductsInfo}>
+                </c-rfp-strategy-memo>
+            </template>
+            <template if:true={isCMRecordType}>
+                <c-strategy-memo-rfp-cm strategy-memo={strategyMemo} record-id={recordId}
+                    onstrategymemochange={handleStrategyMemoChange} is-edit-mode={isEditMode} bid-strategy={bidStrategy}
+                    medical-products-info={medicalProductsInfo} pharmacy-products={pharmacyProducts}
+                    vision-products={visionProducts} dental-products={dentalProducts}
+                    other-products-info={otherProductsInfo}>
+                </c-strategy-memo-rfp-cm>
+            </template>
+            <!-- End :RFP:-->
+            <!-- START Current Offerings -->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>Current Offering: (X) as appropriate </h4>
+                </div>
+            </div>
+            <c-strategy-memo-current-offerings strategy-memo={strategyMemo}
+                onstrategymemochange={handleStrategyMemoChange} record-id={recordId} is-edit-mode={isEditMode}
+                competitor-in-medical={competitorInMedical} competitor-in-other={competitorInOther}
+                competitor-in-dental={competitorInDental} competitor-in-vision={competitorInVision}
+                competitor-in-pharmacy={competitorInPharmacy}>
+            </c-strategy-memo-current-offerings>
+            <!-- End Current Offering: (X) as appropriate - Blank-->
+            <!-- START RFP STRATEGY -->
+            <c-strategy-memo-rfp-strategy strategy-memo={strategyMemo} record-id={recordId}
+                onstrategymemochange={handleStrategyMemoChange} is-edit-mode={isEditMode}
+                business-overview={businessOverview} business-pressures={businessPressures}
+                potential-compelling={potentialCompelling} unique-business-values={uniqueBusinessValues}
+                key-risks={keyRisks} outcome-drivers={outcomeDrivers} approach-strategy={approachStrategy}
+                last-action={lastAction} surest-approach-strategy={surestApproachStrategy}
+                surest-network-constraints={surestNetworkConstraints} network-contracting={networkContracting}
+                surest-comments={surestComments} next-action={nextAction} notes-taken={notesTaken}>
+            </c-strategy-memo-rfp-strategy>
+            <!-- End RFP STRATEGY -->
+            <!-- Start : COLLABORATIVE VENTURES GROUP (CVG):-->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>COLLABORATIVE VENTURES GROUP (CVG):</h4>
+                </div>
+            </div>
+            <table
+                class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <tbody>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Quoting CVG</td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="checkbox" checked={strategyMemo.Quoting_CVG__c}
+                                    name="Quoting_CVG__c" onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <lightning-input type="checkbox" checked={strategyMemo.Quoting_CVG__c} disabled>
+                                </lightning-input>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Aggregator involved in the opportunity</td>
+                        <td colspan="3" class="value"><template if:true={aggregatorInvolved}>
+                                <span>{aggregatorInvolved}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">CVG Association</td>
+                        <td colspan="3" class="value"><template if:true={cvgAccount}>
+                                <span>{cvgAccount}</span>
+                            </template></td>
+
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Private Equity Relationship</td>
+                        <td colspan="3" class="value"><template if:true={privateEquity}>
+                                <span>{privateEquity}</span>
+                            </template></td>
+
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- END : COLLABORATIVE VENTURES GROUP (CVG):-->
+
+            <!--START PRODUCTS TO BE QUOTED: 
+<div class = "section-header">
+    <div class = "slds-p-around_medium slds-text-heading-XX_small">
+        <h4>PRODUCTS TO BE QUOTED: (X) as appropriate. Add a section here with merit Medical Product and Other Buy-Up sections. Include the Surest only,
+UNET/UMR only, Surest and Traditional check offs.</h4>
+        </div>
+    </div>
+     End PRODUCTS TO BE QUOTED: -->
+            <!-- Start : UNDERWRITING INFO: -->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+                    <h4>UNDERWRITING INFO:</h4>
+                </div>
+            </div>
+            <c-strategy-memo-underwriting-info strategy-memo={strategyMemo}
+                onstrategymemochange={handleStrategyMemoChange} is-edit-mode={isEditMode} record-id={recordId}
+                average-contract-size={averageContractSize} bic-data={bicData}
+                eligible-ees-and-retirees={eligibleEesAndRetirees}
+                enrolled-employees-proposal={enrolledEmployeesProposal} members-in-proposal={membersInProposal}
+                vs-aetna={vsAetna} vs-anthem={vsAnthem} vs-blues={vsBlues} vs-blues-alt={vsBluesAlt} vs-cigna={vsCigna}>
+            </c-strategy-memo-underwriting-info>
+            <!-- End : UNDERWRITING INFO: -->
+            <!-- START :OTHER PRICING CONSIDERATIONS: -->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-p-text-heading-XX_small">
+                    <h4>OTHER PRICING CONSIDERATIONS: </h4>
+                </div>
+
+            </div>
+            <table
+                class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <tbody>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Pre-member Web Site</td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="checkbox" checked={strategyMemo.Pre_member_Web_Site__c}
+                                    name="Pre_member_Web_Site__c" onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <lightning-input type="checkbox" checked={strategyMemo.Pre_member_Web_Site__c} disabled>
+                                </lightning-input>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Onshoring (Domestic) Level</td>
+                        <td colspan="3" class="value"> <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="255"
+                                    value={strategyMemo.Onshoring_Domestic_Level__c} name="Onshoring_Domestic_Level__c"
+                                    onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Onshoring_Domestic_Level__c}>
+                                    <span>{strategyMemo.Onshoring_Domestic_Level__c}</span>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Onsite Resource</td>
+                        <td colspan="3" class="value"> <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="255" value={strategyMemo.Onsite_Resource__c}
+                                    name="Onsite_Resource__c" onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Onsite_Resource__c}>
+                                    <span>{strategyMemo.Onsite_Resource__c}</span>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Texting and/or E-mail campaigns</td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="checkbox" checked={strategyMemo.Texting_an_E_mail_campaigns__c}
+                                    name="Texting_an_E_mail_campaigns__c" onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <lightning-input type="checkbox" checked={strategyMemo.Texting_an_E_mail_campaigns__c}
+                                    disabled>
+                                </lightning-input>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Vendor Integration Needs?</td>
+                        <td colspan="3" class="value"> <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="255"
+                                    value={strategyMemo.Vendor_Integration_Needs__c} name="Vendor_Integration_Needs__c"
+                                    onchange={handleChange}></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Vendor_Integration_Needs__c}>
+                                    <span>{strategyMemo.Vendor_Integration_Needs__c}</span>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <table
+                class="slds-text-body_small  slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <colgroup>
+
+                    <col style="width: 24%;">
+
+                    <col style="width: 35%;">
+                    <col style="width: 35%;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td rowspan="3" class="custom-td "> Additional Levers for AI:</td>
+                        <td class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" max-length="255"
+                                    value={strategyMemo.Additional_Levers_AI_1__c} name="Additional_Levers_AI_1__c"
+                                    onchange={handleChange}>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Additional_Levers_AI_1__c}>
+                                    <span>{strategyMemo.Additional_Levers_AI_1__c}</span>
+                                </template>
+                                <template if:false={strategyMemo.Additional_Levers_AI_1__c}>
+                                    &nbsp;
+                                </template>
+
+                            </template>
+                        </td>
+                        <td class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" value={strategyMemo.Additional_Levers_AI_2__c}
+                                    name="Additional_Levers_AI_2__c" max-length="255" onchange={handleChange}>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Additional_Levers_AI_2__c}>
+                                    <span>{strategyMemo.Additional_Levers_AI_2__c}</span>
+                                </template>
+                                 <template if:false={strategyMemo.Additional_Levers_AI_2__c}>
+                                    &nbsp;
+                                </template>
+
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" value={strategyMemo.Additional_Levers_AI_3__c}
+                                    name="Additional_Levers_AI_3__c" max-length="255" onchange={handleChange}>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Additional_Levers_AI_3__c}>
+                                    <span>{strategyMemo.Additional_Levers_AI_3__c}</span>
+                                </template>
+                                 <template if:false={strategyMemo.Additional_Levers_AI_3__c}>
+                                    &nbsp;
+                                </template>
+                            </template>
+                        </td>
+                        <td class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" value={strategyMemo.Additional_Levers_AI_4__c}
+                                    name="Additional_Levers_AI_4__c" max-length="255" onchange={handleChange}>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Additional_Levers_AI_4__c}>
+                                    <span>{strategyMemo.Additional_Levers_AI_4__c}</span>
+                                </template>
+                                 <template if:false={strategyMemo.Additional_Levers_AI_4__c}>
+                                    &nbsp;
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" value={strategyMemo.Additional_Levers_AI_5__c}
+                                    name="Additional_Levers_AI_5__c" max-length="255" onchange={handleChange}>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Additional_Levers_AI_5__c}>
+                                    <span>{strategyMemo.Additional_Levers_AI_5__c}</span>
+                                </template>
+                                 <template if:false={strategyMemo.Additional_Levers_AI_5__c}>
+                                    &nbsp;
+                                </template>
+                            </template>
+                        </td>
+                        <td class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-input type="Text" class="slds-p-around_xxx-small cramp-line"
+                                    variant="label-hidden" value={strategyMemo.Additional_Levers_AI_6__c}
+                                    name="Additional_Levers_AI_6__c" max-length="255" onchange={handleChange}>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Additional_Levers_AI_6__c}>
+                                    <span>{strategyMemo.Additional_Levers_AI_6__c}</span>
+                                </template>
+                                <template if:false={strategyMemo.Additional_Levers_AI_6__c}>
+                                    &nbsp;
+                                </template>
+                            </template>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <table
+                class="slds-text-body_small  slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <tbody>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Special EMT Requested:
+                        </td>
+                        <td colspan="3" class="value"> <template if:true={isEditMode}>
+                                <lightning-textarea class="cramp-line" variant="label-hidden"
+                                    value={strategyMemo.Special_EMT_Requested__c} max-length="32768"
+                                    name="Special_EMT_Requested__c" onchange={handleChange}></lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Special_EMT_Requested__c}>
+                                    <lightning-formatted-text value={strategyMemo.Special_EMT_Requested__c}>
+                                    </lightning-formatted-text>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- END : OTHER PRICING CONSIDERATIONS: -->
+            <!-- Start : NOTES TAKEN DURING STRATEGY CALL: -->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-p-text-heading-XX_small">
+                    <h4>NOTES TAKEN DURING STRATEGY CALL: </h4>
+                </div>
+            </div>
+            <div class="slds-box ">
+                <span class="value"> <template if:true={isEditMode}>
+                        <lightning-input-rich-text class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            max-length="32768" value={strategyMemo.Notes_Taken_During_Call__c}
+                            name="Notes_Taken_During_Call__c" onchange={handleChange}></lightning-input-rich-text>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Notes_Taken_During_Call__c}>
+                            <lightning-formatted-rich-text
+                                value={strategyMemo.Notes_Taken_During_Call__c}></lightning-formatted-rich-text>
+                        </template>
+                    </template></span>
+            </div>
+            <!-- END : NOTES TAKEN DURING STRATEGY CALL: -->
+            <div class="section-header">
+                <div class="slds-p-top_small slds-p-bottom_small slds-p-text-heading-XX_small">
+                    <h4>IPM NOTES:</h4>
+                </div>
+            </div>
+            <table
+                class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+                <tbody>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Will SPDs submitted for compatibility review</td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-textarea class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                                    max-length="255" value={strategyMemo.SPDs_Submitted_for_compatibility_Review__c}
+                                    name="SPDs_Submitted_for_compatibility_Review__c" onchange={handleChange}>
+                                </lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.SPDs_Submitted_for_compatibility_Review__c}>
+                                    <lightning-formatted-text
+                                        value={strategyMemo.SPDs_Submitted_for_compatibility_Review__c}>
+                                    </lightning-formatted-text>
+
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">If SPDs not available, are they coming? If not, what
+                            documents will be / have been submitted for compatibility review?</td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-textarea class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                                    max-length="255" value={strategyMemo.SPDs_Availability_and_Compatibility_Docs__c}
+                                    name="SPDs_Availability_and_Compatibility_Docs__c" onchange={handleChange}>
+                                </lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.SPDs_Availability_and_Compatibility_Docs__c}>
+                                    <lightning-formatted-text
+                                        value={strategyMemo.SPDs_Availability_and_Compatibility_Docs__c}>
+                                    </lightning-formatted-text>
+
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">What EMTs will be submitted? </td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-textarea class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                                    max-length="255" value={strategyMemo.What_EMTs_will_be_Submitted__c}
+                                    name="What_EMTs_will_be_Submitted__c" onchange={handleChange}></lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.What_EMTs_will_be_Submitted__c}>
+                                    <lightning-formatted-text value={strategyMemo.What_EMTs_will_be_Submitted__c}>
+                                    </lightning-formatted-text>
+
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Any non-standard PGs?</td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-textarea class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                                    max-length="255" value={strategyMemo.Any_Non_Standard_PGs__c}
+                                    name="Any_Non_Standard_PGs__c" onchange={handleChange}></lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Any_Non_Standard_PGs__c}>
+                                    <lightning-formatted-text value={strategyMemo.Any_Non_Standard_PGs__c}>
+                                    </lightning-formatted-text>
+
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Any non-standard requests (onsite AMT, OE meetings at
+                            every location, special banking/billing arrangements, ID card customizations, etc.) Do any
+                            of these need EMTs?</td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-textarea class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                                    max-length="255" value={strategyMemo.Non_Standard_Requests_and_EMT_Needs__c}
+                                    name="Non_Standard_Requests_and_EMT_Needs__c" onchange={handleChange}>
+                                </lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Non_Standard_Requests_and_EMT_Needs__c}>
+                                    <lightning-formatted-text
+                                        value={strategyMemo.Non_Standard_Requests_and_EMT_Needs__c}>
+                                    </lightning-formatted-text>
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Vendor partners / integration / file feeds</td>
+                        <td colspan="3" class="value">
+                            <!-- <div class="checkbox-container">
+                            </div>-->
+                            <template if:true={isEditMode}>
+                                <lightning-textarea class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                                    max-length="255" value={strategyMemo.Vendor_Integration_File_Feeds__c}
+                                    name="Vendor_Integration_File_Feeds__c" onchange={handleChange}>
+                                </lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Vendor_Integration_File_Feeds__c}>
+                                    <lightning-formatted-text value={strategyMemo.Vendor_Integration_File_Feeds__c}>
+                                    </lightning-formatted-text>
+
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Confirm dates for finalist, notification of award &
+                            implementation kick-off</td>
+                        <td colspan="3" class="value">
+                            <template if:true={isEditMode}>
+                                <lightning-textarea class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                                    max-length="255" value={strategyMemo.Confirm_Dates_for_Finalist_Kick_Off__c}
+                                    name="Confirm_Dates_for_Finalist_Kick_Off__c" onchange={handleChange}>
+                                </lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Confirm_Dates_for_Finalist_Kick_Off__c}>
+                                    <lightning-formatted-text
+                                        value={strategyMemo.Confirm_Dates_for_Finalist_Kick_Off__c}>
+                                    </lightning-formatted-text>
+
+                                </template>
+                            </template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+        </div>
+    </template>
+    <!--</div>-->
+</template>

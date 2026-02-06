@@ -1,0 +1,63 @@
+<aura:component >
+    <aura:attribute name="competitorsArray" type="String[]"/>
+    <aura:attribute name="isMedical" type="Boolean" default="false"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <aura:registerEvent name="getUpdatedCards" type="c:getUpdatedCards"/>
+    
+    <tr class="slds-hint-parent">
+        <th scope="row" data-label="Competitor Name">
+            <div class="slds-truncate">{!v.competitorsArray.Name}</div>
+        </th>
+        <aura:if isTrue="{!v.isMedical}">
+            <th scope="row" data-label="Medical Competitor">
+<!--            	<input type="checkbox" class="checkboxCursor" data-record="Medical" data-category="{!v.competitorsArray.category}" name="Medical" aura:id="{!v.competitorsArray.Id}" id="{!v.competitorsArray.Id}" checked="{!v.competitorsArray.isChecked}" onclick="{!c.readCards}" disabled="{!v.competitorsArray.disabled}"/>-->
+                <div class="slds-checkbox_add-button slds-text-align_center" data-aura-rendered-by="9:5864;a">
+                    <input type="checkbox" data-record="Medical" data-category="{!v.competitorsArray.category}" name="Medical" aura:id="{!v.competitorsArray.Id}" id="{!v.competitorsArray.Id}" checked="{!v.competitorsArray.isChecked}" onclick="{!c.readCards}" disabled="{!v.competitorsArray.disabled}" class="uiInput uiInputCheckbox uiInput--default uiInput--checkbox" data-aura-class="uiInput uiInputCheckbox uiInput--default uiInput--checkbox"></input> 
+                    <label class="slds-checkbox_faux" for="add-checkbox-17" data-aura-rendered-by="18:5864;a">
+                        <span class="slds-assistive-text" data-aura-rendered-by="19:5864;a">Select item 1</span>
+                    </label>
+                </div>
+        	</th>
+            <aura:set attribute="else">
+                 <th scope="row" data-label="Pharmacy Competitor">
+<!--                    <input type="checkbox" class="checkboxCursor" aura:id="{!v.competitorsArray.Id}" data-category="{!v.competitorsArray.category}" data-record="Pharmacy" name="Pharmacy" id="{!v.competitorsArray.Id}" onclick="{!c.readCards}" checked="{!v.competitorsArray.isPharmacy}" disabled="{!v.competitorsArray.isPharmacyDisabled}" />-->
+                     <div class="slds-checkbox_add-button slds-text-align_center" data-aura-rendered-by="9:5864;a">
+                         <input type="checkbox" aura:id="{!v.competitorsArray.Id}" data-category="{!v.competitorsArray.category}" data-record="Pharmacy" name="Pharmacy" id="{!v.competitorsArray.Id}" onclick="{!c.readCards}" checked="{!v.competitorsArray.isPharmacy}" disabled="{!v.competitorsArray.isPharmacyDisabled}" class="uiInput uiInputCheckbox uiInput--default uiInput--checkbox" data-aura-class="uiInput uiInputCheckbox uiInput--default uiInput--checkbox"></input>
+                         <label class="slds-checkbox_faux" for="add-checkbox-17" data-aura-rendered-by="18:5864;a">
+                             <span class="slds-assistive-text" data-aura-rendered-by="19:5864;a">Select item 1</span>
+                         </label>
+                     </div>
+                </th>
+                <th scope="row" data-label="Dental Competitor">
+<!--                    <input type="checkbox" class="checkboxCursor" aura:id="{!v.competitorsArray.Id}" data-category="{!v.competitorsArray.category}" data-record="Dental" name="Dental" id="{!v.competitorsArray.Id}" onclick="{!c.readCards}" checked="{!v.competitorsArray.isDental}" disabled="{!v.competitorsArray.isDentalDisabled}" />-->
+                    <div class="slds-checkbox_add-button slds-text-align_center" data-aura-rendered-by="9:5864;a">
+                        <input type="checkbox" aura:id="{!v.competitorsArray.Id}" data-category="{!v.competitorsArray.category}" data-record="Dental" name="Dental" id="{!v.competitorsArray.Id}" onclick="{!c.readCards}" checked="{!v.competitorsArray.isDental}" disabled="{!v.competitorsArray.isDentalDisabled}" class="uiInput uiInputCheckbox uiInput--default uiInput--checkbox" data-aura-class="uiInput uiInputCheckbox uiInput--default uiInput--checkbox"> </input>
+                        <label class="slds-checkbox_faux" for="add-checkbox-17" data-aura-rendered-by="18:5864;a">
+                            <span class="slds-assistive-text" data-aura-rendered-by="19:5864;a">Select item 1</span>
+                        </label>
+                    </div>
+                </th>
+                <th scope="row" data-label="Vision Competitor">
+<!--                    <input type="checkbox" class="checkboxCursor" aura:id="{!v.competitorsArray.Id}" data-category="{!v.competitorsArray.category}" data-record="Vision" name="Vision" id="{!v.competitorsArray.Id}" onclick="{!c.readCards}" checked="{!v.competitorsArray.isVision}" disabled="{!v.competitorsArray.isVisionDisabled}"/>-->
+                    <div class="slds-checkbox_add-button slds-text-align_center" data-aura-rendered-by="9:5864;a">
+                        <input type="checkbox" aura:id="{!v.competitorsArray.Id}" data-category="{!v.competitorsArray.category}" data-record="Vision" name="Vision" id="{!v.competitorsArray.Id}" onclick="{!c.readCards}" checked="{!v.competitorsArray.isVision}" disabled="{!v.competitorsArray.isVisionDisabled}" class="uiInput uiInputCheckbox uiInput--default uiInput--checkbox" data-aura-class="uiInput uiInputCheckbox uiInput--default uiInput--checkbox"> </input>
+                        <label class="slds-checkbox_faux" for="add-checkbox-17" data-aura-rendered-by="18:5864;a">
+                            <span class="slds-assistive-text" data-aura-rendered-by="19:5864;a">Select item 1</span>
+                        </label>
+                    </div>
+                </th>
+                <!--Commented as per Tracker #3495 Competitve landscape changes-->
+                <!--th scope="row" data-label="Other Products/ Services Competitor">
+                    <div class="slds-checkbox_add-button slds-text-align_center" data-aura-rendered-by="9:5864;a">
+                        <input type="checkbox" aura:id="{!v.competitorsArray.Id}" data-category="{!v.competitorsArray.category}" data-record="Others" name="Others" id="{!v.competitorsArray.Id}" onclick="{!c.readCards}" checked="{!v.competitorsArray.isOthers}" disabled="{!v.competitorsArray.isOthersDisabled}" class="uiInput uiInputCheckbox uiInput-default uiInput-checkbox" data-aura-class="uiInput uiInputCheckbox uiInput-default uiInput-checkbox"> </input>
+                        <label class="slds-checkbox_faux" for="add-checkbox-17" data-aura-rendered-by="18:5864;a">
+                            <span class="slds-assistive-text" data-aura-rendered-by="19:5864;a">Select item 1</span>
+                        </label>
+                    </div>
+                </th-->
+            </aura:set>
+        </aura:if>               
+    </tr>
+</aura:component>

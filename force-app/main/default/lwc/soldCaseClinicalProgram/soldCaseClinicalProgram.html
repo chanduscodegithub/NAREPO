@@ -1,0 +1,459 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 02-02-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <lightning-accordion class= "section-header-style" allow-multiple-sections-open onsectiontoggle={handleSectionToggle}
+      active-section-name={activeSections}>
+      <template if:true={isDataReceived}>
+      <lightning-accordion-section class="section-header" name="Clinical Programs - Surest" label="Clinical Programs - Surest">
+        <div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium"
+                style="font-size:12px;">
+                <table class="slds-table slds-no-row-hover slds-m-right_large">
+                    <!-- <template if:false={engageSolCopy}> -->
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <b><span>Account Information:</span></b>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Policy Number</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    {policyNumbersSurest}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Policy Name</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    {policyNamesSurest}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Pharmacy Benefit Administrator Name</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Pharmacy_Benefit_Administrator_Name__c}>
+                                  <span>{soldCaseDataCopy.Pharmacy_Benefit_Administrator_Name__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-input type="text" variant="label-hidden" class="slds-p-top_xx-small"
+                                          name="Sold_Case_Checklist__c.Pharmacy_Benefit_Administrator_Name__c"
+                                          value={soldCaseDataCopy.Pharmacy_Benefit_Administrator_Name__c}
+                                          onchange={FieldChangeHandler} maxlength="255">
+                                        </lightning-input>
+                                      </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Pharmacy Benefit Administrator Phone #</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Pharmacy_Benefit_Administrator_Phone__c}>
+                                  <span>{soldCaseDataCopy.Pharmacy_Benefit_Administrator_Phone__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-input type="tel" variant="label-hidden" class="slds-p-top_xx-small"
+                                          name="Sold_Case_Checklist__c.Pharmacy_Benefit_Administrator_Phone__c"
+                                          value={soldCaseDataCopy.Pharmacy_Benefit_Administrator_Phone__c}
+                                          onchange={FieldChangeHandler} maxlength="40">
+                                        </lightning-input>
+                                      </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Employee Assistance Program Name</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Employee_Assistance_Program_Name__c}>
+                                  <span>{soldCaseDataCopy.Employee_Assistance_Program_Name__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-input type="text" variant="label-hidden" class="slds-p-top_xx-small"
+                                          name="Sold_Case_Checklist__c.Employee_Assistance_Program_Name__c"
+                                          value={soldCaseDataCopy.Employee_Assistance_Program_Name__c}
+                                          onchange={FieldChangeHandler} maxlength="255">
+                                        </lightning-input>
+                                      </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Employee Assistance Program Phone #</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Employee_Assistance_Program_Phone__c}>
+                                  <span>{soldCaseDataCopy.Employee_Assistance_Program_Phone__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-input type="tel" variant="label-hidden" class="slds-p-top_xx-small"
+                                          name="Sold_Case_Checklist__c.Employee_Assistance_Program_Phone__c"
+                                          value={soldCaseDataCopy.Employee_Assistance_Program_Phone__c}
+                                          onchange={FieldChangeHandler} maxlength="40">
+                                        </lightning-input>
+                                      </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    
+                    
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <b><span>Standard Clinical Offering:</span></b>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Transplant Resource Services</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Transplant_Resource_Services__c}>
+                                  <span>{soldCaseDataCopy.Transplant_Resource_Services__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox name="Sold_Case_Checklist__c.Transplant_Resource_Services__c" variant="label-hidden"
+                                            value={soldCaseDataCopy.Transplant_Resource_Services__c}
+                                            options={picklistValues} onchange={FieldChangeHandler}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Utilization Management</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Utilization_Management__c}>
+                                  <span>{soldCaseDataCopy.Utilization_Management__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox name="Sold_Case_Checklist__c.Utilization_Management__c" variant="label-hidden"
+                                            value={soldCaseDataCopy.Utilization_Management__c}
+                                            options={picklistValues} onchange={FieldChangeHandler}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Specialty Guidance Program</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    Yes
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Cancer Guidance Program</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Cancer_Guidance_Program_CPSurest__c}>
+                                  <span>{soldCaseDataCopy.Cancer_Guidance_Program_CPSurest__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox name="Sold_Case_Checklist__c.Cancer_Guidance_Program_CPSurest__c" variant="label-hidden"
+                                            value={soldCaseDataCopy.Cancer_Guidance_Program_CPSurest__c}
+                                            options={picklistValues} onchange={FieldChangeHandler}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Behavioral Health Utilization Management, ABA UM</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.BHU_Management_ABA_UM__c}>
+                                  <span>{soldCaseDataCopy.BHU_Management_ABA_UM__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox name="Sold_Case_Checklist__c.BHU_Management_ABA_UM__c" variant="label-hidden"
+                                            value={soldCaseDataCopy.BHU_Management_ABA_UM__c}
+                                            options={picklistValues} onchange={FieldChangeHandler}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Surest Case Management (CM)</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Surest_Case_Management_CM_CPSurest__c}>
+                                  <span>{soldCaseDataCopy.Surest_Case_Management_CM_CPSurest__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox name="Sold_Case_Checklist__c.Surest_Case_Management_CM_CPSurest__c" variant="label-hidden"
+                                            value={soldCaseDataCopy.Surest_Case_Management_CM_CPSurest__c}
+                                            options={picklistValues} onchange={FieldChangeHandler}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Optum Behavioral Network</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    Yes
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Optum Physical Health Network</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    Yes
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                    <b><span>Optional Programs:</span></b>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                  <!-- <template for:each={checklistDisplayData} for:item="item">
+                      <tr key={item.label}>
+                          <td class="left">
+                              <div class="slds-grid slds-grid_vertical-align-center border-bottom">
+                                  <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                      <span>{item.label}</span>
+                                  </div>
+                                  <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-cell-wrap slds-text-align_right">
+                                    <template if:false={editmode}>
+                                      <template if:true={item.value}>
+                                          <span>{item.value}</span>
+                                      </template>
+                                    </template>
+                                      <template if:true={editmode}>
+                                          <template if:true={item.readonly}>
+                                          <span>{item.value}</span>
+                                          </template>
+                                          <template if:false={item.readonly}>
+                                            <span class="slds-text-align_left" style="padding-top: 5px;">
+                                              <lightning-combobox name={item.name} variant="label-hidden" value={item.value} options={picklistValuesOP} onchange={FieldChangeHandler}>
+                                              </lightning-combobox>
+                                            </span>
+                                          </template>
+                                      </template>
+                                  </div>
+                              </div>
+                          </td>
+                      </tr>
+                  </template>                   -->
+                  
+                <template for:each={checklistDisplayData} for:item="item">
+                  <tr key={item.label}>
+                      <td class="left">
+                          <div class="slds-grid slds-grid_vertical-align-center border-bottom">
+              
+                              <!-- Label column -->
+                              <div class={item.labelClass}>
+                                  <span>{item.label}</span>
+                              </div>
+
+                              <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_left">
+                              <template if:true={item.isDual}>
+                                  <span>Dual</span>
+                              </template>
+                              <template if:false={item.isDual}>
+                                  <span></span>
+                              </template>
+                              </div>
+              
+                              <!-- Main combobox or value -->
+                              <div class={item.mainClass}>
+                                <template if:false={editmode}>
+                                      <template if:true={item.value}>
+                                          <span>{item.value}</span>
+                                      </template>
+                                  </template>
+                                  <template if:true={editmode}>
+                                      <template if:true={item.readonly}>
+                                          <span>{item.value}</span>
+                                      </template>
+                                      <template if:false={item.readonly}>
+                                        <span class="slds-text-align_left" style="padding-top: 5px;">
+                                          <lightning-combobox
+                                              name={item.name}
+                                              variant="label-hidden"
+                                              value={item.value}
+                                              options={item.options}
+                                              onchange={FieldChangeHandler}>
+                                          </lightning-combobox>
+                                        </span>
+                                      </template>
+                                  </template>
+                              </div>
+              
+                              <!-- Extra combobox (only for One_Pass_Select__c) -->
+                              <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                <template if:true={item.relatedField}>
+                                  <template if:false={editmode}>
+                                      <span>{item.relatedField.value}</span>
+                                  </template>
+                                  <template if:true={editmode}>
+                                      <template if:true={item.relatedField.readonly}>
+                                          <span>{item.relatedField.value}</span>
+                                      </template>
+                                      <template if:false={item.relatedField.readonly}>
+                                        <span class="slds-text-align_left" style="padding-top: 5px;">
+                                          <lightning-combobox
+                                              name={item.relatedField.name}
+                                              variant="label-hidden"
+                                              value={item.relatedField.value}
+                                              options={extraOnePassValues}
+                                              onchange={FieldChangeHandler}>
+                                          </lightning-combobox>
+                                        </span>
+                                        </template>
+                                  </template>
+                              </template>
+                              <template if:false={item.relatedField}>
+                                <div></div>
+                              </template>
+                            </div>
+                          </div>
+                      </td>
+                  </tr>
+              </template>              
+                              
+                </table>
+            </div>
+      </lightning-accordion-section>
+      </template>
+    </lightning-accordion>
+  </template>

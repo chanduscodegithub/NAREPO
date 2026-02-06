@@ -1,0 +1,170 @@
+<template>
+    <!-- START RFP STRATEGY -->
+    <div class="section-header">
+        <div class="slds-p-top_small slds-p-bottom_small slds-text-heading-XX_small">
+            <h4>RFP STRATEGY:</h4>
+        </div>
+    </div>
+    <table class="slds-table slds-table--fixed-layout">
+        <tbody>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Business Overview/CompanyBackground</td>
+                <td colspan="3" class="value">
+                    <template if:true={businessOverview}>
+                        <lightning-formatted-text value={businessOverview}></lightning-formatted-text>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Business Pressures – what are you addressing
+                    with this RFP responses?</td>
+                <td colspan="3" class="value"><template if:true={businessPressures}>
+                        <!--<span>{businessPressures}</span>-->
+                        <lightning-formatted-text value={businessPressures}></lightning-formatted-text>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Potential Compelling Event to make a
+                    carrier change that starts from their
+                    world, or that we create.</td>
+                <td colspan="3" class="value"><template if:true={potentialCompelling}>
+                       <!-- <span>{potentialCompelling}</span>-->
+                       <lightning-formatted-text value={potentialCompelling}></lightning-formatted-text>
+
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">What Unique Business Value (UBV) are
+                    we creating in this RFP? What is our
+                    Strategy?</td>
+                <td colspan="3" class="value"><template if:true={uniqueBusinessValues}>
+                        <lightning-formatted-text value={uniqueBusinessValues}></lightning-formatted-text>
+
+                    </template></td>
+            </tr>
+
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">What Key Risks are there to our UBV and how
+                    might we overcome them in the response?</td>
+                <td colspan="3" class="value"><template if:true={keyRisks}>
+                    <lightning-formatted-text value={keyRisks}></lightning-formatted-text>
+                </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap"> What are the drivers of the outcome? What
+                    gets them to embrace the change? What decision making barriers do we have to overcome?</td>
+                <td colspan="3" class="value"><template if:true={outcomeDrivers}>
+                    <lightning-formatted-text value={outcomeDrivers}></lightning-formatted-text>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Approach Strategy - Traditional</td>
+                <td colspan="3" class="value"><template if:true={approachStrategy}>
+                    <lightning-formatted-text value={approachStrategy}></lightning-formatted-text>
+                    </template></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="slds-text-align_left custom-td custom-th-wrap">
+                    <h2 class="blue-text"><strong>APPROACH STRATEGY - SUREST</strong></h2>
+                </td>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Surest - Last Action Taken</td>
+                <td colspan="3" class="value"><template if:true={lastAction}>
+                        <span>{lastAction}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Surest - Next Action to be Taken</td>
+                <td colspan="3" class="value"><template if:true={nextAction}>
+                        <span>{nextAction}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Surest - Approach Strategy </td>
+                <td colspan="3" class="value"><template if:true={surestApproachStrategy}>
+                    <lightning-formatted-text value={surestApproachStrategy}></lightning-formatted-text>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Surest - Network Constraints</td>
+                <td colspan="3" class="value"><template if:true={surestNetworkConstraints}>
+                        <span>{surestNetworkConstraints}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Network Contracting Issue - Other</td>
+                <td colspan="3" class="value"><template if:true={networkContracting}>
+                        <span>{networkContracting}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap"> Surest- Comments</td>
+                <td colspan="3" class="value"><template if:true={surestComments}>
+                    <lightning-formatted-text value={surestComments}></lightning-formatted-text>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Special Notes to INTERNAL RFP Participants
+                </td>
+                <td colspan="3" class="value"> <template if:true={isEditMode}>
+                    <lightning-input-rich-text  class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Special_Notes_RFP__c} name="Special_Notes_RFP__c" max-length="32768"
+                            onchange={handleChange}>
+                </lightning-input-rich-text>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Special_Notes_RFP__c}>
+                            <lightning-formatted-rich-text value={strategyMemo.Special_Notes_RFP__c}></lightning-formatted-rich-text>
+
+                            <!--<span>{strategyMemo.Special_Notes_RFP__c}</span>-->
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Discussion Points/Strategies to be
+                    incorporated into questionnaire responses</td>
+                <td colspan="3" class="value"> <template if:true={isEditMode}>
+                    <lightning-input-rich-text  class="slds-p-around_xxx-small" variant="label-hidden" max-length="32768"
+                            value={strategyMemo.Discussion_Points__c} name="Discussion_Points__c"
+                            onchange={handleChange}>
+                </lightning-input-rich-text>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Discussion_Points__c}>
+                            <lightning-formatted-rich-text value={strategyMemo.Discussion_Points__c}> </lightning-formatted-rich-text>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Notes taken on call with consultant</td>
+                <td colspan="3" class="value"><template if:true={notesTaken}>
+                        <!--<span>{notesTaken}</span>-->
+                        <lightning-formatted-text value={notesTaken}> </lightning-formatted-text>
+
+                    </template></td>
+            </tr>
+            <!-- <tr>
+                <td class="slds-text-align_left custom-td custom-th-wrap">Strategic Question No</td>
+                <td colspan="3" class="value"> <template if:true={isEditMode}>
+                        <lightning-textarea class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Strategic_Question_No__c} name="Strategic_Question_No__c"
+                            onchange={handleChange}>
+                         </lightning-textarea>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Strategic_Question_No__c}>
+                            <span>{strategyMemo.Strategic_Question_No__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr> -->
+        </tbody>
+    </table>
+    <!-- End RFP STRATEGY -->
+</template>

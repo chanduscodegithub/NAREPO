@@ -1,0 +1,96 @@
+<aura:component controller="memberShipActivityProductCategory" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="objInfo" type="opportunity" default="{sobjectType :'Opportunity'}" />
+    <aura:attribute name="selected" type="String" />
+    <aura:attribute name="stringremoved" type="String" />
+    <aura:attribute name="productTypeRemoved" type="String"/>
+    <aura:attribute name="oppId" type="String"/>
+     <aura:attribute name="isproductsInvolvedRemoved" type="Boolean" default="true"/>
+    <aura:attribute name="selcted" type="List"/>
+    <aura:attribute name="selectednew" type="List"/>
+    <aura:attribute name="listToCompareChanges" type="List"/>
+    <aura:attribute name="MA_ProductsInvolvedObj" type="Object"/>
+    <aura:registerEvent name="refreshES" type="c:MA_SAVE_SUCCESS"/>
+    
+    <!-- <div aura:id ="linkid">
+        <a style="width:100%;" onclick="{!c.showHidecomponent}" class ="slds-show"> 
+            View Record
+        </a>
+    </div> -->
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide alert-box">
+        <div class="slds-modal__container error-popup">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.onOk}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Confirmation</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;"> {!$Label.c.Product_Type_Involved_Delete_Message1} <br/><br/>
+                    {!$Label.c.Product_Type_Involved_Delete_Message}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.onOk}">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide alert-box">
+        <div class="slds-modal__container error-popup">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorPopup}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!$Label.c.Product_Type_Involved_Empty_Message}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorPopup}">OK</button>
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage1"></div>
+    
+    <div class="slds-show" aura:id="popup">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick = "{!c.onpresscancel}">
+                        <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="StepWise" />
+                        <span class="slds-assistive-text">{Close}</span>
+                        
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate bold-heading">Update the Products Involved in the Opportunity or Risk</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div>
+                        <article class="slds-card">
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="slds-form-element slds-grid">                            
+                                    <div class="slds-size_1-of-1">
+                                        <div class="slds-form-element__control checkbox-group">                                            
+                                            <lightning:checkboxGroup aura:id="updateMP" name="checkboxGroup" options="" value="" onchange="{!c.onPicklistChange}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </article>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <ui:button buttonTitle="Cli" class=" slds-Show button" label="Cancel" press="{!c.onpresscancel}"/>
+                    <ui:button buttonTitle="Cli" aura:id="changeIt" class=" slds-Show button" label="Save" press="{!c.onpress}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

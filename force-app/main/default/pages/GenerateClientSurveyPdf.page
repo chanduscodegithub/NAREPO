@@ -1,0 +1,401 @@
+<apex:page controller="GenerateClientSurveyController" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" standardStylesheets="false" renderAs="advanced_pdf">
+    <head>
+        <style>
+            @page{            
+                margin:  .8cm;
+                @bottom-right {
+               		content: "Page " counter(page) " of " counter(pages);
+            		font-size:12px;
+            		padding-right:12px;
+                }
+               
+            }
+            body{
+                font-family: Arial;
+                font-size: 13px;
+            }
+            table {-fs-table-paginate: paginate;}
+            /* .grayOut{background:#f3f2f2;}*/
+            .section-header{
+            	background: #8aa6d9;
+            	padding: 9px 13px;
+            	width: 100%;
+            	font-size: 14px;
+            	border:1px solid #8aa6d9;
+            	border-radius:9px;
+            }
+            .CompanyInfo{
+            	
+            	width:100%;
+            	text-align:center;
+            	font-size: 17px;
+            }
+        </style>	
+        
+    </head> 
+    <body>
+        <div style="width:100%;">            
+            <p class="CompanyInfo">
+                <br/>
+                <span style="font-size:22px;font-weight:bold;">{!accountName}</span><br/>
+                Client Survey<br/>
+                Confidential -  Internal Use Only
+            </p>
+            
+            
+            <p class="section-header" style="border-radius:9px;"><b>Client Survey Contact Identification</b></p>
+            
+            <apex:outputPanel rendered="{!IF(lstContact.size >0, true,false)}" layout="none">
+                <table cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    
+                    <tr style="background:#f6f4f4;">
+                        <th>Last Name</th>
+                        <th>First Name</th>
+                        <th>Correspondence Type</th>
+                        <th>Survey Type</th>
+                        <th>Email Address</th>
+                        <th>CMC Recommended Contact</th><!--Added Vignesh ****** -->
+                        <th>Partner Recommended Contact</th><!--Added Vignesh ****** -->
+                    </tr>
+                    <apex:repeat value="{!lstContact}" var="contactRecord">
+                        <tr>
+                            <td>{!contactRecord.LastName}</td>
+                            <td>{!contactRecord.FirstName}</td>
+                            <td>{!contactRecord.Correspondence_Type__c}</td>
+                            <td>{!contactRecord.Survey_Type__c}</td>
+                            <td>{!contactRecord.Email}</td>
+                            <td><apex:outputField value="{!contactRecord.CSI_Survey_Contact__c}"/> </td>
+                            <td>{!contactRecord.Contact_Source__c}</td>
+                        </tr>
+                    </apex:repeat>
+                    
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF(lstContact.size >0, false,true)}" layout="none">
+                No Contact Records found
+            </apex:outputPanel>
+            <br/>
+            <apex:form >
+                <p class="section-header"><b>Account Team Members Rated in Survey</b></p>            
+                <table cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    <tr style="background:#f6f4f4;">
+                        <th width="200px">AMT Role </th>
+                        <th>Last Name</th>
+                        <th>First Name</th>
+                        <th>Exclude AMT Role From Survey</th>
+                        <th>Main AMT</th>                     
+                    </tr>
+                    <tr>
+                        <td>CM SCE</td>
+                        <td>{!cmSCELastName}</td>
+                        <td>{!cmSCEFirstName} </td>
+                        <td></td>
+                        <td class='grayOut'></td> 
+                    </tr>
+                    <apex:outputPanel rendered="{!showSpecialistSCE}" layout="none"> <!--Added Vignesh ****** -->
+                    <tr>
+                        <td>Specialty Benefits SCE</td>
+                        <td>{!specialitySCEInLN} </td>
+                        <td>{!specialitySCEInFN} </td>
+                        <td>
+                            <!--apex:outputPanel layout="none" rendered="{!!excludeSpecialtyBenefitsSCESurvey}">
+                                <img src="/img/checkbox_unchecked.gif"/>
+                            </apex:outputPanel-->
+                            <apex:outputPanel layout="none" rendered="{!excludeSpecialtyBenefitsSCESurvey}">
+                                <img src="/img/checkbox_checked.gif"/>
+                            </apex:outputPanel>
+                            
+                        </td>
+                        <td class='grayOut'></td> 
+                    </tr>
+                      </apex:outputPanel>
+                    <apex:repeat value="{!roleSequence}" var="role">
+                        
+                        <apex:repeat value="{!roleVsMember[role]}" var="team">
+                            
+                            <tr >
+                                <td>{!role}</td>
+                                <td>{!team.lastName}</td>
+                                <td>{!team.firstName}</td>
+                                <td>
+                                    <apex:outputPanel layout="none" rendered="{!team.ShowExcludeAMTCheckBox}">
+                                        <apex:outputPanel layout="none" rendered="{!!team.exclude}">
+                                            <img src="/img/checkbox_unchecked.gif"/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="none" rendered="{!team.exclude}">
+                                            <img src="/img/checkbox_checked.gif"/>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                    
+                                </td>
+                                <!--SHRUTI **** START **** -->
+                                <td>
+                                    <apex:outputPanel layout="none" rendered="{!!team.primary}">
+                                            <img src="/img/checkbox_unchecked.gif"/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="none" rendered="{!team.primary}">
+                                            <img src="/img/checkbox_checked.gif"/>
+                                        </apex:outputPanel>
+                                </td>
+                                <!--<td class="{!IF(team.grayOut,'grayOut','')}">{!team.primary}</td>-->
+                                 <!--SHRUTI **** END **** -->
+                            </tr>
+                            
+                        </apex:repeat>
+                    </apex:repeat>
+                </table>
+                <br/>
+            </apex:form>
+            
+            <p class="section-header" ><b>Products Held by the Client</b></p>
+            <table cellpadding="10" cellspacing="0" border="1" width="100%" >
+                
+                <tr style="background:#f6f4f4;">
+                    <th style='height:30px;width:50%'>Product </th>
+                    <th>Yes / No</th>
+                </tr>
+                <tr>
+                    
+                    <td>Pharmacy</td>
+                    <td>
+                        {!productMix.Pharmacy__c}
+                    </td>
+                </tr>
+                <!--Added Vignesh ****** -->
+                 <tr>
+                    
+                    <td>Surest</td>
+                    <td>
+                        {!productMix.Surest__c}
+                    </td>
+                </tr>
+                <tr>
+                    
+                    <td>Dental</td>
+                    <td>
+                        {!productMix.Dental__c}
+                    </td>
+                </tr>
+                <tr>
+                    
+                    <td>Vision</td>
+                    <td>
+                        {!productMix.Vision__c}
+                    </td>
+                </tr>
+                <tr>
+                    
+                    <td>Supplemental Health</td>
+                    <td>
+                        {!productMix.Supplemental_Health__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Care Management </td>
+                    <td>
+                        {!productMix.Care_Management__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Decision Support  </td>
+                    <td>
+                        {!productMix.Decision_Support__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Women's Health  </td>
+                    <td>
+                        {!productMix.Women_s_Health__c}
+                    </td>
+                </tr>
+                <tr>
+                    
+                    <td>Complex Conditions (Centers of excellence)</td>
+                    <td>
+                        {!productMix.Centers_of_Excellence__c}
+                    </td>
+                </tr>
+               
+                <tr>
+                    
+                    <td>Disease Management</td>
+                    <td>
+                        {!productMix.Disease_Management__c}
+                    </td>
+                </tr>
+                <tr>
+                    
+                    <td>Worksite Wellness</td>
+                    <td>
+                        {!productMix.Worksite_Wellness__c}
+                    </td>
+                </tr>
+                
+                <tr>
+                    
+                    <td>Wellness and Wellness Coaching</td>
+                    <td>
+                        {!productMix.Wellness_and_Wellness_Coaching__c}
+                    </td>
+                </tr>
+                <!--Added Vignesh ****** -->
+              <!--  <tr>
+                    
+                    <td>Rally Client (above base)</td>
+                    <td>
+                        {!productMix.Rally_Client_above_base__c}
+                    </td>
+                </tr> -->
+                <tr>
+                    
+                    <td>Incentive Programs</td><!--Added Vignesh ****** -->
+                    <td>
+                        {!productMix.Incentive_Products__c}
+                    </td>
+                </tr>
+                <!--Added Vignesh ****** -->
+            <!--    <tr>
+                    
+                    <td>Health Savings Account (HSA)</td>
+                    <td>
+                        {!productMix.Health_Savings_Account_HSA__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Health Reimbursement Account (HRA)</td>
+                    <td>
+                        {!productMix.Health_Reimbursement_Account_HRA__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Flexible Spending Account (FSA)</td>
+                    <td>
+                        {!productMix.Flexible_Spending_Account_FSA__c}
+                    </td>
+                </tr> -->
+                <!--Added Vignesh ****** -->
+                <tr>
+                    <td>Financial Accounts</td>
+                    <td>
+                        {!productMix.Financial_Accounts__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Behavioral Health</td>
+                    <td>
+                        {!productMix.Behavioral_Health__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>EAP</td><!--Added Vignesh ****** -->
+                    <td>
+                        {!productMix.EAP_Domestic__c}
+                    </td>
+                </tr>
+                <!--Added Vignesh ****** -->
+              <!--  <tr>
+                    <td>EAP - Global</td>
+                    <td>
+                        {!productMix.EAP_Global__c}
+                    </td>
+                </tr> -->
+                <tr>
+                    <td>Retiree Products</td>
+                    <td>
+                        {!productMix.Retiree_Products__c}
+                    </td>
+                </tr>
+                <!--Added Vignesh ****** -->
+                 <tr>
+                    <td>UHC Hub</td>
+                    <td>
+                        {!productMix.UHC_Hub__c}
+                    </td>
+                </tr>
+                <!-- <tr>
+
+                    <td>UHC Cobra Administration</td>
+                    <td>
+                         {!productMix.UHC_Cobra_Administration__c}
+                       
+                    </td>
+                </tr> -->
+
+                <tr><td colspan="2" style="text-align:center">Required Questions For UMR Clients Only</td></tr>
+               <!--Added Vignesh ****** -->
+             <!--   <tr>
+                    <td>UHC/UMR Telehealth Solutions</td>
+                    <td>
+                        {!productMix.UHC_UMR_Telehealth_Solutions__c}
+                    </td>
+                </tr> -->
+                <!--Added Vignesh ****** -->
+              <!--  <tr> 
+                    <td>UHC/UMR Member Service and Tools</td>
+                    <td>
+                        {!productMix.UHC_UMR_Member_Service_and_Tools__c}
+                    </td>
+                </tr>  -->
+                <tr> 
+                    <td>Member Service Vendor</td>
+                    <td>
+                        {!productMix.Member_Service_Vendor__c}
+                    </td>
+                </tr>
+              <!--  <tr>
+                    <td>UMR COBRA Services</td>
+                    <td>
+                        {!productMix.UMR_COBRA_Services__c}
+                    </td>
+                </tr> -->
+            </table>
+            <br/><br/>
+            <p class="section-header" ><b>Validation</b></p>
+            
+            <table cellpadding="10" cellspacing="0" border="1" width="100%">
+                <thead>
+                    <tr style="background:#f6f4f4;">
+                        <th>
+                            CM/CMC Validated By
+                        </th>
+                        <th>
+                            Date/Time
+                        </th>
+                        <th>
+                            SCE Validated By
+                        </th>
+                        <th>
+                            Date/Time
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {!CM_CMC_Validation_By}
+                        </td>
+                        <td>
+                            <apex:outputText value="{0,date,M/d/yyyy hh:mm a}">
+                                <apex:param value="{!CM_CMC_Validation_DateTime+offset}"/> 
+                            </apex:outputText> &nbsp;
+                            <apex:outputText rendered="{!IF(CM_CMC_Validation_DateTime !=null,true,false)}">{!timeZoneShort}</apex:outputText> 
+                            
+                        </td>
+                        <td>
+                            
+                            {!SCE_Validation_By}
+                        </td>
+                        <td>
+                            <apex:outputText value="{0,date,M/d/yyyy hh:mm a}">
+                                <apex:param value="{!SCE_Validation_DateTime+offset}"/> 
+                            </apex:outputText> &nbsp;
+                            <apex:outputText rendered="{!IF(SCE_Validation_DateTime != null,true,false)}">{!timeZoneShort}</apex:outputText> 
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+    
+</apex:page>

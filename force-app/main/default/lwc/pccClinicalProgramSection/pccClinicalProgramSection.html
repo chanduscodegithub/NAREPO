@@ -1,0 +1,460 @@
+<template>
+        <div class="container">
+            <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+                <p>
+                    <strong>Clinical Programs - Surest </strong>
+                </p>
+            </div>
+            <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+                style="background-color:#F7F8E0; margin-bottom: 1rem;">
+                {label.Renewal_Checklist_Additional_Information_instruction}
+            </p>
+            <template if:true={isEdit}>
+            <div class="slds-float_right slds-m-right_large slds-m-top_x-small slds-m-bottom_x-small">
+                <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleCancel}
+                    icon-name="action:remove">
+                </lightning-button>
+                <lightning-button variant="brand" label="Save" class="slds-m-left_x-small" onclick={handleSave}
+                    icon-name="utility:save">
+                </lightning-button>
+            </div>
+            </template>
+            <template if:true={hideEdit}>
+                <div class="slds-float_right slds-m-top_x-small">
+                    <lightning-button variant="brand" label="Edit" class="slds-m-left_x-small"
+                        onclick={handleCPW} icon-name="action:edit">
+                    </lightning-button>
+                </div>
+            </template>
+            <br>
+            <div class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small">
+                <table class="slds-table slds-no-row-hover">
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <b><span>Account Information:</span></b>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Policy Number</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    {policyNumbers}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Policy Name</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    {policyNames}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Pharmacy Benefit Administrator Name</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Pharmacy_Benefit_Administrator_Name__c}>
+                                  <span>{renewalChecklistData.Pharmacy_Benefit_Administrator_Name__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-input type="text" variant="label-hidden" class="slds-p-top_xx-small"
+                                          data-api="Pharmacy_Benefit_Administrator_Name__c"
+                                          value={renewalChecklistData.Pharmacy_Benefit_Administrator_Name__c}
+                                          onchange={handleChange} maxlength="255">
+                                        </lightning-input>
+                                      </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Pharmacy Benefit Administrator Phone #</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Pharmacy_Benefit_Administrator_Phone__c}>
+                                  <span>{renewalChecklistData.Pharmacy_Benefit_Administrator_Phone__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-input type="tel" variant="label-hidden" class="slds-p-top_xx-small"
+                                          data-api="Pharmacy_Benefit_Administrator_Phone__c"
+                                          value={renewalChecklistData.Pharmacy_Benefit_Administrator_Phone__c}
+                                          onchange={handleChange} maxlength="40">
+                                        </lightning-input>
+                                      </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Employee Assistance Program Name</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Employee_Assistance_Program_Name__c}>
+                                  <span>{renewalChecklistData.Employee_Assistance_Program_Name__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-input type="text" variant="label-hidden" class="slds-p-top_xx-small"
+                                          data-api="Employee_Assistance_Program_Name__c"
+                                          value={renewalChecklistData.Employee_Assistance_Program_Name__c}
+                                          onchange={handleChange} maxlength="255">
+                                        </lightning-input>
+                                      </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Employee Assistance Program Phone #</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Employee_Assistance_Program_Phone__c}>
+                                  <span>{renewalChecklistData.Employee_Assistance_Program_Phone__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-input type="tel" variant="label-hidden" class="slds-p-top_xx-small"
+                                          data-api="Employee_Assistance_Program_Phone__c"
+                                          value={renewalChecklistData.Employee_Assistance_Program_Phone__c}
+                                          onchange={handleChange} maxlength="40">
+                                        </lightning-input>
+                                      </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    
+                    
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <b><span>Standard Clinical Offering:</span></b>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Transplant Resource Services</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Transplant_Resource_Services__c}>
+                                  <span>{renewalChecklistData.Transplant_Resource_Services__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox data-api="Transplant_Resource_Services__c" variant="label-hidden"
+                                            value={renewalChecklistData.Transplant_Resource_Services__c}
+                                            options={picklistValues} onchange={handleChange}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Utilization Management</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Utilization_Management__c}>
+                                  <span>{renewalChecklistData.Utilization_Management__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox data-api="Utilization_Management__c" variant="label-hidden"
+                                            value={renewalChecklistData.Utilization_Management__c}
+                                            options={picklistValues} onchange={handleChange}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Specialty Guidance Program</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    Yes
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Cancer Guidance Program</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Cancer_Guidance_Program_CPSurest__c}>
+                                  <span>{renewalChecklistData.Cancer_Guidance_Program_CPSurest__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox data-api="Cancer_Guidance_Program_CPSurest__c" variant="label-hidden"
+                                            value={renewalChecklistData.Cancer_Guidance_Program_CPSurest__c}
+                                            options={picklistValues} onchange={handleChange}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Behavioral Health Utilization Management, ABA UM</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.BHU_Management_ABA_UM__c}>
+                                  <span>{renewalChecklistData.BHU_Management_ABA_UM__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox data-api="BHU_Management_ABA_UM__c" variant="label-hidden"
+                                            value={renewalChecklistData.BHU_Management_ABA_UM__c}
+                                            options={picklistValues} onchange={handleChange}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Surest Case Management (CM)</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Surest_Case_Management_CM_CPSurest__c}>
+                                  <span>{renewalChecklistData.Surest_Case_Management_CM_CPSurest__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox data-api="Surest_Case_Management_CM_CPSurest__c" variant="label-hidden"
+                                            value={renewalChecklistData.Surest_Case_Management_CM_CPSurest__c}
+                                            options={picklistValues} onchange={handleChange}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Optum Behavioral Network</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    Yes
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                    <span>Optum Physical Health Network</span>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    Yes
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <div class="slds-grid slds-grid--vertical-align-center"
+                                style="width:100%;">
+                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                    <b><span>Optional Programs:</span></b>
+                                </div>
+                                <div
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                        
+                    <!-- <template for:each={checklistDisplayData} for:item="item">
+                        <tr key={item.label}>
+                            <td class="left">
+                                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                    <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                                        <span>{item.label}</span>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-cell-wrap slds-text-align_right">
+                                        <template if:true={item.readonly}>
+                                        <template if:true={item.value}>
+                                            <span>{item.value}</span>
+                                        </template>
+                                        </template>
+                                        <template if:false={item.readonly}>
+                                        <template if:true={isEdit}>
+                                            <span class="slds-text-align_left" style="padding-top: 5px;">
+                                                <lightning-combobox data-api={item.name} variant="label-hidden"
+                                                     value={item.value} options={picklistValuesOP} onchange={handleChange}>
+                                                </lightning-combobox>
+                                            </span>
+                                        </template>
+                                        <template if:false={isEdit}>
+                                          <span>{item.value}</span>
+                                        </template>
+                                        </template>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>                    -->
+                    <template for:each={checklistDisplayData} for:item="item">
+                      <tr key={item.label}>
+                          <td class="left">
+                              <div class="slds-grid slds-grid_vertical-align-center border-bottom">
+                  
+                                  <!-- Label column -->
+                                  <div class={item.labelClass}>
+                                      <span>{item.label}</span>
+                                  </div>
+
+                                  <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_left">
+                                    <template if:true={item.isDual}>
+                                        <span class="slds-text-body_regular">Dual</span>
+                                    </template>
+                                    <template if:false={item.isDual}>
+                                        <span></span>
+                                    </template>
+                                  </div>
+                  
+                                  <!-- Main combobox or value -->
+                                  <div class={item.mainClass}>
+                                      <template if:false={isEdit}>
+                                          <template if:true={item.value}>
+                                              <span>{item.value}</span>
+                                          </template>
+                                      </template>
+                                      <template if:true={isEdit}>
+                                          <template if:true={item.readonly}>
+                                              <span>{item.value}</span>
+                                          </template>
+                                          <template if:false={item.readonly}>
+                                            <span class="slds-text-align_left" style="padding-top: 5px;">
+                                              <lightning-combobox data-api={item.name}  variant="label-hidden"  value={item.value}  options={item.options}  onchange={handleChange}>
+                                              </lightning-combobox>
+                                            </span>
+                                          </template>
+                                      </template>
+                                  </div>
+                  
+                                  <!-- Extra combobox (only for One_Pass_Select__c) -->
+                                  <template if:true={item.relatedField}>
+                                      <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                          <template if:false={isEdit}>
+                                              <span>{item.relatedField.value}</span>
+                                          </template>
+                                          <template if:true={isEdit}>
+                                              <template if:true={item.relatedField.readonly}>
+                                                  <span>{item.relatedField.value}</span>
+                                              </template>
+                                              <template if:false={item.relatedField.readonly}>
+                                                <span class="slds-text-align_left" style="padding-top: 5px;">
+                                                  <lightning-combobox  data-api={item.relatedField.name}  variant="label-hidden"  value={item.relatedField.value}  options={extraOnePassValues}  onchange={handleChange}>
+                                                  </lightning-combobox>
+                                                </span>
+                                                </template>
+                                          </template>
+                                      </div>
+                                  </template>
+
+                              </div>
+                          </td>
+                      </tr>
+                  </template>
+                  </table>
+            </div>
+        </div>
+</template>

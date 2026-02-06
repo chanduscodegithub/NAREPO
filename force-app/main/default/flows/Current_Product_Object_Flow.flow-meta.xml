@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <environments>Default</environments>
+    <formulas>
+        <name>UpdateFieldAccountFormula</name>
+        <dataType>String</dataType>
+        <expression>IF (  Contains( Text({!$Record.Pharmacy__c} ), &apos;Yes-&apos;  ), SUBSTITUTE( Text({!$Record.Pharmacy__c} ),  &quot;Yes-&quot;,  &quot;&quot; ) ,
+
+IF (  Contains( Text({!$Record.Pharmacy__c} ), &apos;No&apos; ), SUBSTITUTE( Text({!$Record.Pharmacy__c} ),  &quot;No&quot;, &quot;N/A&quot; ), Text({!$Record.Pharmacy__c} ) ))</expression>
+    </formulas>
+    <interviewLabel>Current Product Object Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Current Product Object Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Account_Field</name>
+        <label>Update Account Field</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <inputAssignments>
+            <field>Optum_RX_Type__c</field>
+            <value>
+                <elementReference>UpdateFieldAccountFormula</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.AccountFirm__r</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Account_Field</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Pharmacy__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>ProductMix__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

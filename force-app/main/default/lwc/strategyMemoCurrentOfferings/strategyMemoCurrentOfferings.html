@@ -1,0 +1,315 @@
+<template>
+    <table
+        class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+
+        <tbody>
+            <tr>
+                <td colspan="4" class="slds-text-align_left custom-td"> Products</td>
+                <td colspan="2" class="slds-text-align_left custom-td">ASO</td>
+                <td colspan="1" class=" custom-background-colour slds-text-align_left "> </td>
+                <td colspan="2" class="slds-text-align_left "> <template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.ASO__c} name="ASO__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.ASO__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+                <td colspan="5" class="slds-text-align_left custom-td"> </td>
+                <td colspan="3" class="slds-text-align_left custom-td">FI(HMOs)</td>
+                <td colspan="1" class="slds-text-align_left custom-td custom-background-colour"> </td>
+                <td colspan="2" class="slds-text-align_left "><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.FI_HMOs__c} name="FI_HMOs__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.FI_HMOs__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+                <td colspan="5" class="slds-text-align_left custom-td"> </td>
+            </tr>
+            <tr>
+                <td colspan="4" class="slds-text-align_left custom-td"> </td>
+                <td colspan="2" class="slds-text-align_left custom-td">EPO</td>
+                <td colspan="1" class="slds-text-align_left custom-td custom-background-colour"> </td>
+                <td colspan="2" class="slds-text-align_left "><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.EPO__c} name="EPO__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.EPO__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+                <td colspan="2" class="slds-text-align_left custom-td">POS</td>
+                <td colspan="1" class="slds-text-align_left custom-td custom-background-colour"> </td>
+                <td colspan="2" class="slds-text-align_left "><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.POS__c} name="POS__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.POS__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+                <td colspan="3" class="slds-text-align_left custom-td">PPO</td>
+                <td colspan="1" class="slds-text-align_left custom-td custom-background-colour"> </td>
+                <td colspan="2" class="slds-text-align_left "><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.PPO__c} name="PPO__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.POS__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+                <td colspan="2" class="slds-text-align_left custom-td">CDHP</td>
+                <td colspan="1" class="slds-text-align_left custom-td custom-background-colour"> </td>
+                <td colspan="2" class="slds-text-align_left "><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.CDHP__c} name="CDHP__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.CDHP__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" class="slds-text-align_left custom-td">Currently in an ACO?</td>
+                <td colspan="21">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Currently_in_an_ACO__c}
+                            name="Currently_in_an_ACO__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Currently_in_an_ACO__c} disabled>
+                        </lightning-input>
+                    </template>
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="25" class="slds-text-align_left "><span class="custom-td">INCUMBENT INFO:</span>
+                    <template if:true={competitorInMedical}>
+                        <template if:true={competitorInMedical.length}>
+                            <h3 class="slds-p-around_medium custom-td">Medical</h3>
+                            <table class ="slds-table slds-table_cell-buffer slds-table_bordered slds-border_left slds-border_right slds-border_top slds-border_bottom">
+                                    <tr>
+                                    <th class="custom-td" style="height: 30px;">Medical Competitors</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">% of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">% of Member Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">Comments</th>
+                                    </tr>
+                                <tbody>
+                                    <template for:each={competitorInMedical} for:item="medical">
+                                        <tr key={medical.id}>
+                                            <td class="value"><template
+                                                    if:true={medical.Competitor_Account__r.Name}>{medical.Competitor_Account__r.Name}</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={medical.Number_of_Members_Held__c}>
+                                                    <lightning-formatted-number value = {medical.Number_of_Members_Held__c}> </lightning-formatted-number>
+                                                </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={medical.of_Members_Held__c}>{medical.of_Members_Held__c}%</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={medical.Number_of_Members_Awarded__c}>
+                                                     <lightning-formatted-number value = {medical.Number_of_Members_Awarded__c}> </lightning-formatted-number>
+                                                    </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={medical.of_Members_Awarded__c}>{medical.of_Members_Awarded__c}%</template>
+                                            </td>
+                                            <td class="value"><template if:true={medical.Comments__c}>{medical.Comments__c}</template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </template>
+                    <template if:true={competitorInPharmacy}>
+                        <template if:true={competitorInPharmacy.length}>
+                            <h3 class="slds-p-around_medium custom-td">Pharmacy</h3>
+                            <table class ="slds-table slds-table_cell-buffer slds-table_bordered slds-border_left slds-border_right slds-border_top slds-border_bottom">
+                                    <tr>
+                                    <th class="custom-td" style="height: 30px;">Pharmacy Competitors</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">% of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">% of Member Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">Comments</th>
+                                   </tr>
+                                <tbody>
+                                    <template for:each={competitorInPharmacy} for:item="Pharmacy">
+                                        <tr key={Pharmacy.id}>
+                                            <td class="value"><template
+                                                    if:true={Pharmacy.Competitor_Account__r.Name}>{Pharmacy.Competitor_Account__r.Name}</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={Pharmacy.Number_of_Members_Held__c}>
+                                                     <lightning-formatted-number value = {Pharmacy.Number_of_Members_Held__c}> </lightning-formatted-number>
+                                                     </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={Pharmacy.of_Members_Held__c}>{Pharmacy.of_Members_Held__c}%</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={Pharmacy.Number_of_Members_Awarded__c}>
+                                                     <lightning-formatted-number value =  {Pharmacy.Number_of_Members_Awarded__c}> </lightning-formatted-number>
+                                                    </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={Pharmacy.of_Members_Awarded__c}>{Pharmacy.of_Members_Awarded__c}%</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={Pharmacy.Comments__c}>{Pharmacy.Comments__c}</template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </template>
+                    <template if:true={competitorInDental}>
+                        <template if:true={competitorInDental.length}>
+                            <h3 class="slds-p-around_medium custom-td">Dental</h3>
+                            <table class ="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <tr>
+                                    <th class="custom-td" style="height: 30px;">Dental Competitors</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">% of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">% of Member Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">Comments</th>
+                                </tr>
+                                <tbody>
+                                    <template for:each={competitorInDental} for:item="dental">
+                                        <tr key={dental.id}>
+                                            <td class="value"><template
+                                                    if:true={dental.Competitor_Account__r.Name}>{dental.Competitor_Account__r.Name}</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={dental.Number_of_Members_Held__c}>
+                                                     <lightning-formatted-number value = {dental.Number_of_Members_Held__c}> </lightning-formatted-number>
+                                                     </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={dental.of_Members_Held__c}>{dental.of_Members_Held__c}%</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={dental.Number_of_Members_Awarded__c}>
+                                                     <lightning-formatted-number value = {dental.Number_of_Members_Awarded__c}> </lightning-formatted-number>
+                                                     </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={dental.of_Members_Awarded__c}>{dental.of_Members_Awarded__c}%</template>
+                                            </td>
+                                            <td class="value"><template if:true={dental.Comments__c}>{dental.Comments__c}</template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </template>
+                    <template if:true={competitorInVision}>
+                        <template if:true={competitorInVision.length}>
+                            <h3 class="slds-p-around_medium custom-td">Vision</h3>
+                            <table class ="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <tr>
+                                    <th class="custom-td" style="height: 30px;">Vision Competitors</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">% of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">% of Member Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">Comments</th>
+                                </tr>
+                                <tbody>
+                                    <template for:each={competitorInVision} for:item="vision">
+                                        <tr key={vision.id}>
+                                            <td class="value"><template
+                                                    if:true={vision.Competitor_Account__r.Name}>{vision.Competitor_Account__r.Name}</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={vision.Number_of_Members_Held__c}>
+                                                     <lightning-formatted-number value = {vision.Number_of_Members_Held__c}> </lightning-formatted-number>
+                                                    </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={vision.of_Members_Held__c}>{vision.of_Members_Held__c}%</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={vision.Number_of_Members_Awarded__c}>
+                                                     <lightning-formatted-number value = {vision.Number_of_Members_Awarded__c}> </lightning-formatted-number>
+                                                     </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={vision.of_Members_Awarded__c}>{vision.of_Members_Awarded__c}%</template>
+                                            </td>
+                                            <td class="value"><template if:true={vision.Comments__c}>{vision.Comments__c}</template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </template>
+                    <template if:true={competitorInOther}>
+                        <template if:true={competitorInOther.length}>
+                            <h3 class="slds-p-around_medium custom-td">Other</h3>
+                            <table>
+                                <tr class ="slds-table slds-table_cell-buffer slds-table_bordered">
+                                    <th class="custom-td" style="height: 30px;">Other Competitors</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">% of Members held</th>
+                                    <th class="custom-td" style="height: 30px;">Number of Members Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">% of Member Awarded</th>
+                                    <th class="custom-td" style="height: 30px;">Comments</th>
+                                </tr>
+                                <tbody>
+                                    <template for:each={competitorInOther} for:item="other">
+                                        <tr key={other.id}>
+                                            <td class="value"><template
+                                                    if:true={other.Competitor_Account__r.Name}>{other.Competitor_Account__r.Name}</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={other.Number_of_Members_Held__c}>
+                                                    <lightning-formatted-number value = {other.Number_of_Members_Held__c}> </lightning-formatted-number>
+                                                    </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={other.of_Members_Held__c}>{other.of_Members_Held__c}%</template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={other.Number_of_Members_Awarded__c}>
+                                                    <lightning-formatted-number value = {other.Number_of_Members_Awarded__c}> </lightning-formatted-number>
+                                                    </template>
+                                            </td>
+                                            <td class="value"><template
+                                                    if:true={other.of_Members_Awarded__c}>{other.of_Members_Awarded__c}%</template>
+                                            </td>
+                                            <td class="value"><template if:true={other.Comments__c}>{other.Comments__c}</template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </template>
+
+                </td>
+            </tr>
+
+
+        </tbody>
+
+    </table>
+</template>

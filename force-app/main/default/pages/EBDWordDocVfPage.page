@@ -1,0 +1,972 @@
+<apex:page showHeader="false" sidebar="false" applyBodyTag="false" contentType="{!ContentTypeValue}"
+           applyHtmlTag="false" controller="EBDController" language="en-US">
+    <apex:includeLightning />
+    <div id="LightningComponentid" />
+    <html>
+        <style>
+            th, td {
+            border: 1px solid #000;
+            padding: 6px;
+            <!--vertical-align: top;
+word-wrap: break-word;-->
+            }
+            th {
+            text-align: left;
+            font-weight: bold;
+            }
+            td{
+            text-align: left;
+            }
+            thead {
+            background-color: #dae9f7;
+            font-weight: bold;
+            text-align: left;
+            font-size: 14px;
+            }
+            .header-row{
+            background-color: #f2f2f2;
+            }
+        </style>
+        <head>
+            <meta content="text/html;charset=UTF-8" />
+        </head>
+        <body>
+            <table style="width: 100%; text-align: center;">
+                <tr>
+                    <td style="text-align: left;">
+                        <img src="{!$Label.ebdUhg}" width="120" height="70" />
+                    </td>
+                    <td style="text-align: center;">
+                        <img src="{!$Label.SoldCaseLetterUnitedImage}" width="120" />                   
+                    </td>
+                    <td style="text-align: right;">
+                        <img src="{!$Label.EbdOptum}" width="120"  height="60"/>
+                    </td>
+                </tr>
+            </table>
+            <p style="width:100%; text-align:center; font-family:Calibri; font-size:25px; font-weight: bold;">Executive Briefing Document </p><!--{!ebdWrapper.getEbdListData.Year__c}-->
+            <p style="width:100%; text-align:center; font-family:Calibri; font-size:15px; font-weight: bold;">CONFIDENTIAL – Internal Use Only </p>
+            <br/>
+            <br/>
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; table-layout: fixed; font-family: Calibri;">
+                <!--<thead >-->
+                    <tr style="border: 1px solid #000; background-color: #dae9f7; font-weight: bold; padding:1px;  text-align: left; ">
+                        <th colspan="2" style="padding-left:3px; border: 1px solid #000; text-align:center; text-align:Center; font-weight: bold; font-size: 15px;">Client Overview</th>
+                    </tr>
+                <!--</thead>-->
+                <tbody>
+                    <tr>
+                        <th style="width:30%;border: 1px solid #000; padding-left:5px;vertical-align: top; text-align: left; font-size: 12px; padding-bottom:5px; ">Company Name</th>
+                        <td  style="width:70%; border: 1px solid #000; padding-left:5px; text-align: left; font-size: 12px;">  <apex:outputField value="{!ebdWrapper.getAccountInfo.Name}" /></td>
+                    </tr>
+                    <tr>
+                        <th  style="width:30%;border: 1px solid #000; padding-left:5px; vertical-align: top; text-align: left; font-size: 12px; padding-bottom:5px; ">Brief Company Description</th>
+                        <td  style="width:70%; text-align: left; padding-left:5px; border: 1px solid #000; font-size: 12px; word-wrap:break-word; white-space:normal;">  <apex:outputField value="{!ebdWrapper.getEbdListData.Brief_Company_Description__c}" /></td>
+                    </tr>
+                    <tr>
+                        <th  style="width:30%; text-align: left; font-weight: bold; border: 1px solid #000; padding-left:5px; font-size: 12px; padding-bottom:5px; ">Involvement in CAC</th>
+                        <td style="width:70%; text-align: left;  border: 1px solid #000; font-size: 12px; padding-left:5px; ">
+                            <!-- {!ebdWrapper.getEbdListData.Involvement_In_CAC__c}-->
+                            <apex:outputText value="{!IF(ebdWrapper.getEbdListData.Involvement_In_CAC__c, 'True', 'False')}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="width:30%; text-align: left;  border: 1px solid #000; padding-left:5px; font-size: 12px; padding-bottom:5px; ">Business Group on Health</th>
+                        <td style="width:70%; text-align: left;  border: 1px solid #000; padding-left:5px; font-size: 12px; word-wrap:break-word; white-space:normal;">{!ebdWrapper.bghData}</td>
+                    </tr>
+                    <tr>
+                        <th  style="width:30%; text-align: left;  border: 1px solid #000; padding-left:5px;font-size: 12px; padding-bottom:5px; ">Current Medical Deal Start Date</th>
+                        <td  style="width:70%; text-align: left;  border: 1px solid #000; padding-left:5px; font-size: 12px;">{!ebdWrapper.CurrentMedicalDealStartDate}</td>
+                    </tr>
+                    <tr>
+                        <th  style="width:30%; text-align: left; border: 1px solid #000; padding-left:5px; font-size: 12px; padding-bottom:5px; ">Next Medical Renewal Date</th>
+                        <td style="width:70%; border: 1px solid #000; text-align: left; padding-left:5px; font-size: 12px;">{!ebdWrapper.NextMedicalRenewalDate}</td>
+                    </tr>
+                    <tr>
+                        <th style="width:30%; text-align: left; font-weight: bold;  border: 1px solid #000; padding-left:5px; font-size: 12px; padding-bottom:5px; ">Tenure</th>
+                        <td  style="width:70%; text-align: left; border: 1px solid #000; padding-left:5px; font-size: 12px;">{!ebdWrapper.getAccountInfo.Tenure__c}</td>
+                    </tr>
+                    <tr>
+                        <th  style="width:30%; text-align: left; font-weight: bold;  border: 1px solid #000; padding-left:5px;; font-size: 12px; padding-bottom:5px; ">Medical membership penetration</th>
+                        <!-- <td style="width:70%; text-align: left; border: 1px solid #000; padding-left:5px; font-size: 12px;">{!ebdWrapper.getAccountInfo.Medical_Membership_Penetration__c}</td>-->
+                        <td style="width:70%; text-align: left; border: 1px solid #000; padding-left:5px; font-size: 12px;">
+                            {!IF(ISBLANK(ebdWrapper.getAccountInfo.Medical_Membership_Penetration__c), 
+                            '0%', 
+                            TEXT(ebdWrapper.getAccountInfo.Medical_Membership_Penetration__c) & '%')}
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <th style="width:30%; text-align: left; font-weight: bold;  border: 1px solid #000; vertical-align: top; padding-left:5px; font-size: 12px; padding-bottom:5px; ">Relationship History and Current State of the Relationship</th>
+                        <td style="width:70%; text-align: left; border: 1px solid #000; padding-left:5px; font-size: 12px; word-wrap:break-word; white-space:normal;">  <apex:outputField value="{!ebdWrapper.getEbdListData.Relationship_History__c}" /></td>
+                    </tr>
+                </tbody>
+            </table>
+            <br/>
+            <br/>
+            <!-- client overview end-->
+            <table style=" width: 100%; border-collapse: collapse;  table-layout: fixed; font-family: Calibri; ">
+                <!--<thead >-->
+                    <tr style ="background-color: #dae9f7;">
+                        <th colspan="2" style=" border: 1px solid #000; text-align:center; font-size: 15px;">Senior UHG Executives Engaged in the Account</th>
+                    </tr>
+                <!--</thead>-->
+                <tr>
+                    <th style="width:30%; text-align: center; font-weight: bold;  border: 1px solid #000; padding-left:5px; font-size: 12px; padding-bottom:5px;">Role</th>
+                    <th style="width:70%; text-align: center; font-weight: bold;  border: 1px solid #000; padding-left:5px; font-size: 12px; padding-bottom:5px;">Name</th>
+                </tr>
+                <tr>
+                    <td style="width:30%; text-align: left; font-weight: bold;  border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px; ">Enterprise Executive Sponsor</td>
+                    <td style="width:70%; border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px; text-align: left;">{!ebdWrapper.getSeniorExecutiveListData.EnterpriseExecutiveSponsorName__c}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; text-align: left; font-weight: bold;  border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px;">UHC Executive Sponsor</td>
+                    <td style="width:70%; text-align: left; border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px;">{!ebdWrapper.getSeniorExecutiveListData.UHCExecutiveSponsorName__c}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; text-align: left; font-weight: bold;  border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px;">Optum Executive Sponsor</td>
+                    <td style="width:70%; text-align: left; border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px; ">{!ebdWrapper.getSeniorExecutiveListData.OptumExecutiveSponsorName__c}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; text-align: left; font-weight: bold;  border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px;">Surest Executive Sponsor</td>
+                    <td style="width:70%; text-align: left; border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px; ">{!ebdWrapper.getSeniorExecutiveListData.SurestExecutiveSponsorName__c}</td>
+                </tr>
+            </table>
+            <br/>
+            <br/>
+            <!--   senior executives end-->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000; table-layout: fixed; font-family: Calibri; ">
+                <!--<thead style="">-->
+                    <tr style="border: 1px solid #000; border-collapse: collapse; background-color: #dae9f7; font-size: 15px;">
+                        <th colspan="2" style="text-align:center">Account Team Leaders</th>
+                    </tr>
+                <!--</thead>-->
+                <tr>
+                    <th style="width:30%; text-align: left; font-weight: bold;  border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px;"><b>VPCR / RVP</b></th>
+                    <td  style="width:70%; text-align: left; border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px;">{!ebdWrapper.getAccountInfo.CMVPCRRVP__r.Name}</td>
+                </tr>
+                <tr>
+                    <th style="width:30%; text-align: left; font-weight: bold; border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px;">SCE</th>
+                    <td style="width:70%; text-align: left; border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px; ">{!ebdWrapper.getAccountInfo.CM_SCE__r.Name}</td>
+                </tr>
+            </table>
+            <br/>
+            <br/>
+            <!--account leaders end-->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <tr>
+                    <th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;" colspan="3">Executive Leadership and/or Key Personnel at Client</th>
+                </tr>    
+                <tr style="text-align:left; padding-left:3px" >
+                    <th style ="border: 1px solid #000; width:30%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Name</th>
+                    <th style ="border: 1px solid #000; width:30%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Title</th>
+                    <th style ="border: 1px solid #000; width:40%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">UHG Primary Contact with the Executive</th>
+                </tr>
+                <apex:repeat value="{!ebdWrapper.getCompanyContactsData}" var="companyContact">
+                    <tr>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">{!companyContact.Name}</td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">{!companyContact.Title}</td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">{!companyContact.UHGPrimaryContactwithExecutive__c}</td>
+                    </tr>
+                </apex:repeat>
+                <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getCompanyContactsData)}">
+                    <tr>
+                        <td colspan="3" style="border: 1px solid #000; text-align:center; font-size: 12px; padding: 6px;">
+                            No records to display 
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+            <br/>
+            <br/>
+            <!-- key personnel clients end-->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                
+                <tr><th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;" colspan="4">Entertainment</th></tr>    
+                <tr style="text-align:left; padding-left:3px" >
+                    <th style ="border: 1px solid #000; width:30%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Client Representative(s)</th>
+                    <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Event</th>
+                    <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Timing</th>
+                    <th style ="border: 1px solid #000; width:30%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">UHG Representative(s)</th>
+                </tr>
+                
+                <apex:repeat value="{!ebdWrapper.getEntertainmentDetails}" var="entertainment">
+                    <!-- <apex:outputPanel rendered="{!ISBLANK(entertainment.Client_Representative_s__c)}">
+<tr>
+<td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">&nbsp;{!entertainment.Client_Representative_s__c}</td>
+<td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">&nbsp;{!entertainment.Event__c}</td>
+<td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">&nbsp;{!entertainment.Timing__c}</td>
+<td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">{!entertainment.UHG_Representative_s__c}</td>
+</tr>
+</apex:outputPanel>-->
+                    
+                    <tr>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">
+                            <!-- <apex:outputText value="{!IF(ISBLANK(entertainment.Client_Representative_s__c),'&nbsp;',entertainment.Client_Representative_s__c)}" escape="false"/>-->
+                            <apex:outputField value="{!entertainment.Client_Representative_s__c}"/>
+                            
+                            
+                        </td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">
+                            <!--<apex:outputText value="{!IF(ISBLANK(entertainment.Event__c),'&nbsp;',entertainment.Event__c)}" escape="false"/>-->
+                            <apex:outputField value="{!entertainment.Event__c}"/>
+                            
+                        </td>
+                        <td style="border: 1px solid #000; vertical-align: top;  text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">
+                            <!--<apex:outputText value="{!IF(ISBLANK(entertainment.Timing__c),'&nbsp;',entertainment.Timing__c)}" escape="false"/>-->
+                            <apex:outputField value="{!entertainment.Timing__c}"/>
+                        </td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">
+                            <!--<apex:outputText value="{!IF(ISBLANK(entertainment.UHG_Representative_s__c),'&nbsp;',entertainment.UHG_Representative_s__c)}" escape="false"/>-->
+                            <apex:outputField value="{!entertainment.UHG_Representative_s__c}"/>
+                        </td>
+                    </tr>
+                    
+                </apex:repeat>
+                <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getEntertainmentDetails)}">
+                    <tr>
+                        <td colspan="4" style=" text-align:center; font-size: 12px; padding: 6px;">
+                            No records to display 
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+            <br/>
+            <br/>
+            <!-- Entertainments end-->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <!--<thead>-->
+                    <tr><th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;" colspan="6">Company Consultants</th></tr>    
+                    <tr style="text-align:left; padding-left:3px" >
+                        <th style ="border: 1px solid #000; width:10%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Company Primary</th> 
+                        <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Last Name</th>
+                        <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">First Name</th>
+                        <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Consulting firm</th>
+                        <th style ="border: 1px solid #000; width:15%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Location</th>
+                        <th style ="border: 1px solid #000; width:15%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Role</th>
+                    </tr>
+                <!--</thead>-->
+                <apex:repeat value="{!ebdWrapper.getConsultantsData}" var="consultant">
+                    <tr>
+                        
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px;   padding-left:5px; padding-bottom:5px; ">
+                            <apex:outputText value="{!IF(consultant.Primary__c, 'Yes', '')}" />
+                        </td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px;   padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">{!consultant.Contact.LastName}</td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">{!consultant.Contact.FirstName}</td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">{!consultant.Contact.Account.Name}</td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">
+                            <!--{!consultant.Contact.Account.Location__c}-->
+                            {!IF(AND(NOT(ISBLANK(consultant.Contact.MailingCity)), 
+                            NOT(ISBLANK(consultant.Contact.MailingStateCode))), 
+                            consultant.Contact.MailingCity & ', ' & consultant.Contact.MailingStateCode,
+                            IF(NOT(ISBLANK(consultant.Contact.MailingCity)), 
+                            consultant.Contact.MailingCity, 
+                            consultant.Contact.MailingStateCode))}
+                        </td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">{!consultant.Contact.Title}</td>
+                    </tr>
+                </apex:repeat>
+                <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getConsultantsData)}">
+                    <tr>
+                        <td colspan="6" style="border: 1px solid #000; text-align:center; font-size: 12px; padding: 6px;">
+                            No records to display  
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+            <br/>
+            <br/>
+            <!--consultants end -->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <!--<thead>-->
+                    <tr><th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;" colspan="3">Client’s Top Priorities or Topics</th></tr>    
+                    <tr style="text-align:left; padding-left:3px" >
+                        <th style ="border: 1px solid #000; width:45%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;" colspan="2">Client’s Goal, Issue or Priority</th>
+                        <th style ="border: 1px solid #000; width:55%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Strategies UHG will propose this year to address client’s priorities </th>
+                    </tr>
+                <!--</thead>-->
+                <apex:variable var="index" value="{!0}" />
+                <apex:repeat value="{!ebdWrapper.getClientPriorityDetails}" var="clientPriority">
+                    <apex:variable var="index" value="{!index + 1}" />    
+                    <tr>
+                        <td style="border: 1px solid #000; font-size: 12px; text-align: center; width:5%; vertical-align:top; ">{!index}.</td>    
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px; vertical-align:top;  width:40%; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">
+                            <!--<apex:outputText value="{!IF(ISBLANK(clientPriority.Client_Priority__c),'&nbsp;',clientPriority.Client_Priority__c)}" escape="false"/>-->
+                            <apex:outputField value="{!clientPriority.Client_Priority__c}"/>
+                            
+                            
+                        </td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px;  vertical-align:top; width:55%; padding-left:5px; padding-bottom:5px; word-wrap:break-word; white-space:normal;">
+                            <!--<apex:outputText value="{!IF(ISBLANK(clientPriority.UHG_Strategy__c),'&nbsp;',clientPriority.UHG_Strategy__c)}" escape="false"/>-->
+                            <apex:outputField value="{!clientPriority.UHG_Strategy__c}"/>
+                            
+                        </td>
+                    </tr>
+                </apex:repeat>
+                <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getClientPriorityDetails)}">
+                    <tr>
+                        <td colspan="3" style="border: 1px solid #000; font-size: 12px; text-align: center; padding: 5px;">
+                            No records to display 
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+            <br/>
+            <br/>
+            <!--clients representatives end -->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family:Calibri;">
+                <tr><th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center; font-family:Calibri;" colspan="3">UHG 3 Year Strategy (include 5%/10%/20% savings plan)</th></tr>    
+                <tr>
+                    <td style="width:5%; text-align:center; vertical-align:top; border: 1px solid #000; padding-center:3px;  font-size:12px;">1.</td>
+                    <th style="width:25%; text-align:left; border: 1px solid #000; vertical-align:top; font-size:12px; padding-left:5px; padding-bottom:5px;"><b>5% Savings Plan</b></th>
+                    <td  style="width:75%; text-align:left; border: 1px solid #000;  font-size:12px; padding-left:5px; padding-bottom:5px;">
+                        <!-- {!ebdWrapper.getEbdListData.X5_Savings_Plan__c}-->
+                        <apex:outputField value="{!ebdWrapper.getEbdListData.X5_Savings_Plan__c}"/>
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:5%; text-align:center; vertical-align:top; border: 1px solid #000; padding-left:3px; font-size:12px; ">2.</td>
+                    <th style="width:25%; text-align: left;  border: 1px solid #000; vertical-align:top;  font-size:12px; padding-left:5px; padding-bottom:5px;">10% Savings Plan</th>
+                    <td style="width:75%; text-align: left; border: 1px solid #000; padding-left:3px;  font-size:12px; padding-left:5px; padding-bottom:5px;">
+                        <apex:outputField value=" {!ebdWrapper.getEbdListData.X10_Savings_Plan__c}"/>
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:5%; text-align:center;  vertical-align:top; border: 1px solid #000; padding-left:3px; font-size:12px; ">3.</td>
+                    <th style="width:25%; text-align: left;  border: 1px solid #000; vertical-align:top; padding-left:5px; padding-bottom:5px;  font-size:12px;"><b>20% Savings Plan</b></th>
+                    <td  style="width:75%; text-align: left; border: 1px solid #000; padding-left:5px; padding-bottom:5px;  font-size:12px;">
+                        <apex:outputField value="{!ebdWrapper.getEbdListData.X20_Savings_Plan__c}"/>
+                        
+                    </td>
+                </tr>
+                
+            </table>
+            <br/>
+            <br/>
+            <!--savings plan end-->
+            <table style=" width: 100%;   table-layout: fixed; font-family:Calibri;">
+                <tr>
+                    <!-- <th style="width:25%;"></th>-->
+                    <th style ="width:75%; border:1px solid #000; background-color: #dae9f7; font-size: 15px; text-align:center;" colspan="4">Net Promoter Score (NPS)</th>
+                </tr> 
+                
+                <!--<th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">&nbsp;</th>
+<apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getFinanicalData))}">
+<th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">{!year3}</th>
+<th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">{!year2}</th>
+<th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">{!year1}</th>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!(ISBLANK(ebdWrapper.getFinanicalData))}">
+<th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;"></th>
+<th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;"></th>
+<th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;"></th>
+<th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;"></th>
+</apex:outputPanel>-->
+                <tr>
+                    <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(ebdWrapper.getFinanicalData))}">
+                        <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">&nbsp;</th>
+                        <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">{!year3}</th>
+                        <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">{!year2}</th>
+                        <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">{!year1}</th>
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel layout="none" rendered="{!(NOT(NOT(ISBLANK(ebdWrapper.getFinanicalData))))}">
+                        <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">&nbsp;</th>
+                        <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;"></th>
+                        <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;"></th>
+                        <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;"></th>
+                    </apex:outputPanel>
+                    
+                    
+                </tr> 
+                <tr>
+                    <th style ="border: 1px solid #000; width:25%;  border-collapse: collapse;  font-size: 12px; text-align:left; padding-left:5px; padding-bottom:5px;">UHC: Likelihood to Recommend Score</th>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getFinanicalData))}">    
+                        <td style ="border: 1px solid #000; width:25%;  border-collapse: collapse;   font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[0][2]}</td>
+                        <td style ="border: 1px solid #000; width:25%;  border-collapse: collapse;   font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[0][3]}</td>
+                        <td style ="border: 1px solid #000; width:25%;  border-collapse: collapse;   font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[0][4]}</td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(ISBLANK(ebdWrapper.getFinanicalData))}">    
+                        <td style ="border: 1px solid #000; width:25%;  border-collapse: collapse;   font-size: 12px; text-align:center;"></td>
+                        <td style ="border: 1px solid #000; width:25%;  border-collapse: collapse;   font-size: 12px; text-align:center;"></td>
+                        <td style ="border: 1px solid #000; width:25%;  border-collapse: collapse;   font-size: 12px; text-align:center;"></td>
+                    </apex:outputPanel>
+                </tr> 
+                <tr>
+                    <th style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left;padding-left:5px; padding-bottom:5px; ">UHC: Net Promoter Type</th>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getFinanicalData))}">   
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[2][2]}</td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[2][3]}</td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[2][4]}</td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(ISBLANK(ebdWrapper.getFinanicalData))}">   
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:center;"></td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:center;"></td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:center;"></td>
+                    </apex:outputPanel>
+                </tr> 
+                
+                 <tr>
+                    <th style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left;padding-left:5px; padding-bottom:5px; ">Surest: Likelihood To Recommend Score</th>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getFinanicalData))}">   
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[3][2]}</td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[3][3]}</td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[3][4]}</td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(ISBLANK(ebdWrapper.getFinanicalData))}">   
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:center;"></td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:center;"></td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:center;"></td>
+                    </apex:outputPanel>
+                </tr> 
+                
+                 <tr>
+                    <th style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left;padding-left:5px; padding-bottom:5px; ">Surest: Net Promoter Type</th>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getFinanicalData))}">   
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[4][2]}</td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[4][3]}</td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:left; left;padding-left:5px; padding-bottom:5px; ">{!csrList[4][4]}</td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(ISBLANK(ebdWrapper.getFinanicalData))}">   
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:center;"></td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:center;"></td>
+                        <td style ="border: 1px solid #000; width:25%;  font-size: 12px; text-align:center;"></td>
+                    </apex:outputPanel>
+                </tr> 
+            </table>
+            <br/>
+            <br/>
+            <!-- likelihood to recommend score end-->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <tr>
+                    <th colspan="3" style="border: 1px solid #000; background-color: #dae9f7; font-size: 15px; text-align: center;">
+                        Net Promoter Score (NPS) Action Plan (Include Surest and other Business Lines)
+                    </th>
+                </tr>
+                <tr style="text-align:left; padding-left:3px" >
+                    
+                    <th style ="border: 1px solid #000; width:30%; font-size: 12px;  padding-left:5px; padding-bottom:5px; text-align:center;" >Strategy</th>
+                    <th style ="border: 1px solid #000; width:50%; font-size: 12px;  padding-left:5px; padding-bottom:5px; text-align:center; word-wrap:break-word; white-space:normal;">Action Steps Planned/Taken</th>
+                    <th style ="border: 1px solid #000; width:20%; font-size: 12px;  padding-left:5px; padding-bottom:5px; text-align:center;">Estimated Completion Date</th>
+                </tr>
+                <!-- <apex:variable var="index" value="{!0}" />-->
+                <apex:repeat value="{!ebdWrapper.getNpsDetails}" var="nps">
+                    <!--  <apex:variable var="index" value="{!index + 1}" />  -->  
+                    <tr>
+                        <!-- <td style="border: 1px solid #000; font-size: 12px; text-align: center; width:10%;">{!index}.</td>  -->  
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:30%">
+                            <apex:outputText value="{!IF(ISBLANK(nps.Strategy__c),'&nbsp;',nps.Strategy__c)}" escape="false"/>
+                            <apex:outputPanel rendered="{!nps.Strategy__c = 'Other'}">
+                                <br/>
+                                <span style="font-style:Calibri; font-size:11px;">
+                                    <apex:outputText value="{!IF(ISBLANK(nps.Other_Strategy__c),'',nps.Other_Strategy__c)}" />
+                                </span>
+                            </apex:outputPanel>
+                        </td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:50%; word-wrap:break-word; white-space:normal;">
+                            <!--<apex:outputText value="{!IF(ISBLANK(nps.Action_Steps_Planned_Taken__c),'&nbsp;',nps.Action_Steps_Planned_Taken__c)}" escape="false"/>-->
+                            <apex:outputField value="{!nps.Action_Steps_Planned_Taken__c}"/>
+                            
+                        </td>
+                        <td style="border: 1px solid #000; text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px;width:20%">
+                            <apex:outputText value="{0,date,M/d/yyyy}">
+                                <apex:param value="{!nps.Estimated_Completion_Date__c}" />
+                            </apex:outputText>
+                            
+                        </td>
+                    </tr>
+                </apex:repeat>
+                <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getNpsDetails)}">
+                    <tr>
+                        <td colspan="3" style="border: 1px solid #000; font-size: 12px; text-align: center; padding: 5px;">
+                            No records to display 
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+            <br/>
+            <br/>
+            <!--Net promoter score end-->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <tr>
+                    <th colspan ="4" style="border-collapse: collapse; width:100%; border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;">Financials</th>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:25%; font-size: 20px; text-align:center;">UHG</th>
+                    <!--<apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getDetailedFinancialData))}">  -->
+                    <th style="border: 1px solid #000; width:25%; font-size: 15px; text-align:center;">{!finyear3}</th>
+                    <th style="border: 1px solid #000; width:25%; font-size: 15px; text-align:center;">{!finyear2}</th>
+                    <th style="border: 1px solid #000; width:25%; font-size: 15px; text-align:center;">Projected {!finyear1}</th>
+                    <!--</apex:outputPanel>-->
+                    
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">Membership - Total</th>
+                    <!--<apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getDetailedFinancialData))}">-->  
+                    <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                        <!-- <apex:outputText value="{0, number, #,##0.000}">
+<apex:param value="{!totalMembership3}" />
+</apex:outputText>-->
+                        <apex:outputText value="{0, number, #,##0.###}">
+                            <apex:param value="{!totalMembership3}" />
+                        </apex:outputText>
+                        
+                        
+                        
+                        <!--<apex:outputText value="{0, number, #,##0}">
+<apex:param value="{!IF(ISBLANK(totalMembership3), 0, totalMembership3)}"/>
+</apex:outputText>-->
+                        
+                    </td>
+                    <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                        <apex:outputText value="{0, number, #,##0.###}">
+                            <apex:param value="{!totalMembership2}" />
+                        </apex:outputText>
+                        
+                        <!--<apex:outputText value="{0, number, #,##0}">
+<apex:param value="{!IF(ISBLANK(totalMembership2), 0, totalMembership2)}"/>
+</apex:outputText>-->
+                    </td>
+                    <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                        <!--<apex:outputText value="{!IF(ISBLANK(totalMembership1), '', TEXT(totalMembership1))}" />-->
+                        <apex:outputText value="{0, number, #,##0.###}">
+                            <apex:param value="{!totalMembership1}" />
+                        </apex:outputText>
+                        <!--<apex:outputText value="{0, number, #,##0}">
+<apex:param value="{!IF(ISBLANK(totalMembership1), 0, totalMembership1)}"/>
+</apex:outputText>-->
+                        
+                    </td>
+                    <!--</apex:outputPanel>-->
+                    
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">Membership - Surest</th>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getDetailedFinancialData))}">  
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <!--<apex:outputText value="{0, number, #,##0.000}">
+<apex:param value="{!surestTotal3}" />
+</apex:outputText>-->
+                            <apex:outputText value="{0, number, #,##0.###}">
+                                <apex:param value="{!surestTotal3}" />
+                            </apex:outputText>
+                            <!-- <apex:outputText value="{0, number, #,##0}">
+<apex:param value="{!IF(ISBLANK(surestTotal3), 0, surestTotal3)}"/>
+</apex:outputText>-->
+                            
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <apex:outputText value="{0, number, #,##0.###}">
+                                <apex:param value="{!surestTotal2}" />
+                            </apex:outputText>
+                            <!--  <apex:outputText value="{0, number, #,##0}">
+<apex:param value="{!IF(ISBLANK(surestTotal2), 0, surestTotal2)}"/>
+</apex:outputText>-->
+                            
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <!-- <apex:outputText value="{!IF(ISBLANK(surestTotal1), '', TEXT(surestTotal1))}" />-->
+                            <apex:outputText value="{0, number, #,##0.###}">
+                                <apex:param value="{!surestTotal1}" />
+                            </apex:outputText>
+                            
+                            <!--<apex:outputText value="{0, number, #,##0}">
+<apex:param value="{!IF(ISBLANK(surestTotal1), 0, surestTotal1)}"/>
+</apex:outputText>-->
+                            
+                        </td>
+                    </apex:outputPanel>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">Revenue - Total</th>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getDetailedFinancialData))}">  
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(totalRevenue3), 0, totalRevenue3)}"/>
+</apex:outputText>-->
+                            <!--<apex:outputText rendered="{!NOT(ISBLANK(totalRevenue3))}" 
+value="{0, number, $#,##0}">
+<apex:param value="{!totalRevenue3}" />
+</apex:outputText>-->
+                            <apex:outputText rendered="{!NOT(ISBLANK(totalRevenue3))}" 
+                                             value="${0}">
+                                <apex:param value="{!totalRevenue3}" />
+                            </apex:outputText>
+                            
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <apex:outputText rendered="{!NOT(ISBLANK(totalRevenue2))}" 
+                                             value="${0}">
+                                <apex:param value="{!totalRevenue2}" />
+                            </apex:outputText>
+                            <!--<apex:outputText rendered="{!NOT(ISBLANK(totalRevenue2))}" 
+value="{0, number, $#,##0}">
+<apex:param value="{!totalRevenue2}" />
+</apex:outputText>-->
+                            
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(totalRevenue2), 0, totalRevenue2)}"/>
+</apex:outputText>-->
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <apex:outputText rendered="{!NOT(ISBLANK(totalRevenue1))}" 
+                                             value="${0}">
+                                <apex:param value="{!totalRevenue1}" />
+                            </apex:outputText>
+                            <!--<apex:outputText rendered="{!NOT(ISBLANK(totalRevenue1))}" 
+value="{0, number, $#,##0}">
+<apex:param value="{!totalRevenue1}" />
+</apex:outputText>-->
+                            
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(totalRevenue1), 0, totalRevenue1)}"/>
+</apex:outputText>-->
+                            
+                        </td>
+                    </apex:outputPanel>
+                    
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">Revenue - Surest</th>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getDetailedFinancialData))}">  
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <!--<apex:outputText rendered="{!NOT(ISBLANK(surestRevenue3))}" 
+value="{0, number, $#,##0}">
+<apex:param value="{!surestRevenue3}" />
+</apex:outputText>-->
+                            <apex:outputText rendered="{!NOT(ISBLANK(surestRevenue3))}" 
+                                             value="${0}">
+                                <apex:param value="{!surestRevenue3}" />
+                            </apex:outputText>
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(surestRevenue3), 0, surestRevenue3)}"/>
+</apex:outputText>-->
+                            
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            
+                            <apex:outputText rendered="{!NOT(ISBLANK(surestRevenue2))}" 
+                                             value="${0}">
+                                <apex:param value="{!surestRevenue2}" />
+                            </apex:outputText>
+                            <!-- <apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(surestRevenue2), 0, surestRevenue2)}"/>
+</apex:outputText>-->
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <apex:outputText rendered="{!NOT(ISBLANK(surestRevenue1))}" 
+                                             value="${0}">
+                                <apex:param value="{!surestRevenue1}" />
+                            </apex:outputText>
+                            
+                            <!-- <apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(surestRevenue1), 0, surestRevenue1)}"/>
+</apex:outputText>-->
+                        </td>
+                    </apex:outputPanel>
+                    
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">Revenue - URS</th>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getDetailedFinancialData))}">  
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <!--<apex:outputText rendered="{!NOT(ISBLANK(totalURS3))}" 
+value="{0, number, $#,##0}">
+<apex:param value="{!totalURS3}" />
+</apex:outputText>-->
+                            <apex:outputText rendered="{!NOT(ISBLANK(totalURS3))}" 
+                                             value="${0}">
+                                <apex:param value="{!totalURS3}" />
+                            </apex:outputText>
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(totalURS3), 0, totalURS3)}"/>
+</apex:outputText>-->
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            
+                            <apex:outputText rendered="{!NOT(ISBLANK(totalURS2))}" 
+                                             value="${0}">
+                                <apex:param value="{!totalURS2}" />
+                            </apex:outputText>
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(totalURS2), 0, totalURS2)}"/>
+</apex:outputText>-->
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            
+                            <apex:outputText rendered="{!NOT(ISBLANK(totalURS1))}" 
+                                             value="${0}">
+                                <apex:param value="{!totalURS1}" />
+                            </apex:outputText>
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(totalURS1), 0, totalURS1)}"/>
+</apex:outputText>-->
+                        </td>
+                    </apex:outputPanel>
+                    
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">Revenue Total UHG</th>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getDetailedFinancialData))}">  
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(totalUHG3), 0, totalUHG3)}"/>
+</apex:outputText>-->
+                            
+                            <apex:outputText rendered="{!NOT(ISBLANK(totalUHG3))}" 
+                                             value="${0}">
+                                <apex:param value="{!totalUHG3}" />
+                            </apex:outputText>
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <apex:outputText rendered="{!NOT(ISBLANK(totalUHG2))}" 
+                                             value="${0}">
+                                <apex:param value="{!totalUHG2}" />
+                            </apex:outputText>
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(totalUHG2), 0, totalUHG2)}"/>
+</apex:outputText> -->
+                        </td>
+                        <td style="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">
+                            <apex:outputText rendered="{!NOT(ISBLANK(totalUHG1))}" 
+                                             value="${0}">
+                                <apex:param value="{!totalUHG1}" />
+                            </apex:outputText>
+                            <!-- <apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(totalUHG1), 0, totalUHG1)}"/>
+</apex:outputText> -->
+                        </td>
+                    </apex:outputPanel>
+                    
+                </tr>
+                <tr style="background-color: #dae9f7; width:100; height:3px;"></tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:30%; text-align:left; vertical-align:top; padding-left:5px; padding-bottom:5px; font-size: 12px;" colspan="1">UHC Services Currently Provided to Client</th>
+                    <td style="border: 1px solid #000; width:75%; text-align:left;  padding-left:5px; padding-bottom:5px; font-size: 12px;" colspan="3">
+                        <!-- {!ebdWrapper.getEbdListData.UHC_Services__c}-->
+                        <!-- <pre style="font-family:calibri;  font-size: 12px;">                
+{!ebdWrapper.getEbdListData.UHC_Services__c}
+</pre>-->
+                        <apex:outputField value="{!ebdWrapper.getEbdListData.UHC_Services__c}"/>
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:30%; text-align:left; vertical-align:top; padding-left:5px; padding-bottom:5px; font-size: 12px;" colspan="1">Current Medical Contract Start Date</th>
+                    <td style="border: 1px solid #000; width:70%; text-align:left;  padding-left:5px; padding-bottom:5px; font-size: 12px;" colspan="3">{!ebdWrapper.CurrentMedicalDealStartDate}</td>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:30%; text-align:left; vertical-align:top; padding-left:5px; padding-bottom:5px; font-size: 12px;" colspan="1">Surest Contract Start Date</th>
+                    <td style="border: 1px solid #000; width:70%; text-align:left;  padding-left:5px; padding-bottom:5px; font-size: 12px;" colspan="3">{!ebdWrapper.surestCurrentMedicalRenewalDate}</td>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:30%; text-align:left; vertical-align:top; padding-left:5px; padding-bottom:5px; font-size: 12px;" colspan="1">Surest Next Renewal Date</th>
+                    <td style="border: 1px solid #000; width:70%; text-align:left;  padding-left:5px; padding-bottom:5px; font-size: 12px;" colspan="3">{!ebdWrapper.surestNextMedicalRenewalDate}</td>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; width:30%; text-align:left; vertical-align:top; padding-left:5px; padding-bottom:5px; font-size: 12px;" colspan="1">Client’s Interest in Surest</th>
+                    <td style="border: 1px solid #000; width:70%; text-align:left;  padding-left:5px; padding-bottom:5px; font-size: 12px; word-wrap:break-word; white-space:normal;" colspan="3">
+                        <apex:outputField value=" {!ebdWrapper.getEbdListData.Client_s_Interest__c}"/>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <br/>
+            <!--financials end -->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <tr><th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;" colspan="4">B-2-B</th></tr>    
+                <tr style="text-align:left; padding-left:3px" >
+                    
+                    <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center;  padding-left:5px; padding-bottom:5px;" >Service/Solution</th>
+                    <th style ="border: 1px solid #000; width:30%; font-size: 12px; text-align:center;  padding-left:5px; padding-bottom:5px;">UHG Business Segment</th>
+                    <th style ="border: 1px solid #000; width:30%; font-size: 12px; text-align:center;  padding-left:5px; padding-bottom:5px;">UHG Buyer or Decision Maker</th>
+                    <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center;  padding-left:5px; padding-bottom:5px;">Revenue</th>
+                    
+                    
+                </tr>
+                <apex:repeat value="{!ebdWrapper.getBusinessDetails}" var="business">
+                    <tr>
+                        <td style="border: 1px solid #000; vertical-align: top;  text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:20%; word-wrap:break-word; white-space:normal;">
+                            <apex:outputText value="{!IF(ISBLANK(business.Service_Solution__c),'&nbsp;',business.Service_Solution__c)}" escape="false"/>
+                        </td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:30%; word-wrap:break-word; white-space:normal; word-break:break-all">
+                            <apex:outputField value="  {!business.UHG_Business_Segment__c}"/>
+                        </td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:30%; word-wrap:break-word; white-space:normal; word-break:break-all">
+                            <apex:outputField value="{!business.UHG_Buyer_or_Decision_Make__c}"/>
+                        </td>
+                        <td style="border: 1px solid #000;  text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:20%; word-wrap:break-word; white-space:normal; word-break:break-all">
+                            <!-- {!business.Revenue__c}-->
+                            <apex:outputText rendered="{!NOT(ISBLANK(business.Revenue__c))}" 
+                                             value="${0}">
+                                <apex:param value="{!business.Revenue__c}" />
+                            </apex:outputText>
+                            <!--<apex:outputText value="{0, number, $#,##0}">
+<apex:param value="{!IF(ISBLANK(business.Revenue__c), 0, business.Revenue__c)}"/>
+</apex:outputText>-->
+                        </td>
+                        
+                    </tr>
+                </apex:repeat>
+                <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getBusinessDetails)}">
+                    <tr>
+                        <td colspan="4" style="border: 1px solid #000; font-size: 12px; text-align: center; padding: 5px;">
+                            No records to display 
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+            <br/>
+            <br/>
+            <!--B2B end -->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <tr><th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;" colspan="3">Advocacy and Clinical Model</th></tr>    
+                <tr style="text-align:left; padding-left:3px" >
+                    <th style ="border: 1px solid #000; width:33%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Service </th>
+                    <th style ="border: 1px solid #000; width:33%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Vendor/Model</th>
+                    <th style ="border: 1px solid #000; width:34%; font-size: 12px; text-align:center; padding-left:5px; padding-bottom:5px;">Site (if in-house)</th>
+                    
+                </tr>
+                <apex:repeat value="{!ebdWrapper.getAdvocacyDetails}" var="advocacy">
+                    <tr>
+                        <td style="border: 1px solid #000; text-align:left; vertical-align: top; font-size: 12px; padding-left:5px; padding-bottom:5px; width:33%; word-wrap:break-word; white-space:normal;">
+                            <apex:outputText value="{!IF(ISBLANK(advocacy.Service__c),'&nbsp;',advocacy.Service__c)}" escape="false"/>
+                            
+                        </td>
+                        <td style="border: 1px solid #000; text-align:left; vertical-align: top; font-size: 12px; padding-left:5px; padding-bottom:5px; width:33%; word-wrap:break-word; white-space:normal;">{!advocacy.Vendor_Model__c}</td>
+                        <td style="border: 1px solid #000; text-align:left; vertical-align: top; font-size: 12px; padding-left:5px; padding-bottom:5px; width:34%; word-wrap:break-word; white-space:normal;">{!advocacy.Site_if_in_house__c}</td>
+                    </tr>
+                </apex:repeat>
+                <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getAdvocacyDetails)}">
+                    <tr>
+                        <td colspan="3" style="border: 1px solid #000; font-size: 12px; text-align: center; padding: 5px;">
+                            No records to display 
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+            <br/>
+            <br/>
+            <!--Advocacy end -->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <!--<thead>-->
+                    <tr><th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;" colspan="4">Current UHC Competitors and Niche Vendors Active in this Account </th></tr>    
+                    <tr style="text-align:left; padding-left:3px" >
+                        
+                        <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center;  padding-left:5px; padding-bottom:5px;" >Competitor</th>
+                        <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center;  padding-left:5px; padding-bottom:5px;">Service Competitor is Providing Client</th>
+                        <th style ="border: 1px solid #000; width:40%; font-size: 12px; text-align:center;  padding-left:5px; padding-bottom:5px;">Competitor’s Strengths / Notes</th>
+                        <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center;  padding-left:5px; padding-bottom:5px;">Tenure Working with Client</th>
+                        
+                    </tr>
+               <!-- </thead>-->
+                <apex:repeat value="{!ebdWrapper.getCompetitorData}" var="competitor">
+                    <tr>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:20%; word-wrap:break-word; white-space:normal;">{!competitor.CompetitorAccount__r.Name}</td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:20%; word-wrap:break-word; white-space:normal;">{!competitor.Type_of_Products_Services_Provided__c}</td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:40%; word-wrap:break-word; white-space:normal;">
+                            
+                            <apex:outputField value=" {!competitor.Strength__c}"/>
+                        </td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px;  padding-left:5px; padding-bottom:5px; width:20%; word-wrap:break-word; white-space:normal;">
+                            
+                            <apex:outputField value=" {!competitor.Tenure__c}"/>
+                            
+                        </td>    
+                    </tr>
+                    
+                </apex:repeat>
+                <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getCompetitorData)}">
+                    <tr>
+                        <td colspan="4" style="border: 1px solid #000; font-size: 12px; text-align: center; padding: 5px;">
+                            No records to display 
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+            <br/>
+            <br/>
+
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <tr><th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;" colspan="5">Anticipated Bid Cycle for Major Products </th></tr>    
+                <tr style="text-align:left; padding-left:3px" >
+                    
+                    <th style ="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;" colspan="2" >Product</th>
+                    <th style ="border: 1px solid #000; width:25%; font-size: 12px; text-align:center;">Incumbent</th>
+                    <th style ="border: 1px solid #000; width:30%; font-size: 12px; text-align:center;">Deal Cycle</th>
+                    <th style ="border: 1px solid #000; width:20%; font-size: 12px; text-align:center;">Status</th>
+                    
+                </tr>
+                <apex:variable var="index" value="{!0}" />
+                <apex:repeat value="{!ebdWrapper.getAnticipatedDetails}" var="anticipated">
+                    <apex:variable var="index" value="{!index + 1}" />    
+                    <tr>
+                        <td style="border: 1px solid #000; font-size: 12px; text-align: center; vertical-align:top; width:5%;">{!index}.</td>    
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px; padding-left:5px; vertical-align:top; padding-bottom:5px; width:20%;word-wrap:break-word; white-space:normal;">
+                            <apex:outputText value="{!IF(ISBLANK(anticipated.Product__c),'&nbsp;',anticipated.Product__c)}" escape="false"/>
+                            
+                        </td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; width:25%; word-wrap:break-word; white-space:normal;">{!anticipated.Incumbent__c}</td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; width:30%; word-wrap:break-word; white-space:normal;">{!anticipated.Deal_Cycle__c}</td>
+                        <td style="border: 1px solid #000; vertical-align: top; text-align:left; font-size: 12px; padding-left:5px; padding-bottom:5px; width:20%; word-wrap:break-word; white-space:normal;">{!anticipated.Status__c}</td>    
+                    </tr>
+                </apex:repeat>
+                <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getAnticipatedDetails)}">
+                    <tr>
+                        <td colspan="5" style="border: 1px solid #000; font-size: 12px; text-align: center; padding: 5px;">
+                            No records to display 
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+            <br/>
+            <br/>
+            <!-- anitipated end-->
+            <table style=" width: 100%; border-collapse: collapse; border: 1px solid #000;  table-layout: fixed; font-family: Calibri; ">
+                <tr><th style ="border: 1px solid #000; width:100%; background-color: #dae9f7; font-size: 15px; text-align:center;">Additional Comments</th></tr>    
+                <tr>
+                    <td  style="width:100%; text-align:left; border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px; word-wrap:break-word; white-space:normal;">
+                        <!--<apex:outputText value=" {!ebdWrapper.getEbdListData.Additional_Comments__c}" escape="false"/
+<apex:outputField value=" {!ebdWrapper.getEbdListData.Additional_Comments__c}"/>
+<!--{!ebdWrapper.getEbdListData.Additional_Comments__c}-->
+                        <apex:outputPanel rendered="{!NOT(ISBLANK(ebdWrapper.getEbdListData.Additional_Comments__c))}">
+                            <apex:outputField value="{!ebdWrapper.getEbdListData.Additional_Comments__c}" />
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel rendered="{!ISBLANK(ebdWrapper.getEbdListData.Additional_Comments__c)}">
+                            &nbsp;
+                        </apex:outputPanel>
+                        
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <table style=" width: 100%; border-collapse: collapse;  table-layout: fixed; font-family: Calibri; ">
+               <!-- <thead >-->
+                    <tr style ="background-color: #dae9f7;">
+                        <th colspan="2" style=" border: 1px solid #000; text-align:center; font-size: 15px;">Validation Details</th>
+                    </tr>
+                <!--</thead>-->
+                <tr>
+                    <td style="width:50%; text-align: center; font-weight: bold;  border: 1px solid #000; padding-left:5px; font-size: 12px; padding-bottom:5px;">Validated By</td>
+                    <td style="width:50%; text-align: center; font-weight: bold;  border: 1px solid #000; padding-left:5px; font-size: 12px; padding-bottom:5px;">Date/Time</td>
+                </tr>
+                <tr>
+                    <td style="width:50%; text-align: center;   border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px; ">
+                        <apex:outputText value="{!IF(ISBLANK(ebdWrapper.getAccountInfo.EBD_Validation_Name__c), '&nbsp;', ebdWrapper.getAccountInfo.EBD_Validation_Name__c)}" 
+                                         escape="false"/>
+                    </td>
+                    <td style="width:50%; border: 1px solid #000; padding-left:5px; padding-bottom:5px; font-size: 12px; text-align: center;">
+                        <apex:outputText value="{!IF(ISBLANK(ebdWrapper.getAccountInfo.EBD_Sce_Validated_Time__c), '&nbsp;', ebdWrapper.getAccountInfo.EBD_Sce_Validated_Time__c)}" 
+                                         escape="false"/>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            
+        </body>
+    </html>
+</apex:page>

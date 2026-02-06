@@ -1,0 +1,38 @@
+<aura:component access="global">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="ModalBody" type="String"/>
+    <aura:attribute name="ModalBodyData" type="Object"/>
+    <aura:attribute name="Modalheader" type="String"/>
+    <aura:attribute name="refreshOnClosingModel" type="String" default="false"/>
+    <aura:attribute name="modalcssStyle" type="String" default="body.desktop{overflow:hidden}"/>
+    <aura:method name="modalClosing" action="{!c.modalClose}" access="PUBLIC"></aura:method>
+    <aura:registerEvent name="modalCmpCloseEvent" type="c:Model_Closing_Event"/>
+   
+    <style>
+        {!v.modalcssStyle}
+    </style>
+    
+   <div class="modal-glass slds-backdrop fadein slds-backdrop--hide" aura:id="contact_History_Modal">
+    </div>
+    
+    <div class="panel slds-modal slds-fade-in-hide" aura:id="contact_History_Modal">
+        <div class="slds-modal__container s-modal" style="top:0; width: 90%;max-width: 90%; margin-top:0;max-height: 100vh;">
+            <div class="modal-header slds-modal__header">
+                <button class="slds-button slds-button--icon-inverse slds-notify__close" onclick="{!c.fireComponentEvent}">
+                    <lightning:icon class="slds-input__icon" iconName="utility:close" size="small"  />
+                    <!-- <c:svgIcon svgPath="/resource/FSPMAR__SLDS214/assets/icons/action-sprite/svg/symbols.svg#close" category="standard" size="small" name="user" /> -->
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 class="title slds-text-heading--medium">{!v.Modalheader}</h2>
+            </div>
+            
+            <div class="modal-body scrollable slds-modal__content slds-p-around--medium QA-modal-body">
+                
+                {!v.body}
+                
+            </div>
+        </div>
+    </div>
+
+    
+</aura:component>

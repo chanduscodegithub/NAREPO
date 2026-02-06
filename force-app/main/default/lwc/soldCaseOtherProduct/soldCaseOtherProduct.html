@@ -1,0 +1,1619 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 11-05-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+	<template if:true={showOtherProdDetails}>
+		<!-- <div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-around_xx-small border-bottom"
+      style="width: 99.4%; font-size: 11px;">
+       <div class="slds-col width-47" style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+          <span><b>a</b></span>
+        </div>
+        <div class="slds-col width-47" style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+          <span><b>Traditional</b></span>
+        </div>
+        <div class="slds-col width-47" style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+          <span><b>Surest</b></span>
+        </div>
+    </div> -->
+		<div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-around_xx-small border-bottom"
+			style="width: 99.5%; font-size: 11px;">
+			<template if:true={otherProducts.showOonSection}>
+				<div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-around_xx-small border-bottom"
+					style="width: 99.5%; font-size: 11px;">
+					<!-- <span><b>{otherProducts.Product2.Name}</b></span> -->
+					<div class="slds-col slds-size_2-of-6 slds-p-left_small">
+						<span><b>{otherProducts.Product2.Name}</b></span>
+					</div>
+					<div class="slds-col slds-size_1-of-6 slds-p-left_small slds-p-right_small"
+						style="text-align: left;">
+						<template if:false={editmode}>
+							{otherProducts.Level_2_Option__c}
+						</template>
+						<template if:true={editmode}>
+							<template if:true={otherProducts.Product2.Level_2_Options__c}>
+								<lightning-combobox name="Level_2_Option__c" variant="label-hidden"
+									label="Level 2 Options" style="text-align: left;"
+									value={otherProducts.Level_2_Option__c} placeholder="Select an Option"
+									options={getPicklistValues} onchange={FieldChangeHandler}>
+								</lightning-combobox>
+							</template>
+						</template>
+					</div>
+					<div class="slds-col slds-size_1-of-6 slds-p-left_small slds-p-right_small"
+						style="text-align: left;">
+						<span>&nbsp;</span>
+					</div>
+
+
+					<div class="slds-col slds-size_1-of-6 slds-p-left_small" style="text-align: right;">
+						<span>{otherProductDispositionValue}</span>
+						<!-- <template if:false={otherProductDispositionValue}>
+							N/A
+						</template> -->
+					</div>
+					<div class="slds-col slds-size_1-of-6 slds-p-left_small" style="text-align: right;">
+						<span>{surestDispValue}</span>
+						<!-- <template if:false={surestDispValue}>
+							N/A
+						</template> -->
+					</div>
+				</div>
+				<template if:true={isFlex}>
+
+					<div class="slds-grid slds-grid--vertical-align-center slds-wrap border-bottom"
+						style="margin-left: 0.6em; width: 98%;padding:7px 0">
+						<div class="slds-col slds-size_2-of-6 slds-p-left_small">
+							Flex Options
+						</div>
+						<div class="slds-col slds-size_1-of-6 slds-p-left_small">
+							<template if:true={editmode}>
+								<lightning-combobox class="slds-text-align_left" name="Flex_Options__c"
+									variant="label-hidden" value={otherProducts.Flex_Options__c} placeholder="Select an Option"
+									options={flexOptions} onchange={FieldChangeHandler} style="width:96%">
+								</lightning-combobox>
+							</template>
+							<template if:false={editmode}>
+								{otherProducts.Flex_Options__c}
+							</template>
+						</div>
+						<template if:true={isCustomized}>
+						<div class="slds-col slds-size_2-of-6 slds-p-left_small">
+							<template if:true={editmode}>
+								<lightning-input type="text" variant="label-hidden" data-id={otherProducts.Id}
+									data-obj="OpportunityLineItem" name="Flex_WriteIn__c"
+									value={otherProducts.Flex_WriteIn__c} placeholder={otherProducts.placeHolder}
+									onchange={FieldChangeHandler} max-length='255'>
+								</lightning-input>
+							</template>
+							<template if:false={editmode}>
+								{otherProducts.Flex_WriteIn__c}
+							</template>
+						</div>
+						</template>
+					</div>
+				</template>
+			</template>
+
+			<template if:false={otherProducts.showOonSection}>
+				<div class="slds-col slds-size_2-of-6">
+					<span>{otherProducts.Product2.Name}</span>
+				</div>
+			</template>
+
+			<template if:false={isFacilityRandC}>
+				<template if:false={otherProducts.showOonSection}>
+					<div class="slds-col slds-size_1-of-6 slds-p-left_small slds-p-right_small"
+						style="text-align: left;">
+						<template if:false={editmode}>
+							{otherProducts.Level_2_Option__c}
+						</template>
+						<template if:true={editmode}>
+							<template if:true={otherProducts.Product2.Level_2_Options__c}>
+								<lightning-combobox name="Level_2_Option__c" variant="label-hidden"
+									label="Level 2 Options" style="text-align: left;"
+									value={otherProducts.Level_2_Option__c} placeholder="Select an Option"
+									options={getPicklistValues} onchange={FieldChangeHandler}>
+								</lightning-combobox>
+							</template>
+						</template>
+					</div>
+
+					<div class="slds-col slds-size_1-of-6 slds-p-left_small slds-p-right_small"
+						style="text-align: left;">
+						<template if:false={editmode}>
+							{otherProducts.Level2_Info__c}
+						</template>
+						<template if:true={editmode}>
+							<template if:true={otherProducts.displayTextarea}>
+								<lightning-input type="text" variant="label-hidden" data-id={otherProducts.Id}
+									data-obj="OpportunityLineItem" name="Level2_Info__c"
+									value={otherProducts.Level2_Info__c} placeholder={otherProducts.placeHolder}
+									onchange={FieldChangeHandler} max-length={otherProducts.commentsLength}>
+								</lightning-input>
+							</template>
+
+							<template if:true={showTextBox}>
+								<template if:false={isClaimFiduciary}>
+									<lightning-input type="text" variant="label-hidden" data-id={otherProducts.Id}
+										data-obj="OpportunityLineItem" name="Level2_Info__c"
+										value={otherProducts.Level2_Info__c} placeholder={otherProducts.placeHolder}
+										onchange={FieldChangeHandler} max-length={otherProducts.commentsLength}>
+									</lightning-input>
+								</template>
+							</template>
+						</template>
+					</div>
+				</template>
+
+				<!-- <template if:true={otherProducts.showOonSection}>
+          <div class="slds-col slds-size_1-of-6 slds-p-left_small"
+            style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;text-align: right;" >
+            <span>{otherProductDispositionValue}</span>
+          </div>
+          <div class="slds-col slds-size_1-of-6 slds-p-left_small" style="text-align: right;">
+            <span>{surestDispValue}</span>
+          </div> 
+        </template> -->
+
+				<template if:false={otherProducts.showOonSection}>
+
+					<div class="slds-col slds-size_1-of-6 slds-p-left_small" style="text-align: right;">
+						<span>{otherProductDispositionValue}</span>
+						<!-- <template if:false={otherProductDispositionValue}>
+							N/A
+						</template> -->
+					</div>
+					<div class="slds-col slds-size_1-of-6 slds-p-left_small" style="text-align: right;">
+						<span>{surestDispValue}</span>
+						<!-- <template if:false={surestDispValue}>
+							N/A
+						</template> -->
+					</div>
+					<template if:true={BHSP1}>
+						<br/>
+						<table class="slds-table slds-no-row-hover">
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>National Network, Outpatient/Inpatient, Utilization Management</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Behavioral Health Virtual Visits</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Substance Use Disorder Helpline</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>Care Explorer (myuhc.com® and mobile app digital navigation)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Calm Health app</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Virtual Behavioral Coaching for adults (provided by AbleTo Coaching+, for age 18+)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												<template if:false={editmode}>
+													{soldCaseDataCopy.Virtual_Behavioral_Coaching_for_adults__c}
+												</template>
+												 
+												<template if:true={editmode}>
+													<lightning-combobox
+														class="slds-text-align_left refreshValueOnChangeSO"
+														name="Sold_Case_Checklist__c.Virtual_Behavioral_Coaching_for_adults__c"
+														variant="label-hidden"
+														value={soldCaseDataCopy.Virtual_Behavioral_Coaching_for_adults__c}
+														placeholder="Select an Option"
+														options={includedOptOut}
+														onchange={ValueChangeHandler}>
+													</lightning-combobox>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Child and Family Behavioral Coaching (provided by Bend Health, for age 25 and under)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												<template if:false={editmode}>
+													{soldCaseDataCopy.Child_and_Family_Behavioral_Coaching__c}
+												</template>
+												 
+												<template if:true={editmode}>
+													<lightning-combobox
+														class="slds-text-align_left refreshValueOnChangeSO"
+														name="Sold_Case_Checklist__c.Child_and_Family_Behavioral_Coaching__c"
+														variant="label-hidden"
+														value={soldCaseDataCopy.Child_and_Family_Behavioral_Coaching__c}
+														placeholder="Select an Option"
+														options={includedOptOut}
+														onchange={ValueChangeHandler}>
+													</lightning-combobox>
+												</template>
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+											<span>24/7 in-the-moment and crisis support (previously Emotional Health Line and Crisis Support)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Family Support (previously Family Support Program and Family Support Plus)</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+											<span>Case Management</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+											style="padding: 12px;">
+											<span>
+												Included
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<template if:true={BHSP2}>
+								<tr>
+									<td>
+										<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+											<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+												style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+												<span>Enhanced Case Management</span>
+											</div>
+
+											<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+												style="padding: 12px;">
+												<span>
+												Included
+											</span>
+											</div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class="slds-grid slds-grid--vertical-align-center" style="width:100%;">
+											<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
+												style="padding-bottom: 2px;">
+												<span>Behavioral Care Connect Guaranteed time to care – 5 days (curated by AbleTo and Alma)</span>
+											</div>
+
+											<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap"
+												style="padding: 12px;">
+												<span>
+												Included
+											</span>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</template>
+						</table>
+					</template>
+				</template>
+
+				<!--OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS-->
+				<template if:true={otherProducts.showOonSection}>
+					<br />
+					<div class="slds-grid slds-grid--vertical-align-center border-bottom" style="width:100%;">
+						<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small">
+							<span><b>OON Programs Included</b></span>
+						</div>
+					</div>
+
+					<table class="slds-table slds-no-row-hover" style="width:100%;">
+						<tr>
+							<td class="left">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+										<span>MNRP</span>
+									</div>
+
+									<template if:false={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.MNRP__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<template if:true={otherProducts.MNRP_Percentage__c}>
+												<span>{otherProducts.MNRP_Percentage__c}%</span>
+											</template>
+										</div>
+									</template>
+
+									<template if:true={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<lightning-combobox name="MNRP__c" variant="label-hidden"
+												value={otherProducts.MNRP__c} style="text-align: left;"
+												placeholder="Select an Option" options={yesNotApplicable}
+												onchange={FieldChangeHandler}>
+											</lightning-combobox>
+										</div>
+										<template if:true={mnrpPerc}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+												<lightning-input type="number" name="MNRP_Percentage__c"
+													variant="label-hidden" value={otherProducts.MNRP_Percentage__c}
+													placeholder="Indicate Percentage" onchange={FieldChangeHandler}>
+												</lightning-input>
+											</div>
+										</template>
+									</template>
+								</div>
+							</td>
+						</tr>
+
+						<tr>
+							<td class="left">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+										<span>MNRP DME</span>
+									</div>
+
+									<template if:false={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.MNRP_DME__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.MNRP_DME_Percentage__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<template if:true={otherProducts.MNRP_DME_Nonstd_Percentage__c}>
+												<span>{otherProducts.MNRP_DME_Nonstd_Percentage__c}%</span>
+											</template>
+										</div>
+									</template>
+
+									<template if:true={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<lightning-combobox name="MNRP_DME__c" variant="label-hidden"
+												value={otherProducts.MNRP_DME__c} style="text-align: left;"
+												placeholder="Select an Option" options={yesNotApplicable}
+												onchange={FieldChangeHandler}>
+											</lightning-combobox>
+										</div>
+										<template if:true={mnrpDmePerc}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+												<lightning-combobox name="MNRP_DME_Percentage__c" variant="label-hidden"
+													style="text-align: left;"
+													value={otherProducts.MNRP_DME_Percentage__c}
+													placeholder="Select an Option" options={mnrpDmePercValues}
+													onchange={FieldChangeHandler}>
+												</lightning-combobox>
+											</div>
+										</template>
+										<template if:true={mnrpDmeWriteIn}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+												<lightning-input type="number" name="MNRP_DME_Nonstd_Percentage__c"
+													variant="label-hidden"
+													value={otherProducts.MNRP_DME_Nonstd_Percentage__c}
+													placeholder="Indicate Percentage" onchange={FieldChangeHandler}>
+												</lightning-input>
+											</div>
+										</template>
+									</template>
+								</div>
+							</td>
+						</tr>
+
+						<tr>
+							<td class="left">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+										<span>MNRP Lab</span>
+									</div>
+
+									<template if:false={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.MNRP_Lab__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.MNRP_Lab_Percentage__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<template if:true={otherProducts.MNRP_Lab_Nonstd_Percentage__c}>
+												<span>{otherProducts.MNRP_Lab_Nonstd_Percentage__c}%</span>
+											</template>
+										</div>
+									</template>
+
+									<template if:true={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<lightning-combobox name="MNRP_Lab__c" variant="label-hidden"
+												value={otherProducts.MNRP_Lab__c} style="text-align: left;"
+												placeholder="Select an Option" options={yesNotApplicable}
+												onchange={FieldChangeHandler}>
+											</lightning-combobox>
+										</div>
+										<template if:true={mnrpLabPerc}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+												<lightning-combobox name="MNRP_Lab_Percentage__c" variant="label-hidden"
+													style="text-align: left;"
+													value={otherProducts.MNRP_Lab_Percentage__c}
+													placeholder="Select an Option" options={mnrpLabPercValues}
+													onchange={FieldChangeHandler}>
+												</lightning-combobox>
+											</div>
+										</template>
+										<template if:true={mnrpLabWriteIn}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+												<lightning-input type="number" name="MNRP_Lab_Nonstd_Percentage__c"
+													variant="label-hidden"
+													value={otherProducts.MNRP_Lab_Nonstd_Percentage__c}
+													placeholder="Indicate Percentage" onchange={FieldChangeHandler}>
+												</lightning-input>
+											</div>
+										</template>
+									</template>
+								</div>
+							</td>
+						</tr>
+
+						<tr>
+							<td class="left">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+										<span>MNRP Default Percentage of Billed Charges</span>
+									</div>
+
+									<template if:false={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.MNRP_Default_of_Billed_Charges__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.MNRP_Dfault_of_Billd_Chrges_Percentage__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<template if:true={otherProducts.MNRP_Default_Nonstd_Percentage__c}>
+												<span>{otherProducts.MNRP_Default_Nonstd_Percentage__c}%</span>
+											</template>
+										</div>
+									</template>
+
+									<template if:true={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<lightning-combobox name="MNRP_Default_of_Billed_Charges__c"
+												variant="label-hidden" style="text-align: left;"
+												value={otherProducts.MNRP_Default_of_Billed_Charges__c}
+												placeholder="Select an Option" options={yesNotApplicable}
+												onchange={FieldChangeHandler}>
+											</lightning-combobox>
+										</div>
+										<template if:true={mnrpDefaultChargesPerc}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+												<lightning-combobox name="MNRP_Dfault_of_Billd_Chrges_Percentage__c"
+													variant="label-hidden" style="text-align: left;"
+													value={otherProducts.MNRP_Dfault_of_Billd_Chrges_Percentage__c}
+													placeholder="Select an Option"
+													options={mnrpDefaultChargesPercValues}
+													onchange={FieldChangeHandler}>
+												</lightning-combobox>
+											</div>
+										</template>
+										<template if:true={mnrpDefaultWriteIn}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+												<lightning-input type="number" name="MNRP_Default_Nonstd_Percentage__c"
+													variant="label-hidden"
+													value={otherProducts.MNRP_Default_Nonstd_Percentage__c}
+													placeholder="Indicate Percentage" onchange={FieldChangeHandler}>
+												</lightning-input>
+											</div>
+										</template>
+									</template>
+								</div>
+							</td>
+						</tr>
+
+						<!-- <tr>
+							<td class="left">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+										<span>Physician R&amp;C</span>
+									</div>
+
+									<template if:false={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.Physician_R_C_OON__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<template if:true={otherProducts.Physician_R_C_OON_Percentage__c}>
+												<span>{otherProducts.Physician_R_C_OON_Percentage__c}%</span>
+											</template>
+										</div>
+									</template>
+
+									<template if:true={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<lightning-combobox name="Physician_R_C_OON__c" variant="label-hidden"
+												style="text-align: left;" value={otherProducts.Physician_R_C_OON__c}
+												placeholder="Select an Option" options={yesNotApplicable}
+												onchange={FieldChangeHandler}>
+											</lightning-combobox>
+										</div>
+										<template if:true={physicianOon}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+												<lightning-input type="number" name="Physician_R_C_OON_Percentage__c"
+													variant="label-hidden"
+													value={otherProducts.Physician_R_C_OON_Percentage__c}
+													placeholder="Indicate Percentage" onchange={FieldChangeHandler}>
+												</lightning-input>
+											</div>
+										</template>
+									</template>
+								</div>
+							</td>
+						</tr>
+
+						<tr>
+							<td class="left">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+										<span>Facility R&amp;C</span>
+									</div>
+
+									<template if:false={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.Facility_R_C__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<template if:true={otherProducts.Facility_R_C_Percentage__c}>
+												<span>{otherProducts.Facility_R_C_Percentage__c}%</span>
+											</template>
+										</div>
+									</template>
+
+									<template if:true={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<lightning-combobox name="Facility_R_C__c" variant="label-hidden"
+												style="text-align: left;" value={otherProducts.Facility_R_C__c}
+												placeholder="Select an Option" options={yesNotApplicable}
+												onchange={FieldChangeHandler}>
+											</lightning-combobox>
+										</div>
+										<template if:true={facilityRc}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+												<lightning-input type="number" name="Facility_R_C_Percentage__c"
+													variant="label-hidden"
+													value={otherProducts.Facility_R_C_Percentage__c}
+													placeholder="Indicate Percentage" onchange={FieldChangeHandler}>
+												</lightning-input>
+											</div>
+										</template>
+									</template>
+								</div>
+							</td>
+						</tr> -->
+
+						<tr>
+							<td class="left">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+										<span>ENRP</span>
+									</div>
+
+									<template if:false={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<span>{otherProducts.ENRP__c}</span>
+										</div>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<template if:true={otherProducts.ENRP_Percentage__c}>
+												<span>{otherProducts.ENRP_Percentage__c}%</span>
+											</template>
+										</div>
+									</template>
+
+									<template if:true={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<lightning-combobox name="ENRP__c" variant="label-hidden"
+												value={otherProducts.ENRP__c} style="text-align: left;"
+												placeholder="Select an Option" options={yesNotApplicable}
+												onchange={FieldChangeHandler}>
+											</lightning-combobox>
+										</div>
+										<template if:true={enrpPerc}>
+											<div
+												class="slds-col slds-size_1-of-5 slds-p-around_xxx-small slds-cell-wrap">
+												<lightning-input type="number" name="ENRP_Percentage__c"
+													variant="label-hidden" value={otherProducts.ENRP_Percentage__c}
+													placeholder="Indicate Percentage of Billed Charges"
+													onchange={FieldChangeHandler}></lightning-input>
+											</div>
+										</template>
+									</template>
+								</div>
+							</td>
+						</tr>
+
+						<!-- <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+                    <span>ENRP Default Percentage of Billed Charges</span>
+                  </div>
+
+                  <template if:false={editmode}>
+                    <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+                      <span>{otherProducts.ENRP_Default_of_Billed_Charge__c}</span>
+                    </div>
+                    <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+                      <template if:true={otherProducts.ENRP_Dfault_of_Billd_Chrges_Percentage__c}>
+                        <span>{otherProducts.ENRP_Dfault_of_Billd_Chrges_Percentage__c}%</span>
+                      </template>
+                    </div>
+                  </template>
+
+                  <template if:true={editmode}>
+                    <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+                      <lightning-combobox name="ENRP_Default_of_Billed_Charge__c" variant="label-hidden"
+                        style="text-align: left;" value={otherProducts.ENRP_Default_of_Billed_Charge__c}
+                        placeholder="Select an Option" options={yesNotApplicable} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </div>
+                    <template if:true={enrpDefaultPerc}>
+                      <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-cell-wrap">
+                        <lightning-input type="number" name="ENRP_Dfault_of_Billd_Chrges_Percentage__c"
+                          variant="label-hidden" value={otherProducts.ENRP_Dfault_of_Billd_Chrges_Percentage__c}
+                          placeholder="Indicate Percentage" onchange={FieldChangeHandler}></lightning-input>
+                      </div>
+                    </template>
+                  </template>
+                </div>
+              </td>
+            </tr> -->
+
+						<tr>
+							<td class="left">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-5 slds-p-around_xx-small slds-cell-wrap">
+										<span>Non-standard Comments (i.e., indicate if OON program differs by
+                      population/set):</span>
+									</div>
+
+									<template if:false={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+											<span>{otherProducts.Non_standard_Comments__c}</span>
+										</div>
+									</template>
+
+									<template if:true={editmode}>
+										<div
+											class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+											<lightning-textarea type="text" variant="label-hidden"
+												name="Non_standard_Comments__c"
+												value={otherProducts.Non_standard_Comments__c} max-length="500"
+												onchange={FieldChangeHandler}>
+											</lightning-textarea>
+										</div>
+									</template>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</template>
+				<!--OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS OON PROGRAMS-->
+			</template>
+
+
+
+			<template if:true={isFacilityRandC}>
+				<div class="slds-col width-16 slds-p-left_small slds-p-right_small">
+					<template if:false={editmode}>
+						<span>{otherProducts.Level2_Info__c}</span>
+						<p><label>R&C Percentage</label></p>
+						<p>
+							<!-- class="slds-col width-16" -->
+							<lightning-formatted-number value={otherProducts.R_C_Percentage__c}>
+							</lightning-formatted-number>
+						</p>
+					</template>
+					<template if:true={editmode}>
+						<!-- <span>
+              <template if:true={otherProducts.displayPicklist}>
+                <template if:true={otherProducts.CarveinOut}>
+                  <lightning-combobox class="slds-text-align_left" name="Level_2_Option__c" variant="label-hidden"
+                    value={otherProducts.Level_2_Option__c} options={carveInOut} onchange={FieldChangeHandler}>
+                  </lightning-combobox>
+                </template>
+
+                <template if:true={otherProducts.stdCust}>
+
+                  <lightning-combobox class="slds-text-align_left" name="Level_2_Option__c" variant="label-hidden"
+                    value={otherProducts.Level_2_Option__c} options={stdCust} onchange={FieldChangeHandler}>
+                  </lightning-combobox>
+                </template>
+
+                <template if:true={otherProducts.optOther}>
+                  <lightning-combobox class="slds-text-align_left" name="Level_2_Option__c" variant="label-hidden"
+                    value={otherProducts.Level_2_Option__c} options={optumOther} onchange={FieldChangeHandler}>
+                  </lightning-combobox>
+                </template>
+              </template>
+            </span> -->
+						<span>
+              <template if:true={otherProducts.displayTextarea}>
+                <lightning-input type="text" variant="label-hidden" data-id={otherProducts.Id}
+                  data-obj="OpportunityLineItem" name="Level2_Info__c" value={otherProducts.Level2_Info__c}
+                  placeholder={otherProducts.placeHolder} onchange={FieldChangeHandler}
+                  max-length={otherProducts.commentsLength}>
+                </lightning-input>
+              </template>
+            </span>
+						<span>
+              <template if:true={showTextBox}>
+                <lightning-input type="text" variant="label-hidden" data-id={otherProducts.Id}
+                  data-obj="OpportunityLineItem" name="Level2_Info__c" value={otherProducts.Level2_Info__c}
+                  placeholder={otherProducts.placeHolder} onchange={FieldChangeHandler}
+                  max-length={otherProducts.commentsLength}>
+                </lightning-input>
+              </template>
+            </span>
+						<lightning-input class="slds-col" type="number" label="R&C Percentage" name="R_C_Percentage__c"
+							value={otherProducts.R_C_Percentage__c} onchange={FieldChangeHandler} max-length="18">
+						</lightning-input>
+					</template>
+				</div>
+
+				<div class="slds-col width-16 slds-p-left_small slds-p-right_small">
+					<span>
+            <template if:false={editmode}>
+              <p><label>Physician R&C</label></p>
+              <p>
+                <lightning-formatted-number value={otherProducts.Physician_R_C__c}></lightning-formatted-number>
+              </p>
+            </template>
+            <template if:true={editmode}>
+              <lightning-input type="number" label="Physician R&C" name="Physician_R_C__c" max-length="18"
+                value={otherProducts.Physician_R_C__c} onchange={FieldChangeHandler}></lightning-input>
+            </template>
+          </span>
+				</div>
+
+				<div class="slds-col width-16 slds-p-left_small slds-p-right_small">
+					<span>
+            <template if:false={editmode}>
+              <p><label>Tolerance Level</label></p>
+              <p>
+                <lightning-formatted-number value={otherProducts.Tolerance_Level__c}></lightning-formatted-number>
+              </p>
+            </template>
+            <template if:true={editmode}>
+              <lightning-input type="number" label="Tolerance Level" name="Tolerance_Level__c" max-length="18"
+                value={otherProducts.Tolerance_Level__c} onchange={FieldChangeHandler}></lightning-input>
+            </template>
+          </span>
+				</div>
+
+				<div class="slds-col width-5 slds-p-left_small">
+					<span>{otherProductDispositionValue}</span>
+				</div>
+			</template>
+		</div>
+		<!-- </template> -->
+	</template>
+
+
+	<!--PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS-->
+	<template if:true={otherProducts.phsIncluded}>
+		<lightning-accordion-section class="section-header-sub subPhs" name={otherProducts.Product2.Name}
+			label={otherProducts.Product2.Name} style="padding-left:0px; margin-left:-8px;">
+			<div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-around_xx-small border-bottom"
+				style="width: 100%; font-size: 11px;">
+
+				<div class="slds-col width-20">
+					<span><b>{otherProducts.Product2.Name}</b></span>
+				</div>
+
+				<!-- <div class="slds-col width-5 slds-p-left_small">
+          <span>{otherProductDispositionValue}</span>
+        </div> -->
+				<div class="slds-col slds-size_1-of-6 slds-p-left_small" style="text-align: right;">
+					<span>{otherProductDispositionValue}</span>
+				</div>
+				<div class="slds-col slds-size_1-of-6 slds-p-left_small" style="text-align: right;">
+					<span>{surestDispValue}</span>
+				</div>
+			</div>
+
+			<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+				style="width: 48%; margin-left: 21px;">
+				<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small">
+					<span><b>Programs Included in PHS 3.0</b></span>
+				</div>
+			</div>
+
+			<div class="slds-col slds-grid slds-wrap" style="width:97%; margin:0 auto; border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);
+    padding-bottom: 2px; margin-bottom: 15px;">
+				<table class="slds-table slds-no-row-hover" style="width:50%;">
+					<tr>
+						<td class="left">
+							<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+								<div class="slds-col slds-size_2-of-3">
+									<span>Decision Support</span>
+								</div>
+								<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+									<span>
+                    <template if:false={editmode}>
+                      <template if:true={otherProducts.Decision_Support__c}>
+                        {otherProducts.Decision_Support__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-combobox name="Decision_Support__c" variant="label-hidden" style="text-align: left;"
+                        value={otherProducts.Decision_Support__c} placeholder="Select an Option" options={optInOptOut}
+                        onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </span>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<!-- <tr>
+						<td class="left">
+							<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+								<div class="slds-col slds-size_2-of-3">
+									<span>Maternity Support</span>
+								</div>
+								<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+									<span>
+                    <template if:false={editmode}>
+                      <template if:true={otherProducts.Maternity_Support__c}>
+                        {otherProducts.Maternity_Support__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-combobox name="Maternity_Support__c" variant="label-hidden" style="text-align: left;"
+                        value={otherProducts.Maternity_Support__c} placeholder="Select an Option" options={optInOptOut}
+                        onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </span>
+								</div>
+							</div>
+						</td>
+					</tr> -->
+					<tr>
+						<td class="left">
+							<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+								<div class="slds-col slds-size_2-of-3">
+									<span>Congenital Heart Disease Resource Services (CHDRS)</span>
+								</div>
+								<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+									<span>
+                    <template if:false={editmode}>
+                      <template if:true={otherProducts.Congenital_Heart_Disease__c}>
+                        {otherProducts.Congenital_Heart_Disease__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-combobox name="Congenital_Heart_Disease__c" variant="label-hidden"
+                        style="text-align: left;" value={otherProducts.Congenital_Heart_Disease__c}
+                        placeholder="Select an Option" options={optInOptOut} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </span>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="left">
+							<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+								<div class="slds-col slds-size_2-of-3">
+									<span>Transplant (TRS - COE)</span>
+								</div>
+
+
+								<!-- <div class="slds-col slds-size_1-of-3" style="margin-right: 7px;">
+                  <template if:true={showTransplantLevel2}>
+                    <span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.Non_Extra_Contractual_Transplant__c}>
+                          {otherProducts.Non_Extra_Contractual_Transplant__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="Non_Extra_Contractual_Transplant__c" variant="label-hidden"
+                          style="text-align: left;" value={otherProducts.Non_Extra_Contractual_Transplant__c}
+                          placeholder="Select an Option" options={transplantYesNo} onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+                  </template>
+                </div> -->
+
+
+								<div class="slds-col slds-size_1-of-3 slds-cell-wrap"
+									style="text-align: right; float: right;">
+									<span>
+                    <template if:false={editmode}>
+                      <template if:true={otherProducts.Transplant_TRS_COE__c}>
+                        {otherProducts.Transplant_TRS_COE__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-combobox name="Transplant_TRS_COE__c" variant="label-hidden" style="text-align: left;"
+                        value={otherProducts.Transplant_TRS_COE__c} placeholder="Select an Option" options={optInOptOut}
+                        onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </span>
+								</div>
+							</div>
+						</td>
+					</tr>
+
+
+
+					<template if:true={showTransplantLevel2}>
+						<tr>
+							<td class="left">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-3">
+										<span>Non (Extra) Contractual Transplant</span>
+									</div>
+									<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+										<span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.Non_Extra_Contractual_Transplant__c}>
+                          {otherProducts.Non_Extra_Contractual_Transplant__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="Non_Extra_Contractual_Transplant__c" variant="label-hidden"
+                          style="text-align: left;" value={otherProducts.Non_Extra_Contractual_Transplant__c}
+                          placeholder="Select an Option" options={transplantYesNo} onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</template>
+
+
+
+					<tr>
+						<td class="left">
+							<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+								<div class="slds-col slds-size_2-of-3">
+									<span>HealtheNote Reminders</span>
+								</div>
+								<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+									<span>
+                    <template if:false={editmode}>
+                      <template if:true={otherProducts.HealtheNote_Reminders__c}>
+                        {otherProducts.HealtheNote_Reminders__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-combobox name="HealtheNote_Reminders__c" variant="label-hidden"
+                        style="text-align: left;" value={otherProducts.HealtheNote_Reminders__c}
+                        placeholder="Select an Option" options={optInOptOut} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </span>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="left">
+							<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+								<div class="slds-col slds-size_2-of-3 slds-cell-wrap">
+									<span>Physical Health Network (CAM, CAM-ACU, Speech, PT/OT and Chiro)</span>
+								</div>
+								<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+									<span>
+                    <template if:false={editmode}>
+                      <template if:true={otherProducts.Physical_Health_Network__c}>
+                        {otherProducts.Physical_Health_Network__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-combobox name="Physical_Health_Network__c" variant="label-hidden"
+                        style="text-align: left;" value={otherProducts.Physical_Health_Network__c}
+                        placeholder="Select an Option" options={optInOptOut} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </span>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="left">
+							<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+								<div class="slds-col slds-size_2-of-3 slds-cell-wrap">
+									<span>Physical Health Chiro Clinical Support</span>
+								</div>
+								<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+									<span>
+                    <template if:false={editmode}>
+                      <template if:true={otherProducts.Physical_Health_Chiro_Clinical_Support__c}>
+                        {otherProducts.Physical_Health_Chiro_Clinical_Support__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-combobox name="Physical_Health_Chiro_Clinical_Support__c" variant="label-hidden"
+                        style="text-align: left;" value={otherProducts.Physical_Health_Chiro_Clinical_Support__c}
+                        placeholder="Select an Option" options={optInOptOut} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </span>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</table>
+
+				<table class="slds-table slds-no-row-hover" style="width:50%;">
+					<template if:false={otherProducts.isAsthmaPresent}>
+						<tr>
+							<td class="right">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-3">
+										<span>Asthma (VOM)</span>
+									</div>
+									<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+										<span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.Asthma_VOM__c}>
+                          {otherProducts.Asthma_VOM__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="Asthma_VOM__c" variant="label-hidden" style="text-align: left;"
+                          value={otherProducts.Asthma_VOM__c} placeholder="Select an Option" options={optInOptOut}
+                          onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</template>
+
+					<template if:false={otherProducts.isDiabetesPresent}>
+						<tr>
+							<td class="right">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-3">
+										<span>Diabetes (VOM)</span>
+									</div>
+									<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+										<span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.Diabetes_VOM__c}>
+                          {otherProducts.Diabetes_VOM__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="Diabetes_VOM__c" variant="label-hidden" style="text-align: left;"
+                          value={otherProducts.Diabetes_VOM__c} placeholder="Select an Option" options={optInOptOut}
+                          onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</template>
+
+					<template if:false={otherProducts.isHeartFailurePresent}>
+						<tr>
+							<td class="right">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-3">
+										<span>Congestive Heart Failure (VOM)</span>
+									</div>
+									<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+										<span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.Congestive_Heart_Failure_VOM__c}>
+                          {otherProducts.Congestive_Heart_Failure_VOM__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="Congestive_Heart_Failure_VOM__c" variant="label-hidden"
+                          style="text-align: left;" value={otherProducts.Congestive_Heart_Failure_VOM__c}
+                          placeholder="Select an Option" options={optInOptOut} onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</template>
+
+					<template if:false={otherProducts.isCADPresent}>
+						<tr>
+							<td class="right">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-3">
+										<span>Coronary Artery Disease (CAD)</span>
+									</div>
+									<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+										<span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.CAD_VOM__c}>
+                          {otherProducts.CAD_VOM__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="CAD_VOM__c" variant="label-hidden" value={otherProducts.CAD_VOM__c}
+                          style="text-align: left;" placeholder="Select an Option" options={optInOptOut}
+                          onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</template>
+
+					<template if:false={otherProducts.isCOPDPresent}>
+						<tr>
+							<td class="right">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-3">
+										<span>COPD (VOM)</span>
+									</div>
+									<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+										<span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.COPD_VOM__c}>
+                          {otherProducts.COPD_VOM__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="COPD_VOM__c" variant="label-hidden" value={otherProducts.COPD_VOM__c}
+                          style="text-align: left;" placeholder="Select an Option" options={optInOptOut}
+                          onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</template>
+
+					<template if:false={otherProducts.isCancerPresent}>
+						<tr>
+							<td class="right">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-3">
+										<span>Cancer Management (VOM)</span>
+									</div>
+									<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+										<span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.Cancer_Support_Program_VOM__c}>
+                          {otherProducts.Cancer_Support_Program_VOM__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="Cancer_Support_Program_VOM__c" variant="label-hidden"
+                          style="text-align: left;" value={otherProducts.Cancer_Support_Program_VOM__c}
+                          placeholder="Select an Option" options={optInOptOut} onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</template>
+
+					<template if:false={hideKidneyESRD}>
+						<tr>
+							<td class="right">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-3">
+										<span>Kidney Management ESRD (VOM)</span>
+									</div>
+									<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+										<span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.Kidney_Solutions_VOM__c}>
+                          {otherProducts.Kidney_Solutions_VOM__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="Kidney_Solutions_VOM__c" variant="label-hidden"
+                          style="text-align: left;" value={otherProducts.Kidney_Solutions_VOM__c}
+                          placeholder="Select an Option" options={optInOptOut} onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</template>
+
+					<template if:false={otherProducts.isKidResPresent}>
+						<tr>
+							<td class="right">
+								<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+									<div class="slds-col slds-size_2-of-3">
+										<span>Kidney Management Stage 4/5 (VOM)</span>
+									</div>
+									<div class="slds-col slds-size_1-of-3 slds-cell-wrap" style="text-align: right;">
+										<span>
+                      <template if:false={editmode}>
+                        <template if:true={otherProducts.Kidney_Resource_Services_VOM__c}>
+                          {otherProducts.Kidney_Resource_Services_VOM__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <lightning-combobox name="Kidney_Resource_Services_VOM__c" variant="label-hidden"
+                          style="text-align: left;" value={otherProducts.Kidney_Resource_Services_VOM__c}
+                          placeholder="Select an Option" options={optInOptOut} onchange={FieldChangeHandler}>
+                        </lightning-combobox>
+                      </template>
+                    </span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</template>
+				</table>
+
+				<br />
+				<br />
+				<br />
+
+				<template if:true={showPhsBuyUpSection}>
+					<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+						style="width: 99%; margin-left: 4px;">
+						<div class="slds-col slds-size_4-of-6 slds-p-around_xx-small">
+							<span><b>Buy Ups Sold</b></span>
+						</div>
+						<template if:true={isTradSoldOther}>
+							<div class="slds-col slds-size_1-of-6 slds-p-left_small" style="text-align: right;">
+								<span><b>Traditional</b></span>
+							</div>
+						</template>
+						<template if:true={isSurestSoldOther}>
+							<div class="slds-col slds-size_1-of-6 slds-p-left_small" style="text-align: right;">
+								<span><b>Surest</b></span>
+							</div>
+						</template>
+					</div>
+					<table class="slds-table slds-no-row-hover">
+						<template if:true={otherProducts.isAsthmaPresent}>
+							<tr>
+								<td class="leftPhs">
+									<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+										<div class="slds-col slds-size_4-of-6">
+											<span>{otherProducts.displayAsthma}</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.otherProductDispositionValueAsthma}</span>
+										</div>
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.surestDispValueAsthma}</span>
+										</div>
+
+									</div>
+								</td>
+							</tr>
+						</template>
+
+						<template if:true={otherProducts.isDiabetesPresent}>
+							<tr>
+								<td class="leftPhs">
+									<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+										<div class="slds-col slds-size_4-of-6">
+											<span>{otherProducts.displayDiabetes}</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.otherProductDispositionValueDiabetes}</span>
+										</div>
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.surestDispValueDiabetes}</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</template>
+
+						<template if:true={otherProducts.isHeartFailurePresent}>
+							<tr>
+								<td class="leftPhs">
+									<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+										<div class="slds-col slds-size_4-of-6">
+											<span>{otherProducts.displayHeartFailure}</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.otherProductDispositionValueHeartFailure}</span>
+										</div>
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.surestDispValueHeartFailure}</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</template>
+
+						<template if:true={otherProducts.isCADPresent}>
+							<tr>
+								<td class="leftPhs">
+									<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+										<div class="slds-col slds-size_4-of-6">
+											<span>{otherProducts.displayCAD}</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.otherProductDispositionValueCAD}</span>
+										</div>
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.surestDispValueCAD}</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</template>
+
+						<template if:true={otherProducts.isCOPDPresent}>
+							<tr>
+								<td class="leftPhs">
+									<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+										<div class="slds-col slds-size_4-of-6">
+											<span>{otherProducts.displayCOPD}</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.otherProductDispositionValueCOPD}</span>
+										</div>
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.surestDispValueCOPD}</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</template>
+
+						<template if:true={otherProducts.isCancerPresent}>
+							<tr>
+								<td class="leftPhs">
+									<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+										<div class="slds-col slds-size_4-of-6">
+											<span>{otherProducts.displayCancer}</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.otherProductDispositionValueCancer}</span>
+										</div>
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.surestDispValueCancer}</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</template>
+
+						<template if:true={otherProducts.isKidSolPresent}>
+							<tr>
+								<td class="leftPhs">
+									<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+										<div class="slds-col slds-size_4-of-6">
+											<span>{otherProducts.displayKidSol}</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.otherProductDispositionValueKidSol}</span>
+										</div>
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.surestDispValueKidSol}</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</template>
+
+						<template if:true={otherProducts.isKidResPresent}>
+							<tr>
+								<td class="leftPhs">
+									<div class="slds-grid slds-grid--vertical-align-center border-bottom">
+										<div class="slds-col slds-size_4-of-6">
+											<span>{otherProducts.displayKidRes}</span>
+										</div>
+
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.otherProductDispositionValueKidRes}</span>
+										</div>
+										<div class="slds-col slds-size_1-of-6 slds-p-left_small"
+											style="text-align: right;">
+											<span>{otherProducts.surestDispValueKidRes}</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</template>
+					</table>
+				</template>
+			</div>
+		</lightning-accordion-section>
+	</template>
+	<!--PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS PHS 3.0 PROGRAMS-->
+</template>

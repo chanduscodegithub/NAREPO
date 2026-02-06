@@ -1,0 +1,52 @@
+<aura:component>
+    <aura:attribute name="opprtuntyPrdctAndRnwlStatusRcrd" type="Object"/>
+    <aura:attribute name="recordSerialNo" type="Integer"/>
+    <aura:attribute name="index" type="Integer"/>
+    
+	<aura:registerEvent name="salesIncentivesExportTableEvent" type="c:Sales_Incentives_Export_Table_Event"/>
+    
+    <tr class="slds-hint-parent">
+        <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <label class="slds-checkbox">
+                        <ui:inputCheckbox text="{!v.opprtuntyPrdctAndRnwlStatusRcrd.recordId}"
+                                          value="{!v.opprtuntyPrdctAndRnwlStatusRcrd.isChecked}"
+                                          change="{!c.checkboxSelect}"/>
+                        <span class="slds-checkbox_faux"></span>
+                        <span class="slds-form-element__label text"></span>
+                    </label>
+                </div>
+            </div>
+        </th>
+        <td scope="row">
+            <div class="slds-cell-wrap" title="">{!(v.recordSerialNo*1)+(v.index*1)+1}</div>
+        </td>
+        <td scope="row">
+            <div class="slds-cell-wrap" title="">{!v.opprtuntyPrdctAndRnwlStatusRcrd.accountName}</div>
+        </td>
+        <td scope="row">
+            <div class="slds-cell-wrap" title="">{!v.opprtuntyPrdctAndRnwlStatusRcrd.productName}</div>
+        </td>
+        <td scope="row">
+            <div class="slds-cell-wrap" title="">{!v.opprtuntyPrdctAndRnwlStatusRcrd.sceOrsvp}</div>
+        </td>
+        <td scope="row" style="width:4.35rem;">
+            <div class="slds-cell-wrap" title="">{!v.opprtuntyPrdctAndRnwlStatusRcrd.type}</div>
+        </td>
+        <td scope="row" style="width:7.25rem;">
+            <div class="slds-cell-wrap" title=""><ui:outputDate format="M/d/yyyy" value="{!v.opprtuntyPrdctAndRnwlStatusRcrd.effectiveDate}"/></div>
+        </td>
+        <td scope="row"  style="width:6.25rem;">
+            <div class="slds-cell-wrap" title="">{!v.opprtuntyPrdctAndRnwlStatusRcrd.membership}</div>
+        </td>
+        <td scope="row">
+            <div class="slds-cell-wrap" title="">{!v.opprtuntyPrdctAndRnwlStatusRcrd.membershipActivityName}</div>
+        </td>
+        <td scope="row" style="width:6.25rem;">
+            <ui:outputDateTime format="M/d/yyyy h:mm a" value="{!v.opprtuntyPrdctAndRnwlStatusRcrd.dateReadyToSend}" class="form-control" />
+        </td>
+        
+    </tr>
+    
+</aura:component>

@@ -1,0 +1,1684 @@
+<apex:page showHeader="false" sidebar="false" applyBodyTag="false" contentType="{!ContentTypeValue}"
+           applyHtmlTag="false" controller="SiteVisitBriefingDocumentController" language="en-US">
+    
+    <apex:includeLightning />
+    <div id="LightningComponentid" />
+    <html>
+    <style>
+        table {
+        font-family: Arial;
+        }               
+        .header {
+        background-color: #D3D3D3;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        width: 100%;
+        border: 1px solid #000;
+        }
+        .detailTable{
+        width:100%;
+        font-size: 12px;
+        }        
+    </style>
+        <head>
+            <meta content="text/html;charset=UTF-8" />
+        </head>  
+    <body>
+      <div style="border: 1px solid #000; height: 80px; margin-top: 2px; background-color: #D3D3D3; text-align: center;font-weight: bold;font-size: 20px; font-family: Arial;" >Finalist Meeting Briefing Document</div>
+      <br/>
+      <br/>
+
+        <table style="background-color: #D3D3D3; width: 100%; margin-top: 2px; border: 3px solid #000; font-family: Arial;">
+            <tr>
+                <td align="left" style="color: #000080; font-size:22px ; font-weight: bold; width: 60%;font-family: Arial; ">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}
+                </td>                
+                <td style="font-size: 13px; font-weight: bold; color: #000080; text-align: left; width: 30%; font-family: Arial;">
+                    <b>SVP:</b> {!siteBriefingWrapper.siteBriefingQuery.Owner.Name}                   
+                </td>
+            </tr>
+            <tr>
+                <td align="left" style="font-size: 14px; font-weight: bold; color: #000080; width: 60%;font-family: Arial;">
+                    {!siteBriefingWrapper.siteBriefingQuery.RecordType.Name}
+                </td>                
+                <td style="font-size: 13px; font-weight: bold; color: #000080; text-align: left; width: 30%; font-family: Arial;">
+                    <b>Surest SVP:</b> {!siteBriefingWrapper.siteBriefingQuery.Surest_SVP_Involved__c}
+                </td>
+            </tr>
+        </table> 
+        
+        <br/>
+        
+       <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-family: Arial;">
+            <tr>
+                <td align="left" style="width:40%; color:#1f1f1f;background: #45b0e1; font-size: 14px; font-weight: bold; font-family: Arial;">
+                    Team Information
+                </td>
+                <td style="font-size: 14px; color:#1f1f1f;background: #45b0e1; text-align: right; font-weight: bold;font-family: Arial;">
+                    {!siteBriefingWrapper.opportunityData.Name}                   
+                </td>
+            </tr>
+         </table> 
+        <table class="detailTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-family: Arial;">
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000; padding-right: 5px;">Owner</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Owner_Name__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Direct Marketing Lead</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Direct_Marketing_Lead__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Finalist Meeting Participants</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Finalist_Meeting_Participants__c} </td>
+            </tr>
+        </table>      
+
+        <br/>
+
+        <table class="detailTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-family: Arial;">
+            <tr>
+                <td style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;border:1px solid #000;" colspan="2">
+                    Meeting Details
+                </td>
+            </tr> 
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Date</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; padding-right: 5px; color:#3d618e;font-weight: normal; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Time</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; padding-right: 5px; color:#3d618e;font-weight: normal; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Location</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; padding-right: 5px; color:#3d618e;font-weight: normal; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Airport / Hotel</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; padding-right: 5px; color:#3d618e;font-weight: normal; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Attire</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; padding-right: 5px; color:#3d618e;font-weight: normal; word-break:break-all">&nbsp;</td>
+            </tr>
+        </table>
+
+        <br/>
+        
+        <table  style="width: 100%; border-collapse: collapse;border:1px solid #000;font-family: Arial; ">
+            <tr>
+                <td style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;border:1px solid #000;">
+                    Internal Prep Meeting Info
+                </td>
+            </tr>
+            <tr>
+                <td style="font-size: 12px; height: 60px; border: 1px solid #000; width:100%; font-weight: normal;color:#3d618e; word-break:break-all">&nbsp;</td> 
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table style="width: 100%; border-collapse: collapse;border:1px solid #000;font-family: Arial;">
+            <tr>
+                <td style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;border:1px solid #000; word-break:break-all">
+                    Proposed Agenda
+                </td>
+            </tr>
+            <tr>
+                <td style="font-size: 12px; height: 60px; border: 1px solid #000; width:100%; font-weight: normal;color:#3d618e; word-break:break-all">&nbsp;</td>
+            </tr>
+        </table>
+        
+        <br/>
+
+         
+        <table class="detailTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-family: Arial;">
+            <tr>
+                <td style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;border:1px solid #000;" colspan="2">
+                    Sales Summary
+                </td>
+            </tr> 
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Background / Company Overview*</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedBackgroundCompanyOverview}" escape="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Headquarter (City, State)*</td>
+                <apex:outputPanel layout="none" rendered="{!AND(NOT(ISBLANK(siteBriefingWrapper.siteBriefingQuery.BillingCity)), NOT(ISBLANK(siteBriefingWrapper.siteBriefingQuery.BillingState)))}">
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.BillingCity}, {!siteBriefingWrapper.siteBriefingQuery.BillingState} </td>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!OR(ISBLANK(siteBriefingWrapper.siteBriefingQuery.BillingCity), ISBLANK(siteBriefingWrapper.siteBriefingQuery.BillingState))}">
+                    <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; color:#3d618e; padding-right: 5px; word-break:break-all">
+                        &nbsp;
+                    </td>
+                </apex:outputPanel>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">HPM Industry*</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Health_Plan_Manager_Industry__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Incumbent(s)*</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all"><b>Medical:</b>&nbsp; {!siteBriefingWrapper.siteBriefingQuery.IncumbentPrimaryMedical__r.Name} <br/>
+                    <b>Vision:</b>&nbsp; {!siteBriefingWrapper.siteBriefingQuery.IncumbentPrimaryVision__r.Name} <br/>
+                    <b>Dental:</b>&nbsp; {!siteBriefingWrapper.siteBriefingQuery.IncumbentPrimaryDental__r.Name} <br/>
+                    <b>Pharmacy:</b>&nbsp; {!siteBriefingWrapper.siteBriefingQuery.Incumbent_Primary_Pharmacy__r.Name} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Consulting Firm Loc*</td>
+                <apex:outputPanel layout="none" rendered="{!AND(NOT(ISBLANK(siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingCity)), NOT(ISBLANK(siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingState)))}">
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingCity} , {!siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingState}  </td>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!OR(ISBLANK(siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingCity), ISBLANK(siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingState))}">
+                    <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; color:#3d618e; padding-right: 5px; word-break:break-all">
+                        &nbsp;
+                    </td>
+                </apex:outputPanel>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Membership opportunity name - Expected or Open*</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.openOppName} </td>
+            </tr>
+        </table>      
+        
+        <br/>
+        
+        
+        <!-- CR 24/07/25 -->
+       
+        <table class="detailTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-family: Arial;">
+            <tr>
+                <td style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;border:1px solid #000;" colspan="2">
+                    Third Party Vendors
+                </td>
+            </tr>
+            <tr>
+                <td style="color:#1f1f1f;background: #a5c9eb;padding: 3px;font-size: 12px; font-weight: bold;border:1px solid #000;">
+                    Vendor Name
+                </td>
+                <td style="color:#1f1f1f;background: #a5c9eb;padding: 3px;font-size: 12px; font-weight: bold;border:1px solid #000;">
+                    In Place or Looking At
+                </td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>               
+            </tr>
+            <tr>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>            
+        </table>      
+        
+        <br/>       
+        
+        <table class="detailTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td colspan="2" style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;border:1px solid #000;">
+                    Membership Counts from RFP
+                </td>
+            </tr>
+            <br/>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Eligible EE`s* </td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Employees_in_the_Proposal_Medical__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Quote EE`s* </td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Members_QUOTED_in_the_Proposal_Medical__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">ACS* </td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Opportunity_Average_Contract_Size_ACS__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Estimated Additional New Members* </td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Estimated_Additional_New_Members__c} </td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold; ">                   
+                    Network Footprint
+                </td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; background-color: #D3D3D3; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; font-size: 14px; font-weight: bold; ">
+                    Network Footprint
+                </td>
+                <td align="right" style="color:#1f1f1f; font-size: 14px; font-weight: bold;padding-right: 5px; ">
+                    {!siteBriefingWrapper.opportunityData.Name}
+                </td>
+            </tr>
+        </table>
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Aetna</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Aetna__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Aetna__c}%
+                    </apex:outputText>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">BiC Source Date</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px; color:#3d618e; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.BiC_Source_Date__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Anthem</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Anthem__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Anthem__c}%
+                    </apex:outputText>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">BiC Source # Records</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px; color:#3d618e; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.BiC_Source_Records__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Blues</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Blues__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Blues__c}%
+                    </apex:outputText>
+                </td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Blues Alt</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Blues_Alt__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Blues_Alt__c}%
+                    </apex:outputText>
+                </td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Cigna</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Cigna__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Cigna__c}%
+                    </apex:outputText>
+                </td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse;background-color: #D3D3D3; border: 3px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f; font-size: 14px; font-weight: bold; padding: 5px; ">
+                    Company-Wide Top Market and BiC Information
+                </td>
+                <td style="font-size: 14px; color: #1f1f1f;font-weight: bold; text-align: right;padding-right: 5px;">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}                    
+                </td>
+            </tr>
+        </table>
+                
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f;background-color: #D3D3D3; font-size: 14px; font-weight: bold; ">
+                    Top Market Information
+                </td>
+            </tr>
+        </table>
+        <table style="width:100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <thead>
+                <tr style="font-weight: bold;">
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 1</th>
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 2</th>
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 3</th>
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 4</th>
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 5</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket1__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket1__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket2__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket2__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket3__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket3__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket4__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket4__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket5__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket5__c}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 1 # Records</td>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 2 # Records</td>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 3 # Records</td>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 4 # Records</td>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 5 # Records</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket1Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket1Records__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket2Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket2Records__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket3Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket3Records__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket4Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket4Records__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket5Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket5Records__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f; font-size: 14px;background-color: #D3D3D3; font-weight: bold; ">
+                    BiC Information
+                </td>
+            </tr>
+        </table>
+        
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 12px; table-layout: fixed;font-family: Arial;">
+            <thead>
+                <tr style="font-weight: bold;">
+                    <th style="border: 1px solid #000; width: 5%;">Year</th>
+                    <th style="border: 1px solid #000;width: 9%;">Type</th>
+                    <th style="border: 1px solid #000;width: 9%;">Overall BiC</th>
+                    <th style="border: 1px solid #000;width: 10%;">vs Aetna</th>
+                    <th style="border: 1px solid #000;width: 10%;">vs Anthem</th>
+                    <th style="border: 1px solid #000;width: 10%;">vs Blues</th>
+                    <th style="border: 1px solid #000;width: 10%;">vs Blues Alt</th>
+                    <th style="border: 1px solid #000;width: 10%;">vs Cigna</th>
+                    <th style="border: 1px solid #000;width: 12%;">BiC Source</th>
+                    <th style="border: 1px solid #000;width: 8%;">BiC Source Date</th>
+                    <th style="border: 1px solid #000;width: 7%;">BiC Source # Records</th>
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!siteBriefingWrapper.getBicInformation}" var="bic">
+                <tr>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;{!bic.Year__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;{!bic.Type__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;                       
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.Overall_BiC__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.Overall_BiC__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Aetna__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Aetna__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Anthem__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Anthem__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Blues__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Blues__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Blues_Alt__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Blues_Alt__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Cigna__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Cigna__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;word-break:break-all;">&nbsp;{!bic.BiC_Source__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;word-break:break-all;">&nbsp;{!bic.BiC_Source_Date__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;word-break:break-all;">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!bic.BiC_Source_Records__c}" />
+                        </apex:outputText>
+                    </td>                
+                 </tr>
+                </apex:repeat>
+            </tbody>
+        </table>
+
+        
+        <br/>
+        
+        <table  class="detailTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td colspan="2" style="color:#1f1f1f;background: #f1a984;padding: 5px;font-weight: bold;font-size: 14px;border:1px solid #000;">
+                    Financial Offer
+                </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000; padding-right: 5px;">Operational Guarantee</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; padding-right: 5px; font-weight: normal; color:#3d618e; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000; padding-right: 5px;">Discount or UHC Claim Target / Trend Guarantee</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; padding-right: 5px; font-weight: normal; color:#3d618e; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000; padding-right: 5px;">Credits</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; padding-right: 5px; font-weight: normal; color:#3d618e; word-break:break-all">&nbsp;</td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table  class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;">
+                    Quoted Products
+                </td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 3px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width:40%; color:#1f1f1f;background: #a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Products
+                </td>
+                <td style="font-size: 14px; color:#1f1f1f;background: #a5c9eb; text-align: right;padding-right: 5px;">
+                    {!siteBriefingWrapper.opportunityData.Name}                   
+                </td>
+            </tr>
+         </table>
+        
+        <br/>
+        
+        <!--  Product Section -- Client Management   -->
+        <apex:outputPanel layout="none" rendered="{!IF(siteBriefingWrapper.siteBriefingQuery.Category__c = 'Client Management' && (siteBriefingWrapper.medicalProducts !=null || siteBriefingWrapper.pharmacyProducts !=null || siteBriefingWrapper.dentalProducts !=null || siteBriefingWrapper.visionProducts !=null) , true,false)}">            
+        <table style="width:100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <thead style="page-break-inside: avoid;">
+                <tr style="font-weight: bold;">
+                    <th style="border: 1px solid #000; text-align: center;font-size: 12px;">Products</th>
+                    <th style="border: 1px solid #000; text-align: center;font-size: 12px;">Product Line</th>
+                    <th style="border: 1px solid #000; text-align: center;font-size: 12px;">Product Selection</th>
+                    <th style="border: 1px solid #000; text-align: center;font-size: 12px;">Existing Mbrs in Bid</th>
+                    <th style="border: 1px solid #000; text-align: center;font-size: 12px;">Est Additional New Mbrs</th>
+                    <th style="border: 1px solid #000; text-align: center;font-size: 12px;">Est Mbrs (Exist + New)</th>
+                    <th style="border: 1px solid #000; text-align: center;font-size: 12px;">Existing Mbrs at Risk</th>
+                    <th style="border: 1px solid #000; text-align: center;font-size: 12px;">Net Results</th>
+                    <th style="border: 1px solid #000; text-align: center;font-size: 12px;">Annual Revenue / Premium</th>
+                </tr>
+            </thead>
+           <tbody>
+                    <apex:repeat value="{!siteBriefingWrapper.allOpportunityProductsData}" var="item">
+                    <apex:outputPanel layout="none" rendered="{!IF((item.Product_Line__c ='Medical' || item.Product_Line__c ='Pharmacy' || item.Product_Line__c ='Dental' || item.Product_Line__c ='Vision' ) , true,false)}">    
+                        <tr>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">{!item.Product2.Name}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">{!item.Product_Line__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">{!item.Buyup_Product_Selection__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">{!item.Existing_Members_Involved_in_the_Bid__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">{!item.Estimated_Additional_New_Members__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">{!item.Estimated_Members_Existing_New__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">{!item.Existing_Membership_at_Risk__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">{!item.Net_Results__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">${!FLOOR(item.Annual_Revenue_Premium__c)}</td>
+                        </tr>
+                        </apex:outputPanel>
+                    </apex:repeat>
+            </tbody>   
+            
+           
+            
+        </table>
+        </apex:outputPanel> 
+        
+        
+        <apex:outputPanel layout="none" rendered="{!IF(siteBriefingWrapper.siteBriefingQuery.Category__c = 'Client Management' && siteBriefingWrapper.otherProducts !=null , true,false)}">
+        <br/>
+        <div style="font-size: 14px; font-weight: bold; font-family: Arial;" >Other Buy Up:</div>            
+        <table style="width:100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <thead>
+                <tr style="font-weight: bold;">
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Products</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Product Selection</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Existing Mbrs in Bid</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Est Additional New Mbrs</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Est Mbrs (Exist + New)</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Existing Mbrs at Risk</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Disposition</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Net Results</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Annual Revenue / Premium</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <apex:repeat value="{!siteBriefingWrapper.opportunityProductsData}" var="item">
+                    <apex:outputPanel layout="none" rendered="{!IF(item.Product_Line__c ='Other', true,false)}">    
+                        <tr>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Product2.Name}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Buyup_Product_Selection__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Existing_Members_Involved_in_the_Bid__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Estimated_Additional_New_Members__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Estimated_Members_Existing_New__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Existing_Membership_at_Risk__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Disposition_Other_Buy_Up_Programs__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Net_Results__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">${!FLOOR(item.Annual_Revenue_Premium__c)}</td>
+                        </tr>
+                        </apex:outputPanel>
+                    </apex:repeat>
+            </tbody>
+        </table>
+        </apex:outputPanel>
+        
+        
+        <!--  Product Section -- Client Development   -->
+        <apex:outputPanel layout="none" rendered="{!IF(siteBriefingWrapper.siteBriefingQuery.Category__c = 'Client Development' && (siteBriefingWrapper.medicalProducts !=null || siteBriefingWrapper.pharmacyProducts !=null || siteBriefingWrapper.dentalProducts !=null || siteBriefingWrapper.visionProducts !=null) , true,false)}">            
+        <table style="width:100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <thead>
+                <tr style="font-weight: bold;">
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Products</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Product Line</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Product Selection</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Mbrs Transferred</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Est Additional New Mbrs</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Est Mbrs (Exist + New)</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Mbrs quoted in the proposal</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Net Results</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Annual Revenue / Premium</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <apex:repeat value="{!siteBriefingWrapper.allOpportunityProductsData}" var="item">
+                    <apex:outputPanel layout="none" rendered="{!IF((item.Product_Line__c ='Medical' || item.Product_Line__c ='Pharmacy' || item.Product_Line__c ='Dental' || item.Product_Line__c ='Vision' ) , true,false)}">    
+                        <tr>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Product2.Name}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Product_Line__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Buyup_Product_Selection__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Mbrs_Transferred_From_To_Another_Segment__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Estimated_Additional_New_Members__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Estimated_Members_Existing_New__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Members_Quoted_in_the_Proposal__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Net_Results__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">${!FLOOR(item.Annual_Revenue_Premium__c)}</td>
+                        </tr>
+                        </apex:outputPanel>
+                    </apex:repeat>
+            </tbody>
+        </table>
+        </apex:outputPanel> 
+        
+        
+        <apex:outputPanel layout="none" rendered="{!IF(siteBriefingWrapper.siteBriefingQuery.Category__c = 'Client Development' && (siteBriefingWrapper.otherProducts !=null) , true,false)}">
+        <br/>
+        <div style="font-size: 14px; font-weight: bold; font-family: Arial;" >Other Buy Up:</div>            
+        <table style="width:100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <thead>
+                <tr style="font-weight: bold;">
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Products</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Product Selection</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Mbrs Transferred</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Est Additional New Mbrs</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Est Mbrs (Exist + New)</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Mbrs quoted in the proposal</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Disposition</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Net Results</th>
+                    <th style="border: 1px solid #000; text-align: center; font-size: 12px;">Annual Revenue / Premium</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <apex:repeat value="{!siteBriefingWrapper.opportunityProductsData}" var="item">
+                    <apex:outputPanel layout="none" rendered="{!IF(item.Product_Line__c ='Other', true,false)}">    
+                        <tr>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Product2.Name}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Buyup_Product_Selection__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Mbrs_Transferred_From_To_Another_Segment__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Estimated_Additional_New_Members__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Estimated_Members_Existing_New__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Members_Quoted_in_the_Proposal__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Disposition_Other_Buy_Up_Programs__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">{!item.Net_Results__c}</td>
+                            <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">${!FLOOR(item.Annual_Revenue_Premium__c)}</td>
+                        </tr>
+                        </apex:outputPanel>
+                    </apex:repeat>
+            </tbody>
+        </table>
+        </apex:outputPanel>
+                
+        <br/>
+        <br/>
+        <br/>
+        
+        <table  class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;">
+                    Strategy
+                </td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Strategy
+                </td>
+                <td align="right" style="color:#1f1f1f; font-size: 14px; background: #a5c9eb; font-weight: bold;padding-right: 5px;">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}
+                </td>
+            </tr>
+        </table>                
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Business Pressures</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.BusinessPressures__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Key Risks to our UBV</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.KeyRiskstoourUBV__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Potential Compelling Event</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.PotentialCompellingEvent__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Outcome Drivers</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.OutcomeDrivers__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Our Potential Unique Business Value</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all" >&nbsp;
+                    <font color="#3d618e"> {!siteBriefingWrapper.siteBriefingQuery.OurPotentialUniqueBusinessValue__c} </font></td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Approach Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.ApproachStrategy__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Last Action Taken</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Last_Action_Taken__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Supp Health Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Supp_Health_Strategy__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Next Action to be Taken</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Next_Action_to_be_Taken__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Eligible for 2nd Blues Bid</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Eligible_for_2nd_Blues_Bid__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;"></td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;"></td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">2nd Blues Bid Comments</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!Formatted2ndBluesBidComments}" escape="false"/>
+                </td>
+            </tr>
+        </table>        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Activity Strategy Summary
+                </td>
+                <td align="right" style="color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold;padding-right: 5px; ">
+                    {!siteBriefingWrapper.opportunityData.Name}
+                </td>
+            </tr>
+        </table>                
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Must Win Criteria</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedMustWinCriteria}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Bid Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                <apex:outputText value="{!FormattedBidStrategy}" escape="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Proposal Reason</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Reason_for_the_Proposal__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Financial Notes</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedFinancialNotes}" escape="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Optum Asks</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!formattedOptumAsks}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Is the Client in the Cannabis Business</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Is_the_Client_in_the_Cannabis_Business__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Product non-standards</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                <apex:outputText value="{!FormattedProductNonStandards}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Win Loss Interview Requested</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Win_Loss_Interview_Requested__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Notes taken on call with consultant</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Notes_taken_on_call_with_consultant__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Win Loss Interview Date</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;                   
+                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                        <apex:param value="{!siteBriefingWrapper.opportunityData.Win_Loss_Interview_Date__c}" />                            
+                    </apex:outputText>
+                </td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Surest Strategy
+                </td>
+                <td align="right" style="color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold;padding-right: 5px; ">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}
+                </td>
+            </tr>
+        </table>                
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Last Action Taken</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Last_Action_Taken__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Approach Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px;  word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Approach_Strategy__c}</td>
+              <!--  <apex:outputText value="{!siteBriefingWrapper.siteBriefingQuery.Surest_Approach_Strategy__c}" escape="false" richtext="true">  </apex:outputText>  -->
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Next Action to be Taken</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Next_Action_to_be_Taken__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Network Constraints</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Network_Constraints__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Comments</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Comments__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Network Contracting Issue - Other</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Network_Contracting_Issue_Other__c}</td>
+            </tr>
+        </table>        
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Activity Surest Strategy
+                </td>
+                <td align="right" style="color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold;padding-right: 5px; ">
+                    {!siteBriefingWrapper.opportunityData.Name}
+                </td>
+            </tr>
+        </table>                
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Problem Surest is Solving</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Problem_Surest_is_Solving__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;"># of Medical current plans</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.No_of_current_plans__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Key Risks - Sales Success</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedSurestKeyRisks}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Est. paid med/Rx savings</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Surest_Targeted_med_Rx_savings_range__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Plan Strategy (most likely)</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Surest_Plan_Strategy__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Default Plan</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Default_Plan__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Offer Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Offer_Nationally__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Plan Positioning</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Contribution_Positioning__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Comments</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedSurestComments}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Contribution Differential</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Surest_Contribution_Differential__c}</td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;background-color: #D3D3D3;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; font-size: 14px; font-weight: bold; ">
+                    Past Membership Activities
+                </td>
+                <td align="right" style="color:#1f1f1f; font-size: 14px; font-weight: bold;padding-right: 5px; ">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}
+                </td>
+            </tr>
+        </table>
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;table-layout: fixed;">
+            <thead>
+                <tr style=" font-weight: bold;">
+                    <th style="border: 1px solid #000;font-size: 12px; width: 11%;">Membership Activity Name</th>
+                    <th style="border: 1px solid #000;font-size: 12px; width: 9%;">Effective Date</th>
+                    <th style="border: 1px solid #000;font-size: 12px; width: 9%;">Medical Disposition</th>
+                    <th style="border: 1px solid #000;font-size: 12px; width: 10%;">Sales Stage (Medical)</th>
+                    <th style="border: 1px solid #000;font-size: 12px; width: 10%;">Sales Stage (Dental)</th>
+                    <th style="border: 1px solid #000;font-size: 12px; width: 11%;">Sales Stage (Vision)</th>
+                    <th style="border: 1px solid #000;font-size: 12px; width: 10%;">Sales Stage (Pharmacy)</th>
+                    <th style="border: 1px solid #000;font-size: 12px; width: 10%;">Sales Stage (Other Buy Up Programs)</th>
+                    <th style="border: 1px solid #000;font-size: 12px; width: 20%;">Closed Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <apex:outputPanel layout="none" rendered="{!IF((siteBriefingWrapper.getClosedOpportunities !=null) , true,false)}">            
+                
+                <apex:repeat value="{!siteBriefingWrapper.getClosedOpportunities}" var="pastOpp">
+                <tr>
+                    <td style=" border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">{!pastOpp.Name}</td>                   
+                    <td style=" border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!pastOpp.EffectiveDate__c}" />                            
+                        </apex:outputText>
+                    </td>
+                    <td style=" border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;word-break:break-all">&nbsp;{!pastOpp.Disposition_Medical__c}</td>
+                    <td style=" border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;word-break:break-all">&nbsp;{!pastOpp.Sales_Stage_Medical__c}</td>
+                    <td style=" border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;word-break:break-all">&nbsp;{!pastOpp.Sales_Stage_Dental__c}</td>
+                    <td style=" border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;">&nbsp;{!pastOpp.Sales_Stage_Vision__c}</td>
+                    <td style=" border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;word-break:break-all">&nbsp;{!pastOpp.Sales_Stage_Pharmacy__c}</td>
+                    <td style=" border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;word-break:break-all">&nbsp;{!pastOpp.Sales_Stage_Other__c}</td>
+                    <td style=" border: 1px solid #000; color:#3d618e; text-align: center;font-size: 12px;word-break:break-all">&nbsp;{!pastOpp.Closed_Comments__c}</td>
+                </tr>
+                </apex:repeat>
+                </apex:outputPanel>
+         <!--       <apex:outputPanel layout="none" rendered="{!IF((siteBriefingWrapper.getClosedOpportunities == null) , true,false)}">
+                    <tr>
+                    <td class="inputCell">No Past Membership Activities found for this Record.</td></tr>
+                </apex:outputPanel>   -->
+            </tbody>
+        </table>
+        
+        <br/>
+        
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width:40%; color:#1f1f1f;background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Previous interactions
+                </td>
+                <td style="font-size: 14px; color:#1f1f1f;background:#a5c9eb; text-align: right;padding-right: 5px;font-weight: bold;">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}                   
+                </td>
+            </tr>
+         </table>       
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="center" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Date</td>
+                <td align="center" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Type</td>
+                <td align="center" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Subject</td>
+                <td align="center" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Comments</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width:40%; color:#1f1f1f;background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    B2B
+                </td>
+                <td style="font-size: 14px; color:#1f1f1f;background:#a5c9eb; text-align: right;padding-right: 5px;font-weight: bold;">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}                   
+                </td>
+            </tr>
+         </table>       
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">B2B Service/Solution</td>
+                <td align="left" style="width: 60%; border: 1px solid #000; padding: 4px;font-size: 12px; color:#3d618e; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.B2BServiceSolution__c}</td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse;background-color: #D3D3D3; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width:40%; color:#1f1f1f;font-size: 14px; font-weight: bold; ">
+                    Other Comments
+                </td>
+                <td style="font-size: 14px; color:#1f1f1f;; text-align: right;padding-right: 5px;font-weight: bold;">
+                    {!siteBriefingWrapper.opportunityData.Name}                   
+                </td>
+            </tr>
+         </table> 
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td style="font-size: 12px; height: 60px; border: 1px solid #000; width:100%;color:#3d618e;font-weight: normal; word-break:break-all">&nbsp;</td> 
+            </tr>
+        </table>                
+
+        <!-- Executive Briefing Document Start -->
+       <div style="page-break-before: always;">
+        <div style="border: 1px solid #000; height: 80px; margin-top: 2px; background-color: #D3D3D3; text-align: center;font-weight: bold;font-size: 20px;font-family: Arial;" >Executive Briefing Document</div>
+        </div>
+      <br/>
+      <br/>
+
+        <table style="background-color: #D3D3D3; width: 100%; margin-top: 2px; border: 3px solid #000; font-family: Arial;">
+            <tr>
+                <td align="left" style="color: #000080; font-size:22px ; font-weight: bold; width: 60%;font-family: Arial; ">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}
+                </td>                
+                <td style="font-size: 13px; color: #000080;font-weight: bold; text-align: left; width: 30%; font-family: Arial;">
+                    <b>SVP:</b> {!siteBriefingWrapper.siteBriefingQuery.Owner.Name}                   
+                </td>
+            </tr>
+            <tr>
+                <td align="left" style="font-size: 14px; font-weight: bold; color: #000080; width: 60%;font-family: Arial;">
+                    {!siteBriefingWrapper.siteBriefingQuery.RecordType.Name}
+                </td>                
+                <td style="font-size: 13px;font-weight: bold; color: #000080; text-align: left; width: 30%; font-family: Arial;">
+                    <b>Surest SVP:</b> {!siteBriefingWrapper.siteBriefingQuery.Surest_SVP_Involved__c}
+                </td>
+            </tr>
+        </table>  
+        
+        <br/>
+        
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;" >
+            <tr>
+                <td align="left" style="width:40%; color:#1f1f1f;background: #45b0e1; font-size: 14px; font-weight: bold;">
+                    Team Information
+                </td>
+                <td style="font-size: 14px; color:#1f1f1f;background: #45b0e1; text-align: right; font-weight: bold;">
+                    {!siteBriefingWrapper.opportunityData.Name}                   
+                </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000; padding-right: 5px;">Owner</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Owner_Name__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Direct Marketing Lead</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Direct_Marketing_Lead__c} </td>
+            </tr>
+         </table> 
+       
+        
+        
+        <br/>
+        
+        <table class="detailTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;border:1px solid #000;" colspan="2">
+                    Sales Summary
+                </td>
+            </tr> 
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Background / Company Overview*</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedBackgroundCompanyOverview}" escape="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Headquarter (City, State)*</td>
+                <apex:outputPanel layout="none" rendered="{!AND(NOT(ISBLANK(siteBriefingWrapper.siteBriefingQuery.BillingCity)), NOT(ISBLANK(siteBriefingWrapper.siteBriefingQuery.BillingState)))}">
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.BillingCity}, {!siteBriefingWrapper.siteBriefingQuery.BillingState} </td>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!OR(ISBLANK(siteBriefingWrapper.siteBriefingQuery.BillingCity), ISBLANK(siteBriefingWrapper.siteBriefingQuery.BillingState))}">
+                    <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; color:#3d618e; padding-right: 5px; word-break:break-all">
+                        &nbsp;
+                    </td>
+                </apex:outputPanel>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">HPM Industry*</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Health_Plan_Manager_Industry__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Incumbent(s)*</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all"><b>Medical:</b>&nbsp; {!siteBriefingWrapper.siteBriefingQuery.IncumbentPrimaryMedical__r.Name} <br/>
+                    <b>Vision:</b>&nbsp; {!siteBriefingWrapper.siteBriefingQuery.IncumbentPrimaryVision__r.Name} <br/>
+                    <b>Dental:</b>&nbsp; {!siteBriefingWrapper.siteBriefingQuery.IncumbentPrimaryDental__r.Name} <br/>
+                    <b>Pharmacy:</b>&nbsp; {!siteBriefingWrapper.siteBriefingQuery.Incumbent_Primary_Pharmacy__r.Name} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Consulting Firm Loc*</td>
+                <apex:outputPanel layout="none" rendered="{!AND(NOT(ISBLANK(siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingCity)), NOT(ISBLANK(siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingState)))}">
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingCity} , {!siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingState}  </td>
+                </apex:outputPanel>
+                 <apex:outputPanel layout="none" rendered="{!OR(ISBLANK(siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingCity), ISBLANK(siteBriefingWrapper.siteBriefingQuery.ConsultantFirm__r.BillingState))}">
+                    <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000; color:#3d618e; padding-right: 5px; word-break:break-all">
+                        &nbsp;
+                    </td>
+                </apex:outputPanel>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Membership opportunity name - Expected or Open*</td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.openOppName} </td>
+            </tr>
+        </table>      
+        
+        <br/>
+        
+        <!-- CR 24/07/25 -->
+       
+        <table class="detailTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-family: Arial;">
+            <tr>
+                <td style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;border:1px solid #000;" colspan="2">
+                    Third Party Vendors
+                </td>
+            </tr>
+            <tr>
+                <td style="color:#1f1f1f;background: #a5c9eb;padding: 3px;font-size: 12px; font-weight: bold;border:1px solid #000;">
+                    Vendor Name
+                </td>
+                <td style="color:#1f1f1f;background: #a5c9eb;padding: 3px;font-size: 12px; font-weight: bold;border:1px solid #000;">
+                    In Place or Looking At
+                </td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>               
+            </tr>
+            <tr>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 50%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>            
+        </table>      
+        
+        <br/>
+        
+        <table class="detailTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td colspan="2" style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;border:1px solid #000;">
+                    Membership Counts from RFP
+                </td>
+            </tr>
+            <br/>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Eligible EE`s* </td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Employees_in_the_Proposal_Medical__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Quote EE`s* </td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Members_QUOTED_in_the_Proposal_Medical__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">ACS* </td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Opportunity_Average_Contract_Size_ACS__c} </td>
+            </tr>
+            <tr>
+                <td align="right" style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;padding-right: 5px;">Estimated Additional New Members* </td>
+                <td align="right" style="width:60%; font-size: 12px; border: 1px solid #000;color:#3d618e; padding-right: 5px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Estimated_Additional_New_Members__c} </td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold; ">                   
+                    Network Footprint
+                </td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; background-color: #D3D3D3; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; font-size: 14px; font-weight: bold; ">
+                    Network Footprint
+                </td>
+                <td align="right" style="color:#1f1f1f; font-size: 14px; font-weight: bold; ">
+                    {!siteBriefingWrapper.opportunityData.Name}
+                </td>
+            </tr>
+        </table>
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Aetna</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Aetna__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Aetna__c}%
+                    </apex:outputText>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">BiC Source Date</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.BiC_Source_Date__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Anthem</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Anthem__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Anthem__c}%
+                    </apex:outputText>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">BiC Source # Records</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.BiC_Source_Records__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Blues</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Blues__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Blues__c}%
+                    </apex:outputText>
+                </td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Blues Alt</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Blues_Alt__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Blues_Alt__c}%
+                    </apex:outputText>
+                </td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">vs Cigna</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px; font-size: 12px;color:#3d618e; word-break:break-all">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(siteBriefingWrapper.opportunityData.vs_Cigna__c))}">
+                        {!siteBriefingWrapper.opportunityData.vs_Cigna__c}%
+                    </apex:outputText>
+                </td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+                <td style="border: 1px solid #000; padding: 4px;"></td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+         <table class="header" style="width: 100%; border-collapse: collapse;background-color: #D3D3D3; border: 3px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f; font-size: 14px; font-weight: bold; padding: 5px; ">
+                    Company-Wide Top Market and BiC Information
+                </td>
+                <td style="font-size: 14px; color: #1f1f1f;font-weight: bold; text-align: right;padding-right: 5px;">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}                    
+                </td>
+            </tr>
+        </table>
+                
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f; font-size: 14px;background-color: #D3D3D3; font-weight: bold; ">
+                    Top Market Information
+                </td>
+            </tr>
+        </table>
+        <table style="width:100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">           
+            <thead>
+                <tr style="font-weight: bold;">
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 1</th>
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 2</th>
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 3</th>
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 4</th>
+                    <th style="border: 1px solid #000; text-align: left; font-size: 12px;">Top Market 5</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket1__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket1__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket2__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket2__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket3__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket3__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket4__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket4__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket5__c), 'height: 30px;', '')}">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.TopMarket5__c}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 1 # Records</td>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 2 # Records</td>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 3 # Records</td>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 4 # Records</td>
+                    <td style="border: 1px solid #000; text-align: left; font-size: 12px;; font-weight: bold;">Top Market 5 # Records</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket1Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket1Records__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket2Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket2Records__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket3Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket3Records__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket4Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket4Records__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: left; font-size: 12px;  {!IF(ISBLANK(siteBriefingWrapper.siteBriefingQuery.TopMarket5Records__c), 'height: 30px;', '')}">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!siteBriefingWrapper.siteBriefingQuery.TopMarket5Records__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f; font-size: 14px; font-weight: bold;background-color: #D3D3D3; ">
+                    BiC Information
+                </td>
+            </tr>
+        </table>
+        
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 12px;table-layout: fixed;font-family: Arial;">
+            <thead>
+                <tr style="font-weight: bold;">
+                    <th style="border: 1px solid #000; width: 5%;">Year</th>
+                    <th style="border: 1px solid #000; width: 9%;">Type</th>
+                    <th style="border: 1px solid #000; width: 9%;">Overall BiC</th>
+                    <th style="border: 1px solid #000; width: 10%;">vs Aetna</th> 
+                    <th style="border: 1px solid #000; width: 10%;">vs Anthem</th>
+                    <th style="border: 1px solid #000; width: 10%;">vs Blues</th>
+                    <th style="border: 1px solid #000; width: 10%;">vs Blues Alt</th>
+                    <th style="border: 1px solid #000; width: 10%;">vs Cigna</th>
+                    <th style="border: 1px solid #000; width: 12%;">BiC Source</th>
+                    <th style="border: 1px solid #000; width: 8%;">BiC Source Date</th>
+                    <th style="border: 1px solid #000; width: 7%;">BiC Source # Records</th>
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!siteBriefingWrapper.getBicInformation}" var="bic">
+                <tr>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;{!bic.Year__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;{!bic.Type__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                     <apex:outputText rendered="{!NOT(ISNULL(bic.Overall_BiC__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.Overall_BiC__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Aetna__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Aetna__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Anthem__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Anthem__c}" />
+                    </apex:outputText>   
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Blues__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Blues__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Blues_Alt__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Blues_Alt__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;">&nbsp;
+                    <apex:outputText rendered="{!NOT(ISNULL(bic.vs_Cigna__c))}" value="{0,number,#0.00'%'}">
+                        <apex:param value="{!bic.vs_Cigna__c}" />
+                    </apex:outputText>
+                    </td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;word-break:break-all">&nbsp;{!bic.BiC_Source__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;word-break:break-all;">&nbsp;{!bic.BiC_Source_Date__c}</td>
+                    <td style="border: 1px solid #000; color:#3d618e; text-align: center; font-size: 12px;word-break:break-all">&nbsp;
+                        <apex:outputText value="{0,number,###,###,###}">
+                            <apex:param value="{!bic.BiC_Source_Records__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                </apex:repeat>
+            </tbody>
+        </table>
+        
+        <br/>
+        <br/>
+        
+        <table  class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="color:#1f1f1f;background: #f1a984;padding: 5px;font-size: 14px; font-weight: bold;">
+                    Strategy
+                </td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Strategy
+                </td>
+                <td align="right" style="color:#1f1f1f; font-size: 14px; background: #a5c9eb; font-weight: bold; ">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}
+                </td>
+            </tr>
+        </table>                
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Business Pressures</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.BusinessPressures__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Key Risks to our UBV</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.KeyRiskstoourUBV__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Potential Compelling Event</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.PotentialCompellingEvent__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Outcome Drivers</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.OutcomeDrivers__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Our Potential Unique Business Value</td>
+                <td align="right" style="color: #3d618e; width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.OurPotentialUniqueBusinessValue__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Approach Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.ApproachStrategy__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Last Action Taken</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Last_Action_Taken__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Supp Health Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Supp_Health_Strategy__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Next Action to be Taken</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Next_Action_to_be_Taken__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Eligible for 2nd Blues Bid</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Eligible_for_2nd_Blues_Bid__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;"></td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;"></td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">2nd Blues Bid Comments</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!Formatted2ndBluesBidComments}" escape="false"/>
+                </td>
+            </tr>
+        </table>        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Activity Strategy Summary
+                </td>
+                <td align="right" style="color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    {!siteBriefingWrapper.opportunityData.Name}
+                </td>
+            </tr>
+        </table>                
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Must Win Criteria</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedMustWinCriteria}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Bid Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedBidStrategy}" escape="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Proposal Reason</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Reason_for_the_Proposal__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Financial Notes</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedFinancialNotes}" escape="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Optum Asks</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                   <apex:outputText value="{!formattedOptumAsks}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Is the Client in the Cannabis Business</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Is_the_Client_in_the_Cannabis_Business__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Product non-standards</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                     <apex:outputText value="{!FormattedProductNonStandards}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Win Loss Interview Requested</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;                  
+                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                        <apex:param value="{!siteBriefingWrapper.opportunityData.Win_Loss_Interview_Date__c}" />                            
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Notes taken on call with consultant</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Notes_taken_on_call_with_consultant__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Win Loss Interview Date</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Win_Loss_Interview_Date__c}</td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Surest Strategy
+                </td>
+                <td align="right" style="color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}
+                </td>
+            </tr>
+        </table>                
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Last Action Taken</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px;word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Last_Action_Taken__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Approach Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Approach_Strategy__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Next Action to be Taken</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Next_Action_to_be_Taken__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Network Constraints</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Network_Constraints__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Comments</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Surest_Comments__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Network Contracting Issue - Other</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.Network_Contracting_Issue_Other__c}</td>
+            </tr>
+        </table>        
+       <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width: 40%; color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Activity Surest Strategy
+                </td>
+                <td align="right" style="color:#1f1f1f; background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    {!siteBriefingWrapper.opportunityData.Name}
+                </td>
+            </tr>
+        </table>                
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Problem Surest is Solving</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Problem_Surest_is_Solving__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;"># of Medical current plans</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.No_of_current_plans__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Key Risks - Sales Success</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedSurestKeyRisks}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Est. paid med/Rx savings</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Surest_Targeted_med_Rx_savings_range__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Plan Strategy (most likely)</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Surest_Plan_Strategy__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Default Plan</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Default_Plan__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Offer Strategy</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Offer_Nationally__c}</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Plan Positioning</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Contribution_Positioning__c}</td>
+            </tr>
+            <tr>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Comments</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;
+                    <apex:outputText value="{!FormattedSurestComments}" escape="false"/>
+                </td>
+                <td align="right" style="width: 25%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Contribution Differential</td>
+                <td align="right" style="width: 25%; border: 1px solid #000; color:#3d618e; padding: 4px;font-size: 12px; word-break:break-all">&nbsp;{!siteBriefingWrapper.opportunityData.Surest_Contribution_Differential__c}</td>
+            </tr>
+        </table>
+        
+        <br/>
+        <table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="left" style="width:40%; color:#1f1f1f;background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    Previous interactions
+                </td>
+                <td style="font-size: 14px; color:#1f1f1f;background:#a5c9eb; text-align: right;font-weight: bold;">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}                   
+                </td>
+            </tr>
+         </table>       
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td align="center" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Date</td>
+                <td align="center" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Type</td>
+                <td align="center" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Subject</td>
+                <td align="center" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">Comments</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 20%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+                <td align="left" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px;color:#3d618e;height: 20px; word-break:break-all">&nbsp;</td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <!--<table class="header" style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+           
+         </table> -->      
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+             <tr>
+                <td align="left" style="width:40%; color:#1f1f1f;background:#a5c9eb; font-size: 14px; font-weight: bold; ">
+                    B2B
+                </td>
+                <td style="font-size: 14px; color:#1f1f1f;background:#a5c9eb; text-align: right; font-weight: bold;">
+                    {!siteBriefingWrapper.siteBriefingQuery.Name}                   
+                </td>
+            </tr>
+            <tr>
+                <td align="left" style="width: 40%; border: 1px solid #000; padding: 4px;font-size: 12px; font-weight: bold;">B2B Service/Solution</td>
+                <td align="left" style="width: 60%; border: 1px solid #000; padding: 4px;font-size: 12px; color:#3d618e; word-break:break-all">&nbsp;{!siteBriefingWrapper.siteBriefingQuery.B2BServiceSolution__c}</td>
+            </tr>
+        </table>
+        
+        <br/>
+        
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td colspan="2" style="color:#1f1f1f; background:#f1a984;padding: 5px;font-weight: bold;font-size: 14px;border:1px solid #000;">
+                    Other Comments
+                </td>
+            </tr>
+        </table>
+        
+        <br/>
+        <table  style="width: 100%; border-collapse: collapse; border: 1px solid #000;font-family: Arial;">
+            <tr>
+                <td style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;">UHG Executive</td>
+                <td align="left" style="width:60%; font-size: 12px; border: 1px solid #000; padding: 5px; font-weight: normal; color:#3d618e; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;">UHG Executive Objectives</td>
+                <td align="left" style="width:60%; font-size: 12px; border: 1px solid #000; padding: 5px; font-weight: normal; color:#3d618e; word-break:break-all">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width:40%; font-size: 12px; font-weight: bold;border: 1px solid #000;">Other Comments</td>
+                <td align="left" style="width:60%; font-size: 12px; border: 1px solid #000; padding: 5px; font-weight: normal; color:#3d618e; word-break:break-all">&nbsp;</td>
+            </tr>
+        </table>
+    </body>    
+    </html>
+</apex:page>

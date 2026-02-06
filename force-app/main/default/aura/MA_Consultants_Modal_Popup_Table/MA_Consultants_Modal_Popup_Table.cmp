@@ -1,0 +1,97 @@
+<aura:component >
+    
+    <!-- For implementing in QA -->
+    <aura:attribute name="isFromQA" type="boolean" default="false" />
+    
+    <aura:attribute name="consultingSearchArray" type="sObject"/>
+    <aura:attribute name="isPrimaryExists" type="boolean"/>
+    <aura:attribute name="consultantId" type="Id"/>
+    <aura:attribute name="isAllContactList" type="boolean"/>
+    <aura:attribute name="selectedContact" type="boolean" />
+    <aura:attribute name="selectedContactIds" type="List" />
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:registerEvent name="maConsultantPopupEvent" type="c:MA_Consulants_Modal_Popup_Table_Event"/>
+    
+    <aura:method name="removeSelectedRecord" action="{!c.removeSelectedRecord}" description="Sample method with parameters"> 
+    </aura:method>
+    
+    <aura:if isTrue="{!v.isAllContactList}">
+        <tr class="slds-hint-parent">
+            <!--<th scope="row" data-label="" width="70">
+                <div class="slds-truncate" title="">
+                    <a data-record="{!v.consultingSearchArray.Id}" onclick="{!c.Select}">Select</a>
+                </div>
+            </th>
+            <td class="" data-label="">
+                <div class="slds-truncate" title="">
+                    <ui:inputCheckbox aura:id="selectedConsultant" change="{!c.Select}"/>
+                    <label class="slds-checkbox__label">
+                        <span class="slds-checkboxfaux"></span>
+                    </label>
+                </div>
+            </td>-->
+            <th scope="row" data-label="{!v.consultingSearchArray.Name}">
+                <div class="slds-checkbox_add-button slds-is-relative cust-checkbox">
+                    <ui:inputCheckbox aura:id="selectedConsultant" change="{!c.Select}" />
+                    <label for="add-checkbox-17" class="slds-checkbox_faux"><span class="slds-assistive-text">Select Consultant</span></label>
+                </div>
+            </th>
+            <th scope="row" data-label="Last Name">
+                <div class="slds-truncate" title="Last Name">{!v.consultingSearchArray.LastName}</div>
+            </th>
+            <th scope="row" data-label="First Name">
+                <div class="slds-truncate" title="First Name">{!v.consultingSearchArray.FirstName}</div>
+            </th>
+            <th scope="row" data-label="Consulting Firm">
+                <div class="slds-truncate" title="Consulting Firm">{!v.consultingSearchArray.Account.Name}</div>
+            </th>
+            <th scope="row" data-label="City">
+                <div class="slds-truncate" title="City">{!v.consultingSearchArray.MailingCity}</div>
+            </th>
+            <th scope="row" data-label="State">
+                <div class="slds-truncate" title="State">{!v.consultingSearchArray.MailingState}</div>
+            </th>
+        </tr>
+        <aura:set attribute="else">
+            <tr class="slds-hint-parent">
+                <!--<aura:if isTrue="{!v.hideSelect}">
+                <th scope="row" data-label="" width="70">
+                    <div class="slds-truncate" title="">
+                        <a data-record="{!v.consultingSearchArray.Contact.Id}" onclick="{!c.relatedSelect}">Select</a>
+                    </div>
+                </th>
+                <td class="" data-label="">
+                    <div class="slds-truncate" title="">
+                        <ui:inputCheckbox aura:id="selectedConsultant" change="{!c.Select}"/>
+                        <label class="slds-checkbox__label">
+                            <span class="slds-checkboxfaux"></span>
+                        </label>
+                    </div>
+                </td>
+                </aura:if>-->
+                <th scope="row" data-label="{!v.consultingSearchArray.Name}">
+                    <div class="slds-checkbox_add-button slds-is-relative cust-checkbox">
+                        <ui:inputCheckbox aura:id="selectedConsultant" change="{!c.Select}" />
+                        <label for="add-checkbox-17" class="slds-checkbox_faux"><span class="slds-assistive-text">Select Consultant</span></label>
+                    </div>
+                </th>
+                <th scope="row" data-label="Last Name">
+                    <div class="slds-truncate" title="Last Name">{!v.consultingSearchArray.Contact.LastName}</div>
+                </th>
+                <th scope="row" data-label="First Name">
+                    <div class="slds-truncate" title="First Name">{!v.consultingSearchArray.Contact.FirstName}</div>
+                </th>
+                <th scope="row" data-label="Consulting Firm">
+                    <div class="slds-truncate" title="Consulting Firm">{!v.consultingSearchArray.Contact.Account.Name}</div>
+                </th>
+                <th scope="row" data-label="City">
+                    <div class="slds-truncate" title="City">{!v.consultingSearchArray.Contact.MailingCity}</div>
+                </th>
+                <th scope="row" data-label="State">
+                    <div class="slds-truncate" title="State">{!v.consultingSearchArray.Contact.MailingState}</div>
+                </th>
+            </tr>
+        </aura:set>
+    </aura:if>
+</aura:component>

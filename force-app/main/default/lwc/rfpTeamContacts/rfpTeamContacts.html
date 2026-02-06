@@ -1,0 +1,511 @@
+<template>
+    <table
+        class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+        <thead>
+            <tr>
+                <td class="slds-text-align_left custom-colour ">Role</td>
+                <td colspan="3" class="custom-colour">Contacts</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="slds-text-align_left custom-td">Sales Vice President – CD</td>
+                <td colspan="3" class="value"><template if:true={ownerName}>
+                        <span>{ownerName}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Coveted Account SVP</td>
+                <td colspan="3" class="value"><template if:true={covetedAccount}>
+                        <span>{covetedAccount}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Surest SVP</td>
+                <td colspan="3" class="value"><template if:true={surestSvpInvolved}>
+                        <span>{surestSvpInvolved}</span>
+
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Specialty SVP</td>
+                <td colspan="3" class="value"><template if:true={specialityBenefits}>
+                        <span>{specialityBenefits}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Financial Strategy Lead</td>
+                <td colspan="3" class="value"><template if:true={financialStrategyLead}>
+                        <span>{financialStrategyLead}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">OPTUM Financial Sales</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.OPTUM_Financial_Sales__c} name="OPTUM_Financial_Sales__c" max-length="255"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode} if:true={strategyMemo.OPTUM_Financial_Sales__c}>
+                        <span>{strategyMemo.OPTUM_Financial_Sales__c}</span>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td"> SCE Assignment - Traditional</td>
+                <td colspan="3" class="value"><template if:true={sceAssignment}>
+                        <span>{sceAssignment}</span>
+                    </template></td>
+            </tr>
+           <tr>
+                <td class="slds-text-align_left custom-td"> SCE Assignment - Surest</td>
+                <td colspan="3"><template if:true={isEditMode}>
+                                  <lightning-input type ="text" variant="label-hidden" name="SCE_Assignment_Surest__c" value={strategyMemo.SCE_Assignment_Surest__c} onchange={handleChange} max-length="255"></lightning-input>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.SCE_Assignment_Surest__c}>
+                                  <span>{strategyMemo.SCE_Assignment_Surest__c}</span>
+                            </template>
+                            </template></td>
+            </tr>
+            <tr>
+            <td class="slds-text-align_left custom-td"> Client Manager - Traditional</td>
+            <td colspan="3">
+                <template if:true={isEditMode}>
+                    <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                        value={strategyMemo.Client_Manager_Traditional__c} name="Client_Manager_Traditional__c" max-length="255"
+                        onchange={handleChange}></lightning-input>
+                </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.Client_Manager_Traditional__c}>
+                                  <span>{strategyMemo.Client_Manager_Traditional__c}</span>
+                            </template>
+                            </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td"> Client Manager - Surest</td>
+                <td colspan="3">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Client_Manager_Surest__c} name="Client_Manager_Surest__c" max-length="255"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                                <template if:false={isEditMode}>
+                                    <template if:true={strategyMemo.Client_Manager_Surest__c}>
+                                      <span>{strategyMemo.Client_Manager_Surest__c}</span>
+                                </template>
+                                </template></td>
+                </tr>
+
+            <tr>
+                <td class="slds-text-align_left custom-td">Client Dev. Director</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Client_Dev_Director__c} name="Client_Dev_Director__c" max-length="255"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Client_Dev_Director__c}>
+                            <span>{strategyMemo.Client_Dev_Director__c}</span>
+                        </template>
+                    </template>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Strategic Coordinator – CD</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Strategic_Coordinator_CD__c} name="Strategic_Coordinator_CD__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Strategic_Coordinator_CD__c}>
+                            <span>{strategyMemo.Strategic_Coordinator_CD__c}</span>
+                        </template>
+                    </template>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">NPS Business Dev Mgr. (BDM)</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.NPS_Business_Dev_Mgr_BDM__c} name="NPS_Business_Dev_Mgr_BDM__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.NPS_Business_Dev_Mgr_BDM__c}>
+                            <span>{strategyMemo.NPS_Business_Dev_Mgr_BDM__c}</span>
+                        </template>
+                    </template>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td" rowspan="4">Proposal Writers</td>
+                <td class="slds-text-align_left custom-td">Med:</td>
+                <td colspan="2" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Proposal_Writers_Med__c} name="Proposal_Writers_Med__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Proposal_Writers_Med__c}>
+                            <span>{strategyMemo.Proposal_Writers_Med__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Clin:</td>
+                <td colspan="2" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Proposal_Writers_Clin__c} name="Proposal_Writers_Clin__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Proposal_Writers_Clin__c}>
+                            <span>{strategyMemo.Proposal_Writers_Clin__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Rx:</td>
+                <td colspan="2" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Proposal_Writers_Rx__c} name="Proposal_Writers_Rx__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Proposal_Writers_Rx__c}>
+                            <span>{strategyMemo.Proposal_Writers_Rx__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Spec:</td>
+                <td colspan="2" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Proposal_Writers_Spec__c} name="Proposal_Writers_Spec__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Proposal_Writers_Spec__c}>
+                            <span>{strategyMemo.Proposal_Writers_Spec__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">NPS Quality Reviewer / SQC</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.NPS_Quality_Reviewer_SQC__c} name="NPS_Quality_Reviewer_SQC__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.NPS_Quality_Reviewer_SQC__c}>
+                            <span>{strategyMemo.NPS_Quality_Reviewer_SQC__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Network Analysis Consultant</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Network_Analysis_Consultant__c} name="Network_Analysis_Consultant__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Network_Analysis_Consultant__c}>
+                            <span>{strategyMemo.Network_Analysis_Consultant__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">NA Network Solutions</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.NA_Network_Solutions__c} name="NA_Network_Solutions__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.NA_Network_Solutions__c}>
+                            <span>{strategyMemo.NA_Network_Solutions__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Actuarial Support</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Actuarial_Support__c} name="Actuarial_Support__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Actuarial_Support__c}>
+                            <span>{strategyMemo.Actuarial_Support__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Underwriter – Medical</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Underwriter_Medical__c} name="Underwriter_Medical__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Underwriter_Medical__c}>
+                            <span>{strategyMemo.Underwriter_Medical__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Underwriter – Specialty</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Underwriter_Specialty__c} name="Underwriter_Specialty__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Underwriter_Specialty__c}>
+                            <span>{strategyMemo.Underwriter_Specialty__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Underwriter – Optum Health</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Underwriter_Optum_Health__c} name="Underwriter_Optum_Health__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Underwriter_Optum_Health__c}>
+                            <span>{strategyMemo.Underwriter_Optum_Health__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Underwriter – Optum Rx</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Underwriter_Optum_Rx__c} name="Underwriter_Optum_Rx__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Underwriter_Optum_Rx__c}>
+                            <span>{strategyMemo.Underwriter_Optum_Rx__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="slds-text-align_left custom-td">IT Data Security</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.IT_Data_Security__c} name="IT_Data_Security__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.IT_Data_Security__c}>
+                            <span>{strategyMemo.IT_Data_Security__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Optum CTO / BDC</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Optum_CTO_BDC__c} name="Optum_CTO_BDC__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Optum_CTO_BDC__c}>
+                            <span>{strategyMemo.Optum_CTO_BDC__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Optum Surest SME</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Optum_Surest_SME__c} name="Optum_Surest_SME__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Optum_Surest_SME__c}>
+                            <span>{strategyMemo.Optum_Surest_SME__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Wellness Lead</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Wellness_Lead__c} name="Wellness_Lead__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Wellness_Lead__c}>
+                            <span>{strategyMemo.Wellness_Lead__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Behavioural Solutions Lead</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Behavioural_Solutions_Lead__c} name="Behavioural_Solutions_Lead__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Behavioural_Solutions_Lead__c}>
+                            <span>{strategyMemo.Behavioural_Solutions_Lead__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">2nd MD Sales Contact</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.X2nd_MD_Sales_Contact__c} name="X2nd_MD_Sales_Contact__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.X2nd_MD_Sales_Contact__c}>
+                            <span>{strategyMemo.X2nd_MD_Sales_Contact__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Optum Rx Sales</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Optum_Rx_Sales__c} name="Optum_Rx_Sales__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Optum_Rx_Sales__c}>
+                            <span>{strategyMemo.Optum_Rx_Sales__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-th-wrap custom-td ">Optum Financial Services and
+                    UHC CDH Product</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Optum_Financial_Services__c} name="Optum_Financial_Services__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Optum_Financial_Services__c}>
+                            <span>{strategyMemo.Optum_Financial_Services__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td"> Implementation Manager - Traditional</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Implementation_Manager_Traditional__c}
+                            name="Implementation_Manager_Traditional__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Implementation_Manager_Traditional__c}>
+                            <span>{strategyMemo.Implementation_Manager_Traditional__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td"> Implementation Manager - Surest</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Implementation_Manager_Surest__c}
+                            name="Implementation_Manager_Surest__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Implementation_Manager_Surest__c}>
+                            <span>{strategyMemo.Implementation_Manager_Surest__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Executive Sponsor</td>
+                <td colspan="3" class="value"><template if:true={executiveSponsor}>
+                        <span>{executiveSponsor}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Deal Sponsor</td>
+                <td colspan="3" class="value"><template if:true={dealSponsor}>
+                        <span>{dealSponsor}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Other</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}> 
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Other_Sponsor__c} name="Other_Sponsor__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Other_Sponsor__c}>
+                            <span>{strategyMemo.Other_Sponsor__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</template>

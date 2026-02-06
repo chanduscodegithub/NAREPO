@@ -1,0 +1,364 @@
+<template>
+  <!--      SPINNER     -->
+
+  <!--      SPINNER     -->
+
+
+  <!--      REPORT TITLE      -->
+  <div class="slds-col slds-size_2-of-3 slds-text-heading_large aligntext">
+    {reportTitle}
+    <!--Ultimately comes from Custom Label-->
+  </div>
+  <!--      REPORT TITLE      -->
+
+  <br />
+
+  <div class="container is-relative">
+    <template if:true={isLoad}>
+      <lightning-spinner alternative-text="Loading" variant="brand" size="medium">
+      </lightning-spinner>
+    </template>
+    <div class="div-left">
+      <div class="inner-container">
+
+        <!--      SALES CYCLE PICKLIST      -->
+        <div class="inner-left" style="padding-top: 6px;">{salesCycleLabelName}</div>
+
+        <div class="inner-right">
+          <template if:true={regionPicklist}>
+            <!--Comes from Custom Metadata-->
+            <lightning-combobox name="region" value={salesCycle} placeholder="Select Region" options={regionPicklist}
+              variant="label-hidden" onchange={filterBasedOnPicklistValue}>
+            </lightning-combobox>
+            <!--SalesCycle and regionPicklist Comes from Custom Metadata-->
+          </template>
+        </div>
+
+      </div>
+      <!--      SALES CYCLE PICKLIST      -->
+    </div>
+
+
+
+    <!--PRINT BUTTON-->
+    <div class="div-right">
+      <lightning-button type="submit" variant="Neutral" label="Print" class="slds-m-left_x-small" onclick={print}
+        disabled={disablePrintButton}></lightning-button>
+    </div>
+    <!--PRINT BUTTON-->
+
+
+  </div>
+  <br />
+
+  <!--      TABLE FOR RENEWAL DATA SHEET      -->
+  <!--IF THE TABLE IS EMPTY-->
+  <lightning-card>
+    <lightning-accordion allow-multiple-sections-open active-section-name={activeSections} class="section-header-style">
+      <lightning-accordion-section name="A" label="Confirmed Renewals for Non-Medical Products" class="section-header">
+        <lightning-card>
+          <div class="slds-card__body slds-m-bottom_none ">
+            <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+              <!--Even though there is no data, the table must be displayed-->
+              <template if:true={isretentionDataListEmpty}>
+                <!--isretentionDataListEmpty will be true if null data comes from backend-->
+                <table
+                  class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+                  <template if:false={isSbSceUser}>
+                    <colgroup>
+                      <col style="width:16%;" />
+                      <col style="width:10%;" />
+                      <col style="width:14%;" />
+                      <col style="width:16%;" />
+                      <col style="width:14%;" />
+                      <col style="width:13%;" />
+                      <col style="width:17%;" />
+                    </colgroup>
+                  </template>
+                  <template if:true={isSbSceUser}>
+                    <colgroup>
+                      <col style="width:12%;" />
+                      <col style="width:15%;" />
+                      <col style="width:9%;" />
+                      <col style="width:12%;" />
+                      <col style="width:12%;" />
+                      <col style="width:14%;" />
+                      <col style="width:13%;" />
+                      <col style="width:13%;" />
+                    </colgroup>
+                  </template>
+                  <thead>
+                    <tr>
+                      <!--class="slds-text-title_caps"-->
+                      <!-- <th class="" scope="col" >
+                      <div class="slds-truncate" title="Effective Date">Effective Date</div>
+                    
+                  </th>-->
+                      <th class="slds-cell-wrap" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                        <div class="slds-cell-wrap" data-record="Company__r.name" title="Company">Company</div>
+                      </th>
+                      <template if:true={isSbSceUser}>
+                        <th class="slds-cell-wrap" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                          <div class="slds-cell-wrap" data-record="Medical SCE on the Integrated Account" title="Medical SCE on the Integrated Account">
+                            Medical SCE on the Integrated Account
+                            <!--div class="slds-text-body_small">(Integrated Accounts)
+                            </div-->
+                          </div>
+                        </th>
+                      </template>
+                      <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                        <div class="slds-cell-wrap" title="Effective Date">Effective Date</div>
+                      </th>
+                      <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                        <div class="slds-cell-wrap" title="Product Types">Product Types</div>
+                      </th>
+                      <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                        <div class="slds-cell-wrap" title="Product Details">Product Details</div>
+                      </th>
+                      <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                        <div class="slds-cell-wrap" style="text-align: center;"
+                          title="Date Ready to Send to IncentiveComp Team">Date Sent to the Incentive Comp Team</div>
+                      </th>
+                      <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                        <div class="slds-cell-wrap" style="text-align: center;"
+                          title="Date Incentive Comp Team Extracted Data">Date Incentive Comp Team
+                          Extracted Data</div>
+                      </th>
+                      <template if:false={isSbSceUser}>
+                        <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                          <div class="slds-cell-wrap" style="text-align: center;"
+                            title="Will Sales Incentives be Split">
+                            Will Sales Incentives be Split</div>
+                        </th>
+                      </template>
+                      <template if:true={isSbSceUser}>
+                        <th class="" scope="col">
+                          <div class="slds-cell-wrap" style="text-align: center;"
+                            title="Will Sales Incentives be Split">
+                            Will Sales Incentives be Split</div>
+                        </th>
+                      </template>
+                    </tr>
+                  </thead>
+
+                  <tbody class="FontSize">
+                    <template if:true={isretentionDataListEmpty}>
+                      <!-- IF TABLE IS EMPTY -->
+                      <tr>
+                        <th colspan="12">
+                          <div class="slds-text-align--center">
+                            No Records Found
+                          </div>
+                        </th>
+                      </tr>
+                    </template>
+                    <template if:false={isretentionDataListEmpty}>
+                      <!-- FOR SHOWING THE DATA IN THE TABLE, ANOTHER COMPONENT IS CALLED -->
+                      <template for:each={RenewalStatusData} for:item="row">
+                        <!--for:item is like var in VF-->
+                        <c-child-row key={row} eachdata={row} issbsceuser={isSbSceUser}></c-child-row>
+                        <!--What is key and eachdata ??-->
+                      </template>
+                      <!-- FOR SHOWING THE DATA IN THE TABLE, ANOTHER COMPONENT IS CALLED -->
+                    </template>
+                  </tbody>
+                </table>
+              </template>
+              <!--      TABLE FOR RENEWAL DATA SHEET      -->
+              <!--IF THE TABLE IS EMPTY-->
+
+
+              <!--      TABLE FOR RENEWAL DATA SHEET      -->
+              <!--IF THE TABLE IS NOT EMPTY-->
+              <template if:false={isretentionDataListEmpty}>
+                <!--isretentionDataListEmpty will be true if null data comes from backend-->
+                <table
+                  class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+                  <template if:false={isSbSceUser}>
+                    <colgroup>
+                      <col style="width:16%;" />
+                      <col style="width:10%;" />
+                      <col style="width:14%;" />
+                      <col style="width:16%;" />
+                      <col style="width:14%;" />
+                      <col style="width:13%;" />
+                      <col style="width:17%;" />
+                    </colgroup>
+                  </template>
+                  <template if:true={isSbSceUser}>
+                    <colgroup>
+                      <col style="width:12%;" />
+                      <col style="width:15%;" />
+                      <col style="width:9%;" />
+                      <col style="width:12%;" />
+                      <col style="width:12%;" />
+                      <col style="width:14%;" />
+                      <col style="width:13%;" />
+                      <col style="width:13%;" />
+                    </colgroup>
+                  </template>
+                  <thead>
+                    <tr>
+                      <!--class="slds-text-title_caps"-->
+                      <!--<th class="" scope="col" >
+               <a onclick={sortFields} data-record="Efective_Date__c" class="slds-th__action slds-text-link--reset" tabindex="0" style="display: inline-block;"> 
+                    <span class="slds-truncate" title="Effective Date">Effective Date</span>
+                  <div class="slds-icon_container">
+                    <template if:true={sortEffectiveDateAsc}>
+                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowdown" size="xx-small" alternative-text="Indicates approval" ></lightning-icon>
+                      </template>
+                      <template if:false={sortEffectiveDateAsc}>
+                            <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowup" size="xx-small" alternative-text="Indicates approval" ></lightning-icon>
+                       </template>
+                </div>
+              </a> 
+            </th>-->
+                      <th class="slds-cell-wrap" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                        <!-- <div class="slds-truncate" data-record="Company__r.name" title="Company">Company</div>-->
+                        <a onclick={sortFields} data-record="Company__r.name"
+                          class="slds-th__action slds-text-link--reset" tabindex="0">
+                          <span class="slds-truncate" title="Company">Company</span>
+                          <div class="slds-icon_container sortIconPadding">
+                            <template if:true={sortCompanyAsc}>
+                              <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowdown" size="xx-small" alternative-text="Indicates approval">
+                              </lightning-icon>
+                            </template>
+                            <template if:false={sortCompanyAsc}>
+                              <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowup" size="xx-small" alternative-text="Indicates approval">
+                              </lightning-icon>
+                            </template>
+                          </div>
+                        </a>
+                      </th>
+
+                      <template if:true={isSbSceUser}>
+                        <th class="slds-cell-wrap" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                          <div class="slds-cell-wrap" data-record="Medical SCE on the Integrated Account" title="Medical SCE on the Integrated Account">
+                            Medical SCE on the Integrated Account
+                            <!--div class="slds-text-body_small">(Integrated Accounts)
+                            </div-->
+                          </div>
+                        </th>
+                      </template>
+
+                      <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                        <a onclick={sortFields} data-record="Efective_Date__c"
+                          class="slds-th__action slds-text-link--reset" tabindex="0">
+                          <span class="slds-cell-wrap" title="Effective Date">Effective Date</span>
+                          <div class="slds-icon_container sortIconPadding">
+                            <template if:true={sortEffectiveDateAsc}>
+                              <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowdown" size="xx-small" alternative-text="Indicates approval">
+                              </lightning-icon>
+                            </template>
+                            <template if:false={sortEffectiveDateAsc}>
+                              <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowup" size="xx-small" alternative-text="Indicates approval">
+                              </lightning-icon>
+                            </template>
+                          </div>
+                        </a>
+                      </th>
+
+
+                      <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                        <!--<div class="slds-truncate" title="Product Types">Product Types</div>-->
+                        <a onclick={sortFields} data-record="Product_Line__c"
+                          class="slds-th__action slds-text-link--reset" tabindex="0">
+                          <span class="slds-cell-wrap slds-truncate" title="Product Types">Product Types</span>
+                          <div class="slds-icon_container sortIconPadding">
+                            <template if:true={sortProductTypeAsc}>
+                              <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowdown" size="xx-small" alternative-text="Indicates approval">
+                              </lightning-icon>
+                            </template>
+                            <template if:false={sortProductTypeAsc}>
+                              <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowup" size="xx-small" alternative-text="Indicates approval">
+                              </lightning-icon>
+                            </template>
+                          </div>
+                        </a>
+                      </th>
+
+
+                      <th class="" scope="col" style="padding-left: 10px; padding-top: 4px;">
+                        <div class="slds-truncate" title="Product Details">Product Details</div>
+                      </th>
+                      <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                        <div class="slds-cell-wrap" style="text-align: center;"
+                          title="Date Ready to Send to IncentiveComp Team">
+                          Date Sent to the Incentive Comp Team</div>
+                      </th>
+                      <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                        <div class="slds-cell-wrap" style="text-align: center;"
+                          title="Date Incentive Comp Team Extracted Data">Date
+                          Incentive Comp Team
+                          Extracted Data</div>
+                      </th>
+                      <template if:false={isSbSceUser}>
+                        <th class="" scope="col" style="padding-left: 2px; padding-top: 2px;">
+                          <div class="slds-cell-wrap" style="text-align: center;"
+                            title="Will Sales Incentives be Split">
+                            Will Sales Incentives be Split</div>
+                        </th>
+                      </template>
+                      <template if:true={isSbSceUser}>
+                        <th class="" scope="col">
+                          <div class="slds-cell-wrap" style="text-align: center;"
+                            title="Will Sales Incentives be Split">
+                            Will Sales Incentives be Split</div>
+                        </th>
+                      </template>
+                    </tr>
+                  </thead>
+
+
+                  <tbody class="FontSize">
+                    <template if:true={isretentionDataListEmpty}>
+                      <tr>
+                        <th colspan="12">
+                          <div class="slds-text-align--center">
+                            No Records Found
+                          </div>
+                        </th>
+                      </tr>
+                    </template>
+                    <template if:false={isretentionDataListEmpty}>
+                      <template for:each={RenewalStatusData} for:item="row">
+                        <c-child-row key={row} eachdata={row} issbsceuser={isSbSceUser}></c-child-row>
+                      </template>
+                    </template>
+                  </tbody>
+                </table>
+              </template>
+              <!--      TABLE FOR RENEWAL DATA SHEET      -->
+              <!--IF THE TABLE IS NOT EMPTY-->
+            </div>
+          </div>
+        </lightning-card>
+      </lightning-accordion-section>
+
+
+
+
+      <!--               SAMARTH               -->
+      <template if:false={isSbSceUser}>
+        <!--For hiding medical section for SBSCE - SAMARTH-->
+        <lightning-accordion-section name="B" label="Medical Proactive Renewals" class="section-header">
+
+          <lightning-card>
+            <c-renewal-sce onproactivedatatransfer={handleDataFromProactiveRenewal}></c-renewal-sce>
+          </lightning-card>
+
+        </lightning-accordion-section>
+      </template>
+
+
+    </lightning-accordion>
+  </lightning-card>
+  <!--               SAMARTH               -->
+
+</template>

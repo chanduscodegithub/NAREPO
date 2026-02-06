@@ -1,0 +1,1332 @@
+<aura:component controller="TemplateDesign" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="objectData" type="Object" />
+    <aura:attribute name="tempDetails" type="Object" />
+    <aura:attribute name="optyId" type="String" />
+    
+    <aura:attribute name="columnHeader" type="String"/>
+    
+    <aura:attribute name="searchCriteriaSection" type="Boolean" default="false"/>
+    <aura:attribute name="NPSsearchCriteriaSection" type="Boolean" default="false"/>
+    <aura:attribute name="isNPSTemplateGenerate" type="Boolean" default="false"/>
+    
+    <aura:attribute name="sortByNameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortByTypeAsc" type="Boolean" default="true"/>
+    
+    <aura:attribute name="sortField" type="String" default="Name"/>
+    <aura:attribute name="sortOrder" type="String" default="ASC"/>
+    
+    <aura:attribute name="templateList" type="Template_Design__c" />
+    
+    <aura:attribute name="selectedInputBox" type="String" />
+    
+    <aura:attribute name="isDesktop" type="boolean" default="false"/>
+    
+    <aura:attribute name="accountSearchList" type="String[]"/>
+    <aura:attribute name="accountSearchListIndex" type="String"/>
+    
+    <aura:attribute name="isFirstConditionPresent" type="boolean" default="false"/>
+    
+    <aura:attribute name="isOrCondition" type="boolean" default="false"/>
+    <aura:attribute name="isAndCondition" type="boolean" default="false"/>
+    <aura:attribute name="isCustomLogic" type="boolean" default="false"/>
+    
+    <!--<aura:attribute name="filterQueries" type="MA_Client_Reference_Class.FilterQueries[]" />-->
+    <aura:attribute name="filterQueries" type="String[]" default="[]" />
+    
+    <aura:attribute name="filterVals" type="Integer" default="3"/>
+    
+    <aura:attribute name="selectedRefAcctsIds" type="List"/>
+    <aura:attribute name="checkBoxCount" type="Integer" default="0"/>
+    
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    
+    <aura:handler name="modalCmpCloseEvent1" event="c:Modal_Closing_RR_Event" action="{!c.modelCloseComponentEvent}"/>
+    
+    <aura:attribute name="isSearchedResultEmpty" type="boolean" default="false"/>
+    <aura:attribute name="isSearchBtnClicked" type="boolean" default="false"/>
+    
+    <aura:attribute name="consultingFirmSearch" type="String[]"/>
+    
+    <aura:attribute name="testAttribute" type="String[]"/>
+    
+    <aura:attribute name="isSpinnertoLoad"  type="Boolean"  default="false"/>
+    <aura:attribute name="isGoButtonClicked" type="Boolean" default="false"/>
+    <aura:attribute name="isPrimaryExists" type="Boolean" default="false"/>
+    <aura:attribute name="ErrorMessage" type="String"/>    
+    <aura:attribute name="isAllContactList" type="boolean" default="false" />    
+    <aura:attribute name="Child_Data" type="Object"/>    
+    <aura:attribute name="isConsultantsListDisplayed" type="boolean" default="true" />
+    <aura:attribute name="isConsultingFirmListDisplayed" type="boolean" default="false" />    
+    <aura:attribute name="isNotSearched" type="boolean" default="true" />    
+    <aura:attribute name="isSearchResultEmpty" type="boolean" default="false" />
+    <aura:attribute name="isConsultantFirmsListEmpty" type="Boolean" default="true"/>
+    <aura:attribute name="hideSelect" type="boolean" default="false" />
+    <aura:attribute name="showSelect" type="boolean" default="false" />    
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>    
+    <!-- Pagination Attributes -->
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    <aura:attribute name='pageSize' type='Integer' />
+    
+    <aura:attribute name="pageMin" type="Integer"/>
+    <aura:attribute name="pageMax" type="Integer"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <!--<aura:attribute name="pickListLabels" type="String[]" default="Participating Members,Account Type,Products/Buy Up Programs,HQ State,Assigned SCE,Original Effective Date,Industry,Aggregator Group,UMR Client,Public Sector,Private Exchange,Leased/ Specilaized Network,Premium Tiering,POS Tiering,Termination (Cancellation),Reason for Term(Medical),Reason for Term(Pharmaxy), Reason for Term(Dental),Reason for Term(Vision),Reason for Term(Other Buy Up),Reason for Term Comments"/>-->
+    <aura:attribute name="pickListLabels" type="String[]"/>
+    <aura:attribute name="condition" type="String[]" default="Equal to, Not equal to, On or before, On or after"/>    
+    <aura:attribute name="Search_Select_DropDown" type="String[]" default="Consultants associated with the Account,All Consultants"/>
+    
+    <aura:attribute name="array1" type="String[]" default="HQ State, Assigned SCE, Participating Members, Industry, Aggregator Group, Private Exchange, Leased/ Specilaized Network, Reason for Term(Medical), Reason for Term(Pharmaxy), Reason for Term(Dental), Reason for Term(Vision), Reason for Term(Other Buy Up)"/>
+    <aura:attribute name="array2" type="String[]" default="Original Effective Date, Termination (Cancellation) Date"/>
+    <aura:attribute name="array3" type="String[]" default="UMR Client, Public Sector, Premium Tiering, POS Tiering"/>
+    
+    <aura:attribute name="conditiontest" type="String[]"/>
+    
+    <aura:attribute name="objType" type="String[]" default="Select Template Design"/>
+    <aura:attribute name="objectName" type="String"/>
+    
+    <aura:attribute name="displayNameFilter1" type="String"/>
+    <aura:attribute name="displayNameFilter2" type="String"/>
+    <aura:attribute name="displayNameFilter3" type="String"/>
+    <aura:attribute name="displayNameFilter4" type="String"/>
+    <aura:attribute name="displayNameFilter5" type="String"/>
+    
+    <aura:attribute name="defaultCondition1" type="String"/>
+    <aura:attribute name="defaultCondition2" type="String"/>
+    <aura:attribute name="defaultCondition3" type="String"/>
+    <aura:attribute name="defaultCondition4" type="String"/>
+    <aura:attribute name="defaultCondition5" type="String"/>
+    
+    <aura:attribute name="condition1" type="String[]" default="Contains at least one value"/>
+    <aura:attribute name="condition2" type="String[]" default="Contains at least one value,Contains all values"/>
+    <aura:attribute name="condition3" type="String[]" default="Equal to"/>
+    <aura:attribute name="condition4" type="String[]" default="Equal to,Not equal to,On or before,On or after"/>
+    <aura:attribute name="condition5" type="String[]" default="Is checked,Is Not Checked"/>
+    <aura:attribute name="condition6" type="String[]" default="Equal to,Contains any,Begins with"/>
+    
+    <aura:attribute name="row1condition" type="String[]"/>
+    <aura:attribute name="row2condition" type="String[]"/>
+    <aura:attribute name="row3condition" type="String[]"/>
+    <aura:attribute name="row4condition" type="String[]"/>
+    <aura:attribute name="row5condition" type="String[]"/>
+    
+    <aura:attribute name="type1" type="String" default="number"/>
+    <aura:attribute name="type2" type="String" default="number"/>
+    <aura:attribute name="type3" type="String" default="number"/>
+    <aura:attribute name="type4" type="String" default="number"/>
+    <aura:attribute name="type5" type="String" default="number"/>
+    
+    <aura:attribute name="type1Values" type="String[]" default=""/>
+    <aura:attribute name="type2Values" type="String[]" default=""/>
+    <aura:attribute name="type3Values" type="String[]" default=""/>
+    <aura:attribute name="type4Values" type="String[]" default=""/>
+    <aura:attribute name="type5Values" type="String[]" default=""/>
+    
+    <aura:attribute name="accountRecordTypeNames" type="String[]" />
+    <aura:attribute name="accountSubTypeNames" type="String[]" />
+    <aura:attribute name="hqStates" type="String[]" />
+    
+    <aura:attribute name="prodBuyUpProgs" type="String[]" />
+    <aura:attribute name="CMSCEusers" type="String[]" />
+    <aura:attribute name="CVGValues" type="String[]" />
+    <aura:attribute name="industryDDValues" type="String[]" />
+    <aura:attribute name="LeasedNetworkValues" type="String[]" />
+    <aura:attribute name="PrivateExValues" type="String[]" />
+    <aura:attribute name="ReasonForAllValues" type="String[]" />
+    <aura:attribute name="dialogErrorMsg" type="String"/>
+    <aura:attribute name="serialNumber" type="Integer" default='0'/>
+    <aura:attribute name="selectedInputBoxContents" type="String[]" />
+    <aura:attribute name="NPSTemplateFilterMap" type="Object" />
+    <aura:attribute name="NPSFields" type="String[]"/>
+    <aura:attribute name="NPSFieldsMap" type="Map"/>
+    <aura:attribute name="NPSSelectAllMap" type="Map"/>
+    <aura:attribute name="metaData" type="Object" />
+    <aura:registerEvent name="accountConsultantSelectSearch" type="c:Account_Consultant_Select_Search_Event"/>
+    
+    <aura:registerEvent name="addRefAccountsEvent" type="c:addRefAccountsEvent"/>
+    
+    <aura:handler name="refAcctsPopUpChildEvent" event="c:refAcctsPopUpChildEvent" action="{!c.addSelectedRefAccounts}"/>           
+    
+    {!v.body} 
+    <div role="alertdialog" tabindex="-1" aura:id="FilterSearch" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide modal-sm">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorMsg}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Alert</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.dialogErrorMsg}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorMsg}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="FilterSearch"></div> 
+    
+    <div role="alertdialog" tabindex="-1" aura:id="downLoadSuccess" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide modal-sm">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--success slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorMsg}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Success</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.dialogErrorMsg}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorMsg1}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="downLoadSuccess"></div> 
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div aura:id="templateDesign" class="slds-section container forceRelatedListSingleContainer slds-is-open slds-m-vertical_none">
+        <article class="slds-card slds-card_boundary forceRelatedListCardDesktop slds-is-relative main-section">
+            <div class="slds-card__header slds-grid slds-p-vertical--x-small flex-auto avoid-clicks appletHeader slds-m-bottom_none" data-record="templateDesign" id="utilityToggle">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__body">
+                        <h2 class="slds-grid">
+                            <span class="slds-text-heading--small">Template Design</span>
+                        </h2>
+                    </div>
+                </header>
+            </div>            
+            <div class="slds-section__content slds-p-top_none">                	
+                <div class="slds-card__body slds-is-relative">
+                    <aura:if isTrue="{!v.isSpinnertoLoad}">
+                        <div class="slds-spinner_container">
+                            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-size_1-of-1 slds-p-horizontal_medium template-opt slds-p-vertical_small">                            
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-form-element__label">Select the Template : </label>
+                                    <ui:inputSelect class="slds-select dropDown-auto-width" aura:id="objType" multiple="false" change="{!c.onObjChange}">
+                                        <aura:iteration items="{!v.objType}" var="objType_var"> 
+                                            <ui:inputSelectoption text="{!objType_var}"/>
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                        </div>
+                        <aura:if isTrue="{!v.NPSsearchCriteriaSection}">
+                            <div aura:id='NPSsearchCriteriaSection' class='slds-size_1-of-1 slds-grid slds-wrap template-contents slds-grid_vertical-align-center'>
+                                <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-p-vertical_small">
+                                    <h3 class="table-title">Enter Search Criteria (Show results where) :</h3>
+                                </div>
+                                <div class="slds-size_1-of-1">
+                                    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal search-table">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th class="slds-cell-shrink" scope="col"><div class="slds-truncate" title="Row Number"></div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Field">Field</div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Condition">Condition</div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Filter Value(s)">Filter Value(s)</div></th>
+                                                <th class="slds-cell-shrink" scope="col"><div class="slds-truncate" title="Row Number"></div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Field">Field</div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Condition">Condition</div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Filter Value(s)">Filter Value(s)</div></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No"></div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control"> 
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Output_1" multiple="false" change="{!c.onNPSFieldChange}">
+                                                                    <aura:iteration items="{!v.NPSFields}" var="row2condition_var">
+                                                                        <aura:if isTrue="{!row2condition_var == 'Owner'}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" label="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}" label="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if> 
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Filter_1" multiple="false" >
+                                                                    <aura:if isTrue="{!v.type1 == 'NUMBER'}"> 
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var" indexVar="indx">
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>    
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type1 == 'STRING'}">
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type1 == 'PICKLIST'}">
+                                                                        <aura:iteration items="Equals to" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type1 == 'DATE'}">
+                                                                        <aura:iteration items="Equals to,On or before,On or after" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                                                <aura:if isTrue="{!v.type1 == 'NUMBER'}">
+                                                                    <ui:inputNumber aura:id="NPS_Input_1" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type1 == 'SEARCH'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search1">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="NPS_Input_1" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type1 == 'STRING'}">
+                                                                    <ui:inputText aura:id="NPS_Input_1" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type1 == 'PICKLIST'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="NPS_Input_1" multiple="false" >
+                                                                        <aura:iteration items="{!v.type1Values}" var="type1Values_var"> 
+                                                                            <aura:if isTrue="{!type1Values_var == ''}">
+                                                                                <ui:inputSelectOption text="{!type1Values_var}" value="true" /> 
+                                                                                <aura:set attribute="else">
+                                                                                    <ui:inputSelectoption text="{!type1Values_var}"/>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type1 == 'DATE'}">
+                                                                    <ui:inputDate aura:id="NPS_Input_1" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No">AND</div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Output_2" multiple="false" change="{!c.onNPSFieldChange}">
+                                                                    <aura:iteration items="{!v.NPSFields}" var="row2condition_var">
+                                                                        <ui:inputSelectoption text="{!row2condition_var}" label="{!row2condition_var}"/> 
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Filter_2" multiple="false" >
+                                                                    <aura:if isTrue="{!v.type2 == 'NUMBER'}"> 
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var" indexVar="indx">
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>    
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type2 == 'STRING'}">
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type2 == 'PICKLIST'}">
+                                                                        <aura:iteration items="Equals to" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type2 == 'DATE'}">
+                                                                        <aura:iteration items="Equals to,On or before,On or after" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                                                <aura:if isTrue="{!v.type2 == 'NUMBER'}">
+                                                                    <ui:inputNumber aura:id="NPS_Input_2" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type2 == 'SEARCH'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search1">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="NPS_Input_2" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type2 == 'STRING'}">
+                                                                    <ui:inputText aura:id="NPS_Input_2" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type2 == 'PICKLIST'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="NPS_Input_2" multiple="false" >
+                                                                        <aura:iteration items="{!v.type2Values}" var="type1Values_var"> 
+                                                                            <aura:if isTrue="{!type1Values_var == ''}">
+                                                                                <ui:inputSelectOption text="{!type1Values_var}" value="true" /> 
+                                                                                <aura:set attribute="else">
+                                                                                    <ui:inputSelectoption text="{!type1Values_var}"/>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type2 == 'DATE'}">
+                                                                    <ui:inputDate aura:id="NPS_Input_2" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No">AND</div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Output_3" multiple="false" change="{!c.onNPSFieldChange}">
+                                                                    <aura:iteration items="{!v.NPSFields}" var="row2condition_var">
+                                                                        <ui:inputSelectoption text="{!row2condition_var}" label="{!row2condition_var}"/>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Filter_3" multiple="false" >
+                                                                    <aura:if isTrue="{!v.type3 == 'NUMBER'}"> 
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var" indexVar="indx">
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>    
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type3 == 'STRING'}">
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type3 == 'PICKLIST'}">
+                                                                        <aura:iteration items="Equals to" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type3 == 'DATE'}">
+                                                                        <aura:iteration items="Equals to,On or before,On or after" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                                                <aura:if isTrue="{!v.type3 == 'NUMBER'}">
+                                                                    <ui:inputNumber aura:id="NPS_Input_3" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type3 == 'SEARCH'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search1">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="NPS_Input_3" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type3 == 'STRING'}">
+                                                                    <ui:inputText aura:id="NPS_Input_3" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type3 == 'PICKLIST'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="NPS_Input_3" multiple="false" >
+                                                                        <aura:iteration items="{!v.type3Values}" var="type1Values_var"> 
+                                                                            <aura:if isTrue="{!type1Values_var == ''}">
+                                                                                <ui:inputSelectOption text="{!typeValues_var}" value="true" /> 
+                                                                                <aura:set attribute="else">
+                                                                                    <ui:inputSelectoption text="{!type1Values_var}"/>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type3 == 'DATE'}">
+                                                                    <ui:inputDate aura:id="NPS_Input_3" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No">AND</div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Output_4" multiple="false" change="{!c.onNPSFieldChange}">
+                                                                    <aura:iteration items="{!v.NPSFields}" var="row2condition_var">
+                                                                        <ui:inputSelectoption text="{!row2condition_var}" label="{!row2condition_var}"/> 
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Filter_4" multiple="false" >
+                                                                    <aura:if isTrue="{!v.type4 == 'NUMBER'}"> 
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var" indexVar="indx">
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>    
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type4 == 'STRING'}">
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type4 == 'PICKLIST'}">
+                                                                        <aura:iteration items="Equals to" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type4 == 'DATE'}">
+                                                                        <aura:iteration items="Equals to,On or before,On or after" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                                                <aura:if isTrue="{!v.type4 == 'NUMBER'}">
+                                                                    <ui:inputNumber aura:id="NPS_Input_4" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type4 == 'SEARCH'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search1">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="NPS_Input_4" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type4 == 'STRING'}">
+                                                                    <ui:inputText aura:id="NPS_Input_4" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type4 == 'PICKLIST'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="NPS_Input_4" multiple="false" >
+                                                                        <aura:iteration items="{!v.type4Values}" var="type1Values_var"> 
+                                                                            <aura:if isTrue="{!typeValues_var == ''}">
+                                                                                <ui:inputSelectOption text="{!type1Values_var}" value="true" /> 
+                                                                                <aura:set attribute="else">
+                                                                                    <ui:inputSelectoption text="{!type1Values_var}"/>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type4 == 'DATE'}">
+                                                                    <ui:inputDate aura:id="NPS_Input_4" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No">AND</div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Output_5" multiple="false" change="{!c.onNPSFieldChange}">
+                                                                    <aura:iteration items="{!v.NPSFields}" var="row2condition_var">
+                                                                        <ui:inputSelectoption text="{!row2condition_var}" label="{!row2condition_var}"/>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="NPS_Filter_5" multiple="false" >
+                                                                    <aura:if isTrue="{!v.type5 == 'NUMBER'}"> 
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var" indexVar="indx">
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>    
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type5 == 'STRING'}">
+                                                                        <aura:iteration items="Begins With,Equals to,Contains" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type5 == 'PICKLIST'}">
+                                                                        <aura:iteration items="Equals to" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                    <aura:if isTrue="{!v.type5 == 'DATE'}">
+                                                                        <aura:iteration items="Equals to,On or before,On or after" var="row2condition_var"> 
+                                                                            <aura:if isTrue="{!indx == 0}">
+                                                                            <ui:inputSelectoption text="{!row2condition_var}" value='true'/>
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        </aura:iteration>
+                                                                    </aura:if>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                                                <aura:if isTrue="{!v.type5 == 'NUMBER'}">
+                                                                    <ui:inputNumber aura:id="NPS_Input_5" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type5 == 'SEARCH'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search1">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="NPS_Input_5" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type5 == 'STRING'}">
+                                                                    <ui:inputText aura:id="NPS_Input_5" class="slds-input" value="" updateOn="keyup" keyup="{!c.searchForNPSActionGoButton}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type5 == 'PICKLIST'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="NPS_Input_5" multiple="false" >
+                                                                        <aura:iteration items="{!v.type5Values}" var="type1Values_var"> 
+                                                                            <aura:if isTrue="{!type1Values_var == ''}">
+                                                                                <ui:inputSelectOption text="{!type1Values_var}" value="true" /> 
+                                                                                <aura:set attribute="else">
+                                                                                    <ui:inputSelectoption text="{!type1Values_var}"/>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type5 == 'DATE'}">
+                                                                    <ui:inputDate aura:id="NPS_Input_5" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            </tr> 
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="slds-size_1-of-1 slds-grid slds-wrap slds-grid_vertical-align-center bkg-light-grey">
+                                    <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_9-of-12 slds-p-horizontal_medium slds-p-vertical_small instruction-section">
+                                        <p class="instruction-heading">In Filter Value(s) field :</p>
+                                        <ul class="instruction-list">
+                                            <li>Multiple pick list values should be seperated by a comma(do not include white spaces before or after the comma)</li>
+                                            <li>Dates should be entered in m/d/yyyy format</li>
+                                        </ul>
+                                    </div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_3-of-12 slds-grid slds-wrap slds-p-horizontal_medium slds-p-vertical_small slds-grid_align-end">
+                                        <ui:button class="slds-button slds-button_brand" press="{!c.searchForNPSAction}">Search</ui:button>
+                                        <ui:button class="slds-button slds-button_neutral" press="{!c.resetFieldValues}">Reset</ui:button>   
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.searchCriteriaSection}">
+                            <div aura:id='searchCriteriaSection' class='slds-size_1-of-1 slds-grid slds-wrap template-contents slds-grid_vertical-align-center'>
+                                <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-p-vertical_small">
+                                    <h3 class="table-title">Enter Search Criteria (Show results where) :</h3>
+                                </div>
+                                <div class="slds-size_1-of-1">
+                                    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal search-table">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th class="slds-cell-shrink" scope="col"><div class="slds-truncate" title="Row Number"></div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Field">Field</div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Condition">Condition</div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Filter Value(s)">Filter Value(s)</div></th>
+                                                <th class="slds-cell-shrink" scope="col"><div class="slds-truncate" title="Row Number"></div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Field">Field</div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Condition">Condition</div></th>
+                                                <th scope="col"><div class="slds-truncate" title="Filter Value(s)">Filter Value(s)</div></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No"></div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="row1field" multiple="false" change="{!c.onFieldSelectChange}">
+                                                                    <aura:iteration items="{!v.pickListLabels}" var="pickListLabels_var"> 
+                                                                        <aura:if isTrue="{!pickListLabels_var == v.displayNameFilter1}">
+                                                                            <ui:inputSelectOption text="{!pickListLabels_var}" value="true" /> 
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!pickListLabels_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="rowcondition1" multiple="false" >
+                                                                    <aura:iteration items="{!v.row1condition}" var="row1condition_var"> 
+                                                                        <ui:inputSelectoption text="{!row1condition_var}"/>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right" >
+                                                                <aura:if isTrue="{!v.type1 == 'number'}">
+                                                                    <!--<lightning:icon iconName="utility:richtextnumberedlist" size="xx-small"></lightning:icon>-->
+                                                                    <ui:inputNumber aura:id="input1" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type1 == 'search'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search1">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="input1" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type1 == 'text'}">
+                                                                    <ui:inputText aura:id="input1" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type1 == 'dropdown'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="input1" multiple="false" >
+                                                                        <aura:iteration items="{!v.type1Values}" var="type1Values_var"> 
+                                                                            <aura:if isTrue="{!type1Values_var == ''}">
+                                                                                <ui:inputSelectOption text="{!type1Values_var}" value="true" /> 
+                                                                                <aura:set attribute="else">
+                                                                                    <ui:inputSelectoption text="{!type1Values_var}"/>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type1 == 'date'}">
+                                                                    <ui:inputDate aura:id="input1" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No">AND</div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="row2field" change="{!c.onFieldSelectChange}">
+                                                                    <aura:iteration items="{!v.pickListLabels}" var="pickListLabels_var"> 
+                                                                        <aura:if isTrue="{!pickListLabels_var == v.displayNameFilter2}">
+                                                                            <ui:inputSelectOption text="{!pickListLabels_var}" value="true" /> 
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!pickListLabels_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="rowcondition2" multiple="false" >
+                                                                    <aura:iteration items="{!v.row2condition}" var="row2condition_var"> 
+                                                                        <ui:inputSelectoption text="{!row2condition_var}"/>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                                                <aura:if isTrue="{!v.type2 == 'number'}">
+                                                                    <ui:inputNumber aura:id="input2" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type2 == 'search'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search2">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="input2" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type2 == 'text'}">
+                                                                    <ui:inputText aura:id="input2" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type2 == 'dropdown'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="input2" multiple="false" >
+                                                                        <aura:iteration items="{!v.type2Values}" var="type2Values_var"> 
+                                                                            <ui:inputSelectoption text="{!type2Values_var}"/>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type2 == 'date'}">
+                                                                    <ui:inputDate aura:id="input2" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No">AND</div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="row3field" change="{!c.onFieldSelectChange}">
+                                                                    <aura:iteration items="{!v.pickListLabels}" var="pickListLabels_var"> 
+                                                                        <aura:if isTrue="{!pickListLabels_var == v.displayNameFilter3}">
+                                                                            <ui:inputSelectOption text="{!pickListLabels_var}" value="true" /> 
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!pickListLabels_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="rowcondition3" multiple="false" >
+                                                                    <aura:iteration items="{!v.row3condition}" var="row3condition_var"> 
+                                                                        <ui:inputSelectoption text="{!row3condition_var}"/>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                                                <aura:if isTrue="{!v.type3 == 'number'}">
+                                                                    <ui:inputNumber aura:id="input3" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type3 == 'search'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search3">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="input3" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type3 == 'text'}">
+                                                                    <ui:inputText aura:id="input3" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type3 == 'dropdown'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="input3" multiple="false" >
+                                                                        <aura:iteration items="{!v.type3Values}" var="type3Values_var"> 
+                                                                            <ui:inputSelectoption text="{!type3Values_var}"/>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type3 == 'date'}">
+                                                                    <ui:inputDate aura:id="input3" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No">AND</div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="row4field" change="{!c.onFieldSelectChange}">
+                                                                    <aura:iteration items="{!v.pickListLabels}" var="pickListLabels_var"> 
+                                                                        <aura:if isTrue="{!pickListLabels_var == v.displayNameFilter4}">
+                                                                            <ui:inputSelectOption text="{!pickListLabels_var}" value="true" /> 
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!pickListLabels_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="rowcondition4" multiple="false" >
+                                                                    <aura:iteration items="{!v.row4condition}" var="row4condition_var"> 
+                                                                        <ui:inputSelectoption text="{!row4condition_var}"/>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                                                <aura:if isTrue="{!v.type4 == 'number'}">
+                                                                    <ui:inputNumber aura:id="input4" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type4 == 'search'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search4">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="input4" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type4 == 'text'}">
+                                                                    <ui:inputText aura:id="input4" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type4 == 'dropdown'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="input4" multiple="false" >
+                                                                        <aura:iteration items="{!v.type4Values}" var="type4Values_var"> 
+                                                                            <ui:inputSelectoption text="{!type4Values_var}"/>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type4 == 'date'}">
+                                                                    <ui:inputDate aura:id="input4" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                            <tr class="slds-hint-parent">                                            
+                                                <td class="slds-cell-shrink" data-label="Sl.No">
+                                                    <div class="slds-truncate" title="Sl.No">AND</div>
+                                                </td>
+                                                <th scope="row" data-label="Field">
+                                                    <div class="slds-truncate" title="Field">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="row5field" change="{!c.onFieldSelectChange}">
+                                                                    <aura:iteration items="{!v.pickListLabels}" var="pickListLabels_var"> 
+                                                                        <aura:if isTrue="{!pickListLabels_var == v.displayNameFilter5}">
+                                                                            <ui:inputSelectOption text="{!pickListLabels_var}" value="true" /> 
+                                                                            <aura:set attribute="else">
+                                                                                <ui:inputSelectoption text="{!pickListLabels_var}"/>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Condition">
+                                                    <div class="slds-truncate" title="Condition">
+                                                        <div class="slds-form-element">
+                                                            <div class="slds-form-element__control">
+                                                                <ui:inputSelect class="slds-select" aura:id="rowcondition5" multiple="false" >
+                                                                    <aura:iteration items="{!v.row5condition}" var="row5condition_var"> 
+                                                                        <ui:inputSelectoption text="{!row5condition_var}"/>
+                                                                    </aura:iteration>
+                                                                </ui:inputSelect>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th scope="row" data-label="Filter Value(s)">
+                                                    <div class="slds-truncate" title="Filter Value(s)">
+                                                        <div class="slds-form-element">                                    
+                                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                                                <aura:if isTrue="{!v.type5 == 'number'}">
+                                                                    <ui:inputNumber aura:id="input5" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type5 == 'search'}">
+                                                                    <div onclick="{!c.openOptionsPopup}" data-record="search5">
+                                                                        <a href="" class="noedit-onlysearch">
+                                                                            <lightning:icon iconName="utility:search" size="xx-small"></lightning:icon>
+                                                                        </a>
+                                                                    </div>
+                                                                    <ui:inputText aura:id="input5" class="slds-input avoid-click" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type5 == 'text'}">
+                                                                    <ui:inputText aura:id="input5" class="slds-input" value="" updateOn="keyup" keyup="{!c.enableGoBtn}" placeholder="Filter Value(s)" required="true"/>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type5 == 'dropdown'}">
+                                                                    <ui:inputSelect class="slds-select" aura:id="input5" multiple="false" >
+                                                                        <aura:iteration items="{!v.type5Values}" var="type5Values_var"> 
+                                                                            <ui:inputSelectoption text="{!type5Values_var}"/>
+                                                                        </aura:iteration>
+                                                                    </ui:inputSelect>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.type5 == 'date'}">
+                                                                    <ui:inputDate aura:id="input5" format="M/d/yyyy" label="" value="" displayDatePicker="true"/>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <td colspan="4">&nbsp;</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="slds-size_1-of-1 slds-grid slds-wrap slds-grid_vertical-align-center bkg-light-grey">
+                                    <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_9-of-12 slds-p-horizontal_medium slds-p-vertical_small instruction-section">
+                                        <p class="instruction-heading">In Filter Value(s) field :</p>
+                                        <ul class="instruction-list">
+                                            <li>Multiple pick list values should be seperated by a comma(do not include white spaces before or after the comma)</li>
+                                            <li>Dates should be entered in m/d/yyyy format</li>
+                                        </ul>
+                                    </div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_3-of-12 slds-grid slds-wrap slds-p-horizontal_medium slds-p-vertical_small slds-grid_align-end">
+                                        <ui:button class="slds-button slds-button_brand" aura:id="searchResults" press="{!c.searchForAccounts}">Search</ui:button>
+                                        <ui:button class="slds-button slds-button_neutral" press="{!c.resetFieldValues}">Reset</ui:button>   
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.isSearchBtnClicked}">
+                            <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-p-vertical_small">
+                                <h3 class="table-title">Search Results</h3>
+                            </div>
+                            <div class="slds-size_1-of-1 slds-is-relative account-data_table">
+                                <ui:scrollerWrapper class="scrollerSize table-scroll slds-p-bottom_small">
+                                    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_striped slds-no-row-hover search-table result-table">
+                                        <thead>
+                                            <aura:if isTrue="{!v.isSearchedResultEmpty}">
+                                                <tr class="slds-text-title--caps">
+                                                    <th width="50">&nbsp;</th>
+                                                    <th scope="col" class="slds-truncate" width="50"><div class="slds-truncate" title="Select Row"></div></th>
+                                                    <th class="font-weight-bold" scope="col" width="350">
+                                                        <span class="slds-truncate" title="{!v.columnHeader+ Name}">{!v.columnHeader} Name</span>
+                                                    </th>
+                                                    <aura:if isTrue="{!v.objectName == 'Account'}">
+                                                        <th scope="col" class="slds-truncate"><div class="slds-truncate" title="{!v.columnHeader+ Type}">{!v.columnHeader} Type</div></th>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.objectName == 'Contact'}">
+                                                        <th scope="col" class="slds-truncate"><div class="slds-truncate" title="{!v.columnHeader+ Company}">{!v.columnHeader} Company Name</div></th>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.objectName == 'Opportunity'}">
+                                                        <th scope="col" class="slds-truncate"><div class="slds-truncate" title="{!v.columnHeader+ Company}">{!v.columnHeader} Company Name</div></th>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.objectName == 'NPSAction'}">
+                                                        <th scope="col" class="slds-truncate"><div class="slds-truncate" title="{!v.columnHeader+ Company}">{!v.columnHeader} Company Name</div></th>
+                                                    </aura:if>
+                                                </tr>
+                                                <aura:set attribute="else">
+                                                    <tr class="slds-cell-wrap">
+                                                        <th width="50">
+                                                            <label class="slds-checkbox">
+                                                                <ui:inputCheckbox aura:id="refAccount" change="{!c.selectAll}"/>
+                                                                <span class="slds-checkbox_faux"></span>
+                                                                <span class="slds-assistive-text">Select Row</span>
+                                                            </label>
+                                                        </th>
+                                                        <th scope="col" class="slds-truncate" width="50">ALL<div class="slds-truncate" title="Select Row"></div></th>
+                                                        
+                                                        <th class="slds-text-title--caps slds-is-sortable font-weight-bold" scope="col" width="350">
+                                                            <a class="slds-th__action slds-text-link_reset" onclick="{!c.sortFields}" data-record="name" role="button" tabindex="-1">
+                                                                <span class="slds-assistive-text">Sort by: </span>
+                                                                <span class="slds-truncate" title="{!v.columnHeader+ Name}">{!v.columnHeader} Name</span>
+                                                                <div class="slds-icon_container">
+                                                                    <aura:if isTrue="{!v.sortByNameAsc}">
+                                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Ascending"/>
+                                                                        <aura:set attribute="else">
+                                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Descending"/>
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </a>
+                                                        </th>
+                                                        <th class="slds-text-title--caps slds-is-sortable font-weight-bold" scope="col">
+                                                            <a class="slds-th__action slds-text-link_reset" onclick="{!c.sortFields}" data-record="type" role="button" tabindex="-1">
+                                                                <span class="slds-assistive-text">Sort by: </span>
+                                                                <aura:if isTrue="{!v.objectName == 'Account'}">
+                                                                    <span class="slds-truncate" title="{!v.columnHeader+ Type}">{!v.columnHeader} Type</span>
+                                                                    <!--<th scope="col" class="slds-truncate"><div class="slds-truncate" title="{!v.columnHeader+ Type}">{!v.columnHeader} Type</div></th>-->
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.objectName == 'Contact'}">
+                                                                    <span class="slds-truncate" title="{!v.columnHeader+ Company}">{!v.columnHeader} Company Name</span>
+                                                                    <!--<th scope="col" class="slds-truncate"><div class="slds-truncate" title="{!v.columnHeader+ Company}">{!v.columnHeader} Company Name</div></th>-->
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.objectName == 'Opportunity'}">
+                                                                    <span class="slds-truncate" title="{!v.columnHeader+ Company}">{!v.columnHeader} Company Name</span>
+                                                                    <!--<th scope="col" class="slds-truncate"><div class="slds-truncate" title="{!v.columnHeader+ Company}">{!v.columnHeader} Company Name</div></th>-->
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!v.objectName == 'NPSAction'}">
+                                                                    <th scope="col" class="slds-truncate"><div class="slds-truncate" title="{!v.columnHeader+ Company}">{!v.columnHeader} Company Name</div></th>
+                                                                </aura:if>
+                                                                <div class="slds-icon_container">
+                                                                    <aura:if isTrue="{!v.sortByTypeAsc}">
+                                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Ascending"/>
+                                                                        <aura:set attribute="else">
+                                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Descending"/>
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </a>
+                                                        </th>
+                                                    </tr>
+                                                </aura:set>
+                                            </aura:if>
+                                        </thead>
+                                        <tbody>
+                                            <aura:if isTrue="{!v.isSearchedResultEmpty}">
+                                                <tr>
+                                                    <th colspan="5">
+                                                        <div class="slds-text-align--center">No {!v.columnHeader} found as per Search criteria.</div>
+                                                    </th>
+                                                </tr>
+                                                <aura:set attribute="else">
+                                                    <aura:iteration items="{!v.accountSearchList}" var="accountSearchListobj" indexVar="index">
+                                                        <c:Template_Design_Table aura:id="eachCheckBox" accountSearchArray="{!accountSearchListobj}" accId="{!accountSearchListobj.Id}" accountSearchArrayIndex="{!accountSearchListIndex}" index="{!index+v.serialNumber}" objNameToDisplay="{!v.objectName}" selectedIds="{!v.selectedRefAcctsIds}" NPSsearchCriteriaSection="{!v.NPSsearchCriteriaSection}"></c:Template_Design_Table>
+                                                    </aura:iteration>
+                                                </aura:set>
+                                            </aura:if>
+                                        </tbody>
+                                    </table>
+                                </ui:scrollerWrapper>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.isSearchBtnClicked}">
+                            <aura:if isTrue="{!v.isSearchedResultEmpty}">
+                                
+                                <aura:set attribute="else">
+                                    <div class="slds-grid slds-wrap slds-size_1-of-1">
+                                        <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-p-horizontal_medium">
+                                            <ui:button class="slds-button slds-button_brand" aura:id="generateBtn" disabled="true" press="{!c.generateTemplate}">Generate</ui:button>
+                                        </div>
+                                        <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-grid slds-grid_align-end slds-p-horizontal_medium slds-grid_vertical-align-center">
+                                            <div class="res-count slds-p-horizontal_small">
+                                                <label>Showing <span>{!v.page}</span> of Total {!v.pages} Pages </label>
+                                                <!--<label>Showing <span>{!v.pageMin}</span> - <span>{!v.pageMax}</span> of {!v.total} Records</label>-->
+                                            </div>	
+                                            <c:Pagination1 page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                                            <!--<ui:button class="slds-button slds-button_brand" aura:id="searchResults" press="{!c.generateTemplate}">Prev</ui:button>
+                                                <ui:button class="slds-button slds-button_brand" aura:id="searchResults" press="{!c.generateTemplate}">Next</ui:button>-->
+                                        </div>
+                                    </div>
+                                    <!--<div class="slds-size_1-of-1 slds-grid slds-wrap slds-p-horizontal_medium slds-p-vertical_small slds-grid_align-end">
+                                            <ui:button class="slds-button slds-button_brand" aura:id="searchResults" press="{!c.generateTemplate}">Generate</ui:button>
+                                        </div>-->
+                                    <!--<div class="nav-footer" aura:id="pageFooter">
+                                            <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>   
+                                        </div>-->
+                                </aura:set>
+                            </aura:if>
+                        </aura:if>
+                        <aura:if isTrue='{!v.isNPSTemplateGenerate}'>
+                            <c:NPSActionPlanCmp isInit="true" aura:id='NPSActionId'/>
+                        </aura:if>
+                    </div>                 
+                </div>
+                
+            </div>
+        </article>
+    </div>
+</aura:component>

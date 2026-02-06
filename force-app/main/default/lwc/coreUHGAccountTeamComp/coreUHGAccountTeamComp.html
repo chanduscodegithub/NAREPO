@@ -1,0 +1,111 @@
+<template>
+
+    <div>
+        <div class="section-header">
+            <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small">
+                <span><b>Core UHG Account Team</b> </span>
+            </div>
+        </div>
+    </div>
+    <div>
+
+        <div class="slds-p-top_xx-small  slds-p-left_x-small slds-text-body_small">
+            <!-- <span><i>This section will be expanded in 2021 to include other key AMT members. If information in this section is incorrect, please contact the Merit HelpDesk.</i></span>-->
+            <span><i>The information for this section comes from the Extended Account Team/AMT under the People tab and
+                    the General Info tab.</i></span>
+        </div>
+
+
+    </div>
+    <div class="slds-grid slds-gutters slds-p-top_x-small ">
+        <div class="slds-col slds-size_1-of-2">
+            <table
+                class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                <thead>
+
+                    <tr class="slds-border_top header-color">
+                        <td class="slds-border_right ">
+                            <div>
+                                <span><b>Role</b></span>
+                            </div>
+                        </td>
+                        <td class="slds-border_right ">
+                            <div class="slds-truncate">
+                                <span><b>Name</b></span>
+                            </div>
+                        </td>
+                        <!-- <td class="slds-border_right ">
+                                <div class="slds-truncate">
+                                    <span ><b>Office Phone Number/Cell Phone</b></span>
+                                </div>
+                            </td> -->
+                    </tr>
+
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>CM VPCR/RVP </div>
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={accCoreData.CMVPCRRVP__r}>
+                                <span>{accCoreData.CMVPCRRVP__r.Name}</span>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>CM SCE </div>
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={accCoreData.CM_SCE__r}>
+                                <span>{accCoreData.CM_SCE__r.Name}</span>
+                            </template>
+                        </td>
+                    </tr>
+
+                    <template if:true={specialtyBenefitInvolved}>
+                        <tr>
+                            <td class="slds-border_right">
+                                <div>Specialty Benefits SCE </div>
+                            </td>
+                            <td class="slds-border_right">
+                                {specialtyBenefitInvolved}
+                            </td>
+                        </tr>
+                    </template>
+
+                    <template for:each={contactRoleMap} for:item="ctd">
+                        <tr key={ctd.Name}>
+                            <template if:true={ctd.Name}>
+                                <td class="slds-border_right">
+                                    {ctd.Contact_Role}
+                                </td>
+                                <td class="slds-border_right">
+                                    <div class="slds-cell-wrap slds-truncate">
+                                        {ctd.Name}
+                                    </div>
+                                </td>
+                            </template>
+                        </tr>
+                    </template>
+
+                    <!-- <template for:each={coreTeamData} for:item="ctd">
+                        <tr key={ctd.Id}>
+                            <template if:true={ctd.Name}>
+                                <td class="slds-border_right">
+                                    {ctd.Contact_Role__c}
+                                </td>
+                                <td class="slds-border_right">
+                                    {ctd.First_Name__c}&nbsp;{ctd.Last_Name__c}
+                                </td>
+                            </template>
+                        </tr>
+                    </template> -->
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,64 @@
+<template>
+  <template if:true={ifProactive}>
+    <td data-label="Company" class="tableVerticleAlign">
+      <div class="slds-truncate " title="Company">{eachdata.CompanyName}</div>
+    </td>
+
+    <td data-label="Effective Date" class="tableVerticleAlign">
+      <div class="slds-truncate " title="Effective Date">{eachdata.EffectiveDate}</div>
+    </td>
+
+    <!--td data-label="Sold\Retained Members" class="tableVerticleAlign">
+      <div class="slds-truncate " title="Sold\Retained Members">{eachdata.SoldRetainedMembers}</div>
+    </td-->
+
+    <td data-label="Sold\Retained Members" class="tableVerticleAlign">
+      <div class="slds-truncate " title="Sold\Retained Members">
+        <lightning-formatted-number value={eachdata.SoldRetainedMembers}></lightning-formatted-number>
+      </div>
+    </td>
+
+    <template if:true={incentiveStatus}>
+      <td data-label="Incentive Status" class="tableVerticleAlign">
+        <div class="slds-truncate slds-cell-wrap colourtxt" title="Incentive Status">{eachdata.IncentiveStatus}</div>
+      </td>
+    </template>
+
+    <template if:false={incentiveStatus}>
+      <td data-label="Incentive Status" class="tableVerticleAlign">
+        <div class="slds-truncate slds-cell-wrap" title="Incentive Status">{eachdata.IncentiveStatus}</div>
+      </td>
+    </template>
+
+    <td data-label="Retention Criteria" class="tableVerticleAlign">
+      <div class="slds-truncate " title="Retention Criteria">{eachdata.RetentionPercentage}</div>
+    </td>
+
+    <template if:true={attachmentStatus}>
+      <td data-label="Are Documents Attached" class="tableVerticleAlign">
+        <div class="slds-truncate " title="Are Documents Attached">{eachdata.AreDocumentsAttached}</div>
+      </td>
+    </template>
+
+    <template if:false={attachmentStatus}>
+      <template if:true={incentiveStatus}>
+        <td data-label="Are Documents Attached" class="tableVerticleAlign">
+          <div class="slds-truncate colourtxt" title="Are Documents Attached">{eachdata.AreDocumentsAttached}</div>
+        </td>
+      </template>
+      <template if:false={incentiveStatus}>
+        <td data-label="Are Documents Attached" class="tableVerticleAlign">
+          <div class="slds-truncate " title="Are Documents Attached">{eachdata.AreDocumentsAttached}</div>
+        </td>
+      </template>
+    </template>
+
+
+
+    <td data-label="Membership Activity" class="tableVerticleAlign slds-cell-wrap">
+      <!--p><a href="javascript:void(0);" variant="base" label={eachdata.Name} class="slds-cell-wrap " title="Membership Activity Name"  value={eachdata.Id} target="_blank" onclick={goToOppRecord} >{eachdata.MembershipActivityName}</a></p-->
+      <p><a href={eachdata.oppLink} variant="base" label={eachdata.Name} title="Membership Activity" value={eachdata.Id}
+          target="_self">{eachdata.MembershipActivityName}</a></p>
+    </td>
+  </template>
+</template>

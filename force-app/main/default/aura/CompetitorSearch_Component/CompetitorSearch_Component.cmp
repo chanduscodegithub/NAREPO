@@ -1,0 +1,132 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="ProductsAndCompetitorsAppletController">
+    <aura:attribute name="productsdata" type="Account"/>
+    <aura:attribute name="selectedProducts" type="List"/>
+    <aura:attribute name="selectedProductsLength" type="Integer" default='0'/>
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='isProductEmpty' type='Boolean' />
+    <aura:attribute name='pages' type='Integer'/>
+    <aura:attribute name='possibleSaleStageValues' type='String[]' default="['Medical','Others']"/>
+    <aura:attribute name='total' type='Integer' />
+    <aura:attribute name="Child_Data" type="Object"/>
+    
+    <aura:registerEvent name="productsAndCompetitorsPopUpEvent" type="c:ProductsAndCompetitorsPopUpEvent"/>
+    <aura:handler name="ProductSearchComp" event="c:ProductSearch_Component_Event" action="{!c.addSelectedProducts}"/>
+    <aura:handler name="init" action="{!c.productsSearchController}" value="{!this}"/> 
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    
+    <aura:attribute name='productType' type='String' default="[Medical And Others]"/>
+    <aura:attribute name='selectedTab' type='String' default="Top"/>
+    <article>
+        <div class="slds-grid slds-wrap modal-content"> 
+            <lightning:spinner aura:id="mySpinner" class="slds-hide"/>
+            <div class="slds-size_1-of-1 search-product">
+                <div class="slds-col slds-grid slds-grid_vertical slds-nowrap">
+                    <div class="slds-shrink-none slds-theme_shade slds-p-vertical_medium slds-p-horizontal_large search-pdt-wrapper">
+                        <div class="slds-form-element slds-grid slds-wrap">
+                            <!--Search Products-->
+                            <div class="slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_5-of-12 slds-p-right_x-small input-container">
+                                <label class="slds-form-element__label slds-assistive-text">Search By Competitor Name</label>
+                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                    <div class="slds-hide">
+                                        <ui:inputText class="slds-form-control"></ui:inputText>
+                                    </div>
+                                    <ui:inputText class="slds-input uiInput--input input" updateOn="keyup"  keyup="{!c.enableGoBtn}" placeholder="Search By Competitor Name" aura:id="Srch_By_cmp_Name"/>
+                                </div>
+                            </div>             
+                            <div class="slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_2-of-12 slds-grid slds-grid_align-end btn-wrapper">
+                                <div class="slds-form-element go-btn">
+                                    <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="goBtn" disabled="true" press="{!c.searchProductsRecords}">{!$Label.c.Go}</ui:button>
+                                </div>
+                                <div class="slds-form-element clr-btn">                                
+                                    <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="clrBtn" disabled="true" press="{!c.clearBtn}">{!$Label.c.Clear}</ui:button>                                
+                                </div>
+                            </div>                        
+                        </div>
+                        <div class="slds-p-top_small">
+                            <p class="slds-text-body_small slds-text-color_weak">
+                                <strong>Note</strong> : Select the Competitors involved in this Opportunity\Risk by clicking the "+" next to the Competitor Name.
+                                Your selections will display at the top of the screen. Click the Save button when complete. If your Competitor is not listed among the Top Competitors, you can find and select other Competitors by either (1) clicking one of the additional categories displayed below or (2) searching by Competitor Name..
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 tab-list">
+                <div class="slds-tabs_default">
+                    <ul class="slds-tabs_default__nav competitorTab" aura:id="TabView" role="tablist">
+                        <li class="slds-tabs_default__item slds-is-active" id="Top_Tab" aura:id="Top_Tab" title="Item One" role="presentation">
+                            <a class="slds-tabs_default__link" role="tab" data-record="Top_Tab" onclick="{!c.tabChange}">Top Competitors</a>
+                        </li>
+                        <li class="slds-tabs_default__item" title="Item Two" id="Blues_Tab" aura:id="Blues_Tab" role="presentation">
+                            <a class="slds-tabs_default__link" role="tab"    data-record="Blues_Tab"  onclick="{!c.tabChange}">The Blues and their Affiliates</a>
+                        </li>
+                        <li class="slds-tabs_default__item" title="Item Three" id="Exchange_Tab" aura:id="Exchange_Tab" role="presentation">
+                            <a class="slds-tabs_default__link" role="tab"    data-record="Exchange_Tab" onclick="{!c.tabChange}">Exchange Competitors</a>
+                        </li>
+                        <li class="slds-tabs_default__item" title="Item One"  id="Others_Tab" aura:id="Others_Tab" role="presentation">
+                            <a class="slds-tabs_default__link" role="tab"   data-record="Others_Tab" onclick="{!c.tabChange}">All Other Competitors</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-theme_shade slds-p-vertical_small slds-p-horizontal_large search-pdt-wrapper">
+                <div class="slds-pill_container slds-pill_container_bare selected-pill slds-m-bottom_x-small">
+                    <aura:iteration items="{!v.selectedProducts}" var="selectedProductsObj">
+                        <lightning:pill label="{!selectedProductsObj.prodCat+':'+selectedProductsObj.Name}" name="{!selectedProductsObj.uniqueprodCat}" onremove="{! c.handleRemoveOnly }">
+                            <aura:set attribute="media">
+                                <lightning:icon iconName="standard:product" alternativeText="Product"/>
+                            </aura:set>
+                        </lightning:pill>
+                    </aura:iteration>
+                </div>
+                <div class="slds-text-title slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                    <span><span class="count">{!v.selectedProductsLength}</span> Item(s) Selected</span>
+                    <div class="slds-float_right">
+                        <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="saveBtn" press="{!c.saveProducts}">{!$Label.c.Save}</ui:button>
+                        <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="cancelBtn" press="{!c.cancelPopUp}">{!$Label.c.Cancel}</ui:button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 hidden-xs-up slds-p-horizontal_medium slds-p-vertical_large xs-title">
+                <h1>Medical Products</h1>
+            </div>
+            <div class="slds-size_1-of-1 product-table">
+                <div class="slds-scrollable slds-grow">
+                    <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal">
+                        <thead>
+                            <tr>                            
+                                <th width="700"><div class="slds-truncate" title="Close Date">Competitor Name</div></th>
+                                <aura:if isTrue="{!v.productType != 'Medical and Others'}">
+                                    <th class="slds-text-align_center"><div class="slds-truncate" title="Close Date">{!v.productType}</div></th>
+                                    <aura:set attribute="else">
+                                        <th class="slds-text-align_center"><div class="slds-truncate" title="Close Date">Medical</div></th>
+                                        <th class="slds-text-align_center"><div class="slds-truncate" title="Close Date">Other Buy Up</div></th>
+                                    </aura:set>
+                                </aura:if>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.isProductEmpty}">
+                                <p></p>
+                                <tr>
+                                    <th colspan="3">
+                                        <div class="slds-text-align--center">{!$Label.c.No_records_found}</div>
+                                    </th>
+                                </tr>
+                                <aura:set attribute="else">
+                                    <aura:iteration items="{!v.productsdata}" var="productObj">
+                                        <c:CompetitorSearchChild_Component aura:id="ProductSearchId" competitorList='{!productObj}' productType='{!v.productType}'></c:CompetitorSearchChild_Component>
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer slds-p-horizontal_x-small">
+            <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+        </div>
+    </article>
+</aura:component>

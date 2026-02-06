@@ -1,0 +1,347 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="Service_AMT_Class">
+    <aura:attribute name="compLandscapeMedicalData" type="String[]"/>
+    <aura:attribute name="compLandscapeMedicalEmptyList" type="Boolean" default="false"/>
+    <aura:attribute name="removeCompititorId" type="String"/>
+    <aura:attribute name="isEditAccess" type="Boolean" default="true"/>
+    <aura:attribute name="compLandscapeMedicalTotalRow" type="Competitor__c"/>
+    
+    <aura:attribute name="isScroll" type="Boolean" default="false"/>
+    
+    <aura:attribute name="isGenericEventTriggered" type="Boolean" default="false"/>
+    
+    <aura:attribute name="participatingNBFTAinput" type="Integer" default="0"/>
+    <aura:attribute name="participatingBFTAinput" type="Integer" default="0"/>
+    <aura:attribute name="participatingPTAinput" type="Integer" default="0"/>
+    <aura:attribute name="participatingU65Rinput" type="Integer" default="0"/>
+    <aura:attribute name="participatingO65Rinput" type="Integer" default="0"/>
+    <aura:attribute name="participatingMembersinput" type="Integer" default="0"/>
+    
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    
+    <aura:attribute name="processIndex" type="Integer"/>
+    
+    <aura:attribute name="isExpand" type="Boolean" default="false"/>
+    
+    <aura:attribute name="isScrollStop" type="Boolean" default="true"/>
+    <aura:attribute name="isStop" type="Integer" default="1"/>
+    <aura:attribute name="lastCount" type="Integer" default="1"/>
+    <aura:attribute name="nextLastCount" type="Integer" default="1"/>
+    
+    <aura:attribute name="isDesktop" type="Boolean" default="true"/>
+    
+    <aura:attribute name="scrollStyleForDevice" type="String" default="@media screen and (min-width: 320px) and (max-width: 1199px){.panel-content.scrollable{overflow-y: hidden !important;-webkit-overflow-scrolling: auto !important ;}}"/>
+    
+    <aura:attribute name="selectedDataList" type="String"/>
+    
+    
+    <aura:attribute name="ServiceAMTList" type="Service_AMT__c[]" default="[]"/>
+    <aura:attribute name="userRolePLValues" type="String[]"/>
+    <aura:attribute name="contactRolePLValues" type="String[]"/>
+    <aura:attribute name="ServiceAMTEmptyList" type="Boolean" default="false" />
+    
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>  
+    
+    {!v.body}
+    
+    <div role="alertdialog" tabindex="-1" aura:id="DeleteConfirmDailog" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+        <div class="slds-modal__container md-modal-sm">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!$Label.c.Competitive_Landscape_Confirmation_Message}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="DeleteConfirmDailog"></div>
+    <!--  Error PopUp STARTS --> 
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="ErrorMessage"></div>
+    <!--  Error PopUp ENDS -->
+    <div aura:id="Competitive_Medical_CM" class="slds-section container forceRelatedListSingleContainer">
+        <article aura:id="articleClass" class="slds-card forceRelatedListCardDesktop slds-is-relative slds-card_boundary">
+            <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+            <!-- <div class="slds-grid slds-grid_vertical-align-center forceChatterSelectMentionOption">-->
+            <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread flex-auto">
+                <div class="slds-card__header slds-grid slds-p-vertical--x-small slds-m-bottom--none appletHeader flex-auto avoid-clicks" data-record="Competitive_Medical_CM" id="utilityToggle" onclick="{!c.expandCollapse}">
+                    <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                        <div class="slds-media__figure slds-grid slds-grid_vertical-align-center"> 
+                            <button class="slds-button slds-text-body--regular action-bar-mobile">
+                                <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                            </button>
+                            <div aura:id="appletIcon">
+                                <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Competitive_Landscape_Medical_CM_Applet_Name}">
+                                    <lightning:icon class="slds-icon slds-icon--small" iconName="custom:custom86" size="small" alternativeText="{!$Label.c.Competitive_Landscape_Medical_CM_Applet_Name}" />
+                                </span>
+                            </div>
+                            <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-is-relative display-right">
+                                <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-grid flex-alignCenter">
+                                <!--<a href="javascript:void(0);" class="slds-card__header-link">-->
+                                <span class="slds-text-heading--small">AMT Service Test</span>
+                                <!--</a>-->
+                                <div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small">
+                                    <c:tooltip helpLink="Help" helpText="{!$Label.c.Competitive_Landscape_Medical_CM_Instruction_Text}"/>
+                                </div>
+                            </h2>
+                        </div>
+                    </header>
+                </div>
+                <aura:if isTrue="{!v.isDesktop}">
+                    <div class="slds-p-right--medium appletAddBtn">
+                        <aura:if isTrue="{!v.isEditAccess}">
+                            <lightning:button class="slds-button slds-button--neutral" onclick="{!c.editMedicalCarrier}" aura:id="addMedicalCarrier">{!$Label.c.Add}</lightning:button>
+                        </aura:if>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-p-right--medium appletAddBtn action-bar-mobile">
+                            <aura:if isTrue="{!v.isEditAccess}">
+                                <lightning:button class="slds-button slds-button--neutral" aura:id="addMedicalCarrier">{!$Label.c.Add}</lightning:button>
+                            </aura:if>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </div>            
+            <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                
+                <div class="slds-card__body d-inline-block">
+                    <div class="slds-card__body slds-m-bottom--none"> 
+                        <div class="slds-page-header slds-p-vertical--x-small">
+                            <div class="slds-grid slds-mobile--header">
+                                <header class="slds-media slds-media--center ml-auto">
+                                    <div class="slds-grid">
+                                        <aura:if isTrue="{!v.isEditAccess}">                                    	
+                                            <lightning:button class="slds-button slds-button--neutral" aura:id="editMedicalCarrier" disabled="false" onclick="{!c.editMedicalCarrier}">{!$Label.c.Edit}</lightning:button>
+                                            <lightning:button class="slds-button slds-button--neutral hide" aura:id="saveMedicalCarrier" onclick="{!c.saveMedicalCarrier}">{!$Label.c.Save}</lightning:button>
+                                            <lightning:button class="slds-button slds-button--neutral hide" aura:id="cancelMedicalCarrier" onclick="{!c.cancelMedicalCarrier}">{!$Label.c.Cancel}</lightning:button>                                    
+                                        </aura:if>                                         
+                                    </div>
+                                </header>
+                            </div>
+                        </div>
+                    </div>
+                    <table aura:id="clientSurveyTbl" id="clientSurveyTbl" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout table-alignment-mobile">
+                        <thead>
+                            <tr class="slds-hint-parent thBorderLeft">
+                                <!--<th class="slds-is-resizable" scope="col" width="60">&nbsp;                                                                                                                                                  
+                                </th>-->
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="bold" title="Medical Carrier">Last Name</span>                                                    
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                           
+                                    <span class="bold" title="Participating Non-Bargained Full-Time Actives">First Name</span>                                                                                                                        
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                           
+                                    <span class="bold" title="Participating Bargained Full-Time Actives">Start Date</span>                                                                                         
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="bold" title="Participating Part-Time Actives">End Date</span>                                                                         
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="bold" title="Participating U65 Retirees">Role</span>                                                                         
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="bold" title="Participating O65 Retirees">Phone</span>                                                                         
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="bold" title="Total Participating Members">Email</span>                                                                         
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="bold" title="Total Participating Members">User Heirarchy</span>                                                                         
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="bold" title="Total Participating Members">Order</span>                                                                         
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="bold" title="Total Participating Members">Policy</span>                                                                         
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="bold" title="Total Participating Members">External</span>                                                                         
+                                </th>
+                                <aura:if isTrue="{!v.isEditAccess}">
+                                    <th width="65">&nbsp;</th>
+                                </aura:if>
+                            </tr>
+                        </thead>
+                        <tbody aura:id="clientSurveyTblBody">
+                            <aura:iteration items="{!v.ServiceAMTList}" var="serviceAMTObj" indexVar="index">                                                             	
+                                <tr class="slds-hint-parent">
+                                    <!--<td width="60">&nbsp;</td>-->
+                                    <td data-label="Medical Carrier" class="addBorderLeft">
+                                        <div class="slds-form-element slds-cell-wrap">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-cell-wrap" title="">{!serviceAMTObj.Last_Name__c}</div>
+                                            </div>                                           
+                                        </div>
+                                    </td>
+                                    <td data-label="Medical Carrier" class="addBorderLeft">
+                                        <div class="slds-form-element slds-cell-wrap">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-cell-wrap" title="">{!serviceAMTObj.First_Name__c}</div>
+                                            </div>                                           
+                                        </div>
+                                    </td>
+                                    <td data-label="Participating Non-Bargained Full-Time Actives" class="addBorderLeft text-align-right">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-cell-wrap no-wrap-in-mobile" title=""><ui:outputDate aura:id="outputfield1" format="M/d/yyyy" value="{!serviceAMTObj.Case_Management_Start_Date__c}"/></div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element hide" aura:id="editMode">                                            
+                                            <div class="slds-form-element__control">
+                                                <ui:inputDate class="alignDateField" aura:id="editableField" displayDatePicker="true" format="M/d/yyyy" value="{!serviceAMTObj.Case_Management_Start_Date__c}" />
+                                            </div>                                                                                        
+                                        </div>
+                                    </td>
+                                    <td data-label="Participating Bargained Full-Time Actives" class="addBorderLeft text-align-right">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-cell-wrap no-wrap-in-mobile" title=""><ui:outputDate aura:id="outputfield2"  format="M/d/yyyy"  value="{!serviceAMTObj.Case_Management_End_Date__c}"/></div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element hide" aura:id="editMode">                                            
+                                            <div class="slds-form-element__control">
+                                                <ui:inputDate class="alignDateField" aura:id="editableField" displayDatePicker="true"  format="M/d/yyyy"  value="{!serviceAMTObj.Case_Management_End_Date__c}"/>
+                                            </div>                                                                                        
+                                        </div>
+                                    </td>
+                                    <td data-label="Participating Part-Time Actives" class="addBorderLeft text-align-right">                                           
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">                                                
+                                                <span>{!serviceAMTObj.Contact_Role__c}</span>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element hide" aura:id="editMode">                                            
+                                            <div class="slds-form-element__control">
+                                                <ui:inputSelect class="slds-form-control" aura:id="Role" multiple="false" change="{!c.onSelectRoleChangeFunction}" required="true">
+                                                    <aura:iteration items="{!v.contactRolePLValues}" var="RolePicklistVar">                                    
+                                                        <aura:if isTrue="{!RolePicklistVar == serviceAMTObj.Contact_Role__c}">
+                                                            <ui:inputSelectOption class="slds-cell-wrap" text="{!RolePicklistVar}" value="true"/> 
+                                                            <aura:set attribute="else">
+                                                                <ui:inputSelectOption text="{!RolePicklistVar}" /> 
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:iteration>
+                                                </ui:inputSelect> 
+                                            </div>                                                                                        
+                                        </div>
+                                    </td>
+                                    <td data-label="Participating U65 Retirees" class="addBorderLeft text-align-right">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">                                                
+                                                <div class="slds-cell-wrap no-wrap-in-mobile" title=""><ui:outputPhone  class="slds-cell-wrap" value="{!serviceAMTObj.Phone__c}" /></div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element hide" aura:id="editMode">                                            
+                                            <div class="slds-form-element__control">
+                                                <ui:inputPhone  class="slds-cell-wrap" value="{!serviceAMTObj.Phone__c}"/>
+                                            </div>                                                                                        
+                                        </div>
+                                    </td>
+                                    <td data-label="Medical Carrier" class="addBorderLeft">
+                                        <div class="slds-form-element slds-cell-wrap">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-cell-wrap" title="">{!serviceAMTObj.Email__c}</div>
+                                            </div>                                           
+                                        </div>
+                                    </td>                                        
+                                    <td data-label="Participating O65 Retirees" class="addBorderLeft text-align-right">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">                                                
+                                                <div class="slds-cell-wrap no-wrap-in-mobile" title=""><ui:outputNumber  class="slds-cell-wrap" value="{!serviceAMTObj.UserHierarchy__c}" format=""/></div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element hide" aura:id="editMode">                                            
+                                            <div class="slds-form-element__control">
+                                                <ui:inputNumber value="{!serviceAMTObj.UserHierarchy__c}"/>
+                                            </div>                                                                                        
+                                        </div>
+                                    </td>
+                                    <td data-label="Participating O65 Retirees" class="addBorderLeft text-align-right">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">                                                
+                                                <div class="slds-cell-wrap no-wrap-in-mobile" title=""><ui:outputNumber  class="slds-cell-wrap" value="{!serviceAMTObj.Order__c}" format=""/></div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element hide" aura:id="editMode">                                            
+                                            <div class="slds-form-element__control">
+                                                <ui:inputNumber value="{!v.serviceAMTObj.Order__c}"/>
+                                            </div>                                                                                        
+                                        </div>
+                                    </td>                                        
+                                    <td data-label="Participating O65 Retirees" class="addBorderLeft text-align-right">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">                                                
+                                                <div class="slds-cell-wrap no-wrap-in-mobile" title=""><ui:outputText aura:id="outputText" value="{!serviceAMTObj.Policy_Information_MultiChecKlist__c}" class="slds-cell-wrap "/></div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element hide" aura:id="editMode">                                            
+                                            <div class="slds-form-element__control">
+                                                <ui:inputSelect class="slds-form-control" aura:id="multipleSelect" multiple="true" change="{!c.onSelectPolicyInformation}" />
+                                            </div>                                                                                        
+                                        </div>
+                                    </td>
+                                    <td data-label="Participating O65 Retirees" class="addBorderLeft text-align-right">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">                                                
+                                                <div class="slds-cell-wrap no-wrap-in-mobile" title=""><ui:outputCheckbox class="slds-text-align_center marginExternal" value="{!v.serviceAMTObj.External__c}"/></div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element hide" aura:id="editMode">                                            
+                                            <div class="slds-form-element__control">
+                                                <ui:inputCheckbox class="slds-text-align_center marginExternal" aura:id="checkBox" value="{!serviceAMTObj.External__c }"/>
+                                            </div>                                                                                        
+                                        </div>
+                                    </td>
+                                    <td data-label="Medical Carrier" class="addBorderLeft">
+                                        <div class="" aura:id="deleteIcon" title="Remove">
+                                            <button class="slds-button slds-button_icon delete-btn" onclick="{!c.confirmDelete}" title="Delete">
+                                                <lightning:icon iconName="utility:delete" size="xx-small"></lightning:icon>
+                                                <span class="slds-assistive-text">Delete</span>
+                                            </button>
+                                        </div>
+                                    </td>                                         
+                                </tr>                                
+                            </aura:iteration>                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>                  
+        </article>        
+    </div>   
+</aura:component>

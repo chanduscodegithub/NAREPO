@@ -1,0 +1,201 @@
+<aura:component access="global" implements="force:hasRecordId">
+    
+    <aura:registerEvent name="competitiveLandscapeEvent" type="c:CompetitiveLandscape_Event"/>
+    
+    <aura:attribute name="isEditSaveDeleteButtonsEnabled" type="Boolean" default="true"/>
+    <aura:attribute name="competitorsAttributes" type="Object"/>
+    <aura:attribute name="accountType" type="String" />
+    <aura:attribute name="pharmacyData" type="Competitor__c" />
+    <aura:attribute name="indexVal" type="Integer" />
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="isEnableMultiPickListComponent" type="Boolean" default="false" />
+    <aura:attribute name="associatedMedicalCarrierPicklistValues" type="List" />
+    <aura:handler name="multiPickListEvent" event="c:multiPickListEvent" action="{!c.handleMultiPickList}"/>
+    
+    <aura:method name="editFields" action="{!c.editPharmacyRecords}" access="PUBLIC">
+        <aura:attribute name="cancelEdit" type="Boolean" default="false" />
+    </aura:method>
+    
+    <aura:method name="clearPrimaryIncumbentFields" action="{!c.clearFields}" access="PUBLIC">
+        <aura:attribute name="isPrimaryIncumbent" type="Boolean" default="true" />
+    </aura:method>
+    
+    <aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>
+    
+    <aura:attribute name="pharmacyCoalitionPicklistValuesList" type="List" />
+    
+    <aura:if isTrue="{!and(v.accountType != null, v.accountType == $Label.c.Client_Management)}">
+        <tr class="slds-hint-parent">
+            <th scope="row" data-label="{!$Label.c.Pharmacy_Carrier}">
+                <div class="slds-cell-wrap" title="4/14/2015">{!v.pharmacyData.CompetitorAccount__r.Name}</div>
+            </th>
+            <th scope="col" data-label="Coliation">
+                <aura:if isTrue="{!v.isEdit}">
+                    <div class="slds-form-element__control">
+                        <!--<ui:inputSelect class="slds-form-control" aura:id="dropDownColiationValues" multiple="false" value="{!v.pharmacyCoalitionPicklistValuesList}" />-->
+                        <ui:inputSelect  aura:id="InputSelectSingle" change="{!c.onSingleSelectChange}" class="slds-form-control slds-select">
+                            <aura:iteration items="{!v.pharmacyCoalitionPicklistValuesList}" var="option" >
+                                <option text="{!option.value}" value="{!option.value}" selected="{!option.value==v.pharmacyData.Coalition_if_applicable__c}" />
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-cell-wrap" title="4/14/2015">{!v.pharmacyData.Coalition_if_applicable__c}</div>
+                    </aura:set>
+                </aura:if>
+            </th>
+            <!-- Row Header code goes here for Coaliation -->
+            <th class="slds-text-align--right text-sm-left" scope="row" data-label="{!$Label.c.Number_of_Members_held}">
+                <aura:if isTrue="{!v.isEdit}">
+                    <aura:if isTrue="{!v.pharmacyData.CompetitorAccount__r.Name != 'Optum Rx'}">
+                    <ui:inputNumber class="slds-text-align--right" format="#,###,##0" change="{!c.onChangeOfNoOfMembersHeld}" aura:id="pharmacyFields" value="{!v.pharmacyData.NumberOfMembersHeld__c}" maxlength="13"/>
+                    <aura:set attribute="else">
+                        <ui:outputNumber class="" format="#,###,##0" value="{!v.pharmacyData.NumberOfMembersHeld__c}"/>
+                    </aura:set>
+                </aura:if>
+                    <aura:set attribute="else">
+                        <ui:outputNumber class="" format="#,###,##0" value="{!v.pharmacyData.NumberOfMembersHeld__c}"/>
+                    </aura:set>
+                   
+                </aura:if>
+            </th>
+            <th scope="row" data-label="{!$Label.c.of_Members_held}">
+                <div class="slds-text-align--right text-sm-left" title="Prospecting">{!v.pharmacyData.ofMembersHeld__c}%</div>
+            </th>
+            <th scope="row" data-label="{!$Label.c.Comments}">
+                <aura:if isTrue="{!v.isEdit}">
+                    <lightning:textarea class="slds-cell-wrap no-label textarea-content-fix-edit" value="{!v.pharmacyData.Comments__c}" maxlength="255" />
+                    <aura:set attribute="else">
+                        <ui:outputTextArea value="{!v.pharmacyData.Comments__c}"/>
+                    </aura:set>
+                </aura:if>
+                <!--<div aura:id="OutputComments" class="">
+                    <lightning:textarea class="slds-cell-wrap no-label textarea-content-fix slds-is-relative" value="{!v.pharmacyData.Comments__c}" disabled="true" />
+                </div>
+                <div aura:id="InputComments" class="slds-hide">
+                    <lightning:textarea class="slds-cell-wrap no-label textarea-content-fix-edit" value="{!v.pharmacyData.Comments__c}" maxlength="255" />
+                </div>-->
+            </th>
+            <th scope="row" class="alignDataCenter" data-label="">
+                <aura:if isTrue="{!or(v.pharmacyData.CompetitorAccount__r.Name == 'Optum Rx', v.isEditSaveDeleteButtonsEnabled == false)}">
+                    <span class="slds-grid"></span>
+                    <aura:set attribute="else">
+                        <div aura:id="deleteIcon">
+                            <button class="slds-button slds-text-body--regular" onclick="{!c.removeRecord}">
+                            	<lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                        	</button>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </th>
+    	</tr>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!(v.accountType != null)}">
+                <aura:if isTrue="{!or(v.accountType == $Label.c.Client_Development, v.accountType == $Label.c.Aggregator)}">
+                	<tr class="slds-hint-parent">
+                        <th scope="row" data-label="{!$Label.c.Pharmacy_Carrier}">
+                            <div class="slds-cell-wrap" title="4/14/2015">{!v.pharmacyData.CompetitorAccount__r.Name}</div>
+                        </th>
+                        <th scope="col" data-label="Coliation">
+                            <aura:if isTrue="{!v.isEdit}">
+                                <div class="slds-form-element__control">
+                                    <!--<ui:inputSelect class="slds-form-control" aura:id="dropDownColiationValues" multiple="false" value="{!v.pharmacyCoalitionPicklistValuesList}" />-->
+                                    <ui:inputSelect  aura:id="InputSelectSingle" change="{!c.onSingleSelectChange}" class="slds-form-control slds-select">
+                                        <aura:iteration items="{!v.pharmacyCoalitionPicklistValuesList}" var="option" >
+                                            <option text="{!option.value}" value="{!option.value}" selected="{!option.value==v.pharmacyData.Coalition_if_applicable__c}" />
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                                <aura:set attribute="else">
+                                    <div class="slds-cell-wrap" title="4/14/2015">{!v.pharmacyData.Coalition_if_applicable__c}</div>
+                                </aura:set>
+                            </aura:if>
+                        </th>
+                        <!-- Row Header code goes here for Coaliation -->
+                        <th scope="row" class="alignDataCenter" data-label="{!$Label.c.Incumbent_Primary}">
+                            <ui:inputRadio aura:id="primaryIncumbent" click="{!c.updatePriValue}" disabled="true" value="{!v.pharmacyData.PrimaryIncumbent__c}"/>
+                        </th>
+                        <th scope="row" class="alignDataCenter" data-label="{!$Label.c.Incumbent_Secondary}">
+                            <ui:inputRadio aura:id="secondaryIncumbent" click="{!c.updateSecValue}" disabled="true" value="{!v.pharmacyData.SecondaryIncumbent__c}"/>
+                        </th>
+                        <th class="slds-text-align--right text-sm-left" scope="row" data-label="{!$Label.c.Number_of_Members_held}">
+                            <aura:if isTrue="{!v.isEdit}">
+                                <ui:inputNumber class="slds-text-align--right text-sm-left" format="#,###,##0" change="{!c.onChangeOfNoOfMembersHeldCD}" aura:id="pharmacyFields" value="{!v.pharmacyData.NumberOfMembersHeld__c}"/>
+                                <aura:set attribute="else">
+                                    <ui:outputNumber class="total-data" format="#,###,##0" value="{!v.pharmacyData.NumberOfMembersHeld__c}"/>
+                                </aura:set>
+                            </aura:if>
+                            <!--<ui:inputNumber class="slds-text-align-right" format="#,###,##0" change="{!c.onChangeOfNoOfMembersHeldCD}" aura:id="pharmacyFields" disabled="true" value="{!v.pharmacyData.NumberOfMembersHeld__c}"/>-->
+                        </th>
+                        <th scope="row" data-label="{!$Label.c.Associated_Medical_Carrier}">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <!--Including LWC for choosing TYPE OF OTHER PRODUCTS/SERVICES PROVIDED using Mouse Click - START -->
+                                    <aura:if isTrue="{!v.isEnableMultiPickListComponent}" aura:id="multipleSelect">  
+                                        <c:multiPickListGenericComponent receivedPickListValues="{!v.associatedMedicalCarrierPicklistValues}" selectedValues="{!v.pharmacyData.AssociatedMedicalCarrier__c}" onmultipicklistgenericevent="{!c.handleMultiPickList}"></c:multiPickListGenericComponent>
+                                    </aura:if>
+                    				<!--Including LWC for choosing TYPE OF OTHER PRODUCTS/SERVICES PROVIDED using Mouse Click - END -->
+                                    <!--<ui:inputSelect multiple="true" class="multiple slds-hide" aura:id="multipleSelect" change="{!c.onChangeValues}" />-->
+                                    <!--<ui:inputSelectOption text="" /> 
+                                        <aura:iteration items="{!v.competitorsAttributes.AssociatedMedicalCarriers}" var="associatedMedicalCarrierVal">
+                                            <aura:if isTrue="{!associatedMedicalCarrierVal.Id == v.pharmacyData.zzAssociatedMedicalCarrier__c}">
+                                                <ui:inputSelectOption label="{!associatedMedicalCarrierVal.CompetitorAccount__r.Name}" text="{!associatedMedicalCarrierVal.Id}" value="true"/> 
+                                            <aura:set attribute="else">
+                                                <ui:inputSelectOption label="{!associatedMedicalCarrierVal.CompetitorAccount__r.Name}" text="{!associatedMedicalCarrierVal.Id}"/> 
+                                            </aura:set>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </ui:inputSelect>-->
+                                    <div aura:id="multiResult">
+                                        <ui:outputText class="slds-cell-wrap" value="{!v.pharmacyData.AssociatedMedicalCarrier__c}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                        <th scope="row" data-label="{!$Label.c.Comments}">
+                            <aura:if isTrue="{!v.isEdit}">
+                                <lightning:textarea class="slds-cell-wrap no-label textarea-content-fix-edit" value="{!v.pharmacyData.Comments__c}" maxlength="255" />
+                                <aura:set attribute="else">
+                                    <ui:outputTextArea value="{!v.pharmacyData.Comments__c}"/>
+                                </aura:set>
+                            </aura:if>
+                            <!--<div aura:id="OutputComments" class="">
+                                <lightning:textarea class="slds-cell-wrap no-label textarea-content-fix slds-is-relative" value="{!v.pharmacyData.Comments__c}" disabled="true" />
+                            </div>
+                            <div aura:id="InputComments" class="slds-hide">
+                                <lightning:textarea class="slds-cell-wrap no-label textarea-content-fix-edit" value="{!v.pharmacyData.Comments__c}" maxlength="255" />
+                            </div>-->
+                        </th>
+                        <th scope="row" class="alignDataCenter" data-label="">
+                            <aura:if isTrue="{!v.isEditSaveDeleteButtonsEnabled}">
+                                <div aura:id="deleteIcon">
+                                    <button class="slds-button slds-text-body--regular" onclick="{!c.removeRecord}">
+                                        <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                                    </button>
+                                </div>
+                                <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                                    <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                        <span class="slds-assistive-text">Loading</span>
+                                        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:if>
+                        </th>
+    				</tr>
+                </aura:if>
+            </aura:if>
+        </aura:set>
+    </aura:if>
+</aura:component>

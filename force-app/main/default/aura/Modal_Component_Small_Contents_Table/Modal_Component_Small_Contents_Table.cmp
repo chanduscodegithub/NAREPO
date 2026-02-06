@@ -1,0 +1,27 @@
+<aura:component >
+    <aura:attribute name="dataToDisplayObj" type="String[]"/>
+    <aura:attribute name="inputBoxValue" type="String[]"/>
+    <aura:attribute name="selectedAddPopupDataName" type="String[]"/>
+    <aura:attribute name="selectedVal" type="Boolean" />    
+    <aura:registerEvent name="MultiCheckDataSelect" type="c:MultiCheckDataSelect"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <td class="">
+        <form class="slds-form--inline">
+            <div class="slds-form-element w-100">
+                <div class="slds-form-element__control w-100">
+                    <div class="slds-grid">
+                        <div class="slds-grid slds-grid--vertical-align-start chk-box-container w-100">
+                            <ui:inputCheckbox aura:id="valueCheckbox" change="{!c.Select}"/>
+                            <label class="slds-checkbox__label alignBghName">
+                                <span class="slds-checkbox--faux"></span>
+                                <span class="slds-form-element__label">{!v.dataToDisplayObj}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </td>
+</aura:component>

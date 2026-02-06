@@ -1,0 +1,184 @@
+<!--
+  @description       : 
+  @author            : Thanushree
+  @group             : 
+  @last modified on  : 01-30-2024
+  @last modified by  : Thanushree
+-->
+<template>
+
+        
+                <div >
+                    <div class="section-header" >
+                        <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small">
+                        <span ><b>{headerLabel}</b></span>
+                    </div>
+                    </div>
+                </div>
+                <div >
+                       
+                            <div class="slds-p-top_xx-small  slds-p-left_x-small slds-text-body_small" >
+                                <span ><i>The information for this section comes from the Underwriting A-File. If any of this data is incorrect or missing, please contact the Merit Helpdesk.</i></span>
+                                <!-- The information for this section comes from the Financials section under the Details tab.-->                      
+                                </div>
+                                
+                           
+                        </div>
+    <div class="slds-p-top_x-small ">
+    <table class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+        <thead>
+            
+
+            <tr class="slds-hint-parent thBorderLeft divider header-color">
+                <td class="slds-border_right" >
+                        <div class="slds-truncate">
+                            <span ><b>Medical:</b></span>
+                        </div>
+                    </td>
+                <td  class="slds-border_right">
+                    <div class="slds-truncate" >
+                        <span ><b>{year2018Med}</b></span>
+                    </div>
+                </td>
+                <td class="slds-border_right">
+                        <div class="slds-truncate">
+                            <span ><b>{year2019Med}</b></span>
+                        </div>
+                    </td>
+                    <td class="slds-border_right">
+                        <div class="slds-truncate" >
+                            <span><b>{year2020Med}</b></span>
+                        </div>
+                    </td>
+                    <td class="slds-border_right">
+                        <div class="slds-truncate">
+                            <template if:true={year2021Med}> 
+                                <span ><b>Projected</b></span>
+                                <span >&nbsp;</span>  
+                            </template> 
+                            <span ><b>{year2021Med}</b></span>
+                           
+                        </div>
+                    </td>
+        </tr>
+        </thead>
+       
+        <tbody>
+            
+            <template for:each={financialMedicalList} for:item="eachFinancialMedData"
+                                for:index="index">
+                                <tr key={eachFinancialMedData.coloumn0Data}>
+                                    <td class="slds-border_right">
+                                          <span ><strong>{eachFinancialMedData.coloumn0Data}</strong></span>    
+                                        
+                                    </td>
+                                    <td  class="slds-border_right">
+                                        <template if:true={eachFinancialMedData.coloumn1Data}>                          
+                                            <span>{eachFinancialMedData.coloumn1Data}</span>    
+                                        </template>                            
+                                    </td>
+                                    <td class="slds-border_right" >
+                                        <template if:true={eachFinancialMedData.coloumn2Data}>                          
+                                            <span>{eachFinancialMedData.coloumn2Data}</span>    
+                                        </template>                            
+                                    </td>  
+                                    <td  class="slds-border_right">
+                                        <template if:true={eachFinancialMedData.coloumn3Data}>                          
+                                            <span>{eachFinancialMedData.coloumn3Data}</span>    
+                                        </template>                            
+                                    </td> 
+                                    <td >
+                                        <template if:true={eachFinancialMedData.coloumn4Data}>                          
+                                            <span>{eachFinancialMedData.coloumn4Data}</span>    
+                                        </template>                            
+                                    </td>                     
+                                </tr>
+                       
+                                
+            </template>
+                
+            
+        </tbody>
+   
+    </table>
+    </div>
+
+    <!--div class="slds-p-top_x-small ">
+            <table class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                <thead>
+                    
+                    <tr class="slds-hint-parent thBorderLeft divider header-color">
+                        <td class="slds-border_right">
+                                <div class="slds-truncate">
+                                    <span ><b>Optum Rx:</b></span>
+                                </div>
+                            </td>
+                        <td class="slds-border_right">
+                            <div class="slds-truncate" >
+                                <span ><b>{year2018Rx}</b></span>
+                            </div>
+                        </td>
+                        <td class="slds-border_right">
+                                <div class="slds-truncate" >
+                                    <span ><b>{year2019Rx}</b></span>
+                                </div>
+                            </td>
+                            <td class="slds-border_right">
+                                <div class="slds-truncate" >
+                                    <span ><b>{year2020Rx}</b></span>
+                                </div>
+                            </td>
+                            <td class="slds-border_right">
+                                <div class="slds-truncate" >
+                                    <template if:true={year2021Rx}> 
+                                        <span ><b>Projected</b></span>
+                                        <span >&nbsp;</span>  
+                                    </template> 
+                                    <span ><b>{year2021Rx}</b></span>
+                                    
+                                </div>
+                            </td>
+                </tr>
+                </thead>
+                
+                <tbody>
+                    
+                    <template for:each={financialrxDataList} for:item="eachFinancialRxData"
+                                        for:index="index">
+                                        <tr key={eachFinancialRxData.coloumn0Data}>
+                                            <td class="slds-border_right">
+                                                <template if:true={eachFinancialRxData.coloumn0Data}>                          
+                                                    <span><strong>{eachFinancialRxData.coloumn0Data}</strong></span>    
+                                                </template> 
+                                            </td>
+                                            <td  class="slds-border_right">
+                                                <template if:true={eachFinancialRxData.coloumn1Data}>                          
+                                                    <span>{eachFinancialRxData.coloumn1Data}</span>    
+                                                </template>                            
+                                            </td>
+                                            <td class="slds-border_right" >
+                                                <template if:true={eachFinancialRxData.coloumn2Data}>                          
+                                                    <span>{eachFinancialRxData.coloumn2Data}</span>    
+                                                </template>                            
+                                            </td>  
+                                            <td  class="slds-border_right">
+                                                <template if:true={eachFinancialRxData.coloumn3Data}>                          
+                                                    <span>{eachFinancialRxData.coloumn3Data}</span>    
+                                                </template>                            
+                                            </td> 
+                                            <td >
+                                                <template if:true={eachFinancialRxData.coloumn4Data}>                          
+                                                    <span>{eachFinancialRxData.coloumn4Data}</span>    
+                                                </template>                            
+                                            </td>                     
+                                        </tr>
+                               
+                                        
+                    </template>
+                        
+                    
+                </tbody>
+           
+            </table>
+            </div-->
+</template>

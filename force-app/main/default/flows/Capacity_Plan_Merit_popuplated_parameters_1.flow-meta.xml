@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <decisions>
+        <name>myRule_19</name>
+        <label>Is UHC APP Members changed and &gt;0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_31</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is UHC APP Members changed and &gt;0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_19</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.UHC_APP_Members__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_APP_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_19_A1</targetReference>
+            </connector>
+            <label>TRUE_Is UHC APP Members changed and &gt;0</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_22</name>
+        <label>Is UHC APP Members changed and = 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_25</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is UHC APP Members changed and = 0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_22</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.UHC_APP_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_APP_Members__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_22_A1</targetReference>
+            </connector>
+            <label>TRUE_Is UHC APP Members changed and = 0</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_25</name>
+        <label>Is UHC Life Members changed and &gt; 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_19</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is UHC Life Members changed and &gt; 0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_25</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.UHC_Life_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_Life_Members__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_25_A1</targetReference>
+            </connector>
+            <label>TRUE_Is UHC Life Members changed and &gt; 0</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_28</name>
+        <label>Is UHC Life Members changed and = 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_22</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is UHC Life Members changed and = 0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_28</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.UHC_Life_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_Life_Members__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_28_A1</targetReference>
+            </connector>
+            <label>TRUE_Is UHC Life Members changed and = 0</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_31</name>
+        <label>Is UHC HI Members changed and &gt; 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_34</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is UHC HI Members changed and &gt; 0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_31</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.UHC_HI_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_HI_Members__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_31_A1</targetReference>
+            </connector>
+            <label>TRUE_Is UHC HI Members changed and &gt; 0</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_34</name>
+        <label>Is UHC HI Members changed and = 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_37</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is UHC HI Members changed and = 0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_34</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.UHC_HI_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_HI_Members__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_34_A1</targetReference>
+            </connector>
+            <label>TRUE_Is UHC HI Members changed and = 0</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_37</name>
+        <label>Is FIGO changed and &gt; 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_40</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is FIGO changed and &gt; 0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_37</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Pet_Insurance_FIGO_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Pet_Insurance_FIGO_Members__c</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_37_A1</targetReference>
+            </connector>
+            <label>TRUE_Is FIGO changed and &gt; 0</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_40</name>
+        <label>Is FIGO changed and = 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_43</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is FIGO changed and = 0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_40</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Pet_Insurance_FIGO_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Pet_Insurance_FIGO_Members__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_43</targetReference>
+            </connector>
+            <label>TRUE_Is FIGO changed and = 0</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_43</name>
+        <label>Is STD or LTD changed and &gt; 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_47</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is STD or LTD changed and &gt; 0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_43</name>
+            <conditionLogic>(1 AND 2) OR (3 AND 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.UHC_STD_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_STD_Members__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_LTD_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_LTD_Members__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_43_A1</targetReference>
+            </connector>
+            <label>TRUE_Is STD or LTD changed and &gt; 0</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_47</name>
+        <label>Is STD or LTD changed and = 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>FALSE_Is STD or LTD changed and = 0</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_47</name>
+            <conditionLogic>(1 AND 2) OR (3 AND 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.UHC_STD_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_STD_Members__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_LTD_Members__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.UHC_LTD_Members__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_47_A1</targetReference>
+            </connector>
+            <label>TRUE_Is STD or LTD changed and = 0</label>
+        </rules>
+    </decisions>
+    <description>Migrated from the Capacity Plan- Merit popuplated parameters process using multiple criteria.
+Added HIPP, FIGO</description>
+    <label>Capacity Plan- Merit popuplated parameters_1</label>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>myRule_19_A1</name>
+        <label>Update Accident</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_31</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Accident__c</field>
+            <value>
+                <stringValue>1 - Yes</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Policy_Information__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_22_A1</name>
+        <label>Update Accident</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_25</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Accident__c</field>
+            <value>
+                <stringValue>0 - No</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Policy_Information__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_25_A1</name>
+        <label>Update Life</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_19</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Life__c</field>
+            <value>
+                <stringValue>1</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Policy_Information__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_28_A1</name>
+        <label>Update Life</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_22</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Life__c</field>
+            <value>
+                <stringValue>0</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Policy_Information__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_31_A1</name>
+        <label>Update HIPP</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_34</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>HIPP__c</field>
+            <value>
+                <stringValue>1 - Yes</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Policy_Information__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_34_A1</name>
+        <label>Update HIPP</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_37</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>HIPP__c</field>
+            <value>
+                <stringValue>0 - No</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Policy_Information__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_37_A1</name>
+        <label>Update FIGO</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_40</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>FIGO__c</field>
+            <value>
+                <stringValue>1 - Yes</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Policy_Information__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_43_A1</name>
+        <label>Update Disability Insurance</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_47</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Disability_Insurance__c</field>
+            <value>
+                <stringValue>1 - Yes</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Policy_Information__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_47_A1</name>
+        <label>Update Disability Insurance</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Disability_Insurance__c</field>
+            <value>
+                <stringValue>0 - No</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Policy_Information__r</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_28</targetReference>
+        </connector>
+        <object>Account</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

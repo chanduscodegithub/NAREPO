@@ -1,0 +1,105 @@
+<template>
+    <div class="white-background slds-p-vertical_small container">
+        <template if:false={isLoaded}>
+            <lightning-spinner alternative-text="Loadding" size="medium"></lightning-spinner>
+        </template>
+        <template if:true={isLoaded}>
+            <template if:true={isUserAuthorized}>
+                <div class="slds-p-horizontal_medium">
+                    <div class="slds-clearfix slds-m-top_medium">
+                        <div class="slds-float_left">
+                            <p><strong>Current Sales Cycle : </strong>{currentSlaesCycle}</p>
+                        </div>
+                        <!-- <div class="slds-float_right">
+                            <lightning-button 
+                                label="Refresh" 
+                                title="Refresh" 
+                                icon-name="utility:refresh" 
+                                class="slds-m-left_x-small" 
+                                onclick={fetchSalesDebreiefSummaryDataFromSF}
+                            ></lightning-button>
+                        </div> -->
+                    </div>
+                </div>
+                    <template if:true={containsSalesDebriefSummaryData}>
+                        <div class="slds-p-horizontal_medium slds-p-vertical_medium slds-text-align_left">
+                            <p>
+                                <strong> 
+                                    Below is a list of the Sales Debriefs that will need to be completed for this Sales Cycle. To access the Sales 
+                                    Debrief, click on the link in the membership activity name shown below and navigate to the Sales Debrief tab 
+                                    within the membership activity.
+                                </strong>
+                            </p>
+                        </div>
+                        <div class="slds-p-horizontal_medium slds-m-top_small">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Company Name">Company Name</div>
+                                        </th>
+                                        <th scope="col">
+                                            Membership Activity
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Effective Date">Effective Date</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Sales Debrief Type">Sales Debrief Type</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Sales Debrief Status">Sales Debrief Status</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={salesDebreiefSummaryData} for:item="dataIterator">
+                                        <tr key={dataIterator.id} class="slds-hint-parent">
+                                            <th class="slds-cell-wrap" data-label="Company Name" scope="row">
+                                                <div class="slds-line-clamp" title={dataIterator.Account.Name}>{dataIterator.Account.Name}</div>
+                                            </th>
+                                            <td class="slds-cell-wrap" data-label="Membership Activity">
+                                                <div class="slds-line-clamp" title={dataIterator.Name}>
+                                                    <a   
+                                                        href={dataIterator.membershipActivityUrl} 
+                                                        target="_self" 
+                                                        data-opportunityid={dataIterator.Id} 
+                                                        onclick={navigateToMembershipActivity}
+                                                    >{dataIterator.Name}</a>
+                                                </div>
+                                            </td>
+                                            <td data-label="Effective Date">
+                                                <div> 
+                                                    <p class="slds-truncate" title={dataIterator.effectiveDate}>{dataIterator.effectiveDate}</p>
+                                                </div>
+                                            </td>
+                                            <td data-label="Sales Debrief Type">
+                                                <div class="slds-truncate" title={dataIterator.salesDebriefType}>{dataIterator.salesDebriefType}</div>
+                                            </td>
+                                            <td data-label="Sales Debrief Status">
+                                                <div class="slds-truncate" title={dataIterator.salesDebriefStatus}>{dataIterator.salesDebriefStatus}</div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                    <template if:false={containsSalesDebriefSummaryData}>
+                        <h1 class="slds-p-horizontal_medium slds-p-horizontal_large slds-p-vertical_medium slds-text-align_center">
+                            There is no data to display.
+                        </h1>
+                    </template>
+            </template>
+            <template if:false={isUserAuthorized}>
+                <div class="slds-p-horizontal_medium slds-p-horizontal_large slds-p-vertical_medium slds-text-align_center">
+                    <p>
+                        This tab was specifically designed to provide CD SVPs, Client Development Directors, SCEs, RVPs, VPCRs, Specialty
+                        Benefit SCE and Specialty Client Development Directors (CD MD/SSC) the ability to complete the Sales Debrief. 
+                        This tab will be blank for those who are not part of this targeted group.
+                    </p>
+                </div>
+            </template>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,30 @@
+<template>
+    
+    <td role="gridcell">
+        <div class="slds-cell-wrap" title="Date">
+            <lightning-formatted-date-time value={auditTrailRec.createdDate} year="numeric"
+                        day="numeric" month="numeric" hour="numeric" minute="numeric" time-zone={loggedInUserTimeZone}
+                        hour12="true"></lightning-formatted-date-time>
+        </div>
+    </td>
+    <td role="gridcell">
+        <div class="slds-cell-wrap" title="User">
+            <!--<a href={userRecLink} variant="base" onclick={navigateToUserRecord}>{auditTrailRec.userName}</a>-->
+            <a href="javascript:void(0);" variant="base" onclick={navigateToUserRecord}>{auditTrailRec.userName}</a>
+        </div>
+    </td>
+    <td role="gridcell">
+        <div class="slds-cell-wrap" title="Event">{auditTrailRec.event}</div>
+    </td>
+    <td role="gridcell">
+        <div class="slds-cell-wrap" title="Field">{auditTrailRec.field}</div>
+    </td>
+    
+    <td role="gridcell">
+        <div class="slds-cell-wrap" title="Original Value">{auditTrailRec.originalValue}</div>
+    </td>
+    <td role="gridcell">
+        <div class="slds-cell-wrap" title="New Value">{auditTrailRec.newValue}</div>
+    </td>
+
+</template>

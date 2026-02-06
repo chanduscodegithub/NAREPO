@@ -1,0 +1,171 @@
+<apex:page controller="SalesDebriefPrintCtrl" showHeader="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false" renderAs="pdf">
+    <html>
+        <head>
+            <style>
+                @page{            
+                margin:.5cm;
+                
+                @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size:12px;
+                padding-right:12px;
+                }
+                
+                }
+                
+                body{
+                font-family: sans-serif !important;
+                font-size: 13px;
+                }
+                
+                .main-header{
+                background-color:#b3c8ee;
+                display: flex;
+                padding: 4px 10px;
+                font-size: 17px;
+                text-align:center;
+                margin-top:10px;
+                margin-bottom: 10px;
+                }
+                
+                .border-bottom{
+                border-bottom: 1px solid #b3c8ee;
+                padding-top:10px;
+                padding-bottom: 4px;
+                margin-left:10px;
+                margin-right:10px;
+                }
+                
+                .section-name{
+                line-height: 30px;
+                margin-bottom: 15px;
+                padding-left: 10px;
+                background-color: #b3c8ee;
+                font-weight: bold;
+                }
+                
+                .other-info{
+                line-height: 20px;
+                margin-bottom: 15px;
+                padding-left: 10px;
+                background-color: #f6f8e0;
+                width: 100%;
+                }
+                
+                .question-name{
+                line-height: 25px;
+                margin-bottom: 3px;
+                margin-left: 5px;
+                padding-left: 5px;
+                margin-right: 10px;
+                background-color: #f3f3f3;
+                font-weight: bold;
+                }
+                
+                .onlyAnswer{
+                vertical-align: top;
+                margin-left: 10px;
+                margin-right: 10px;
+                width:100%
+                }
+                
+                .answerWithWriteIn{
+                display: inline;
+                height:auto;
+                word-wrap:break-word;
+                overflow: visible;
+                vertical-align: top;
+                margin-left: 10px;
+                margin-right: 10px;
+                width:50%;
+                }
+                
+                .writeInSpan{
+                margin-left:70px;
+                display: inline;
+                width:50%;
+                height:auto;
+                }
+                
+                .writeInOnly{
+                height:auto;
+                white-space: pre;
+                display: inline-block;
+                overflow:visible;
+                word-wrap:break-word;
+                }
+            </style>	
+        </head> 
+        <body>
+            <div>
+                <apex:image url="{!$Resource.UHC_Logo}" width="250" height="60" style="float:right"/>
+            </div>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <div>
+                <span style="color: black;font-size:15px;float:right;margin-right:10px;"><b>Date: </b>
+                    <apex:outputText value="{0,date,M'/'d'/'yyyy  h:mm a}">
+                        <apex:param value="{!todayDate+offset}" /> 
+                    </apex:outputText>
+                </span>
+            </div>
+            <br/>
+            <br/>
+            <div class="main-header" style="border-radius: 3px;">
+                <apex:outputPanel rendered="{!IF(salesDebriefType == 'Comprehensive Medical',true,false)}">
+                    <b>{!effectiveDateYear} UHC NA Internal Sales Debrief Program Questionnaire - Medical &amp; Specialty</b>
+                </apex:outputPanel>
+                
+                <apex:outputPanel rendered="{!IF(salesDebriefType == 'Specialty Only',true,false)}">
+                    <b>{!effectiveDateYear} UHC NA Internal Sales Debrief Program Questionnaire - Specialty Only</b>
+                </apex:outputPanel>
+            </div>
+            
+            <div class="border-bottom">
+                <b>Company Name:</b> {!accountName}
+            </div>
+            <div class="border-bottom">
+                <b>Membership Activity Name:</b> {!membershipActivityName}
+            </div>
+            
+            <br/>
+            <br/>
+            
+            <apex:repeat value="{!sdpwList}" var="data">
+                <apex:outputPanel rendered="{!IF(AND(data.sectionName != NULL, data.sectionName != ''),true,false)}">
+                    <div class="section-name" style="border-radius: 3px;">
+                        {!data.sectionName}
+                    </div>
+                </apex:outputPanel>
+                
+                <apex:outputPanel rendered="{!IF(AND(data.otherContent != NULL, data.otherContent != ''),true,false)}">
+                    <div class="other-info">
+                        <apex:outputText value="{!data.otherContent}" escape="false"/>
+                    </div>
+                </apex:outputPanel>
+                
+                <div class="question-name" style="border-radius: 3px;">
+                    {!data.question}
+                </div>
+                
+                <apex:outputPanel rendered="{!IF(OR(data.writeInValue == NULL, data.writeInValue == ''),true,false)}">
+                    <div class="onlyAnswer">
+                        <apex:outputText value="{!data.answer}" escape="false"/>
+                    </div>
+                </apex:outputPanel>
+                
+                <apex:outputPanel rendered="{!IF(AND(data.writeInValue != NULL, data.writeInValue != ''),true,false)}">
+                    <div class="onlyAnswer"><apex:outputText value="{!data.answer}" escape="false"/></div>
+                    
+                    <div class="onlyAnswer">
+                        <b>Other:</b><apex:outputText value="{!data.writeInValue}" escape="false"/>
+                    </div>
+                </apex:outputPanel>
+                
+                <br/>
+            </apex:repeat>
+        </body>
+    </html>
+</apex:page>

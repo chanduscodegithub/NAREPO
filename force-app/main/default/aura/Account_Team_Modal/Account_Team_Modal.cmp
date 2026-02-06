@@ -1,0 +1,177 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="AccountTeamController">
+    <aura:attribute name="UsersList" type="User[]"/>
+    <aura:attribute name="AccountTeamIndex" type="String"/> 
+    <aura:attribute name="isUserListEmpty" type="Boolean" default="false" />
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    <aura:attribute name='ModalPagination' type='Boolean' default="false"/>
+    <aura:attribute name='Child_Data' type='Object' />
+    <aura:attribute name="sortLastNameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortFirstNameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortDepartmentAsc" type="Boolean" default="true"/>
+    <aura:attribute name="isGoButtonClicked" type="Boolean" default="false"/>
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="user_SearchFieldValues" type="String[]" default="Last Name,First Name,Job Title"/>
+    <aura:attribute name="user_SearchFieldValues1" type="String[]" default="Begins With,Equals to,Contains"/>
+    
+    <div class="slds-section ipadbottom slds-m-vertical--none modal_main-content">
+        <article class="slds-card">
+            <div style="padding-top:0px;position:relative;">
+                <div class="slds-spinner_container slds-hide" aura:id="userLoadingspinner">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                        <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>  
+                <div class="slds-grid uiInputSelect slds-m-bottom_none slds-p-vertical_small slds-p-horizontal_medium">
+                    <div class="uiInputSelect uiMenuList">
+                        <form class="uiMenuList slds-form--inline slds-grid slds-grid--vertical-align-center account-team--popup">
+                            <div class="slds-form-element search-align">
+                                <div class="slds-form-element__control">
+                                    <span class="slds-truncate" title="Search Results Where">{!$Label.c.Search_Results_Where}</span>
+                                </div>
+                            </div>
+                            <div class="slds-form-element last-align">
+                                <div class="slds-form-element__control nm-wdt">
+                                    <ui:inputSelect class="slds-form-control" aura:id="SearchDropDown" multiple="false" change="{!c.clearSearchKeyValues}">
+                                        <aura:iteration items="{!v.user_SearchFieldValues}" var="user_SearchFieldVal"> 
+                                            <ui:inputSelectOption text="{!user_SearchFieldVal}"/> 
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                            <div class="slds-form-element begin-align">
+                                <div class="slds-form-element__control nm-wdt">
+                                    <ui:inputSelect class="slds-form-control" aura:id="SearchDropDown1" multiple="false" change="{!c.clearSearchKeyValues}">
+                                        <aura:iteration items="{!v.user_SearchFieldValues1}" var="user_SearchFieldVal1"> 
+                                            <ui:inputSelectOption text="{!user_SearchFieldVal1}"/> 
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                            <div class="slds-form-element input-align">
+                                <div class="slds-form-element__control nm-wdt">
+                                    <div class="slds-hide">
+                                        <ui:inputText class="slds-form-control"></ui:inputText>
+                                    </div>
+                                    <ui:inputText class="slds-form-control" updateOn="keyup" aura:id="searchKey" keyup="{!c.enableGoBtn}"></ui:inputText>
+                                </div>
+                            </div>
+                            <div class="slds-form-element go-btn">
+                                <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="goBtn" disabled="true" press="{!c.searchUserRecords}">{!$Label.c.Go}</ui:button>
+                            </div>
+                            <div class="slds-form-element clr-btn">
+                                <div class="slds-p-right--small seperator-md">
+                                <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="clrBtn" press="{!c.doInit}">{!$Label.c.Clear}</ui:button>
+                                </div>
+                            </div>
+                            <div class="slds-col--bump-left prev-btn top-pagination">
+                                <c:Pagination page="{!v.page}" pages="{!v.pages}" ModalPagination="{!v.ModalPagination}" total="{!v.total}"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                                
+                
+                
+                <div class="slds-card__body slds-m-bottom--none">
+                    <ui:scrollerWrapper class="scrollerSize">
+                    <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                    	<table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout data-table">
+                        <thead>
+                            <tr class="slds-text-title--caps">
+                                
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:8%;">
+                                    
+                                </th>
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                    <div  class="slds-th__action">
+                                        <span class="slds-truncate" title="{!$Label.c.Last_Name}">{!$Label.c.Last_Name}</span>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                    </div>
+                                    <div class="slds-resizable">
+                                        <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                        <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                        <span class="slds-resizable__handle">
+                                            <span ></span>
+                                        </span>
+                                    </div>
+                                </th>
+                                
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                    <div  class="slds-th__action">
+                                        <span class="slds-truncate" title="{!$Label.c.First_Name}">{!$Label.c.First_Name}</span>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                    </div>
+                                    <div class="slds-resizable">
+                                        <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                        <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                        <span class="slds-resizable__handle">
+                                            <span ></span>
+                                        </span>
+                                    </div>
+                                </th>
+                                
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                    <div  class="slds-th__action">
+                                        <span class="slds-truncate" title="{!$Label.c.Job_Title}">{!$Label.c.Job_Title}</span>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                    </div>
+                                    <div class="slds-resizable">
+                                        <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                        <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                        <span class="slds-resizable__handle">
+                                            <span ></span>
+                                        </span>
+                                    </div>
+                                </th>
+                                
+                                <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                    <div  class="slds-th__action">
+                                        <span class="slds-truncate" title="{!$Label.c.Role}">{!$Label.c.Role}</span>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                    </div>
+                                    <div class="slds-resizable">
+                                        <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                        <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                        <span class="slds-resizable__handle">
+                                            <span ></span>
+                                        </span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.isUserListEmpty}">
+                                <p></p>
+                                <tr>
+                                    <th colspan="7">
+                                        <div class="slds-text-align--center">{!$Label.c.NationalAccountSalesTeam_AddPopUp_NoRecords_Message}</div>
+                                    </th>
+                                </tr>
+                                <aura:set attribute="else">
+                                    <p></p>
+                                    <aura:iteration items="{!v.UsersList}" var="UserSearchObject" indexVar="index">
+                                        <c:Search_Account_Team_Modal_TableBody UserSearchObject="{!UserSearchObject}"></c:Search_Account_Team_Modal_TableBody>
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </tbody>
+                    </table>
+                    </ui:scrollerWrapper>
+                    <div class="slds-p-horizontal_medium slds-p-vertical_small modal-footer">
+                    	<c:Pagination page="{!v.page}" pages="{!v.pages}" ModalPagination="{!v.ModalPagination}" total="{!v.total}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-card__footer">
+                
+            </div>
+        </article>
+    </div>
+</aura:component>

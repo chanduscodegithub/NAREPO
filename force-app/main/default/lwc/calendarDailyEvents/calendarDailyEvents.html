@@ -1,0 +1,58 @@
+<template>
+<!--Purpose : Display Calendar Component showing events from user's personal and shared calendar
+    This is added as a Component in CSI Home Page 
+    History 
+    VERSION      AUTHOR                DATE                DETAIL              FEATURES/CSR/TTP  
+    1.0 -        Satish               12/18/2019      INITIAL DEVELOPMENT   
+     *******************************************************************   -->
+    <lightning-card title="Events Calendar - This Week's Events" style="font-weight: 600;">
+        <div class="slds-m-around_medium" style="font-weight: normal;">
+            <!-- Show Today's Events from Personal and Shared Calendar -->
+            <table class="slds-table slds-m-left_xx-small slds-table_fixed-layout">
+                <template if:true={calendarEvents.data}>
+                    <template for:each={calendarEvents.data} for:item="calEvent">
+                        <tr key={calEvent.Id}>
+                            <td style="width: 10%;vertical-align: top;">
+                                {calEvent.StartDate}
+                            </td>
+                            <td class="slds-truncate">
+                                <p class="slds-truncate"><a href="#"  data-record-id={calEvent.Id} onclick={handleClick}>
+                                {calEvent.Subject}
+                                </a></p>
+                                <p style="font-size:12px;" class="slds-text-color_weak">{calEvent.location}</p>
+                                <p style="font-size:12px;" class="slds-text-color_weak">{calEvent.StartTime} - {calEvent.EndTime}</p>
+                            </td>                           
+                        </tr>
+                        <!--<p key={calEvent.Id}>
+                            {calEvent.StartDate}
+                            <a class="slds-m-around_xx-small" href="www.salesforce.com"  data-record-id={calEvent.Id} onclick={handleClick}>{calEvent.Subject} </a>
+                        </p> 
+                        <div key={calEvent.Id} class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_2-of-12">
+                                <span></span>
+                            </div>
+                            <div class="slds-col">
+                                <span>{calEvent.EndDate}</span>
+                            </div>
+                        
+                        </div>-->
+                    </template>
+                </template>
+            </table>
+            <!-- Data failed to load -->
+            <template if:true={isEmpty}>
+                <!--<div class="slds-text-color_error">
+                    Nothing Due today
+                </div>-->
+                <div class="slds-illustration slds-illustration_x-small" aria-hidden="false">
+                    <img src="/projRes/ui-home-private/emptyStates/noEvents.svg" class="slds-illustration__svg" alt=""/>
+                    <div class="slds-text-color_weak">
+                        <div class="empty-state-message slds-m-top_medium">Looks like you're free and clear the rest of the day.</div>
+                    </div>
+                </div>
+            </template>        
+            <!-- Navigating code goes here -->
+        </div>
+        <p slot="footer" style="font-weight: normal;"><a href="#" onclick={navigateToEventHomePage}>View Calendar</a></p>
+    </lightning-card>
+</template>

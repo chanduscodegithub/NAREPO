@@ -1,0 +1,196 @@
+<template>
+    <template if:false={isLoggedInUserRoleCMVPCRRVP}>
+        <td data-label="Company Name" class="slds-cell-wrap txtVerticleAlign" title="Company">
+
+            <div class="slds-cell-wrap">{growthRec.accountName}</div>
+        </td>
+        <template if:true={isLoggedInUserRoleSpecialitySVP}>
+            <template if:false={isSpecialitySVPAnOpportunityOwner}>
+                <td data-label="Medical SVP/SCE" class="slds-cell-wrap txtVerticleAlign" title="Medical SVP/SCE">
+                    <div class="slds-cell-wrap">{growthRec.opportunityOwnerName}</div>
+                </td>
+            </template>
+            <template if:true={isSpecialitySVPAnOpportunityOwner}>
+                <td data-label="Medical SVP/SCE" class="slds-cell-wrap txtVerticleAlign" title="Medical SVP/SCE">
+                    <div class="slds-cell-wrap"></div>
+                </td>
+            </template>
+        </template>
+        <td data-label="Effective Date" class="slds-cell-wrap txtVerticleAlign" title="Effective Date">
+
+            <!-- <div class="slds-truncate">{growthRec.effectiveDate}</div> -->
+            <lightning-formatted-date-time value={growthRec.effectiveDate} year="numeric" day="numeric" month="numeric"
+                time-zone="UTC"></lightning-formatted-date-time>
+        </td>
+        <template if:true={isNonOtherByUpProduct}>
+                <td data-label="Product Name" class="slds-cell-wrap txtVerticleAlign" title="Product Name">
+                    <div class="slds-cell-wrap">{growthRec.productLine}</div>
+                </td>
+            </template>
+            <template if:false={isNonOtherByUpProduct}>
+                <td data-label="Product Name" class="slds-cell-wrap txtVerticleAlign" title="Product Name">
+                    <div class="slds-cell-wrap">{growthRec.productName}</div>
+                </td>
+            </template>
+            <template if:true={hasRecSubmittedToICTeam}>
+                    <td data-label="Date Sent to the Incentive Comp Team" class="slds-cell-wrap txtVerticleAlign" title="Date Sent to the Incentive Comp Team">
+                        <!-- <div class="slds-truncate">{growthRec.dateSentToIncentiveCompTeam}</div> -->
+                        <lightning-formatted-date-time value={growthRec.dateSentToIncentiveCompTeam} year="numeric"
+                            day="numeric" month="numeric" hour="numeric" minute="numeric" time-zone={loggedInUserTimeZone}
+                            hour12="true"></lightning-formatted-date-time>
+        
+                    </td>
+                </template>
+                <template if:false={hasRecSubmittedToICTeam}>
+                    <td data-label="Date Sent to the Incentive Comp Team" class="slds-cell-wrap txtVerticleAlign" title="Date Sent to the Incentive Comp Team">
+                        <div class="slds-cell-wrap colourtxt">Not Sent - Action Needed</div>
+                    </td>
+                </template>
+                <template if:true={hasRecExtractedByICTeam}>
+                    <td data-label="Date Incentive Comp Team Extracted Data" class="slds-cell-wrap txtVerticleAlign" title="Date Incentive Comp Team Extracted Data">
+                        <!-- <div class="slds-truncate">{growthRec.dateIncentiveCompTeamExtractedData}</div> -->
+                        <lightning-formatted-date-time value={growthRec.dateIncentiveCompTeamExtractedData} year="numeric"
+                            day="numeric" month="numeric" hour="numeric" minute="numeric" time-zone={loggedInUserTimeZone}
+                            hour12="true"></lightning-formatted-date-time>
+                    </td>
+                </template>
+                <template if:false={hasRecExtractedByICTeam}>
+                    <td data-label="Date Incentive Comp Team Extracted Data" class="slds-cell-wrap txtVerticleAlign" title="Date Incentive Comp Team Extracted Data">
+                        <div class={icDataExtractedStatusStyle}>Not Yet Extracted</div>
+                    </td>
+                </template>
+        
+        
+
+       <!-- <td data-label="Product Family">
+            <div class="slds-truncate">{growthRec.productFamily}</div>
+        </td>-->
+
+        <template if:false={isLoggedInUserRoleSpecialitySVP}>
+                <td data-label="Will Sales Incentives be Split" class="slds-cell-wrap txtVerticleAlign" title="Will Sales Incentives be Split">
+                        <div class={salesIncentivesBeSplitStyle}>{growthRec.willSalesIncentivesBeSplit}</div>
+                    </td>
+        </template>
+        
+        <td data-label="New Membership" class="slds-cell-wrap txtVerticleAlign" title="New Membership">
+            <div class="slds-cell-wrap">
+                <lightning-formatted-number value={growthRec.newMembership}></lightning-formatted-number>
+            </div>
+        </td>
+
+        <td data-label="Membership Activity Name" class="slds-cell-wrap txtVerticleAlign" title="Membership Activity">
+                <p class="slds-cell-wrap"><a href="javascript:void(0);" variant="base" value={growthRec.opportunityId} target="_blank"
+                        onclick={handleOpportunityRecordView}>{growthRec.opportunityName}</a></p>
+        </td>
+        
+
+       <!-- <template if:false={isLoggedInUserRoleSpecialitySVP}>
+            <td data-label="Sales Person 1">
+                <div class="slds-truncate">{growthRec.salesPerson1Name}</div>
+            </td>
+            <td data-label="Sales Person 1 Split Percentage">
+                <div class="slds-truncate">{growthRec.salesPerson1SplitPercentage}</div>
+            </td>
+            <td data-label="Sales Person 2">
+                <div class="slds-truncate">{growthRec.salesPerson2Name}</div>
+            </td>
+            <td data-label="Sales Person 2 Split Percentage">
+                <div class="slds-truncate">{growthRec.salesPerson2SplitPercentage}</div>
+            </td>
+        </template>-->
+    </template>
+    <template if:true={isLoggedInUserRoleCMVPCRRVP}>
+        <td data-label="Company Name" class="slds-cell-wrap txtVerticleAlign" title="Company">
+
+            <div class="slds-cell-wrap">{growthRec.accountName}</div>
+        </td>
+        <td data-label="Effective Date" class="slds-cell-wrap txtVerticleAlign" title="Effective Date">
+
+
+            <lightning-formatted-date-time value={growthRec.effectiveDate} year="numeric" day="numeric" month="numeric"
+                time-zone="UTC"></lightning-formatted-date-time>
+        </td>
+        <template if:false={isNonOtherByUpProduct}>
+            <td data-label="Product Name" class="slds-cell-wrap txtVerticleAlign" title="Product Name">
+                <div class="slds-cell-wrap">{growthRec.productName}</div>
+            </td>
+        </template>
+        <template if:true={isNonOtherByUpProduct}>
+            <td data-label="Product Name" class="slds-cell-wrap txtVerticleAlign" title="Product Name">
+                <div class="slds-cell-wrap">{growthRec.productLine}</div>
+            </td>
+        </template>
+        <td data-label="Current SCE" class="slds-cell-wrap txtVerticleAlign" title="Current SCE">
+            <div class="slds-cell-wrap">{growthRec.currentSCE}</div>
+
+        </td>
+       <!-- <template if:true={hasRecSubmittedToICTeam}>
+            <td data-label="Date Sent to the Incentive Comp Team">
+                <lightning-formatted-date-time value={growthRec.dateSentToIncentiveCompTeam} year="numeric"
+                    day="numeric" month="numeric" hour="numeric" minute="numeric" time-zone={loggedInUserTimeZone}
+                    hour12="true"></lightning-formatted-date-time>
+
+            </td>
+        </template>
+        <template if:false={hasRecSubmittedToICTeam}>
+            <td data-label="Date Sent to the Incentive Comp Team">
+                <div class="slds-truncate colourtxt">Not Sent - Action Needed</div>
+            </td>
+        </template>-->
+        <td data-label="SCE(s) Receiving Compensation" class="slds-cell-wrap txtVerticleAlign" title="SCE(s) Receiving Compensation">
+
+            <div class={addClass}>{scesReceivingCompensation}</div>
+        </td>
+ 
+        <td data-label="New Membership" class="slds-cell-wrap txtVerticleAlign" title="New Membership">
+
+            <div class="slds-cell-wrap">
+                <lightning-formatted-number value={growthRec.newMembership}></lightning-formatted-number>
+            </div>
+        </td>
+
+        <td data-label="Membership Activity Name" class="slds-cell-wrap txtVerticleAlign" title="Membership Activity">
+            <p class="slds-cell-wrap"><a href="javascript:void(0);" variant="base" value={growthRec.opportunityId} target="_blank"
+                    onclick={handleOpportunityRecordView}>{growthRec.opportunityName}</a></p>
+
+        </td>
+        
+        
+
+       <!-- <td data-label="Product Family">
+            <div class="slds-truncate">{growthRec.productFamily}</div>
+        </td>
+
+        
+        
+        
+
+
+
+        <td data-label="Sales Person 1">
+            <div class={addClass}>{growthRec.salesPerson1Name}</div>
+        </td>
+        <td data-label="Sales Person 1 Split Percentage">
+            <div class={addClass}>{growthRec.salesPerson1SplitPercentage}</div>
+        </td>
+        <td data-label="Sales Person 2">
+            <div class={addClass1}>{growthRec.salesPerson2Name}</div>
+        </td>
+        <td data-label="Sales Person 2 Split Percentage">
+            <div class={addClass1}>{growthRec.salesPerson2SplitPercentage}</div>
+        </td>
+        <template if:true={hasRecExtractedByICTeam}>
+            <td data-label="Date Incentive Comp Team Extracted Data">
+                
+                <lightning-formatted-date-time value={growthRec.dateIncentiveCompTeamExtractedData} year="numeric"
+                    day="numeric" month="numeric" hour="numeric" minute="numeric" time-zone={loggedInUserTimeZone}
+                    hour12="true"></lightning-formatted-date-time>
+            </td>
+        </template>
+        <template if:false={hasRecExtractedByICTeam}>
+            <td data-label="Date Incentive Comp Team Extracted Data">
+                <div class="slds-truncate">Not Yet Extracted</div>
+            </td>
+        </template> -->
+    </template>
+</template>

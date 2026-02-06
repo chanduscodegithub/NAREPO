@@ -1,0 +1,91 @@
+<template>
+    <div>
+        <div class="section-header">
+            <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+                <span><b>Company Consultants</b></span>
+            </div>
+        </div>
+    </div>
+    <div class="slds-p-top_large slds-p-bottom_large">
+        <table
+            class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <thead class="header-color">
+                <tr>
+                    <td class="slds-border_right"> <b>Company Primary</b></td>
+                    <td class="slds-border_right"> <b>Last Name</b></td>
+                    <td class="slds-border_right"> <b>First Name</b></td>
+                    <td class="slds-border_right"> <b>Consulting Firm</b></td>
+                    <td class="slds-border_right"> <b>Location </b></td>
+                    <td class="slds-border_right"> <b>Role</b></td>
+                </tr>
+            </thead>
+            <tbody>
+                <template lwc:if={consultantsData}>
+                    <template lwc:if={consultantsData.length}>
+                        <template for:each={consultantsData} for:item="consultant">
+                            <tr key={consultant.id}>
+                                <td class="slds-border_right" style="text-align:left; padding-left:50px;">
+                                    <!--<template lwc:if={consultant.Contact.Primary__c}> </template>-->
+                                    <!--<span>{consultant.Contact.Primary__c}</span>-->
+                                    <lightning-input name="Primary__c" type="radio" checked={consultant.Primary__c}
+                                        disabled></lightning-input>
+
+                                </td>
+                                <td class="slds-border_right" style="word-wrap: break-word; white-space: normal;">
+                                    <template lwc:if={consultant.Contact.LastName}>
+                                        <span>{consultant.Contact.LastName}</span>
+                                    </template>
+                                </td>
+                                <td class="slds-border_right" style="word-wrap: break-word; white-space: normal;">
+                                    <template lwc:if={consultant.Contact.FirstName}>
+                                        <span>{consultant.Contact.FirstName}</span>
+                                    </template>
+                                </td>
+                                <td class="slds-border_right" style="word-wrap: break-word; white-space: normal;">
+                                    <template lwc:if={consultant.Contact.Account.Name}>
+                                        <span>{consultant.Contact.Account.Name}</span>
+                                    </template>
+                                </td>
+                                <td class="slds-border_right" style="word-wrap: break-word; white-space: normal;">
+                                    <!-- <template lwc:if={consultant.Contact.Account.Location__c}>
+                                        <span>{consultant.Contact.Account.Location__c}</span>
+                                    </template>-->
+                                    <template lwc:if={consultant.Contact}>
+                                        <template lwc:if={consultant.Contact.MailingCity}>
+                                            <template lwc:if={consultant.Contact.MailingStateCode}>
+                                                <span>{consultant.Contact.MailingCity},
+                                                    {consultant.Contact.MailingStateCode}</span>
+                                            </template>
+                                            <template lwc:else>
+                                                <span>{consultant.Contact.MailingCity}</span>
+                                            </template>
+                                        </template>
+                                        <template lwc:else>
+                                            <span>{consultant.Contact.MailingStateCode}</span>
+                                        </template>
+                                    </template>
+                                </td>
+                                <td class="slds-border_right" style="word-wrap: break-word; white-space: normal;">
+                                    <template lwc:if={consultant.Contact.Title}>
+                                        <span>{consultant.Contact.Title}</span>
+                                    </template>
+                                    
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                    <template lwc:else>
+                        <tr>
+                            <td class="slds-text-align_center" colspan="6">No records to display</td>
+                        </tr>
+                    </template>
+                </template>
+                <template lwc:else>
+                    <tr>
+                        <td colspan="6" class="slds-text-align_center">No records to display</td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</template>

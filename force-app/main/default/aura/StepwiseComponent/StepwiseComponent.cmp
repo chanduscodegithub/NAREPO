@@ -1,0 +1,158 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller='Stepwiseclass'> 
+    <ltng:require scripts="{!join(',',
+    $Resource.jsZIP, 
+    $Resource.FileSaver)}"/>
+    <aura:attribute name="opportunities" type="Opportunity[]"/>
+    <aura:attribute name="alertme" type="String"/>
+    <aura:attribute name="selectedRefAcctsIds" type="List"/>
+    <aura:attribute name="checkBoxCount" type="Integer" default="0"/>
+    <aura:attribute name="isSpinnertoLoad"  type="Boolean"  default="false"/>
+    <aura:attribute name="dialogErrorMsg" type="String"/>
+    <aura:attribute name="selectedrefoppt" type="List"/>
+    <aura:attribute name="isSearchedResultEmpty" type="boolean" default="false"/>
+    <aura:attribute name="ErrorMessage" type="String"/> 
+    <aura:attribute name="opportunitiesIndex" type="String"/>
+    
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/> 
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    <aura:attribute name="pageMin" type="Integer"/>
+    <aura:attribute name="pageMax" type="Integer"/>
+    
+    <aura:handler name="refoppPopUpChildEvent" event="c:refoppPopUpChildEvent" action="{!c.addSelectedRefAccounts}"/>    
+    
+    <!-- <ui:button label="Get Opportunities" press="{!c.getOpps}"/>-->
+    <aura:handler name="init" value="{!this}" action="{!c.getOpps}"/>
+    <!-- <aura:iteration var="opportunity" items="{!v.opportunities}">
+        <p> <ui:inputCheckbox aura:id="checkbox" label="Select" />  {!opportunity}</p>
+    </aura:iteration>-->
+    <div role="alertdialog" tabindex="-1" aura:id="FilterSearch" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide modal-sm">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorMsg}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="StepWise" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Alert</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.dialogErrorMsg}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorMsg}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="FilterSearch"></div> 
+    
+    <div role="alertdialog" tabindex="-1" aura:id="downLoadSuccess" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide modal-sm">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--success slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorMsg}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="StepWise" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Success</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.dialogErrorMsg}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorMsg1}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="downLoadSuccess"></div> 
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="StepWise" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>    
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    <article class="slds-grid slds-is-relative slds-wrap slds-card">
+        <aura:if isTrue="{!v.isSpinnertoLoad}">
+            <div class="slds-spinner_container slds-is-fixed">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>              
+        </aura:if>
+        <div class="slds-size_1-of-1 slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container" title="">
+                        <lightning:icon iconName="doctype:xml" size="small"></lightning:icon>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="section-title"><span class="slds-text-heading_small">StepWise XML Generator CM</span></h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-size_1-of-1 slds-is-relative account-data_table">
+            <ui:scrollerWrapper class="scrollerSize table-scroll slds-p-bottom_small">
+                
+                <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal search-table">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col" class="slds-truncate slds-cell-shrink"><div class="slds-truncate" title="Select Row"></div></th>
+                            <th scope="col" class="slds-truncate" width="60"><div class="slds-truncate" title="">Sl. No.</div></th>                            
+                            <th scope="col" class="slds-truncate"><div class="slds-truncate" title="Membership Activity Name">Membership Activity Name</div></th>
+                            
+                            <th scope="col" class="slds-truncate"><div class="slds-truncate" title="Business Type">Business Type</div></th>
+                            <th scope="col" class="slds-truncate"><div class="slds-truncate" title="Dental Activity Stage">Dental Activity Stage</div></th>
+                            <th scope="col" class="slds-truncate"><div class="slds-truncate" title="Vision Activity Stage">Vision Activity Stage</div></th>
+                            <th scope="col" class="slds-truncate"><div class="slds-truncate" title="Other Buy Up Program Activity Stage">Other Buy Up Program Activity Stage</div></th>
+                            <th scope="col" class="slds-truncate"><div class="slds-truncate" title="Company Name">Company Name</div></th>
+                            
+                            
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        <aura:if isTrue="{!v.isSearchedResultEmpty}">
+                            <tr>
+                                <th colspan="12">
+                                    <div class="slds-text-align--center">No Records Found .</div>
+                                </th>
+                            </tr>
+                            <aura:set attribute="else">
+                                <aura:iteration items="{!v.opportunities}" var="opportunity" indexVar="index">
+                                    
+                                    <!-- <c:StepWiseTable opportunitySearchArray="{!opportunity.Name}" oppId="{!opportunity.Id}" opportunitySearchArrayIndex="{!opportunitiesIndex}" index="{!index}" />-->
+                                    <c:StepWiseTable opportunitySearchArray="{!opportunity.Name}" oppId="{!opportunity.Id}" opportunitySearchArrayIndex="{!opportunitiesIndex}" index="{!index}" 
+                                                     BusinessType="{!opportunity.BusinessType__c }" DentalActivityStage="{!opportunity.Sales_Stage_Dental__c}" VisionActivityStage="{!opportunity.Sales_Stage_Vision__c }" 
+                                                     OtherBuyUpProgramActivityStage="{!opportunity.Sales_Stage_Other__c}" CompanyName="{!opportunity.Account.Name}" />
+                                </aura:iteration>
+                                
+                                
+                            </aura:set>
+                            
+                        </aura:if>
+                        
+                    </tbody>
+                </table>
+            </ui:scrollerWrapper>
+        </div>
+        <div class="slds-p-horizontal_medium slds-m-bottom_small">
+            <ui:button label="Generate Xml" aura:Id="generateXML" press="{!c.generateXML}" class="slds-hide"/>
+        </div>
+        
+        
+    </article>
+</aura:component>

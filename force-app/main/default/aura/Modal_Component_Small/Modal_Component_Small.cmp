@@ -1,0 +1,24 @@
+<aura:component access="global">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="ModalBody" type="String"/>
+    <aura:attribute name="ModalBodyData" type="Object"/>
+    <aura:attribute name="Modalheader" type="String"/>
+    <aura:attribute name="refreshOnClosingModel" type="String" default="false"/>
+    <!--<aura:attribute name="modalcssStyle" type="String" default=".slds-global-header_container{position:static} body.desktop{overflow:hidden} .forceStyle.desktop .viewport .stage{position:relative;z-index: 99}"/>-->
+    <aura:method name="modalClosing" action="{!c.modalClose}" access="PUBLIC"></aura:method>
+    <aura:registerEvent name="modalCmpCloseEvent1" type="c:Modal_Closing_RR_Event"/>   
+    <style>{!v.modalcssStyle}</style>
+    <section class="slds-modal slds-fade-in-hide slds-modal_large" aura:id="client_refSmallPopup">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse btn-icon-white" onclick="{!c.fireComponentEvent}" title="Close">
+                    <lightning:icon class="slds-input__icon" iconName="utility:close" size="small"/>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 class="slds-text-heading_medium slds-hyphenate" title="{!v.Modalheader}">{!v.Modalheader}</h2>
+            </header>
+            <div class="slds-modal__content">{!v.body}</div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"  aura:id="client_refSmallPopup"></div>    
+</aura:component>

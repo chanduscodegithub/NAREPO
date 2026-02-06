@@ -1,0 +1,160 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 03-15-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <!-- Alert Pop Up component -->
+    <div class="slds-theme_default">
+        <template if:true={openmodel}>
+            <div class="demo-only" style="height: 640px;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                    aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header slds-theme--error">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close" onclick={closeModal}>
+                                <lightning-icon icon-name="utility:close" size="medium">
+                                </lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <center>
+                                <h2><b>Do you want to Remove this Strategy?</b></h2><br />
+                            </center>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning-button label="Cancel" variant="neutral" onclick={closeModal}></lightning-button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <lightning-button label="Delete" variant="brand" onclick={deleteRecord}></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </template>
+    </div> 
+    <!-- Alert Pop up component Ends-->
+    <article class="slds-card slds-card_boundary">
+        <lightning-accordion-section name={goalRec.Name} label={goalSectionName}>
+            <div class="slds-grid slds-wrap"></div><br />
+            <div class="slds-grid slds-wrap">
+                <div class="" style="padding-left: 5px;padding-right: 15px;">
+                    <b> <span>Goal</span></b>
+                </div>
+                <template if:true={isGoalAMandatoryGoal}>
+                    <div class="slds-col slds-size_4-of-12 slds-box slds-box_xx-small slds-theme_shade slds-var-p-left_x-large">
+                        <span>{goalRec.Goal__c}</span>
+                    </div>
+                </template>
+                <template if:false={isGoalAMandatoryGoal}>
+                    <template if:false={isEdit}>
+                        <template if:false={isGoalValueEmpty}>
+                            <div class="slds-col slds-size_4-of-12 slds-box slds-box_xx-small slds-var-p-left_x-large">
+                                <span>{goalRec.Goal__c}</span>
+                            </div>
+                        </template>
+                        <template if:true={enableGoalWriteIn}>
+                            <div class="slds-col slds-size_6-of-12 slds-p-horizontal_small slds-cell-shrink slds-m-left--x-small" style="margin-left: 1.5rem;">
+                                <!--<span class="slds-cell-wrap">{goalRec.Goal_Write_In__c}</span>-->
+                                 <lightning-textarea name='Name' variant="label-hidden"
+                                      value={goalRec.Goal_Write_In__c}
+                                     readonly>
+                                 </lightning-textarea>
+                            </div>
+                        </template>
+                    </template>
+                    <template if:true={isEdit}>
+                        <div class="slds-col slds-size_4-of-12">
+                            <lightning-combobox name='goal3'  value={goalSelected}  variant="label-hidden"
+                                options={goalPicklist} onchange={goalChangeHandler} class='goal3'>
+                            </lightning-combobox>
+                        </div>
+                        <template if:true={enableGoalWriteIn}>
+                            <div class="slds-col slds-size_6-of-12 slds-p-horizontal_x-small" style="margin-left: 1.5rem;">
+                                <lightning-textarea name='GoalWriteIn' variant="label-hidden"
+                                    placeholder="Please write in your goal in this field" value={goalRec.Goal_Write_In__c}
+                                    onfocusout={goalWriteInChangeHandler} onkeyup={goalWriteInChangeHandler} class='GoalWriteIn'>
+                                </lightning-textarea>
+                            </div>
+                        </template>
+                    </template>
+                   <!-- <template if:true={isEdit}> -->
+                        <template if:true={hasEditAccess}>
+                        <div class="slds-grid slds-wrap slds-col slds-p-horizontal_small slds-p-top_xx-small">
+                            <!--<lightning-icon icon-name="utility:delete" alternative-text="Delete" slot="actions"
+                                data-name="Goal" onclick={deleteid} data-recordid={goal.Id} size="xx-small">
+                            </lightning-icon>-->
+                            <lightning-icon icon-name="utility:delete" alternative-text="Delete" 
+                                 onclick={deleteGoalRec} size="xx-small">
+                            </lightning-icon>
+
+                        </div>
+                        </template>
+                    <!--  </template> -->
+                </template>
+
+
+            </div><br />
+            <!-- Table starts here -->
+            <template if:false={isGoalValueEmpty}>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-24 slds-p-horizontal_large" >
+                        <span></span>
+                    </div>
+                    <div class="slds-col slds-size_12-of-12 slds-p-right_medium" style="padding-left: 47px;">
+                        <table
+                            class="slds-table slds-table_bordered slds-border_left slds-border_right slds-table_col-bordered" style="table-layout:fixed">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="slds-size_3-of-12">
+                                        <div class="slds-truncate" title="Product">Strategy</div>
+                                    </th>
+                                    <th scope="col" class="slds-size_7-of-12">
+                                        <div class="slds-truncate" title="Quantity">Action Steps Planned/Taken</div>
+                                    </th>
+                                    <th scope="col" class="slds-size_2-of-12">
+                                        <div class="slds-truncate" title="Quantity">Applicable for?</div>
+                                    </th>
+                                   <!-- <template if:true={isEdit}> -->
+                                        <template if:true={hasEditAccess}>
+                                        <th scope="col">
+                                            <div class="slds-truncate"></div>
+                                        </th>
+                                        </template>
+                                   <!--  </template> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={strategyList} for:item="eachStrategy" for:index="strategyListIndex">
+
+                                    <!--  <c-strategy-cmp key={eachStrategy.Goal__c} strategy={eachStrategy} strategy-picklist={strategyPicklist}
+                                            is-edit={isEdit} oneditstrategy={strategyEditHandler} strategy-list-index={strategyListIndex}
+                                            ondeleteid={deleteid}></c-strategy-cmp> -->
+
+                                    <c-strategy-cmp key={eachStrategy.Goal__c} strategy={eachStrategy}
+                                        strategy-picklist={strategyPicklist} is-edit={isEdit}
+                                        oneditstrategy={strategyEditHandler} strategy-list-index={strategyListIndex}
+                                        ondeleteid={deleteid} onstrategyusedpicklist={strategyUsedPicklist} has-edit-access={hasEditAccess}></c-strategy-cmp>
+
+
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div><br />
+               <!-- <template if:true={isEdit}> -->
+                    <template if:true={hasEditAccess}>
+                    <lightning-button label="Add Another Strategy for this Goal"
+                        name="Add Another Strategy for this Goal" onclick={addStrategy} class="slds-m-left_xx-large">
+                    </lightning-button>
+                    </template>
+             <!--   </template> -->
+            </template>
+        </lightning-accordion-section>
+    </article>
+</template>

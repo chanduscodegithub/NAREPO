@@ -1,0 +1,276 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" 
+                controller="Sales_Incentive_Export_Controller">
+    <aura:attribute name="page" type="Integer" />
+    <aura:attribute name="pages" type="Integer" />
+    <aura:attribute name="total" type="Integer" />
+    <aura:attribute name="pageSize" type="Integer" default="30"/>
+    <aura:attribute name="opprtuntyPrdctAndRnwlStatusRcrdLst" type="List"/>
+    <aura:attribute name="isOpprtuntyPrdctAndRnwlStatusRcrdLstEmpty" type="boolean" default="false"/>
+    <aura:attribute name="allOpprtuntyPrdctAndRnwlStatusRcrdLst" type="List"/>
+    <aura:attribute name="recordSerialNo" type="Integer"/>
+    <aura:attribute name="productLineList" type="List"/>
+    <aura:attribute name="productLineListOption" type="List"/>
+    
+    <aura:attribute name="oppProductLineListOption" type="List"/>
+    <aura:attribute name="renevalProductLineListOption" type="List"/>
+    <aura:attribute name="categoryTypeListOption" type="List"/>
+    <aura:attribute name="isPageLoad" type="Boolean" default="true"/>
+    
+     <aura:attribute name="selectAllRecord" type="Boolean" default="false"/>
+    <aura:attribute name="selectAllRecordTempVar" type="Boolean" default="false"/>
+    <aura:attribute name="deSelectSome" type="Boolean" default="false"/>
+    <aura:attribute name="selectedRecordMap" type="Map" default='{}'/>
+    <aura:attribute name="employeeNumberMap" type="Map" default='{}'/>
+    <aura:attribute name="selectedRecordCount" type="Integer" default="0"/>
+    <aura:attribute name="date" type="Date" access="GLOBAL"/>
+    <aura:attribute name="toDate" type="Date" access="GLOBAL"/>
+    <aura:attribute name="categoryTypeFilter" type="String"/>
+    <aura:attribute name="productFilter" type="String[]"/>
+    <aura:attribute name="fromDateFilter" type="String"/>
+    <aura:attribute name="toDateFilter" type="String"/>
+    <aura:attribute name="allOpprtuntyPrdctAndRnwlStatusRcrdExportLst" type="List"/>
+    <aura:attribute name="updateList" type="List"/>
+    <aura:attribute name="idList" type="List"/>
+    <aura:attribute name="totalNumberofRecords" type="String"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:handler name="salesIncentivesExportTableEvent" event="c:Sales_Incentives_Export_Table_Event" action="{!c.salesIncentivesExportTableEventHandler}"/>
+    <aura:handler name="change" value="{!v.date}" action="{!c.dateFromDateSelected}"/>
+    <aura:handler name="change" value="{!v.toDate}" action="{!c.dateFromDateSelected}"/>
+    <aura:attribute name="loggedInUserTimeZone" type="String"/>
+    
+    <!--public attributes-->
+  <aura:attribute name="options" type="List" />
+  <aura:attribute name="selectedItems" type="String[]" />
+  <aura:attribute name="width" type="String" default="300px;" />
+  <aura:attribute name="dropdownLength" type="Integer" default="5" />
+  <aura:attribute name="dropdownOver" type="Boolean" default="false" />
+    
+  <aura:attribute name="options_" type="List" />
+  <aura:attribute name="infoText" type="String" default="Select an option..." />
+  
+  <aura:registerEvent name="selectChange" type="c:sales_Incentive_MultiSelect_Change" />
+     
+    <div  class="slds-section">
+        <article class="slds-card slds-card_boundary">
+            <div class="slds-spinner_container slds-hide" aura:id="loadingSpinner">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-fixed loading-Position" role="status">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>  
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    
+                    <div class="slds-media__body">
+                        <h2 class="slds-grid flex-alignCenter">
+                            <span class="slds-text-heading--small">Internal Sales Incentives Export Generator</span> 
+                        </h2>
+                    </div>
+                    
+                     <div class="slds-no-flex">
+                       <!-- <button class="slds-button slds-button_neutral" onclick="{!c.print}">Print</button>-->
+                         <aura:if isTrue="{!v.allOpprtuntyPrdctAndRnwlStatusRcrdLst.length > 0}">
+                            <button class="slds-button slds-button_neutral" onclick="{!c.export}">Export</button>                            
+                        </aura:if>
+                    </div>
+                </header>
+            </div>
+            
+           
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row slds-grid">
+                                    <div class="slds-form-element slds-size_1-of-1 slds-large-size_2-of-12 slds-m-horizontal_small" aura:id="emptyselCategoryVal">
+                                        <!--  <ui:inputSelect class="inputSelectoption1 slds-input" aura:id="CategoryDropDown" multiple="false" change="{!c.changeOnSCEList}"/> -->
+                                        <ui:inputSelect class="inputSelectoption1 slds-input" aura:id="CategoryDropDown" multiple="false" change="{!c.changeOnCategoryList}"  label='{!$Label.c.Export_Type}'  />
+                                    </div>
+                                    
+                                   
+                                        <!--<ui:inputSelect class="inputSelectoption slds-input" aura:id="ProductLineDropDown" multiple="true" change="{!c.changeOnVPCRList}"/>-->
+                                       	<!--<ui:inputSelect class="inputSelectoption slds-input" aura:id="ProductLineDropDown" multiple="false"/>-->
+                                        <!--<c:sales_Incentive_MultiSelect aura:id="ProductLineDropDown" options="{!v.myOptions}" selectChange="{!c.handleSelectChangeEvent}" selectedItems="{!v.mySelectedItems}" />-->
+                                        
+                                        
+                                    
+                                    
+                                    
+                                    <div class="slds-form-element hideLabel" style="{!'width:' + v.width }">
+                                        <!-- <label class="{!if (v.variant == 'label-hidden' , 'slds-hide' , 'slds-form-element__label')}" for="combobox-id-1">{!v.label}</label> -->
+                                        <div class="slds-form-element__control">
+                                          <div class="slds-combobox_container">
+                                            <div aura:id="main-div" class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                                              <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none" aura:id="emptyProductVal">
+                                                {!$Label.c.Export_Product}
+                                                  <input type="text" class="slds-input slds-combobox__input" id="combobox-id-1" aria-controls="listbox-id-1" autoComplete="off" role="textbox" placeholder="{!v.infoText}" readonly="true" onclick="{!c.handleClick}" onmouseleave="{!c.handleMouseOutButton}" />
+                                                <span class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right">
+                                                  <lightning:icon iconName="utility:down" size="x-small" class="slds-icon slds-icon slds-icon_x-small slds-icon-text-default" />
+                                                </span>
+                                              </div>
+                                    
+                                              <div class="{!'slds-dropdown  slds-dropdown_fluid slds-dropdown_length-5' + v.dropdownLength}" onmouseenter="{!c.handleMouseEnter}" onmouseleave="{!c.handleMouseLeave}" role="listbox">
+                                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                  <aura:iteration items="{!v.options_}" var="option">
+                                                    <li class="slds-listbox__item" role="presentation" onclick="{!c.handleSelection}" data-value="{!option.value}" data-selected="{!option.selected}">
+                                                      <div class="{!' slds-media  slds-listbox__option_plain slds-media_small slds-listbox__option ' + (option.selected == true ? ' slds-is-selected' : '')}" role="option">
+                                                        <span class="slds-media__figure">
+                                                          <lightning:icon iconName="utility:check" size="x-small" class="slds-icon-utility-check slds-current-color slds-listbox__icon-selected slds-icon_container" />
+                                                        </span>
+                                    
+                                                        <span class="slds-media__body">
+                                                          <span class="slds-truncate" title="{!option.label}">&nbsp;{!option.label}</span>
+                                                        </span>
+                                                      </div>
+                                    
+                                                    </li>
+                                                  </aura:iteration>
+                                                </ul>
+                                              </div>
+                                    
+                                    
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                                                              
+                                        
+                                    &nbsp;
+                                    <div class="slds-form-element slds-size_1-of-2 slds-large-size_1-of-12" aura:id="emptyFromDateCheck">
+                                    {!$Label.c.Export_From_Date}
+                                    <!--<ui:inputDate aura:id="fromDate"  class="slds-input uiInput-input" labelClass="slds-form-element__label" select="{!c.nullify}" keyup="{!c.nullify}" keypress="{!c.nullify}" updateOn="keypress, keyup" displayDatePicker="true" format="M/d/yyyy"  value="{!v.date}"/>-->
+                                        <ui:inputDate aura:id="fromDate"  class="slds-input uiInput--input" labelClass="slds-form-element__label" displayDatePicker="true" format="M/d/yyyy"  value="{!v.date}"/>
+                                       <!-- <div aura:id="fromDateValidation" class="slds-hide" style="color: red; font-size: 12px;">Enter Valid format: mm/dd/yyyy </div> -->
+                                    </div>
+                                    &nbsp;
+                                    <div class="slds-form-element slds-size_1-of-2 slds-large-size_1-of-12" aura:id="emptyToDateCheck">
+                                    {!$Label.c.Export_To_Date}    
+                                    <!--<ui:inputDate aura:id="toDate"  class="slds-input uiInput-input" labelClass="slds-form-element__label" select="{!c.nullify}" keyup="{!c.nullify}" keypress="{!c.nullify}" updateOn="keypress, keyup" displayDatePicker="true" format="M/d/yy" value="{!v.toDate}"/>-->
+                                        <ui:inputDate aura:id="toDate"  class="slds-input uiInput--input" labelClass="slds-form-element__label"  displayDatePicker="true" format="M/d/yyyy" value="{!v.toDate}"/>
+                                       <!-- <div aura:id="toDateValidation" class="slds-hide" style="color: red;font-size: 12px;">Enter Valid format: mm/dd/yyyy </div> -->
+                                    </div>
+                                    
+                                    &nbsp;&nbsp;&nbsp;
+                                    <div class="slds-form-element slds-size_1-of-2 slds-large-size_1-of-12" style="margin-top: 33px">
+                                        <ui:button class="slds-button slds-button--brand mt-md-0 uiButton" aura:id="goBtn" press="{!c.handleFilters}">{!$Label.c.Go}</ui:button>
+                                        <div class="slds-hide" style="font-size: 12px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+            			<div aura:id="DateValidation" class="slds-hide" style="color: red;font-size: 13px;margin-left: 540px;">Please enter the date in m/d/yyyy format.</div>
+            			<br/>
+            			<!--<div class="slds-p-top_small slds-size_1-of-1 slds-theme_shade" data-aura-rendered-by="1595:0">
+                            <p class="slds-text-body_small slds-text-color_weak" data-aura-rendered-by="1596:0">
+                                <strong data-aura-rendered-by="1597:0">Note </strong>
+                                : Dates should be entered in m/d/yyyy format.
+                            </p>
+                        </div>-->
+            				
+            			<div class="slds-p-top_small slds-size_1-of-1 slds-theme_shade" data-aura-rendered-by="1595:0">
+                            <p class="slds-text-body_small slds-text-color_weak" data-aura-rendered-by="1596:0">
+                  				<strong data-aura-rendered-by="1597:0">Total Records : {!v.totalNumberofRecords}</strong>
+                            </p>
+                        </div>
+            
+            
+            
+            
+            <div class="slds-card__body">
+                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout data-table">
+                    <thead>      
+                        <tr>
+                             <th style="width:3.25rem;padding:11.5px;" class="slds-text-align_right">
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <label class="slds-checkbox">
+                                            <ui:inputCheckbox disabled="{!v.isOpprtuntyPrdctAndRnwlStatusRcrdLstEmpty == true}"
+                                                              aura:id="selectAllId"
+                                                              value="{!v.selectAllRecordTempVar}"
+                                                              change="{!c.selectAllCheckbox}"/>
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-form-element__label"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </th> 
+                            <th class="slds-is-sortable slds-is-resizable slds-cell-wrap" scope="col" style="width: 4.25rem;">
+                                <span class="slds-th__action slds-text-link--reset" title="SL. NO."><strong>SL. NO.</strong></span>
+                            </th>
+                            <th class="slds-is-sortable slds-is-resizable slds-cell-wrap" scope="col">
+                                <span class="slds-th__action slds-text-link--reset" title="Company Name"><strong>Company Name</strong></span>
+                            </th>
+                            <th class="slds-is-sortable slds-is-resizable slds-cell-wrap" scope="col">
+                                <span class="slds-th__action slds-text-link--reset" title="Product Name"><strong>Product Name</strong></span>
+                            </th>
+                            <th class="slds-is-sortable slds-is-resizable slds-cell-wrap" scope="col" >
+                                <span class="slds-th__action slds-text-link--reset" title="SCE\SVP"><strong>SCE\SVP</strong> </span>
+                            </th>
+                            <th class="slds-is-sortable slds-is-resizable slds-cell-wrap" scope="col" style="width:4.35rem;">
+                                <span class="slds-th__action slds-text-link--reset" title="Type">Type</span>
+                            </th>
+                            <th class="slds-is-sortable slds-is-resizable slds-cell-wrap" scope="col" style="width:7.25rem;">
+                                <span class="slds-th__action slds-text-link--reset" title="Effective Date">Effective Date</span>
+                            </th>
+                            <th class="slds-is-sortable slds-is-resizable slds-cell-wrap" scope="col"  style="width:6.25rem;">
+                                <span class="slds-th__action slds-text-link--reset" title="Membership">Membership</span>
+                            </th>
+                            <th class="slds-is-sortable slds-is-resizable slds-cell-wrap" scope="col">
+                                <span class="slds-th__action slds-text-link--reset" title="Membership Activity Name">Membership Activity Name</span>
+                            </th>
+                            <th class="slds-is-sortable slds-is-resizable slds-cell-wrap" scope="col" >
+                                <span class="slds-th__action slds-text-link--reset" title="Date Ready to Send"><strong>Date Ready to Send</strong></span>
+                            </th>
+                        </tr>                               
+                    </thead>
+                    <tbody>
+                        <aura:if isTrue="{!v.isOpprtuntyPrdctAndRnwlStatusRcrdLstEmpty}">
+                            <tr>
+                                <th colspan="10">
+                                    <div class="slds-text-align--center">
+                                        No Records found.   Please adjust the filter criteria.
+                                    </div>
+                                </th>
+                            </tr> 
+                            <aura:set attribute="else">
+                                <aura:iteration items="{!v.opprtuntyPrdctAndRnwlStatusRcrdLst}" var="opprtuntyPrdctAndRnwlStatusRcrd" indexVar="index">
+                                    <c:Sales_Incentives_Export_Table opprtuntyPrdctAndRnwlStatusRcrd="{!opprtuntyPrdctAndRnwlStatusRcrd}" recordSerialNo="{!v.recordSerialNo}" index="{!index}"/>
+                                </aura:iteration>
+                                
+                            </aura:set>
+                            
+                        </aura:if>
+                        
+                    </tbody>
+                </table>
+                <div class="slds-theme_shade slds-border_bottom">
+                    <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                </div>
+                
+            </div>
+            <div class="slds-card__footer"> 
+            </div>
+            
+            
+            <div class="slds-show" style="height: 640px;" aura:id="toggle1">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container ">
+                        <header class="slds-modal__header popup-padding slds-modal__header slds-theme--error slds-theme--alert-texture">
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Confirmation</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <div class="slds-scrollable_y" style="height:100%;">
+                                Do you want to Continue?  Click OK to confirm that you want to extract data regarding the selected records.  Once the information is extracted, these records will be removed from the export tab.
+                            </div>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button class=" slds-Show button" label="OK" variant="brand" onclick="{!c.print}"/>
+                            <lightning:button class=" slds-Show button" label="Cancel" onclick="{!c.cancel}"/>
+                        </footer>
+                    </div>
+                </section>
+            </div>
+            
+            
+        </article>
+    </div>
+</aura:component>

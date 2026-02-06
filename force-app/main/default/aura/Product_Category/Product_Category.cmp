@@ -1,0 +1,246 @@
+<aura:component controller="memberShipActivityProductCategory" access="global">
+    <aura:attribute name="memberShipActivityRecordId" type="Id"/>
+    <aura:attribute name="selectedSalesStage" type="String[]"/>
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="MArecordId" type="Id"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="isDataLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="fieldsItag" type="String[]"/>
+    <aura:attribute name="ErrorList" type="String[]"/>
+    <aura:attribute name="saleStageIntialValueMap" type="Object"/>
+    <aura:attribute name="MAChildAttrObj" type="Object"/>
+    <aura:attribute name="isMedOth" type="Boolean" default="false"/>
+    <aura:attribute name="salesStageItag" type="String"/>
+    <aura:attribute name="MedOthsalesStageItag" type="String"/>
+    <aura:attribute name="GenSelcSalesStgNme" type="String" default=''/>
+    <aura:attribute name="MedOthSelcSalesStgNme" type="String" default=''/>
+    <aura:attribute name="issalesStgEmt" type="Boolean" default="false"/>
+    <aura:attribute name="isMedOthsalesStgEmt" type="Boolean" default="false"/>
+    <aura:attribute name="isSalesStageEmpty" type="Boolean" default="false"/>
+    <aura:attribute name="isSyncSalesStage" type="Boolean" default="true"/>
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="selectedDispostion" type="String"/>
+    <aura:attribute name="selectedRiskProb" type="String"/>
+    <aura:attribute name="selectedRiskOther" type="String"/>
+    <aura:attribute name="resetMessage" type="String"/>
+    <aura:attribute name="resetItag" type="String"/>
+    <aura:attribute name="isReset" type="boolean" default="false"/>
+    <aura:attribute name="genErrorMessage" type="String"/>
+    <aura:attribute name="isProdCatLink" type="Boolean" default="false"/>
+    <aura:attribute name="isLoadCompleted" type="Boolean" default="false"/>
+    <aura:attribute name="CheckCommentValueChanged" type="String"/>
+    <aura:handler name="makeFieldsEditable" event="c:Edit_Read_Event" action="{!c.makeFieldsEditable}"/>
+    <aura:registerEvent name="focusErrorField" type="c:FocusErrorField_Event"/>    
+    <aura:registerEvent name="refreshTab" type="c:Refresh_Tab_Event"/>
+    <aura:registerEvent name="refreshES" type="c:MA_SAVE_SUCCESS"/> 
+    <aura:handler name="resetEvent" event="c:reset_SalesStage_Event" action="{!c.resetSalesStage}"/>
+    <aura:handler name="handleSaveEvent" event="c:HandleSaveEvent" action="{!c.handleSaveRecord}"/>   
+    <aura:method name="handleSaveRecord" action="{!c.handleSaveRecord}" ></aura:method>
+    <aura:method name="makeFieldsEditable" action="{!c.makeFieldsEditable}" ></aura:method>
+    <c:auraPubsub aura:id="pubsub" />
+    
+    <aura:handler name="productsAndCompetitorsEvent" event="c:ProductsAndCompetitorsEvent" action="{!c.productsAndCompetitorsEventMethod}"/>
+    <aura:handler name="focusCompetitorsSectionEvent" event="c:FocusCompetitorsSection_Event" action="{!c.focusCompetitors}"/>
+    <aura:if isTrue="{!v.MAChildAttrObj.isProdCat}">
+        <div aura:id ="linkid" class="view-record--link">
+            <a style="width:100%;" onclick="{!c.showHidecomponent}" class ="slds-show"> 
+                 {!$Label.c.Add_Remove_Products_Involved_Click_Here}
+            </a>
+            {!v.body}
+        </div>
+    </aura:if>
+    
+    <force:recordData aura:id="recordHandler"
+                      recordId="{!v.MAChildAttrObj.MArecordId}"
+                      layoutType=""
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.simpleRecord}"
+                      targetError="{!v.recordError}"
+                      mode="{!v.MAChildAttrObj.accessVal}"
+                      fields="{!v.MAChildAttrObj.backedFeildItags}"
+                      recordUpdated="{!c.handleRecordUpdated}"
+                      />
+    <aura:if isTrue="{!not(empty(v.recordError))}">
+        <div class="recordError">
+            <ui:message title="Error" severity="error" closable="true">
+                Product Record {!v.recordError}
+            </ui:message>
+        </div>
+    </aura:if> 
+    <div role="alertdialog" tabindex="-1" aura:id="resetConfirm" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Reset Sales Stage</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.resetMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmReset}">Reset</button>
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="resetConfirm"></div>
+    <div aura:id="MA_CUSTOM">
+        <aura:if isTrue="{!v.isDataLoaded}">
+            <lightning:spinner aura:id="mySpinner" class="slds-hide"/>
+            <div class="flexipageComponent">
+                <div class="slds-clearfix inlineEditEnabled">
+                    <div aura:id="Edit_Mode_risen" class="riseTransitionEnabled test-id__inline-edit-record-layout-container">
+                        <div class="forceInlineEdit top-padding">
+                            <c:MA_Product_Category_Details requiredFieldsItag="{!v.MAChildAttrObj.requiredFieldsItag}" 
+                                                           saleStageIntialValueMap="{!v.saleStageIntialValueMap}" 
+                                                           SalesStageItag="{!v.salesStageItag}" 
+                                                           Intial_Stage_values="{!v.MAChildAttrObj.intialSalesStageList}" 
+                                                           readOnlyFieldsItag="{!v.MAChildAttrObj.readOnlyFieldsItag}"
+                                                           readOnlyFieldsItagMO="{!v.MAChildAttrObj.readOnlyFieldsItagMO}"
+                                                           requiredFieldsItagMO="{!v.MAChildAttrObj.requiredFieldsItagMO}"
+                                                           medicalFieldsList="{!v.MAChildAttrObj.medicalFieldsList}"
+                                                           othersFieldsList="{!v.MAChildAttrObj.othersFieldsList}"                                                            
+                                                           isEdit="{!v.isEdit}" 
+                                                           fieldSets="{!v.MAChildAttrObj.productCategoryFeilds}" 
+                                                           simpleRecord="{!v.simpleRecord}" 
+                                                           aura:id="MA_Product_Category_Details_Id" 
+                                                           oppCategory="{!v.MAChildAttrObj.oppCategory}" 
+                                                           isMedOth="{!v.isMedOth}"
+                                                           Intial_Stage_MO_values="{!v.MAChildAttrObj.intialSalesStageMOList}" 
+                                                           MedOthsalesStageItag="{!v.MedOthsalesStageItag}"
+                                                           possible_Stage_values="{!v.MAChildAttrObj.possibleSaleStageList}"
+                                                           possible_Stage_MO_values="{!v.MAChildAttrObj.possibleSaleStageMOList}"
+                                                           GenSelcSalesStgNme="{!v.GenSelcSalesStgNme}"
+                                                           MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                           issalesStgEmt="{!v.issalesStgEmt}"
+                                                           isMedOthsalesStgEmt="{!v.isMedOthsalesStgEmt}"
+                                                           DispositonItag="{!v.MAChildAttrObj.DispositonItag}"
+                                                           DispositonMap="{!v.MAChildAttrObj.DispositonMap}"
+                                                           selectedProductTab="{!v.MAChildAttrObj.selectedProductTab}"
+                                                           MArecordId="{!v.MAChildAttrObj.MArecordId}"
+                                                           selectedProdCatg="{!v.MAChildAttrObj.selectedProdCatg}"
+                                                           clearValueMap="{!v.MAChildAttrObj.clearValueMap}"
+                                                           selectedCategoryMap="{!v.MAChildAttrObj.selectedCategoryMap}"
+                                                           selectedRiskProb="{!v.selectedRiskProb}"
+                                                           selectedRiskOther="{!v.selectedRiskOther}"
+                                                           selectedDispostion="{!v.selectedDispostion}"
+                                                           isComments="{!v.MAChildAttrObj.isComments}"
+                                                           isAdditionalInfo="{!v.MAChildAttrObj.isAdditionalInfo}"
+                                                           isAdditionalInfo2="{!v.MAChildAttrObj.isAdditionalInfo2}"
+                                                           isCompanyWideMarket="{!v.MAChildAttrObj.isCompanyWideMarket}"
+                                                           isProdCat="{!v.MAChildAttrObj.isProdCat}"
+                                                           accessObj="{!v.MAChildAttrObj.accessObj}"
+                                                           possItag="{!v.MAChildAttrObj.possItag}"
+                                                           prevGeneralSalesStage="{!v.MAChildAttrObj.PreviousSelectedStage}"
+                                                           prevOtherSalesStage="{!v.MAChildAttrObj.PreviousSelectedStageMO}"
+                                                           genreadOnlyFieldsItag="{!v.MAChildAttrObj.genreadOnlyFieldsItag}"
+                                                           genreadOnlyFieldsItagMO="{!v.MAChildAttrObj.genreadOnlyFieldsItagMO}"
+                                                           maActivityType="{!v.MAChildAttrObj.maActivityType}"
+                                                           accountreadOnlyFieldsItag="{!v.MAChildAttrObj.accountreadOnlyFieldsItag}"
+                                                           >
+                            </c:MA_Product_Category_Details>            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+        </aura:if>
+        <!--Error PopUp STARTS -->
+        
+        <!--Error PopUp ENDS -->
+        <aura:if isTrue="{!and(v.MAChildAttrObj.accessObj.readOnly != true,v.isLoadCompleted)}">
+            <div class="footer active" style="position: fixed; width: auto; left: 29px; right: 29px; bottom: 0px;">
+                <aura:if isTrue="{!v.MAChildAttrObj.isCompanyWideMarket != true}">
+                    <aura:if isTrue="{!and(v.MAChildAttrObj.isAdditionalInfo == false,v.MAChildAttrObj.isAdditionalInfo2 == false)}">
+                        <div class="slds-text-align_center forceRecordEditActions" data-aura-class="forceRecordEditActions">                                            
+                            <div aura:id="save_cancel_ActionBar" class="actionsContainer slds-hide">
+                                <div aura:id="error_Msg" class="pageError slds-is-relative hideEl">
+                                    <div class="pageErrorIcon">
+                                        <button onclick="{!c.errorPopup}" class="slds-button slds-button--neutral pageErrorIconButton uiButton" aria-live="off" type="button" title="Error" data-aura-class="uiButton">
+                                            <lightning:icon iconName="utility:warning" size="x-small" variant="error" alternativeText="Indicates warning"/>
+                                            <span class="slds-assistive-text">Error</span>
+                                        </button>
+                                    </div>
+                                    
+                                    <div tabindex="-1" role="dialog" aura:id="error_Popup" class="uiPanel--default uiPanel--error uiPanel positioned north open active error-tooltip hideEl" data-aura-class="uiPanel--default uiPanel--error uiPanel" data-aura-rendered-by="8214:0" id="8214:0" aria-hidden="false">
+                                        <div class="container">
+                                            <span class="assistiveText">Start of Dialog</span>
+                                            <div class="panel-header">
+                                                <button onclick="{!c.errorPopup}" class="slds-button slds-button--neutral inlineEdit closeBtn uiButton" aria-live="off" type="button" title="Close" data-aura-class="uiButton">
+                                                    <span class="assistiveText">Close</span>
+                                                    <lightning:icon iconName="utility:close" variant="bare" size="x-small" alternativeText="Indicates close"/>
+                                                </button>
+                                            </div>
+                                            <div class="panel-content scrollable" data-scoped-scroll="true">
+                                                <div class="inlineEdit desktop forcePageError" aria-live="assertive" data-aura-class="forcePageError">
+                                                    <div class="genericNotification">
+                                                        <span class="genericError uiOutputText" data-aura-class="uiOutputText">Review the following fields</span>
+                                                    </div>
+                                                    <ul class="errorsList">                                        
+                                                        <aura:iteration items="{!v.ErrorList}" var="error" indexVar="index">
+                                                            <li><a class="errorsListLink" onclick="{!c.focusSelectedFeild}" data-record="{!error.ITag}">{!error.Field_Label}</a></li>
+                                                        </aura:iteration>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="panel-footer">
+                                            </div></div>
+                                        <div class="pointer">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div aura:id="generror_Msg" class="pageError slds-is-relative hideEl">
+                                    <div class="pageErrorIcon">
+                                        <button onclick="{!c.errorPopup}" class="slds-button slds-button--neutral pageErrorIconButton uiButton" aria-live="off" type="button" title="Error" data-aura-class="uiButton">
+                                            <lightning:icon iconName="utility:warning" size="x-small" variant="error" alternativeText="Indicates warning"/>
+                                            <span class="slds-assistive-text">Error</span>
+                                        </button>
+                                    </div>
+                                    
+                                    <div tabindex="-1" role="dialog" aura:id="generror_Popup" class="uiPanel--default uiPanel--error uiPanel positioned north open active error-tooltip hideEl" data-aura-class="uiPanel--default uiPanel--error uiPanel" data-aura-rendered-by="8214:0" id="8214:0" aria-hidden="false">
+                                        <div class="container">
+                                            <span class="assistiveText">Start of Dialog</span>
+                                            <div class="panel-header">
+                                                <button onclick="{!c.generrorPopup}" class="slds-button slds-button--neutral inlineEdit closeBtn uiButton" aria-live="off" type="button" title="Close" data-aura-class="uiButton">
+                                                    <span class="assistiveText">Close</span>
+                                                    <lightning:icon iconName="utility:close" variant="bare" size="x-small" alternativeText="Indicates close"/>
+                                                </button>
+                                            </div>
+                                            <div class="panel-content scrollable" data-scoped-scroll="true">
+                                                <div class="inlineEdit desktop forcePageError" aria-live="assertive" data-aura-class="forcePageError">
+                                                    <div class="genericNotification">
+                                                        <span class="genericError uiOutputText" data-aura-class="uiOutputText">Review the following fields</span>
+                                                    </div>
+                                                    <ul class="errorsList">                                        
+                                                        <li>{!v.genErrorMessage}</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="panel-footer">
+                                            </div></div>
+                                        <div class="pointer">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="{!c.handleCancelRecord}" class="slds-button slds-button--neutral uiButton--neutral uiButton forceActionButton" aria-live="off" type="button" title="Cancel" data-aura-class="uiButton forceActionButton">
+                                    <span class=" label bBody truncate" dir="ltr">Cancel</span>
+                                </button>
+                                <button onclick="{!c.handleSaveRecord}" class="slds-button slds-button--neutral uiButton--brand uiButton forceActionButton" aria-live="off" type="button" title="Save" data-aura-class="uiButton forceActionButton">
+                                    <span class=" label bBody truncate" dir="ltr">Save</span>
+                                </button>
+                            </div>
+                            <div aura:id="edit_ActionBar" class="actionsContainer">
+                                <aura:if isTrue="{!and(v.MAChildAttrObj.accessObj.readOnly != true,v.isEdit != true)}">                      
+                                    <ui:button class="slds-button slds-button--neutral uiButton--neutral uiButton forceActionButton"  aura:id="editBtn" disabled="false" press="{!c.makeFieldsEditable}">{!$Label.c.Edit}</ui:button>
+                                </aura:if>                	
+                            </div>                                       	
+                        </div>
+                    </aura:if> 
+                </aura:if>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

@@ -1,0 +1,28 @@
+<aura:component controller="Account_Consultants_Class">
+    <aura:attribute name="accountConsultant" type="String[]"/>
+    <aura:attribute name="accConsulatantIndex" type="Integer"/>
+    <aura:attribute name="accConsulatantTableColumns" type="boolean"/>
+    
+    <tr class="slds-hint-parent">
+        <td class="" data-label="Company Primary">
+            <label class="slds-checkbox" title="Company Primary">
+                <input type="checkbox" name="options" value="" disabled="true" checked="{!v.accountConsultant.Primary__c}"/>
+                <span class="slds-checkbox_faux checkbox-disabled"></span>
+                <span class="slds-assistive-text">Select Primary</span>
+            </label>
+        </td>                              
+        <td data-label="Company Name">
+            <div class="slds-truncate" title="{!v.accountConsultant.Account.Name}">
+                <a data-record="{!v.accountConsultant.AccountId}" onclick="{!c.navToRecord}">{!v.accountConsultant.Account.Name}</a>
+            </div>
+        </td>
+		<td data-label="Company Type">
+            <div class="slds-truncate" title="{!v.accountConsultant.Account.RecordType.Name}">
+                {!v.accountConsultant.Account.RecordType.Name}
+            </div>
+        </td><td data-label="Owner">
+            <div class="slds-truncate" title="{!v.accountConsultant.Account.Owner.Name}">{!v.accountConsultant.Account.Owner.Name}
+            </div>
+        </td>
+    </tr>
+</aura:component>

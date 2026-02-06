@@ -1,0 +1,116 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" >     
+    <aura:attribute name="simpleRecord" type="Object" />
+    <aura:attribute name="clientList" type="Object" />
+    <aura:attribute name="pipelineId" type="String" />
+    <aura:attribute name="clientListId" type="String" />
+    <aura:attribute name="isIdAvailable" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="OpenPiplineURL" type="String" default="https://orbitbi-tableau.optum.com/t/SCRM/views/OpenPipelineandNetResultsDashboard_0/OpenSummary?iframeSizedToWindow=true&amp;:embed=y&amp;:showAppBanner=false&amp;:display_count=no&amp;:showVizHome=no"/>
+    <aura:attribute name="ClientListURL" type="String" default="https://orbitbi-tableau.optum.com/t/SCRM/views/ClientLists/ClientList?iframeSizedToWindow=true&amp;:embed=y&amp;:showAppBanner=false&amp;:display_count=no&amp;:showVizHome=no"/>
+    <aura:if isTrue="{!v.isIdAvailable}">
+         <force:recordData recordId="{!v.pipelineId}"        
+          targetFields ="{!v.simpleRecord}"
+          fields="Id,Formula_Link__c" 
+          recordUpdated="{!c.handleRecordUpdated}"/>
+        
+        <force:recordData recordId="{!v.clientListId}"         
+          targetFields ="{!v.clientList}"
+          fields="Id, Formula_Link__c" 
+          recordUpdated="{!c.handleClientRecUpdated}"/>
+    </aura:if>   
+    <div aura:id="acc_Contacts">
+        <article class="slds-card">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container" title="Quick Links">
+                            <lightning:icon iconName="standard:link" size="small" class="slds-icon slds-icon_small"></lightning:icon>                            
+                            <span class="slds-assistive-text">Quick Links</span>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span class="slds-truncate" title="Quick Links">
+                                <span>Quick Links</span>
+                            </span>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body" aura:id="articleOne">
+            	<div class="slds-grid slds-wrap slds-border_top slds-border_bottom slds-theme_shade quick-link--content">
+                    <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12 slds-p-horizontal_medium slds-p-vertical_medium quick-link--container">
+                    	<a href="{!v.OpenPiplineURL}" class="slds-box slds-box_link slds-box_x-small slds-media quick-link--item" target="_blank">
+                        	<div class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-m-left_xx-small">
+                            	<div class="slds-welcome-mat__tile-icon-container">
+                                	<span class="slds-icon_container">
+                                    	<lightning:icon iconName="standard:kanban" size="small" class="slds-icon tile-icon"></lightning:icon>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="slds-media__body slds-border_left slds-p-around_small">
+                            	<h3 class="slds-welcome-mat__tile-title">Open Pipeline and Net Results Snapshot</h3>
+                                <p class="slds-welcome-mat__tile-description">&#40;Tableau Access Required&#41;</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12 slds-p-horizontal_medium slds-p-vertical_medium quick-link--container">
+                    	<a href="{!v.ClientListURL}" class="slds-box slds-box_link slds-box_x-small slds-media quick-link--item" target="_blank">
+                        	<div class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-m-left_xx-small">
+                            	<div class="slds-welcome-mat__tile-icon-container">
+                                	<span class="slds-icon_container">
+                                    	<lightning:icon iconName="standard:report" size="small" class="slds-icon tile-icon"></lightning:icon>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="slds-media__body slds-border_left slds-p-around_small">
+                            	<h3 class="slds-welcome-mat__tile-title">Client Lists</h3>
+                                <p class="slds-welcome-mat__tile-description">&#40;Tableau Access Required&#41;</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12 slds-p-horizontal_medium slds-p-vertical_medium quick-link--container">                    
+                    	<a href="mailto:Merit@uhc.com" class="slds-box slds-box_link slds-box_x-small slds-media quick-link--item" target="_blank">
+                        	<div class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-m-left_xx-small">
+                            	<div class="slds-welcome-mat__tile-icon-container">
+                                	<span class="slds-icon_container slds-icon-utility-animal_and_nature">
+                                    	<img width="38" src="{!$Resource.MeritLogo}"/>
+                                    </span>
+                                </div>
+                            </div>
+                           <div class="slds-media__body slds-border_left slds-p-around_small">
+                            	<h3 class="slds-welcome-mat__tile-title">{!$Label.c.Home_Page_Merit_Email_Address}</h3>
+                                 <!-- Tracker No: 3614-->
+                                <p class="slds-welcome-mat__tile-description">&nbsp;</p>
+                                <!--p class="slds-welcome-mat__tile-description">{!$Label.c.Home_Page_Merit_Phone_Number}</p-->
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <article class="slds-card">
+        	<div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container" title="Client Membership:">
+                            <lightning:icon iconName="standard:client" size="small" class="slds-icon slds-icon_small"></lightning:icon>                            
+                            <span class="slds-assistive-text">Client Membership:</span>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span class="slds-truncate" title="Client Membership:">
+                                <span>Client Membership</span>
+                            </span>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body">
+            	<c:HomePageReports/>
+            </div>
+        </article>
+    </div>
+</aura:component>

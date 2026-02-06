@@ -1,0 +1,138 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 03-18-2024
+  @last modified by  : Spoorthy
+-->
+<aura:component >
+    <aura:attribute name="accountSearchArray" type="String[]"/>
+    <aura:attribute name="accId" type="String[]"/>
+    <aura:attribute name="accountSearchArrayIndex" type="String[]"/>
+    <aura:attribute name="index" type="Integer"/>
+    <aura:attribute name="selectedrefAcct" type="Boolean" />
+    <aura:attribute name="selectedIds" type="List" />
+    <aura:registerEvent name="refAcctsPopUpChildEvent" type="c:refAcctsPopUpChildEvent"/>
+    
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <tr class="slds-hint-parent">
+        <td class="slds-cell-shrink cell-freeze cell-freeze-1" data-label="">
+            <div class="slds-truncate slds-grid slds-grid_vertical-align-center" title="">
+                <ui:inputCheckbox aura:id="refAccount" change="{!c.select}" />
+                <label class="slds-checkbox__label">
+                    <span class="slds-checkbox--faux"></span>
+                </label>
+            </div>
+        </td>
+        <th scope="row" class="cell-freeze cell-freeze-2" data-label="Company Name">
+            <div class="slds-truncate" title="Company Name">{!v.accountSearchArray.Name}</div>
+        </th>
+        <th scope="row" data-label="Client Reference Status Comments">
+            <div class="slds-truncate" title="Client Reference Status Comments">{!v.accountSearchArray.Client_Reference_Status_Comments__c}</div>
+        </th>
+        <th scope="row" data-label="Reference Status">
+            <div class="slds-truncate" title="Reference Status">{!v.accountSearchArray.Client_Reference_Status__c}</div>
+        </th>
+        <th scope="row" data-label="Referenceable Products and Programs">
+            <div class="slds-truncate" title="Referenceable Products and Programs">{!v.accountSearchArray.Client_Ref_Products_Programs__c}</div>
+        </th>
+        <!--<th scope="row" data-label="Minimum Prospect Size">
+            <div class="slds-truncate" title="Minimum Prospect Size"></div>
+        </th>-->
+        <th scope="row" data-label="Industry">
+            <div class="slds-truncate" title="Industry">{!v.accountSearchArray.Health_Plan_Manager_Industry__c}</div>
+        </th>
+        <!--<th scope="row" data-label="Public Sector">
+            <input type="checkbox" value="" disabled="true" checked="{!v.accountSearchArray.PublicSector__c}"/> 
+        </th>-->
+        <th scope="row" data-label="Participating US Members">
+            <div class="slds-truncate" title="Participating Members">{!v.accountSearchArray.ParticipatingUSMembers__c}</div>
+        </th>
+        <th scope="row" data-label="Original Effective Date">
+            <ui:outputDate value="{!v.accountSearchArray.Original_Effective_Date__c}" format="M/d/yyyy"/>
+        </th>
+        <th scope="row" data-label="Assigned SCE">
+            <div class="slds-truncate" title="Assigned SCE">{!v.accountSearchArray.CM_SCE__r.Name}</div>
+        </th>
+        <th scope="row" data-label="UHC Total Medical Members">
+            <div class="slds-truncate" title="UHC Total Medical Members">{!v.accountSearchArray.UHC_Medical_Members__c}</div>
+        </th>
+        <th scope="row" data-label="Surest Members">
+            <div class="slds-truncate" title="Surest Members">{!v.accountSearchArray.Surest_Members__c}</div>
+        </th>
+        <th scope="row" data-label="UHC Medical Members">
+            <div class="slds-truncate" title="UHC Dental Members">{!v.accountSearchArray.UHC_Dental_Members__c}</div>
+        </th>
+        <th scope="row" data-label="UHC Medical Members">
+            <div class="slds-truncate" title="UHC Vision Members">{!v.accountSearchArray.UHC_Vision_Members__c}</div>
+        </th>
+        <th scope="row" data-label="HQ State">
+            <div class="slds-truncate" title="HQ State">{!v.accountSearchArray.BillingStateCode}</div>
+        </th>
+        <th scope="row" data-label="Aggregator Group">
+            <div class="slds-truncate" title="Aggregator Group">{!v.accountSearchArray.CVGAccount__r.Name}</div>
+        </th>
+        <th scope="row" data-label="Call Site">
+            <div class="slds-truncate" title="Call Site">{!v.accountSearchArray.Call_Site__c}</div>
+        </th>
+        <th scope="row" data-label="Claim Site">
+            <div class="slds-truncate" title="Claim Site">{!v.accountSearchArray.Claim_Site__c}</div>
+        </th>
+        <th scope="row" data-label="Clinical Site">
+            <div class="slds-truncate" title="Clinical Site">{!v.accountSearchArray.Clinical_Site__c}</div>
+        </th>
+        <th scope="row" data-label="Top Markets 1">
+            <div class="slds-truncate" title="Top Markets 1">{!v.accountSearchArray.TopMarket1__c}</div>
+        </th>
+        <th scope="row" data-label="Top Markets 2">
+            <div class="slds-truncate" title="Top Markets 2">{!v.accountSearchArray.TopMarket2__c}</div>
+        </th>
+        <th scope="row" data-label="Top Markets 3">
+            <div class="slds-truncate" title="Top Markets 3">{!v.accountSearchArray.TopMarket3__c}</div>
+        </th>
+        <th scope="row" data-label="Top Markets 4">
+            <div class="slds-truncate" title="Top Markets 4">{!v.accountSearchArray.TopMarket4__c}</div>
+        </th>
+        <th scope="row" data-label="Top Markets 5">
+            <div class="slds-truncate" title="Top Markets 5">{!v.accountSearchArray.TopMarket5__c}</div>
+        </th>
+        <th scope="row" data-label="UMR Client">
+            <input type="checkbox" value="" disabled="true" checked="{!v.accountSearchArray.UMR_Client__c}"/> 
+        </th>
+        <th scope="row" data-label="Private Exchange">
+            <div class="slds-truncate" title="Private Exchange">{!v.accountSearchArray.Private_Exchange_Client__c}</div>
+        </th>
+        <th scope="row" data-label="Leased / Specialized Network">
+            <div class="slds-truncate" title="Leased / Specialized Network">{!v.accountSearchArray.Leased_Specialized_Network__c}</div>
+        </th>
+        <th scope="row" data-label="Premium Tiering">
+            <input type="checkbox" value="" disabled="true" checked="{!v.accountSearchArray.Premium_Tiering__c}"/> 
+        </th>
+        <th scope="row" data-label="POS Tiering">
+            <input type="checkbox" value="" disabled="true" checked="{!v.accountSearchArray.POS_Tiering__c}"/> 
+        </th>
+        <th scope="row" data-label="Business Line">
+            <div class="slds-truncate" title="Business Line">{!v.accountSearchArray.Subtype__c}</div>
+        </th>
+        <th scope="row" data-label="Termination Date">
+            <ui:outputDate value="{!v.accountSearchArray.Cancellation_Date__c}" format="M/d/yyyy"/>
+        </th>
+        <th scope="row" data-label="Reason for Term (Medical)">
+            <div class="slds-truncate" title="Reason for Term (Medical)">{!v.accountSearchArray.ReasonforTermMedical__c}</div>
+        </th>
+        <th scope="row" data-label="Reason for Term (Pharmacy)">
+            <div class="slds-truncate" title="Reason for Term (Pharmacy)">{!v.accountSearchArray.Reason_for_Term_Pharmacy__c}</div>
+        </th>
+        <th scope="row" data-label="Reason for Term (Dental)">
+            <div class="slds-truncate" title="Reason for Term (Dental)">{!v.accountSearchArray.ReasonforTermDental__c}</div>
+        </th>
+        <th scope="row" data-label="Reason for Term (Vision)">
+            <div class="slds-truncate" title="Reason for Term (Vision)">{!v.accountSearchArray.Reason_for_Term_Vision__c}</div>
+        </th>
+        <th scope="row" data-label="Reason for Term (Other Buy Up)">
+            <div class="slds-truncate" title="Reason for Term (Other Buy Up)">{!v.accountSearchArray.Reason_for_Term_Other_Buy_Up__c}</div>
+        </th>
+    </tr>
+</aura:component>

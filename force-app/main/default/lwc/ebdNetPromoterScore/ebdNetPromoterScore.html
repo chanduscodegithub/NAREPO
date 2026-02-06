@@ -1,0 +1,353 @@
+<template>
+    <div>
+        <div class="section-header">
+            <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+                <span><b>Net Promoter Score (NPS)</b></span>
+            </div>
+        </div>
+    </div>
+    <div class="slds-p-top_large slds-p-bottom_large">
+        <table
+            class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <thead>
+
+                <tr class="slds-border_top header-color">
+                    <td colspan="1" class="slds-border_right">
+                        <div class="slds-truncate" style="text-align: center; ">
+                            <span>&nbsp;</span>
+                        </div>
+                    </td>
+                   <!--  <td colspan="1" class="slds-border_right">
+                        <div class="slds-truncate">
+                            <span><strong>{latestFourYear0}</strong></span>
+                        </div>
+                    </td>-->
+                    <td colspan="1" class="slds-border_right">
+                        <div class="slds-truncate">
+                            <span><strong>{latestFourYear1}</strong></span>
+                        </div>
+                    </td>
+                    <td colspan="1" class="slds-border_right">
+                        <div class="slds-truncate">
+                            <span><strong>{latestFourYear2}</strong></span>
+                        </div>
+                    </td>
+                    <td colspan="1" class="slds-border_right">
+                        <div class="slds-truncate">
+                            <span><strong>{latestFourYear3}</strong></span>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <template if:false={isClientPlanSurveyData}>
+                <tbody>
+                    <tr>
+                        <td class="slds-border_right">
+                            <span><strong>UHC: Likelihood To Recommend Score</strong></span>
+                        </td>
+
+                       <!--  <td class="slds-border_right">
+                            <template if:true={liklihoodJson.coloumn1Data}>
+                                <span>{liklihoodJson.coloumn1Data}</span>
+
+                            </template>
+
+                        </td>-->
+                        <td class="slds-border_right">
+
+                            <template if:true={liklihoodJson.coloumn2Data}>
+                                <span>{liklihoodJson.coloumn2Data}</span>
+
+                            </template>
+
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={liklihoodJson.coloumn3Data}>
+                                <span>{liklihoodJson.coloumn3Data}</span>
+
+                            </template>
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={liklihoodJson.coloumn4Data}>
+                                <span>{liklihoodJson.coloumn4Data}</span>
+
+                            </template>
+                        </td>
+
+
+                    </tr>
+                    <!--tr>
+            <td class="slds-border_right">                 
+                        <span ><strong>Overall Satisfaction Score</strong></span>                 
+                </td>
+               
+                        <td  class="slds-border_right">
+                            <template if:true={overAllSatisfactionjson.coloumn1Data}>                          
+                                <span >{overAllSatisfactionjson.coloumn1Data}</span>    
+                            </template> 
+                        </td>
+                        <td  class="slds-border_right">
+                                <template if:true={overAllSatisfactionjson.coloumn2Data}>                          
+                                    <span >{overAllSatisfactionjson.coloumn2Data}</span>    
+                                </template> 
+                            </td>
+                            <td  class="slds-border_right">
+                                    <template if:true={overAllSatisfactionjson.coloumn3Data}>                          
+                                        <span >{overAllSatisfactionjson.coloumn3Data}</span>    
+                                    </template> 
+                                </td>
+                                <td  class="slds-border_right">
+                                        <template if:true={overAllSatisfactionjson.coloumn4Data}>                          
+                                            <span >{overAllSatisfactionjson.coloumn4Data}</span>    
+                                        </template> 
+                                    </td>
+                        
+                             
+    </tr>-->
+
+                    <tr>
+                        <td class="slds-border_right">
+                            <span><strong>UHC: Net Promoter Type</strong></span>
+                        </td>
+
+                       <!-- <td class="slds-border_right">
+                            <template if:true={netPromoterjson.coloumn1Data}>
+                                <span>{netPromoterjson.coloumn1Data}</span>
+                            </template>
+                        </td>-->
+                        <td class="slds-border_right">
+                            <template if:true={netPromoterjson.coloumn2Data}>
+                                <span>{netPromoterjson.coloumn2Data}</span>
+                            </template>
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={netPromoterjson.coloumn3Data}>
+                                <span>{netPromoterjson.coloumn3Data}</span>
+                            </template>
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={netPromoterjson.coloumn4Data}>
+                                <span>{netPromoterjson.coloumn4Data}</span>
+                            </template>
+                        </td>
+
+
+                    </tr>
+
+                     <tr>
+                        <td class="slds-border_right">
+                            <span><strong>Surest: Likelihood To Recommend Score</strong></span>
+                        </td>
+
+                       <!-- <td class="slds-border_right">
+                            <template if:true={netPromoterjson.coloumn1Data}>
+                                <span>{netPromoterjson.coloumn1Data}</span>
+                            </template>
+                        </td>-->
+                        <td class="slds-border_right">
+                            <template if:true={SurestliklihoodJson.coloumn2Data}>
+                                <span>{SurestliklihoodJson.coloumn2Data}</span>
+                            </template>
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={SurestliklihoodJson.coloumn3Data}>
+                                <span>{SurestliklihoodJson.coloumn3Data}</span>
+                            </template>
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={SurestliklihoodJson.coloumn4Data}>
+                                <span>{SurestliklihoodJson.coloumn4Data}</span>
+                            </template>
+                        </td>
+
+
+                    </tr>
+
+                     <tr>
+                        <td class="slds-border_right">
+                            <span><strong>Surest: Net Promoter Type</strong></span>
+                        </td>
+
+                       <!-- <td class="slds-border_right">
+                            <template if:true={netPromoterjson.coloumn1Data}>
+                                <span>{netPromoterjson.coloumn1Data}</span>
+                            </template>
+                        </td>-->
+                        <td class="slds-border_right">
+                            <template if:true={SurestnetPromoterjson.coloumn2Data}>
+                                <span>{SurestnetPromoterjson.coloumn2Data}</span>
+                            </template>
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={SurestnetPromoterjson.coloumn3Data}>
+                                <span>{SurestnetPromoterjson.coloumn3Data}</span>
+                            </template>
+                        </td>
+                        <td class="slds-border_right">
+                            <template if:true={SurestnetPromoterjson.coloumn4Data}>
+                                <span>{SurestnetPromoterjson.coloumn4Data}</span>
+                            </template>
+                        </td>
+
+
+                    </tr>
+
+
+                </tbody>
+            </template>
+        </table>
+
+    </div>
+    <div>
+        <div class="section-header">
+            <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+                <span><b>Net Promoter Score (NPS) Action Plan (Include Surest and other Business Lines)</b></span>
+            </div>
+        </div>
+    </div>
+    <div class="slds-p-top_small  slds-text-align_right slds-text-heading_small">
+        <template lwc:if={isEditMode}>
+            <lightning-button label="Clear Data" class="clear-data-btn" variant="Neutral" alternative-text="Clear entire table" size="small"
+                title="Clear entire table" onclick={deleteAllNpsRows}>
+            </lightning-button>
+            <template if:true={showConfirmModalForNps}>
+                <section role="dialog" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header" style="background-color: #ba0517; color: white;">
+                            <h2 class="slds-text-heading_medium">Confirmation</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                                <p class="slds-text-heading_small slds-text-align_center slds-p-horizontal_large">
+                                    This action will clear all data in the table. Are you sure you want to proceed?
+                                </p>
+                            <div style="text-align: center;" class="slds-p-top_large">
+                                <lightning-button label="Continue" onclick={handleConfirmDelete}>
+                                </lightning-button>
+
+                                <lightning-button label="Cancel" onclick={handleCancelDelete}
+                                    class="slds-m-left_x-small">
+                                </lightning-button>
+                            </div>
+                        </div>
+                        <!--<footer class="slds-modal__footer">
+                            <lightning-button label="Cancel" onclick={handleCancelDelete}></lightning-button>
+                            <lightning-button label="OK" variant="destructive" onclick={handleConfirmDelete}
+                                class="slds-m-left_small"></lightning-button>
+                        </footer>-->
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </template>
+        <template lwc:else>
+            <lightning-button label="Clear Data" class="clear-data-btn" variant="Neutral" disabled alternative-text="Clear entire table"
+                size="small" title="Clear entire table" onclick={deleteAllRows}>
+            </lightning-button>
+        </template>
+    </div>
+    <div class="slds-p-top_small slds-p-bottom_large">
+        <table  class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols ">
+            <thead class="header-color">
+                <tr>
+                    <td class="slds-border_right" style="width:30%" colspan="3"><b>Strategy </b></td>
+                    <td class="slds-border_right" style="width:40%" colspan="8"><b>Action Steps Planned/Taken </b></td>
+                    <td style="width:20%" colspan="3"> <b>Estimated Completion Date</b> </td>
+                    <td class="slds-border_right" colspan="1" style="width:10%">
+                        <div class="slds-text-align_right">
+                            <template lwc:if={isEditMode}>
+                                <lightning-icon icon-name="action:new" access-key={index} id={index}
+                                    alternative-text="Add new row" size="xx-small" title="Add new row" onclick={addRow}>
+                                </lightning-icon>
+                            </template>
+                            <template lwc:else>
+                                <lightning-icon icon-name="action:new" alternative-text="Add new row" size="xx-small"
+                                    title="Add new row" class="disabled-icon">
+                                </lightning-icon>
+                            </template>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={_npsData} for:item="rec" for:index="index">
+                    <tr key={rec.id}>
+                        <td class="slds-border_right" colspan="3">
+                            <template lwc:if={isEditMode}>
+                                <lightning-combobox style="word-wrap: break-word; white-space: normal;"
+                                    name="Strategy__c" value={rec.Strategy__c} placeholder="Select Strategy"
+                                    options={options} data-index={index} onchange={handleChange}></lightning-combobox>
+
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-text value={rec.Strategy__c}></lightning-formatted-text>
+                            </template>
+                            <template lwc:if={rec.isOther}>
+                    <div class="slds-m-top_x-small">
+                        <template lwc:if={isEditMode}>
+                            <lightning-input
+                                name="Other_Strategy__c"
+                                data-index={index}
+                                value={rec.Other_Strategy__c}
+                                placeholder="Enter other strategy"
+                                onchange={handleChange} max-length="255">
+                            </lightning-input>
+                        </template>
+                        <template lwc:else>
+                            <lightning-formatted-text value={rec.Other_Strategy__c}></lightning-formatted-text>
+                        </template>
+                    </div>
+                </template>
+                     
+                        </td>
+
+
+                        <td class="slds-border_right" colspan="8">
+                            <template lwc:if={isEditMode}>
+                                <lightning-textarea type="text" name="Action_Steps_Planned_Taken__c" data-index={index}
+                                    onchange={handleChange} value={rec.Action_Steps_Planned_Taken__c}>
+                                </lightning-textarea>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-text style="word-wrap: break-word; white-space: normal;"
+                                    value={rec.Action_Steps_Planned_Taken__c}></lightning-formatted-text>
+                            </template>
+                        </td>
+                        <td  colspan="3">
+                            <template lwc:if={isEditMode}>
+                                <lightning-input style="word-wrap: break-word; white-space: normal;" type="Date"
+                                    name="Estimated_Completion_Date__c" data-index={index}
+                                    value={rec.Estimated_Completion_Date__c} onchange={handleChange} date-style="short">
+                                </lightning-input>
+                            </template>
+                            <template lwc:else>
+                                <!-- <lightning-formatted-date-time month="numeric" day="numeric" year="numeric"
+                                    value={rec.Estimated_Completion_Date__c}></lightning-formatted-date-time> -->
+                                    <lightning-formatted-text
+                                    value={rec.FormattedCompletionDate}></lightning-formatted-text>
+                            </template>
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <div class="slds-text-align_right">
+                                <template lwc:if={isEditMode}>
+                                    <lightning-icon icon-name="action:delete" data-index={index}
+                                        alternative-text="Delete this row" size="xx-small" title="Delete this row"
+                                        onclick={removeRow}>
+                                    </lightning-icon>
+                                </template>
+                                <template lwc:else>
+                                    <lightning-icon icon-name="action:delete" alternative-text="Delete this row"
+                                        size="xx-small" title="Delete this row" class="disabled-icon">
+                                    </lightning-icon>
+                                </template>
+                            </div>
+                        </td>
+                    </tr>
+
+                  <!--newly added-->
+           
+        </template>                    
+   
+            </tbody>
+        </table>
+    </div>
+</template>

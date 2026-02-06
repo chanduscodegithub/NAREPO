@@ -1,0 +1,2839 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 01-03-2025
+  @last modified by  : Spoorthy
+-->
+<template>
+	<lightning-accordion class="section-header-style productAccordian" allow-multiple-sections-open
+		onsectiontoggle={handleSectionToggle} active-section-name={activeSections}>
+		<lightning-accordion-section class="section-header" name="Products and Services" label="Products and Services">
+			<div>
+				<template if:true={cmType}>
+					<b style="color: black;">
+						&nbsp;&nbsp;&nbsp;&nbsp;Note: Adding or updating products can only be completed by the SCE in
+						the Details
+						tab
+						on the Membership Activity</b>
+				</template>
+
+				<template if:false={cmType}>
+					<b style="color: black;">
+						&nbsp;&nbsp;&nbsp;&nbsp;Note: Adding or updating products can only be completed by the Sales
+						team in the
+						Details tab on the Membership Activity</b>
+				</template>
+			</div>
+			<template if:false={isMedicalEmpty}>
+				<lightning-accordion-section class="section-header-sub" name="Medical Products"
+					label="Medical Products">
+					<div class="slds-grid slds-grid--vertical-align-center slds-wrap border-bottom"
+						style="margin-left: 2.5em; width: 97%;">
+						<div class="slds-col tieredBenefitsLabel">
+							Tiered Benefits (Not applicable to Nexus)
+						</div>
+						<div class="slds-col tieredBenefitsValue">
+							<template if:true={editmode}>
+								<lightning-combobox class="slds-text-align_left"
+									name="Sold_Case_Checklist__c.Tiered_Benefits_Excluding_Nexus__c"
+									variant="label-hidden" value={soldCaseDataCopy.Tiered_Benefits_Excluding_Nexus__c}
+									placeholder="Select an Option" options={tieredBenefitsValues}
+									onchange={FieldChangeHandler}>
+								</lightning-combobox>
+							</template>
+							<template if:false={editmode}>
+								{soldCaseDataCopy.Tiered_Benefits_Excluding_Nexus__c}
+							</template>
+						</div>
+					</div>
+
+					<div class="slds-grid slds-grid--vertical-align-center slds-wrap border-bottom"
+						style="margin-left: 2.5em; width: 97%; padding-top:8px;">
+						<div class="slds-col tieredBenefitsLabel">
+							% of Rx Rebates retained by UHC
+						</div>
+						<div class="slds-col tieredBenefitsValue">
+							<template if:true={editmode}>
+								<lightning-input type="text" variant="label-hidden"
+									name="Sold_Case_Checklist__c.Rx_rebates_under_medical__c"
+									value={soldCaseDataCopy.Rx_rebates_under_medical__c} placeholder="%"
+									onchange={FieldChangeHandler} max-length="25">
+								</lightning-input>
+							</template>
+							<template if:false={editmode}>
+								<span class="slds-text-align_left">{soldCaseDataCopy.Rx_rebates_under_medical__c}</span>
+							</template>
+						</div>
+					</div>
+
+					<template if:false={editmode}>
+
+						<template for:each={medicalrecords} for:item="meditem" for:index="index">
+							<div class="slds-p-left_x-large slds-p-top_xx-small" key={meditem.key}>
+								<div class="slds-grid slds-wrap">
+									<div class="slds-col slds-size_1-of-2">
+										<span><b>{meditem.key}</b></span>
+									</div>
+								</div>
+
+								<template for:each={meditem.value} for:item="meditemvalue" for:index="index">
+									<div key={meditemvalue.Id}
+										class="slds-grid slds-wrap slds-p-around_xx-small sub-products-med-others border-bottom"
+										style="width:98%;">
+										<div class="slds-col slds-size_2-of-5">
+											<span>{meditemvalue.Product2.Name}</span>
+										</div>
+										<template if:true={meditemvalue.showLevel2Opt}>
+											<div class="slds-col slds-size_1-of-5" style="text-align: left;">
+												<span>{meditemvalue.Level_2_Option__c}</span>
+											</div>
+										</template>
+										<div class="slds-col slds-size_1-of-5" style="text-align: left;">
+											<span>{meditemvalue.Level2_Info__c}</span>
+										</div>
+										<template if:false={meditemvalue.showLevel2Opt}>
+											<div class="slds-col slds-size_1-of-5" style="text-align: right;">
+
+											</div>
+										</template>
+										<div class="slds-col slds-size_1-of-5" style="text-align: right;">
+											<span>{meddispValue}</span>
+										</div>
+									</div>
+								</template>
+							</div>
+						</template>
+					</template>
+
+					<template if:true={editmode}>
+						<template for:each={medicalrecords} for:item="meditem" for:index="index">
+							<div class="slds-p-left_x-large slds-p-top_xx-small" key={meditem.key}>
+								<div class="slds-grid slds-wrap">
+									<div class="slds-col slds-size_1-of-2">
+										<span><b>{meditem.key}</b></span>
+									</div>
+								</div>
+
+								<template for:each={meditem.value} for:item="meditemvalue" for:index="index">
+									<div key={meditemvalue}
+										class="slds-grid slds-wrap slds-p-around_xx-small sub-products-med-others border-bottom"
+										style="width:97%;">
+										<div class="slds-col slds-size_2-of-5" style="padding-top: 7px;">
+											<span>{meditemvalue.Product2.Name}</span>
+										</div>
+										<template if:true={meditemvalue.showLevel2Opt}>
+											<div class="slds-col slds-size_1-of-5" style="text-align: left;">
+												<span>
+													<template if:true={meditemvalue.Product2.Level_2_Options__c}>
+														<lightning-combobox style="text-align: left;"
+															name="Level_2_Option__c" variant="label-hidden"
+															data-id={meditemvalue.Id} data-prod="medical"
+															data-obj="OpportunityLineItem"
+															value={meditemvalue.Level_2_Option__c}
+															placeholder="Select an Option"
+															options={meditemvalue.level2Opt}
+															onchange={level2ChangeHandler}>
+														</lightning-combobox>
+													</template>
+												</span>
+											</div>
+										</template>
+										<div class="slds-col slds-size_1-of-5" style="text-align: left;">
+											<template if:true={meditemvalue.displayTextarea}>
+												<lightning-input type="text" variant="label-hidden"
+													data-id={meditemvalue.Id} data-prod="medical"
+													data-obj="OpportunityLineItem" name="Level2_Info__c"
+													value={meditemvalue.Level2_Info__c}
+													placeholder={meditemvalue.placeHolder}
+													onchange={level2ChangeHandler}
+													max-length={meditemvalue.commentsLength}>
+												</lightning-input>
+											</template>
+										</div>
+										<template if:false={meditemvalue.showLevel2Opt}>
+											<div class="slds-col slds-size_1-of-5" style="text-align: right;">
+
+											</div>
+
+										</template>
+										<div class="slds-col slds-size_1-of-5"
+											style="text-align: right; padding-top: 6px;">
+											<span>{meddispValue}</span>
+										</div>
+									</div>
+								</template>
+							</div>
+						</template>
+					</template>
+					<template if:true={isMedicalEmpty}>
+						<div class="slds-text-color_weak no-products" style="margin-top: 10px;">
+							No Medical products
+						</div>
+					</template>
+				</lightning-accordion-section>
+			</template>
+
+			<template if:false={isPharmacyEmpty}>
+				<c-sold-case-pharmacy-prod-comp editmode={editmode} pharmacyrecords={pharmacyrecords}
+					pharmdisp-value={pharmdispValue} onopplinevaluechange={opplineupdatedata}>
+				</c-sold-case-pharmacy-prod-comp>
+			</template>
+
+			<template if:false={isDentalEmpty}>
+
+				<lightning-accordion-section class="section-header-sub" name="Dental Products" label="Dental Products">
+					<div class="slds-grid slds-grid--vertical-align-center slds-wrap border-bottom"
+						style="margin-left: 2.5em; width: 96.8%;">
+
+						<div class="slds-col tieredBenefitsLabel">
+							Dental Clinical Integration
+							<c-tooltip-lwc help-text={dentalClinicalIntegrationHelpText}></c-tooltip-lwc>
+						</div>
+						<div class="slds-col tieredBenefitsValue">
+							<template if:true={editmode}>
+								<lightning-combobox class="slds-text-align_left" name="Bridge2Health_opt_out__c"
+									variant="label-hidden" value={bridge2healthOptOutValue}
+									placeholder="Select an Option" options={bridge2healthOptOutValues}
+									onchange={FieldChangeHandler}>
+								</lightning-combobox>
+							</template>
+							<template if:false={editmode}>
+								{bridge2healthOptOutValue}
+							</template>
+						</div>
+					</div>
+					<div class="slds-grid slds-grid--vertical-align-center slds-wrap border-bottom"
+						style="margin-left: 2.5em; width: 96.8%;">
+						<div class="slds-col slds-size_4-of-6">
+							<span>&nbsp;</span>
+						</div>
+						
+						<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+							<template if:true={isTradSoldDental}>
+								<span><b>Traditional</b></span>
+							</template>
+							
+						</div>
+						<template if:true={isSurestSoldDental}>
+						<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+							<span><b>Surest</b></span>
+						</div>
+						</template>
+						<br />
+					</div>
+					<template if:false={editmode}>
+						<template for:each={dentalrecordsList} for:item="denitem" for:index="index">
+							<div key={denitem}
+								class="slds-grid slds-wrap slds-p-around_xx-small sub-products border-bottom"
+								style="width: 97%;">
+								<div class="slds-col slds-size_2-of-6">
+									<span>{denitem.Product2.Name}</span>
+								</div>
+								<div class="slds-col slds-size_1-of-6" style="text-align: left;">
+									<span>{denitem.Level2_Info__c}</span>
+								</div>
+								<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+
+								</div>
+								<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+									<span>{denitem.traditionalDisp}</span>
+								</div>
+								<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+									<span>{denitem.surestDisp}</span>
+								</div>
+							</div>
+						</template>
+					</template>
+
+					<template if:true={editmode}>
+						<template for:each={dentalrecordsList} for:item="denitem" for:index="index">
+							<div key={denitem.Id}
+								class="slds-grid slds-wrap slds-p-around_xx-small sub-products border-bottom"
+								style="width: 97%;">
+								<div class="slds-col slds-size_2-of-6" style="padding-top: 7px;">
+									<span>{denitem.Product2.Name}</span>
+								</div>
+								<div class="slds-col slds-size_2-of-6" style="text-align: left;">
+									<span>
+										<template if:true={denitem.displayTextarea}>
+											<lightning-input type="text" variant="label-hidden" data-id={denitem.Id}
+												data-prod="dental" data-obj="OpportunityLineItem"
+												placeholder={denitem.placeHolder} onchange={level2ChangeHandler}
+												value={denitem.Level2_Info__c} name="Level2_Info__c">
+											</lightning-input>
+										</template>
+									</span>
+								</div>
+								<div class="slds-col slds-size_1-of-6" style="text-align: right; padding-top: 6px;">
+									<span>{denitem.traditionalDisp}</span>
+								</div>
+								<div class="slds-col slds-size_1-of-6" style="text-align: right; padding-top: 6px;">
+									<span>{denitem.surestDisp}</span>
+								</div>
+							</div>
+						</template>
+					</template>
+					<template if:true={isDentalEmpty}>
+						<div class="slds-text-color_weak no-products" style="margin-top: 10px;">No Dental products</div>
+					</template>
+				</lightning-accordion-section>
+			</template>
+
+			<template if:false={isVisionEmpty}>
+
+				<lightning-accordion-section class="section-header-sub" name="Vision Products" label="Vision Products">
+					<div class="slds-grid slds-grid--vertical-align-center slds-wrap border-bottom"
+						style="margin-left: 2.5em; width: 96.8%;">
+
+						<div class="slds-col tieredBenefitsLabel">
+							Vision Clinical Integration
+							<c-tooltip-lwc help-text={visionClinicalIntegrationHelpText}></c-tooltip-lwc>
+						</div>
+						<div class="slds-col tieredBenefitsValue">
+							<template if:true={editmode}>
+								<lightning-combobox class="slds-text-align_left" name="Bridge2Health_Vision__c"
+									variant="label-hidden" value={bridge2healthOptOutVisionValue}
+									placeholder="Select an Option" options={bridge2healthOptOutVisionValues}
+									onchange={FieldChangeHandler}>
+								</lightning-combobox>
+							</template>
+							<template if:false={editmode}>
+								{bridge2healthOptOutVisionValue}
+							</template>
+						</div>
+
+
+					</div>
+					<div class="slds-grid slds-grid--vertical-align-center slds-wrap border-bottom"
+						style="margin-left: 2.5em; width: 96.8%;">
+						<div class="slds-col slds-size_4-of-6">
+							<span>&nbsp;</span>
+						</div>
+						
+						<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+							<template if:true={isTradSoldVision}>
+							<span><b>Traditional</b></span>
+						</template>
+						</div>
+						<template if:true={isSurestSoldVision}>
+						<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+							<span><b>Surest</b></span>
+						</div>
+						</template>
+						<br />
+					</div>
+
+					<template if:false={editmode}>
+						<template for:each={visionrecordList} for:item="visionitem" for:index="index">
+							<div key={visionitem}
+								class="slds-p-left_medium slds-p-around_xx-small sub-products border-bottom"
+								style="width:97%;">
+								<div class="slds-grid slds-wrap">
+									<div class="slds-col slds-size_2-of-6">
+										<span>{visionitem.Product2.Name}</span>
+									</div>
+									<div class="slds-col slds-size_1-of-6" style="text-align: left;">
+										<span>{visionitem.Level2_Info__c}</span>
+									</div>
+									<div class="slds-col slds-size_1-of-6" style="text-align: left;">
+									</div>
+									<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+										<span>{visionitem.traditionalDisp}</span>
+									</div>
+									<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+										<span>{visionitem.surestDisp}</span>
+									</div>
+								</div>
+							</div>
+						</template>
+					</template>
+
+					<template if:true={editmode}>
+						<template for:each={visionrecordList} for:item="visionitem" for:index="index">
+							<div key={visionitem.Id}
+								class="slds-p-left_medium slds-p-around_xx-small sub-products border-bottom"
+								style="width:97%;">
+								<div class="slds-grid slds-wrap">
+									<div class="slds-col slds-size_2-of-6" style="padding-top: 7px;">
+										<span>{visionitem.Product2.Name}</span>
+									</div>
+									<div class="slds-col slds-size_2-of-6" style="text-align: left;">
+										<span>
+											<template if:true={visionitem.displayTextarea}>
+												<lightning-input type="text" variant="label-hidden"
+													data-id={visionitem.Id} data-prod="vision"
+													data-obj="OpportunityLineItem" name="Level2_Info__c"
+													value={visionitem.Level2_Info__c}
+													placeholder={visionitem.placeHolder} onchange={level2ChangeHandler}
+													max-length={visionitem.commentsLength}>
+												</lightning-input>
+											</template>
+										</span>
+									</div>
+									<div class="slds-col slds-size_1-of-6" style="text-align: right; padding-top: 6px;">
+										<span>{visionitem.traditionalDisp}</span>
+									</div>
+									<div class="slds-col slds-size_1-of-6" style="text-align: right;">
+										<span>{visionitem.surestDisp}</span>
+									</div>
+								</div>
+							</div>
+						</template>
+					</template>
+					<template if:true={isVisionEmpty}>
+						<div class="slds-text-color_weak no-products">No Vision products</div>
+					</template>
+				</lightning-accordion-section>
+			</template>
+
+			<template if:false={isOtherEmpty}>
+				<lightning-accordion-section class="section-header-sub sec-padding" name="Other Products"
+					label="Other Products">
+
+					<div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-around_xx-small border-bottom"
+						style="width: 100%;font-size: 13px;">
+						<div class="slds-col slds-size_4-of-6" style="padding-bottom: 2px;text-align:right">
+							<span><b>&nbsp;</b></span>
+						</div>
+						
+						<div class="slds-col slds-size_1-of-6" style=" padding-bottom: 2px;text-align:right">
+							<template if:true={isTradSoldOther}>
+							<span><b>Traditional</b></span>
+						</template>
+
+						</div>
+						<template if:true={isSurestSoldOther}>
+						<div class="slds-col slds-size_1-of-6" style="padding-bottom: 2px;text-align:right">
+							<span><b>Surest</b></span>
+						</div>
+						</template>
+					</div>
+
+					<template for:each={otherrecords} for:item="otheritem" for:index="index">
+						<template if:false={otheritem.showOonInstruction}>
+							<div key={otheritem.key} class="slds-p-left_medium sub-products-med-others">
+								<div class="slds-grid slds-wrap">
+									<div class="slds-col slds-size_3-of-5 slds-grid slds-grid--vertical-align-center">
+										<span><b>{otheritem.key}</b></span>
+									</div>
+									<div class="slds-col slds-size_1-of-5">
+										<span></span>
+									</div>
+								</div>
+								<template for:each={otheritem.value} for:item="othertemvalue" for:index="index">
+									<c-sold-case-other-product key={othertemvalue.id} othertemvalue={othertemvalue} 
+										valueinchild={othertemvalue} other-products-status={otherProductsStatus} sold-case-data-copy={soldCaseDataCopy} onprogressvaluechange={handleChildProgressValueChange}
+										editmode={editmode} onopplinevaluechange={opplineupdatedata} is-surest-sold-other={isSurestSoldOther} is-trad-sold-other={isTradSoldOther} >
+									</c-sold-case-other-product>
+								</template>
+							</div>
+						</template>
+					</template>
+					<template if:true={showPayIntBuyUpSection}>
+						<div style="margin-right:30px;">
+							<h1 class="section-header-style"
+								style="padding: 4px 10px; border-radius: 3px; font-weight: bold; font-size:11px; margin-left: 25px; margin-right: 7px;">
+								Payment Integrity
+							</h1>
+
+							<table class="slds-table slds-no-row-hover" style="margin-left:30px; width:100%;">
+								<tbody>
+									<template for:each={otherrecords} for:item="otheritem" for:index="index">
+										<template for:each={otheritem.value} for:item="othertemvalue" for:index="subIndex">
+											<template if:true={othertemvalue.payIntBuyUp}>
+												<tr key={othertemvalue.Id} class="border-bottom">
+													<td style="font-size:11px; padding-left:8px; width:60%;">
+														{othertemvalue.Product2.Name}
+													</td>
+
+													<td style="font-size:11px; text-align:right; width:23.5%;">
+														{othertemvalue.disposition}
+													</td>
+
+													<td style="font-size:11px; text-align:right; width:20%;">
+														{othertemvalue.Surestdisposition}
+													</td>
+												</tr>
+											</template>
+										</template>
+									</template>
+								</tbody>
+							</table>
+
+						</div>
+					</template>
+					<template if:true={oonProductsPresent}>
+						<div style="margin-top: 15px;">
+							<h1 class="section-header-style" style="background-color: #DFE9F9; padding: 4px 10px; border-radius: 3px; font-weight: 700; 
+                font-size:12px; margin-left: 7px; margin-right: 9px;">
+								Out of Network Reimbursement Program</h1>
+						</div>
+
+						<div style="margin-top: 5px; margin-left:35px;">
+							<b style="color: black; font-size:11px;">
+								Please note – any changes made to programs included in BAFO may have fee or PG
+								implications, contact
+								Underwriting. You must select "Included" or "Opt Out" for each program listed below.
+								Information on Out
+								of Network Programs can be found on the UHC E&amp;I Out of Network Program Documentation
+								Site.
+								Information on Naviguard can be found on CTM under Naviguard Out-of-Network Solution.
+							</b>
+						</div>
+					</template>
+					<template for:each={otherrecords} for:item="otheritem" for:index="index">
+						<template if:true={otheritem.showOonInstruction}>
+							<div key={otheritem.key} class="slds-p-left_medium sub-products-med-others">
+								<div class="slds-grid slds-wrap">
+									<div class="slds-col slds-size_1-of-5">
+										<span></span>
+									</div>
+								</div>
+								<template for:each={otheritem.value} for:item="othertemvalue" for:index="index">
+									<template if:true={othertemvalue.showOonSection}>
+										<lightning-accordion-section class="section-header-sub"
+											name={othertemvalue.Product2.Name} label={othertemvalue.Product2.Name}
+											key={othertemvalue.id} style="margin-left:-8px;">
+											<c-sold-case-other-product key={othertemvalue.id}
+												othertemvalue={othertemvalue} valueinchild={othertemvalue} onprogressvaluechange={handleChildProgressValueChange}
+												other-products-status={otherProductsStatus} editmode={editmode}
+												onopplinevaluechange={opplineupdatedata} sold-case-data-copy={soldCaseDataCopy} flex-options={flexOptionValuesOptions}></c-sold-case-other-product>
+										</lightning-accordion-section>
+									</template>
+
+									<template if:false={othertemvalue.showOonSection}>
+										<c-sold-case-other-product key={othertemvalue.id} othertemvalue={othertemvalue}
+											valueinchild={othertemvalue} other-products-status={otherProductsStatus} onprogressvaluechange={handleChildProgressValueChange}
+											editmode={editmode} onopplinevaluechange={opplineupdatedata} sold-case-data-copy={soldCaseDataCopy}>
+										</c-sold-case-other-product>
+									</template>
+								</template>
+							</div>
+						</template>
+					</template>
+					<template if:true={surestNaviguardSold}>
+							<lightning-accordion-section class="section-header-sub"
+							name="Naviguard - Surest - Customer Credits & Fees"
+							label="Naviguard - Surest - Customer Credits & Fees" key={othertemvalue.id} style="margin-left:25px;">
+							<div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium"
+								style="font-size:12px;">
+								<table class="slds-table slds-no-row-hover">
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Cap Type</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													<span>
+														<template if:false={editmode}>
+															<template
+																if:true={soldCaseDataCopy.Cap_Type__c}>
+																{soldCaseDataCopy.Cap_Type__c}
+															</template>
+														</template>
+														<template if:true={editmode}>
+															<template if:true={capTypeValues}>
+																<lightning-combobox style="text-align: left;"
+																	name="Sold_Case_Checklist__c.Cap_Type__c"
+																	variant="label-hidden"
+																	value={soldCaseDataCopy.Cap_Type__c}
+																	placeholder="Select an Option"
+																	options={capTypeValues}
+																	onchange={FieldChangeHandler}>
+																</lightning-combobox>
+															</template>
+														</template>
+													</span>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Cap Category</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													<span>
+														<template if:false={editmode}>
+															<template
+																if:true={soldCaseDataCopy.Cap_Category__c}>
+																{soldCaseDataCopy.Cap_Category__c}
+															</template>
+														</template>
+														<template if:true={editmode}>
+															<template if:true={capCategoryValues}>
+																<lightning-combobox style="text-align: left;"
+																	name="Sold_Case_Checklist__c.Cap_Category__c"
+																	variant="label-hidden"
+																	value={soldCaseDataCopy.Cap_Category__c}
+																	placeholder="Select an Option"
+																	options={capCategoryValues}
+																	onchange={FieldChangeHandler}>
+																</lightning-combobox>
+															</template>
+														</template>
+													</span>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Cap Value</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+													<span>
+														<template if:false={editmode}>
+															<template
+																if:true={soldCaseDataCopy.Cap_Value__c}>
+																{soldCaseDataCopy.Cap_Value__c}
+															</template>
+														</template>
+														<template if:true={editmode}>
+																<lightning-input class="slds-p-around_xx-small " style="padding: initial;"
+																	type="text" variant="label-hidden"
+																	name="Sold_Case_Checklist__c.Cap_Value__c"
+																	value={soldCaseDataCopy.Cap_Value__c}
+																	onchange={FieldChangeHandler} max-length="255">
+																</lightning-input>
+														</template>
+													</span>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Amount Type</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													<span>
+														<template if:false={editmode}>
+															<template
+																if:true={soldCaseDataCopy.Amount_Type__c}>
+																{soldCaseDataCopy.Amount_Type__c}
+															</template>
+														</template>
+														<template if:true={editmode}>
+															<template if:true={amountTypeValues}>
+																<lightning-combobox style="text-align: left;"
+																	name="Sold_Case_Checklist__c.Amount_Type__c"
+																	variant="label-hidden"
+																	value={soldCaseDataCopy.Amount_Type__c}
+																	placeholder="Select an Option"
+																	options={amountTypeValues}
+																	onchange={FieldChangeHandler}>
+																</lightning-combobox>
+															</template>
+														</template>
+													</span>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Amount</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													<span>
+														<template if:false={editmode}>
+															<template
+																if:true={soldCaseDataCopy.Amount__c}>
+																{soldCaseDataCopy.Amount__c}
+															</template>
+														</template>
+														<template if:true={editmode}>
+																<lightning-input class="slds-p-around_xx-small" style="padding: initial;"
+																	type="Number" variant="label-hidden" step="any"
+																	name="Sold_Case_Checklist__c.Amount__c"
+																	value={soldCaseDataCopy.Amount__c}
+																	onchange={FieldChangeHandler}>																			</lightning-input>
+														</template>
+													</span>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Additional Comments</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+													<span>
+														<template if:false={editmode}>
+															<template if:true={soldCaseDataCopy.Additional_Comments__c}>
+																{soldCaseDataCopy.Additional_Comments__c}
+															</template>
+														</template>
+														<template if:true={editmode}>
+																<lightning-textarea class="slds-p-around_xx-small" style="padding: initial;"
+																	type="text" variant="label-hidden"
+																	name="Sold_Case_Checklist__c.Additional_Comments__c"
+																	value={soldCaseDataCopy.Additional_Comments__c}
+																	onchange={FieldChangeHandler} max-length="3000">
+																</lightning-textarea>
+														</template>
+													</span>
+												</div>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+							</lightning-accordion-section>
+					</template>
+					
+					<template if:true={isOtherEmpty}>
+						<div class="slds-text-color_weak no-products">No Other products</div>
+					</template>
+					<br />
+					<template if:true={medSold}>
+						<!--Core Medical Necessity Programs Core Medical Necessity Programs Core Medical Necessity Programs Core Medical Necessity Programs-->
+						<template if:true={isTraditionalProductMed}>
+							<div>
+								<h1 class="section-header-style"
+									style="background-color: #DFE9F9; padding: 4px 10px; border-radius: 3px; font-weight: 700; font-size:11px; margin-left: 7px; margin-right: 7px;">
+									{medicalNecessity} </h1>
+							</div>
+
+							<div class="slds-grid slds-grid--vertical-align-center"
+								style="padding: 10px 10px; border-radius: 3px; font-size:11px; margin-left: 7px; margin-right: 7px; border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);">
+								<div class="slds-col slds-size_1-of-2">
+									<span><b>Medical Necessity</b></span>
+								</div>
+								<div class="slds-col slds-cell-wrap slds-size_1-of-2 slds-text-align_right">
+									<span>
+										<template if:false={editmode}>
+											<template if:true={soldCaseDataCopy.Medical_Necessity__c}>
+												{soldCaseDataCopy.Medical_Necessity__c}
+											</template>
+										</template>
+										<template if:true={editmode}>
+											<template if:true={medNecMainValues}>
+												<lightning-combobox style="text-align: left;"
+													name="Sold_Case_Checklist__c.Medical_Necessity__c"
+													variant="label-hidden" value={soldCaseDataCopy.Medical_Necessity__c}
+													options={medNecMainValues} onchange={FieldChangeHandler}>
+												</lightning-combobox>
+											</template>
+										</template>
+									</span>
+								</div>
+							</div>
+
+							<template if:true={showMedNecSection}>
+								<lightning-accordion-section class="section-header-sub CoreMedicalNecessity"
+									name="CoreMedicalNecessity"
+									label="Core Medical Necessity Programs Included in ASO Administrative Fee">
+									<div>
+										<b style="font-size: 11px; color:black;">
+											&nbsp;&nbsp;&nbsp;&nbsp;Please note – any changes made to programs included in BAFO may have fee or PG implications, contact Underwriting. You must select "Included" or "Opt Out" for each program listed below.</b>
+									</div>
+									<div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium"
+										style="font-size:12px;">
+										<table class="slds-table slds-no-row-hover">
+											<tr>
+												<td class="leftCoreMed">
+													<div class="slds-grid slds-grid--vertical-align-center border-bottom" style="width:100.5%;">
+														<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small">
+															<span>Genetic Testing Prior Authorization</span>
+														</div>
+														<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+															<span>
+																<template if:false={editmode}>
+																	<template if:true={soldCaseDataCopy.Genetic_Testing_Prior_Authorization__c}>
+																		{soldCaseDataCopy.Genetic_Testing_Prior_Authorization__c}
+																	</template>
+																</template>
+																<template if:true={editmode}>
+																	<lightning-combobox style="text-align: left;" name="Sold_Case_Checklist__c.Genetic_Testing_Prior_Authorization__c" variant="label-hidden"	value={soldCaseDataCopy.Genetic_Testing_Prior_Authorization__c} options={optInOut} onchange={FieldChangeHandler}>
+																	</lightning-combobox>
+																</template>
+															</span>
+														</div>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td class="leftCoreMed">
+													<div class="slds-grid slds-grid--vertical-align-center border-bottom"	style="width:100.5%;">
+														<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small">
+															<span>Inflammatory Medication Site of Care</span>
+														</div>
+														<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+															<span>
+																<template if:false={editmode}>
+																	<template if:true={soldCaseDataCopy.Inflammatory_Medication_Site_of_Care__c}>
+																		{soldCaseDataCopy.Inflammatory_Medication_Site_of_Care__c}
+																	</template>
+																</template>
+																<template if:true={editmode}>
+																	<lightning-combobox style="text-align: left;"	name="Sold_Case_Checklist__c.Inflammatory_Medication_Site_of_Care__c"	variant="label-hidden"	value={soldCaseDataCopy.Inflammatory_Medication_Site_of_Care__c}	options={optInOut} onchange={FieldChangeHandler}>
+																	</lightning-combobox>
+																</template>
+															</span>
+														</div>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td class="leftCoreMed">
+													<div class="slds-grid slds-grid--vertical-align-center border-bottom"	style="width:100.5%;">
+														<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small">
+															<span>Functional Endoscopic Sinus Surgery FESS</span>
+														</div>
+														<div
+															class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+															<span>
+																<template if:false={editmode}>
+																	<template	if:true={soldCaseDataCopy.Functional_Endoscopic_Sinus_Surgery_FESS__c}>
+																		{soldCaseDataCopy.Functional_Endoscopic_Sinus_Surgery_FESS__c}
+																	</template>
+																</template>
+																<template if:true={editmode}>
+																	<lightning-combobox style="text-align: left;"	name="Sold_Case_Checklist__c.Functional_Endoscopic_Sinus_Surgery_FESS__c"	variant="label-hidden"	value={soldCaseDataCopy.Functional_Endoscopic_Sinus_Surgery_FESS__c} options={optInOut} onchange={FieldChangeHandler}>
+																	</lightning-combobox>
+																</template>
+															</span>
+														</div>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td class="leftCoreMed">
+													<div class="slds-grid slds-grid--vertical-align-center border-bottom"	style="width:100.5%;">
+														<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small">
+															<span>Hysterectomy</span>
+														</div>
+														<div	class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+															<span>
+																<template if:false={editmode}>
+																	<template if:true={soldCaseDataCopy.Hysterectomy__c}>
+																		{soldCaseDataCopy.Hysterectomy__c}
+																	</template>
+																</template>
+																<template if:true={editmode}>
+																	<lightning-combobox style="text-align: left;"	name="Sold_Case_Checklist__c.Hysterectomy__c"	variant="label-hidden"	value={soldCaseDataCopy.Hysterectomy__c} options={optInOut} onchange={FieldChangeHandler}>
+																	</lightning-combobox>
+																</template>
+															</span>
+														</div>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td class="leftCoreMed">
+													<div class="slds-grid slds-grid--vertical-align-center border-bottom" style="width:100.5%;">
+														<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small">
+															<span>Sinuplasty</span>
+														</div>
+														<div	class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+															<span>
+																<template if:false={editmode}>
+																	<template if:true={soldCaseDataCopy.Sinuplasty__c}>
+																		{soldCaseDataCopy.Sinuplasty__c}
+																	</template>
+																</template>
+																<template if:true={editmode}>
+																	<lightning-combobox style="text-align: left;"	name="Sold_Case_Checklist__c.Sinuplasty__c"	variant="label-hidden"	value={soldCaseDataCopy.Sinuplasty__c}	options={optInOut} onchange={FieldChangeHandler}>
+																	</lightning-combobox>
+																</template>
+															</span>
+														</div>
+													</div>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</lightning-accordion-section>
+							</template>
+							<br />
+							<template if:true={showMedNecBuyUpSection}>
+								<div>
+									<h1 class="section-header-style" style="padding: 4px 10px; border-radius: 3px; font-weight: bold; font-size:11px; margin-left: 7px; margin-right: 7px;">
+										Medical Necessity Buy Ups</h1>
+									<span
+										style="color: black; padding: 4px 10px; border-radius: 3px; font-weight: bold; font-size:11px; margin-left: 7px; margin-right: 7px;">
+										<b>
+											Validate programs/network are compatible with chosen buy up. For example, Rad Card PA and genetic testing cannot be added to Harvard Pilgrim plans.
+										</b>
+									</span>
+									<table class="slds-table slds-no-row-hover">
+										<template for:each={otherrecords} for:item="otheritem" for:index="index">
+											<template for:each={otheritem.value} for:item="othertemvalue" for:index="index">
+												<template if:true={othertemvalue.medNecBuyUp}>
+													<tr key={othertemvalue.Id}>
+														<td>
+															<div class="slds-grid slds-grid--vertical-align-center border-bottom"	style="width:96%; margin-left:20px; padding-top:5px;">
+																<div class="slds-col slds-size_4-of-7 slds-p-around_xx-small slds-text-align_right"	style="float:left;">
+																	<span style="font-size:12px; float:left;">
+																		{othertemvalue.Product2.Name}
+																	</span>
+																</div>
+
+																<div class="slds-col slds-size_2-of-7 slds-p-around_xx-small slds-text-align_right"
+																	style="text-align:right;">
+																	<span style="font-size:12px;">
+																		{othertemvalue.disposition}
+																	</span>
+																</div>
+																<div class="slds-col slds-size_1-of-7 slds-p-around_xx-small slds-text-align_right"
+																	style="text-align:right;">
+																	<span style="font-size:12px;">
+																		{othertemvalue.Surestdisposition}
+																	</span>
+																</div>
+															</div>
+														</td>
+													</tr>
+												</template>
+											</template>
+										</template>
+									</table>
+								</div>
+							</template>
+						</template>
+						<!--Core Medical Necessity Programs Core Medical Necessity Programs Core Medical Necessity Programs Core Medical Necessity Programs-->
+						<br />
+						<!--Payment Integrity Bundle Payment Integrity Bundle Payment Integrity Bundle Payment Integrity Bundle Payment Integrity Bundle-->
+						<div>
+							<h1 class="section-header-style"
+								style="background-color: #DFE9F9; padding: 4px 10px; border-radius: 3px; font-weight: 700; font-size:11px; margin-left: 7px; margin-right: 7px;">
+								Payment Integrity</h1>
+						</div>
+						<template if:true={isTraditionalProductMed}>
+						<lightning-accordion-section class="section-header-sub" name="Payment Integrity Bundles - Traditional"
+							label="Payment Integrity Bundles - Traditional">
+							<div>
+								<b style="font-size: 11px; color:black;">
+									&nbsp;&nbsp;&nbsp;&nbsp;Please note – any changes made to programs included in BAFO
+									may have fee or PG
+									implications, contact Underwriting. You must select "Included" or "Opt Out" for each
+									program listed
+									below.</b>
+							</div>
+
+
+							<div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium"
+								style="font-size:12px; width:100%;">
+								<table class="slds-table slds-no-row-hover">
+									<tr>
+										<td class="left" style="vertical-align: middle;">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small">
+													<span><b>Payment Integrity Bundles</b></span>
+												</div>
+												<div
+													class="slds-col slds-size_2-of-5 slds-p-around_xx-small slds-text-align_right">
+													<span>
+														<template if:false={editmode}>
+															<template if:true={soldCaseDataCopy.Payment_Integrity__c}>
+																{soldCaseDataCopy.Payment_Integrity__c}
+															</template>
+														</template>
+														<template if:true={editmode}>
+															<template if:true={payIntegValues}>
+																<lightning-combobox style="text-align:left;"
+																	name="Sold_Case_Checklist__c.Payment_Integrity__c"
+																	variant="label-hidden"
+																	value={soldCaseDataCopy.Payment_Integrity__c}
+																	options={payIntegValues}
+																	onchange={FieldChangeHandler}>
+																</lightning-combobox>
+															</template>
+														</template>
+													</span>
+												</div>
+											</div>
+										</td>
+									</tr>
+
+									<template if:true={showPayIntFields}>
+										<template if:true={prevOption123}>
+											<c-prev-payment-integrity sold-case-data-copy={soldCaseDataCopy} prev-option={prevOption123}></c-prev-payment-integrity>
+										</template>
+										<template if:true={option123}>
+											<tr>
+												<td class="right">
+													<table class="slds-table slds-no-row-hover">
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+																		<span>Pre-Pay</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Pre_Pay_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="prePay"
+																					name="Sold_Case_Checklist__c.Pre_Pay_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Pre_Pay_Percentage__c}
+																					onchange={FieldChangeHandler} disabled={simplified12}>
+																				</lightning-input>
+																			</template>
+     																	</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Pre_Pay__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChangeSO"
+																					name="Sold_Case_Checklist__c.Pre_Pay__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Pre_Pay__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler} disabled={simplified12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Post-Pay</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Post_Pay_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			<template if:true={editmode}>
+																				<lightning-input class="postPay"
+																					name="Sold_Case_Checklist__c.Post_Pay_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Post_Pay_Percentage__c}
+																					onchange={FieldChangeHandler} disabled={simplified12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Post_Pay__c}
+																			</template>
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChangeSO"
+																					name="Sold_Case_Checklist__c.Post_Pay__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Post_Pay__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler} disabled={simplified12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Subrogation</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Subrogation_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			<template if:true={editmode}>
+																				<lightning-input class="subro"
+																					name="Sold_Case_Checklist__c.Subrogation_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Subrogation_Percentage__c}
+																					onchange={FieldChangeHandler} disabled={simplified12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Subrogation__c}
+																			</template>
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChangeSO"
+																					name="Sold_Case_Checklist__c.Subrogation__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Subrogation__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler} disabled={simplified12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+																		<span>Coordination of Benefits</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Coordination_of_Benefits_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="coOrdBenSO"
+																					name="Sold_Case_Checklist__c.Coordination_of_Benefits_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Coordination_of_Benefits_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={simplified12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Coordination_of_Benefits__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChangeCB"
+																					name="Sold_Case_Checklist__c.Coordination_of_Benefits__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Coordination_of_Benefits__c}
+																					placeholder="Select an Option"
+																					options={enhancedCOB}
+																					onchange={FieldChangeHandler} disabled={simplified12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+														<template if:true={simplified1Only}>
+															<tr>
+																<td>
+																	<div class="slds-grid slds-grid--vertical-align-center"
+																		style="width:100%;">
+																		<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																			style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																			<span>Claims Tracking and Validation (CTV) Audit</span>
+																		</div>
+	
+																		<div
+																			class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																			<span>
+																				<template if:false={editmode}>
+																					$<lightning-formatted-number
+																						value={soldCaseDataCopy.Claim_Trcking_Validation_Audt_Percentage__c}
+																						minimum-fraction-digits="2">
+																					</lightning-formatted-number>
+																				</template>
+																				 
+																				<template if:true={editmode}>
+																					<lightning-input class="claimTrk"
+																						name="Sold_Case_Checklist__c.Claim_Trcking_Validation_Audt_Percentage__c"
+																						type="number" step=".01"
+																						variant="label-hidden"
+																						value={soldCaseDataCopy.Claim_Trcking_Validation_Audt_Percentage__c}
+																						onchange={FieldChangeHandler}  disabled={isdisbaledsimplified1Only}>
+																					</lightning-input>
+																				</template>
+																			</span>
+																		</div>
+	
+																		<div
+																			class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																			<span>
+																				<template if:false={editmode}>
+																					{soldCaseDataCopy.Claims_Tracking_and_Validation_Audit__c}
+																				</template>
+																				 
+																				<template if:true={editmode}>
+																					<lightning-combobox
+																						class="slds-text-align_left refreshValueOnChangeSO clmTrk"
+																						name="Sold_Case_Checklist__c.Claims_Tracking_and_Validation_Audit__c"
+																						variant="label-hidden"
+																						value={soldCaseDataCopy.Claims_Tracking_and_Validation_Audit__c}
+																						placeholder="Select an Option"
+																						options={includedCarveOut}
+																						onchange={FieldChangeHandler}  disabled={isdisbaledsimplified1Only}>
+																					</lightning-combobox>
+																				</template>
+																			</span>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+															</template>
+															<template if:false={simplified12}>
+																<tr>
+																	<td>
+																		<div class="slds-grid slds-grid--vertical-align-center"
+																			style="width:100%;">
+																			<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																				style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																				<span>Claims Tracking and Validation (CTV) Audit</span>
+																			</div>
+		
+																			<div
+																				class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																				<span>
+																					<template if:false={editmode}>
+																						$<lightning-formatted-number
+																							value={soldCaseDataCopy.Claim_Trcking_Validation_Audt_Percentage__c}
+																							minimum-fraction-digits="2">
+																						</lightning-formatted-number>
+																					</template>
+																					 
+																					<template if:true={editmode}>
+																						<lightning-input class="claimTrk"
+																							name="Sold_Case_Checklist__c.Claim_Trcking_Validation_Audt_Percentage__c"
+																							type="number" step=".01"
+																							variant="label-hidden"
+																							value={soldCaseDataCopy.Claim_Trcking_Validation_Audt_Percentage__c}
+																							onchange={FieldChangeHandler}  disabled={simplified12}>
+																						</lightning-input>
+																					</template>
+																				</span>
+																			</div>
+		
+																			<div
+																				class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																				<span>
+																					<template if:false={editmode}>
+																						{soldCaseDataCopy.Claims_Tracking_and_Validation_Audit__c}
+																					</template>
+																					 
+																					<template if:true={editmode}>
+																						<lightning-combobox
+																							class="slds-text-align_left refreshValueOnChangeSO clmTrk"
+																							name="Sold_Case_Checklist__c.Claims_Tracking_and_Validation_Audit__c"
+																							variant="label-hidden"
+																							value={soldCaseDataCopy.Claims_Tracking_and_Validation_Audit__c}
+																							placeholder="Select an Option"
+																							options={includedCarveOut}
+																							onchange={FieldChangeHandler}  disabled={simplified12}>
+																						</lightning-combobox>
+																					</template>
+																				</span>
+																			</div>
+																		</div>
+																	</td>
+																</tr>
+																</template>
+													</table>
+												</td>
+											</tr>
+										</template>
+										<template if:true={option456}>
+											<tr>
+												<td class="right">
+													<table class="slds-table slds-no-row-hover">
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+																		<span>Payment Policy</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Payment_Policy_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="payPol"
+																					name="Sold_Case_Checklist__c.Payment_Policy_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Payment_Policy_Percentage__c}
+																					onchange={FieldChangeHandler} disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+     																	</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Payment_Policy_Prospective_Payment_Revi__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange payPolSts"
+																					name="Sold_Case_Checklist__c.Payment_Policy_Prospective_Payment_Revi__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Payment_Policy_Prospective_Payment_Revi__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler} disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+																		<span>Coordination of Benefits</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Coordination_of_Benefits_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="coOrdBen"
+																					name="Sold_Case_Checklist__c.Coordination_of_Benefits_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Coordination_of_Benefits_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Coordination_of_Benefits__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChangeCB"
+																					name="Sold_Case_Checklist__c.Coordination_of_Benefits__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Coordination_of_Benefits__c}
+																					placeholder="Select an Option"
+																					options={enhancedCOB}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Prospective Fraud &amp; Abuse</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Prospective_Fraud_Abuse_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="prosFraud"
+																					name="Sold_Case_Checklist__c.Prospective_Fraud_Abuse_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Prospective_Fraud_Abuse_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Prospective_Fraud_Abuse__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange prosFraudSts"
+																					name="Sold_Case_Checklist__c.Prospective_Fraud_Abuse__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Prospective_Fraud_Abuse__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Retrospective Fraud &amp; Abuse</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Retrospective_Fraud_Abuse_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>	 
+																			<template if:true={editmode}>
+																				<lightning-input class="retroFraud"
+																					name="Sold_Case_Checklist__c.Retrospective_Fraud_Abuse_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Retrospective_Fraud_Abuse_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Retrospective_Fraud_Abuse__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange retroFraudSts"
+																					name="Sold_Case_Checklist__c.Retrospective_Fraud_Abuse__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Retrospective_Fraud_Abuse__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Enhanced Fraud &amp; Abuse/CCD</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Enhanced_Fraud_Abuse_CCD_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="enhanFraud"
+																					name="Sold_Case_Checklist__c.Enhanced_Fraud_Abuse_CCD_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Enhanced_Fraud_Abuse_CCD_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Enhanced_Fraud_Abuse_CCD__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange"
+																					name="Sold_Case_Checklist__c.Enhanced_Fraud_Abuse_CCD__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Enhanced_Fraud_Abuse_CCD__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>EDC Analyzer</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.EDC_Analyzer_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="edcAnlzr"
+																					name="Sold_Case_Checklist__c.EDC_Analyzer_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.EDC_Analyzer_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.EDC_Analyzer__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange edcAnlzrSts"
+																					name="Sold_Case_Checklist__c.EDC_Analyzer__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.EDC_Analyzer__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Itemized Bill Review</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Itemized_Bill_Review_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="itemBill"
+																					name="Sold_Case_Checklist__c.Itemized_Bill_Review_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Itemized_Bill_Review_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Itemized_Bill_Review__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange"
+																					name="Sold_Case_Checklist__c.Itemized_Bill_Review__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Itemized_Bill_Review__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Focused Claim Review</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Focused_Claim_Review_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="focClaim"
+																					name="Sold_Case_Checklist__c.Focused_Claim_Review_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Focused_Claim_Review_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Focused_Claim_Review__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange"
+																					name="Sold_Case_Checklist__c.Focused_Claim_Review__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Focused_Claim_Review__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Hospital Bill Audit</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Hospital_Bill_Audit_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="hospOptum"
+																					name="Sold_Case_Checklist__c.Hospital_Bill_Audit_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Hospital_Bill_Audit_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Hospital_Bill_Audit__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange hospOptumSts"
+																					name="Sold_Case_Checklist__c.Hospital_Bill_Audit__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Hospital_Bill_Audit__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Credit Balance Recovery Services</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Credit_Blnce_Recvry_Services_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="credBal"
+																					name="Sold_Case_Checklist__c.Credit_Blnce_Recvry_Services_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Credit_Blnce_Recvry_Services_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Credit_Balance_Recovery_Services__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange credBalSts"
+																					name="Sold_Case_Checklist__c.Credit_Balance_Recovery_Services__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Credit_Balance_Recovery_Services__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Third Party Liability Recovery
+																			(Subro)</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Third_Party_Liability_Subro_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="tpSubro"
+																					name="Sold_Case_Checklist__c.Third_Party_Liability_Subro_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Third_Party_Liability_Subro_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Third_Party_Liability_Recovery_Subro__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange"
+																					name="Sold_Case_Checklist__c.Third_Party_Liability_Recovery_Subro__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Third_Party_Liability_Recovery_Subro__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Third Party Liability Recovery
+																			(ICC)</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Third_Party_ICC_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="tpIcc"
+																					name="Sold_Case_Checklist__c.Third_Party_ICC_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Third_Party_ICC_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Third_Party_Liability_Recovery_ICC__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange"
+																					name="Sold_Case_Checklist__c.Third_Party_Liability_Recovery_ICC__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Third_Party_Liability_Recovery_ICC__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Advanced Analytic and Recovery Services (AARS)</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Advanced_Analytics_and_Recvry_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="advRec"
+																					name="Sold_Case_Checklist__c.Advanced_Analytics_and_Recvry_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Advanced_Analytics_and_Recvry_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Advanced_Analytics_and_Recovery__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange"
+																					name="Sold_Case_Checklist__c.Advanced_Analytics_and_Recovery__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Advanced_Analytics_and_Recovery__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+														<template if:true={onlyOption456}>
+														 <tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Claims Tracking and Validation (CTV) Audit</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				$<lightning-formatted-number
+																					value={soldCaseDataCopy.Claim_Trcking_Validation_Audt_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-input class="claimTrk"
+																					name="Sold_Case_Checklist__c.Claim_Trcking_Validation_Audt_Percentage__c"
+																					type="number" step=".01"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Claim_Trcking_Validation_Audt_Percentage__c}
+																					onchange={FieldChangeHandler}  disabled={legacy12claim}>
+																				</lightning-input>
+																			</template>
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																			<template if:false={editmode}>
+																				{soldCaseDataCopy.Claims_Tracking_and_Validation_Audit__c}
+																			</template>
+																			 
+																			<template if:true={editmode}>
+																				<lightning-combobox
+																					class="slds-text-align_left refreshValueOnChange clmTrk"
+																					name="Sold_Case_Checklist__c.Claims_Tracking_and_Validation_Audit__c"
+																					variant="label-hidden"
+																					value={soldCaseDataCopy.Claims_Tracking_and_Validation_Audit__c}
+																					placeholder="Select an Option"
+																					options={includedCarveOut}
+																					onchange={FieldChangeHandler}  disabled={legacy12claim}>
+																				</lightning-combobox>
+																			</template>
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+													</template>
+
+													</table>
+												</td>
+											</tr>
+										</template>
+
+										<template if:true={option7}>
+											<tr>
+												<td class="right">
+													<table class="slds-table slds-no-row-hover">
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Payment Policy (Prospective Payment
+																			Review)</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Payment_Policy_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Payment_Policy_Prospective_Payment_Revi__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+																		<span>Coordination of Benefits</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Coordination_of_Benefits_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Coordination_of_Benefits__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);  padding-bottom: 2px;">
+																		<span>Credit Balance Recovery Services</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Credit_Blnce_Recvry_Services_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Credit_Balance_Recovery_Services__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Advanced Analytics &amp; Recovery</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Advanced_Analytics_and_Recvry_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Advanced_Analytics_and_Recovery__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);  padding-bottom: 2px;">
+																		<span>COB Vendor Recoveries</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.COB_Vendor_Recoveries_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.COB_Vendor_Recoveries__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+																		<span>Enhanced Fraud &amp; Abuse/CCD</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Enhanced_Fraud_Abuse_CCD_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Enhanced_Fraud_Abuse_CCD__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);  padding-bottom: 2px;">
+																		<span>Focused Claim Review</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Focused_Claim_Review_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Focused_Claim_Review__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);  padding-bottom: 2px;">
+																		<span>Hospital Audit Program</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Hospital_Audit_Program_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Hospital_Audit_Program__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);  padding-bottom: 2px;">
+																		<span>Claims Tracking</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Claims_Tracking_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Claims_Tracking__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);  padding-bottom: 2px;">
+																		<span>Validation Audit</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Validation_Audit_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Validation_Audit__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);  padding-bottom: 2px;">
+																		<span>Third-Party Liability Subrogation</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Thrd_Prty_Liability_Subrgatin_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Third_Party_Liability_Subrogation__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+
+														<tr>
+															<td>
+																<div class="slds-grid slds-grid--vertical-align-center"
+																	style="width:100%;">
+																	<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+																		style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);  padding-bottom: 2px;">
+																		<span>Injury Coverage Coordination</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				<lightning-formatted-number
+																					value={soldCaseDataCopy.Injury_Coverage_Coordination_Percentage__c}
+																					minimum-fraction-digits="2">
+																				</lightning-formatted-number>%
+																		</span>
+																	</div>
+
+																	<div
+																		class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+																		<span>
+																				{soldCaseDataCopy.Injury_Coverage_Coordination__c}
+																		</span>
+																	</div>
+																</div>
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</template>
+									</template>
+								</table>
+							</div>
+						</lightning-accordion-section>
+						</template>
+						<br />
+
+						<template if:true={isSurestProductMed}>
+            			<lightning-accordion-section class="section-header-sub" name="Payment Integrity Bundles - Surest"
+							label="Payment Integrity Bundles - Surest">
+							<div>
+								<b style="font-size: 11px; color:black;">
+									&nbsp;&nbsp;&nbsp;&nbsp;
+                  					Please note – any changes made to programs included in BAFO may have fee or PG implications, contact Underwriting.</b>
+							</div>
+
+							<template if:true={isSurestProductMed}>
+								<c-surest-payment-integrity sold-case-data-copy={soldCaseDataCopy} editmode={editmode} cm-type={cmType} onprogressvaluechange={handleChildProgressValueChange}></c-surest-payment-integrity>
+							</template>
+
+							<!-- <div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium"
+								style="font-size:12px; width:100%;">
+								<table class="slds-table slds-no-row-hover">
+									<tr>
+										<td class="left" style="vertical-align: middle;">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-5 slds-p-around_xx-small">
+													<span><b>Surest Payment Integrity "Included"</b></span>
+												</div>
+                        					</div>
+                        				</td>
+                        			</tr>
+                        		</table>
+                        	</div> -->
+                        </lightning-accordion-section>
+						</template>
+
+						<template if:true={showInPayIntBuyUpSection}>
+							<lightning-accordion-section class="section-header-sub" name="Payment Integrity Buy Ups"
+							label="Payment Integrity Buy Ups">
+							<div style="margin-right:30px;">
+								<table class="slds-table slds-no-row-hover" style="margin-left:30px; width:97.6%;">
+									<thead>
+										<tr class="border-bottom">
+											<th style="width:60%; text-align:left; background-color: transparent;">&nbsp;</th>
+											<th style="width:20%; text-align:right; background-color: transparent;"><template if:true={isTradSoldOther}><b>Traditional</b></template></th>
+											<th style="width:20%; text-align:right; background-color: transparent;"><template if:true={isSurestSoldOther}><b>Surest</b></template></th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<template for:each={otherrecords} for:item="otheritem" for:index="index">
+											<template for:each={otheritem.value} for:item="othertemvalue" for:index="subIndex">
+												<template if:true={othertemvalue.payIntBuyUp}>
+													<tr key={othertemvalue.Id} class="border-bottom">
+														<td style="font-size:12px; padding-left:20px;">
+															{othertemvalue.Product2.Name}
+														</td>
+														<td style="font-size:12px; text-align:right;">
+															{othertemvalue.disposition}
+														</td>
+														<td style="font-size:12px; text-align:right;">
+															{othertemvalue.Surestdisposition}
+														</td>
+													</tr>
+												</template>
+											</template>
+										</template>
+									</tbody>
+								</table>
+							</div>
+							</lightning-accordion-section>
+						</template>
+
+						<!--Payment Integrity Bundle Payment Integrity Bundle Payment Integrity Bundle Payment Integrity Bundle Payment Integrity Bundle-->
+					</template>
+
+					<br />
+
+					<!--BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS-->
+					<template if:true={isTraditionalProductMed}>
+						<div>
+							<h1 class="section-header-style"
+								style="background-color: #DFE9F9; padding: 4px 10px; border-radius: 3px; font-weight: 700; font-size:11px; margin-left: 7px; margin-right: 7px;">
+								Base Programs - Traditional</h1>
+						</div>
+						<lightning-accordion-section class="section-header-sub sec-padding"
+							name="Base Programs Included in ASO Administrative Fee"
+							label="Base Programs Included in ASO Administrative Fee">
+							<div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium"
+								style="font-size:12px;">
+								<table class="slds-table slds-no-row-hover">
+									<template if:false={engageSolCopy}>
+										<tr>
+											<td class="left">
+												<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+													style="width:100%;">
+													<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+														<span>Standard Communications</span>
+													</div>
+													<div
+														class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+
+													</div>
+												</div>
+											</td>
+										</tr>
+									</template>
+									<!-- <template if:false={wellRallCopy}>
+										<tr>
+											<td class="left">
+												<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+													style="width:100%;">
+													<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+														<span>Rally base</span>
+													</div>
+													<div
+														class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+
+													</div>
+												</div>
+											</td>
+										</tr>
+									</template> -->
+									<template if:false={advocacyCopy}>
+										<tr>
+											<td class="left">
+												<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+													style="width:100%;">
+													<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+														<span>A4Me Core</span>
+													</div>
+													<div
+														class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+
+													</div>
+												</div>
+											</td>
+										</tr>
+									</template>
+									<template if:false={eServicesCopy}>
+										<tr>
+											<td class="left">
+												<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+													style="width:100%;">
+													<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+														<span>eServices Select Reporting</span>
+													</div>
+													<div
+														class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+														<span>
+															<template if:false={editmode}>
+																<template
+																	if:true={soldCaseDataCopy.eServices_Select__c}>
+																	{soldCaseDataCopy.eServices_Select__c}
+																</template>
+															</template>
+															<template if:true={editmode}>
+																<template if:true={eServicesValues}>
+																	<lightning-combobox style="text-align: left;"
+																		name="Sold_Case_Checklist__c.eServices_Select__c"
+																		variant="label-hidden"
+																		value={soldCaseDataCopy.eServices_Select__c}
+																		placeholder="Select an Option"
+																		options={eServicesValues}
+																		onchange={FieldChangeHandler}>
+																	</lightning-combobox>
+																</template>
+															</template>
+														</span>
+													</div>
+												</div>
+											</td>
+										</tr>
+									</template>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+													<span>UHC Virtual Visits</span>
+												</div>
+												<div
+													class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+													<template if:false={editmode}>
+														<div class="slds-grid slds-grid--vertical-align-center">
+															<template if:false={showUhcVirtualVisitsWriteIn}>
+																<div class="slds-col slds-size_1-of-2 slds-p-around_xx-small slds-cell-wrap"
+																	style="margin-left: auto; margin-right: 0;">
+																	{soldCaseDataCopy.Virtual_Visits__c}
+																</div>
+															</template>
+															<template if:true={showUhcVirtualVisitsWriteIn}>
+																<div
+																	class="slds-col slds-size_1-of-2 slds-p-around_xx-small slds-cell-wrap">
+																	{soldCaseDataCopy.Virtual_Visits__c}
+																</div>
+																<div
+																	class="slds-col slds-size_1-of-2 slds-p-around_xx-small slds-cell-wrap">
+																	{soldCaseDataCopy.UHC_Virtual_Visits_Write_In__c}
+																</div>
+															</template>
+														</div>
+													</template>
+													<template if:true={editmode}>
+														<template if:true={virVisValues}>
+															<span class="slds-text-align_left">
+																<lightning-combobox
+																	class="virVis1 slds-p-around_xx-small"
+																	style="text-align: left; width:49%;"
+																	name="Sold_Case_Checklist__c.Virtual_Visits__c"
+																	variant="label-hidden"
+																	value={soldCaseDataCopy.Virtual_Visits__c}
+																	placeholder="Select an Option"
+																	options={virVisValues}
+																	onchange={FieldChangeHandler}>
+																</lightning-combobox>
+															</span>
+														</template>
+														<template if:true={showUhcVirtualVisitsWriteIn}>
+															<span class="slds-text-align_left">
+																<lightning-input class="virVis2 slds-p-around_xx-small"
+																	type="text" variant="label-hidden"
+																	style="width:49%;"
+																	name="Sold_Case_Checklist__c.UHC_Virtual_Visits_Write_In__c"
+																	value={soldCaseDataCopy.UHC_Virtual_Visits_Write_In__c}
+																	onchange={FieldChangeHandler} max-length="25"
+																	placeholder="Indicate Vendor">
+																</lightning-input>
+															</span>
+														</template>
+													</template>
+												</div>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</lightning-accordion-section>
+					</template>
+					<template if:true={isSurestProductMed}>
+						<div>
+							<h1 class="section-header-style"
+								style="background-color: #DFE9F9; padding: 4px 10px; border-radius: 3px; font-weight: 700; font-size:11px; margin-left: 7px; margin-right: 7px;">
+								Base Programs - Surest</h1>
+						</div>
+						<lightning-accordion-section class="section-header-sub sec-padding"
+							name="Base Programs Included in ASO Administrative Fee Surest"
+							label="Base Programs Included in ASO Administrative Fee">
+							<div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium"
+								style="font-size:12px;">
+								<table class="slds-table slds-no-row-hover">
+									<!-- <template if:false={engageSolCopy}> -->
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Standard Communications</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													Yes
+												</div>
+											</div>
+										</td>
+									</tr>
+									
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Surest Member Services and Surest Clinical Advocacy</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													Yes
+												</div>
+											</div>
+										</td>
+									</tr>
+									
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Behavioral Health network</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													Yes
+												</div>
+											</div>
+										</td>
+									</tr>
+									
+									
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<b><span>Optum programs:</span></b>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Transplant Resource Services</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													Yes
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Behavioral Health and ABA Utilization Management for Surest ASO</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													Yes
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Surest Case Management (CM)</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													Yes
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Specialty Guidance Program</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													Yes
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td class="left">
+											<div class="slds-grid slds-grid--vertical-align-center border-bottom"
+												style="width:100%;">
+												<div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+													<span>Cancer Guidance Program</span>
+												</div>
+												<div
+													class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+													Yes
+												</div>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</lightning-accordion-section>
+					</template>
+					<!--BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS BASE PROGRAMS-->
+				</lightning-accordion-section>
+			</template>
+		</lightning-accordion-section>
+	</lightning-accordion>
+</template>

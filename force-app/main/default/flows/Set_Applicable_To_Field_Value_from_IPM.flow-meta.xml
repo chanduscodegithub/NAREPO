@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <decisions>
+        <name>If_Check_Project_Type</name>
+        <label>If Check Project Type</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Project_Type_UHC_or_Surest_isTrue</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_IPM_Record_related_to_IRAD.Project_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>UHC</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_IPM_Record_related_to_IRAD.Project_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Surest</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Applicable_To_IRAD_Record</targetReference>
+            </connector>
+            <label>If Project Type UHC or Surest isTrue</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>Set Applicable To Field Value from IPM {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Set Applicable To Field Value from IPM</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_IPM_Record_related_to_IRAD</name>
+        <label>Get IPM Record related to IRAD</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>If_Check_Project_Type</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Project__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Project_Template__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Applicable_To_IRAD_Record</name>
+        <label>Update Applicable To IRAD Record</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <inputAssignments>
+            <field>Applicable_To__c</field>
+            <value>
+                <elementReference>Get_IPM_Record_related_to_IRAD.Project_Type__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_IPM_Record_related_to_IRAD</targetReference>
+        </connector>
+        <object>IRAD__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>

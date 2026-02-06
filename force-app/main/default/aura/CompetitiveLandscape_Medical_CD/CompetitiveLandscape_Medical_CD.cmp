@@ -1,0 +1,484 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="CompetitiveLandscapeMedicalCmClass">
+    <aura:attribute name="removeIndex" type="String"/>
+    <aura:attribute name="compLandscapeMedicalDataCD" type="Competitor__c[]"/>
+    <aura:attribute name="compLandscapeMedicalEmptyList" type="Boolean" default="false"/>
+    <aura:attribute name="removeCompititorId" type="String"/>
+    <aura:attribute name="removeCompititorIdList" type="String[]"/>
+    <aura:attribute name="isEditAccess" type="Boolean"/>
+    <aura:attribute name="compLandscapeMedicalcdTotalRow" type="Competitor__c"/>
+    
+    <aura:attribute name="isEditMode" type="Boolean" default="false"/>
+    <aura:attribute name="isExpand" type="Boolean" default="false"/>
+    
+    <aura:attribute name="isGenericEventTriggered" type="Boolean" default="false"/>
+    
+    <aura:attribute name="participatingMembersinputCD" type="Integer" default="0"/>
+    <aura:attribute name="participatingActivesinputCD" type="Integer" default="0"/>
+    <aura:attribute name="participatingU65RinputCD" type="Integer" default="0"/>
+    <aura:attribute name="participatingO65RinputCD" type="Integer" default="0"/> 
+    <aura:attribute name="participatingBFTAinputCD" type="Integer" default="0"/>
+    <aura:attribute name="participatingNBFTAinputCD" type="Integer" default="0"/>    
+    <aura:attribute name="participatingPTAinputCD" type="Integer" default="0"/> 
+    
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    
+    <aura:attribute name="selectedDataList" type="String"/>
+    <aura:attribute name="radioButtonVal" type="Boolean" default="true"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="prevRadioVal" type="Boolean"/>
+    <aura:attribute name="noPrimarySelectionMsg" type="String" default="{!$Label.c.Competitive_Landscape_Medical_CD_Prompt_msg1}"/>
+    <aura:attribute name="participatingMembersValMsg" type="String" default="{!$Label.c.Competitive_Landscape_Medical_CD_Prompt_msg2}"/>
+    <aura:attribute name="currentErrMsg" type="String" default=""/>
+    
+    <aura:attribute name="currentPopUpName" type="String" default=""/>
+    <aura:attribute name="reminderPopUpNameValue" type="String" default="{!$Label.c.Reminder_popup_name}"/>
+    
+    <aura:attribute name="isDataModified" type="Boolean" default="false"/>
+    <aura:attribute name="isParticipantLess" type="Boolean" default="false"/>
+    <aura:attribute name="isPrimarySecondarySelected" type="Boolean" default="false"/> 
+    
+    <aura:attribute name="processIndex" type="Integer"/>
+    
+    <aura:attribute name="isScrollStop" type="Boolean" default="true"/>
+    <aura:attribute name="isStop" type="Integer" default="1"/>
+    <aura:attribute name="lastCount" type="Integer" default="1"/>
+    <aura:attribute name="nextLastCount" type="Integer" default="1"/>    
+    
+    <aura:attribute name="scrollStyleForDevice" type="String" default="@media screen and (min-width: 320px) and (max-width: 1199px){.panel-content.scrollable{overflow-y: hidden !important;-webkit-overflow-scrolling: auto !important ;}}"/>
+    
+    <aura:handler name="getNewAccountData" event="c:addCompetitorAccountEvent" action="{!c.addNewCompetitorAccount}"/>
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <aura:handler event="c:GeneralInfoAccountApplicationEvent" action="{!c.setGeneralValues}"/>
+    {!v.body}
+    <style>
+        @media (max-width: 1199px){
+        .cuf-scroller-inside{
+        padding: 0 !important;
+        }
+        }
+        {!v.scrollStyleForDevice}
+    </style>
+    <div role="alertdialog" tabindex="-1" aura:id="DeleteConfirmDailog" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+        <div class="slds-modal__container md-modal-sm">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!$Label.c.Competitive_Landscape_Confirmation_Message}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmDelete}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="DeleteConfirmDailog"></div>
+    <!--  Reminder PopUp STARTS -->
+                
+    <div role="alertdialog" tabindex="-1" aura:id="reminderPopUp" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancelForPrompt}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small"/>
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!v.currentPopUpName}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p class="slds-text-align--center">{!v.currentErrMsg}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmPrompt}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="reminderPopUp"></div>
+    
+    <!--  Reminder PopUp ENDS --> 
+    
+    <!--  Error PopUp STARTS --> 
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Error_popup_name}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="ErrorMessage"></div>
+    <!--  Error PopUp ENDS --> 
+    <div aura:id="Competitive_Medical_CD" class="slds-section container forceRelatedListSingleContainer">
+        <article aura:id="articleClass" class="slds-card forceRelatedListCardDesktop slds-is-relative slds-card_boundary" onscroll="{!c.scrollBottom}">
+            <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+            <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread flex-auto">
+                <div class="slds-card__header slds-grid slds-p-vertical--x-small slds-m-bottom--none appletHeader flex-auto avoid-clicks" data-record="Competitive_Medical_CD" id="utilityToggle" onclick="{!c.expandCollapse}">
+                    <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                        <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                            <button class="slds-button slds-text-body--regular action-bar-mobile">
+                                <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                            </button>
+                            <div aura:id="appletIcon">
+                                <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Competitive_Landscape_Medical_CD_Applet_Name}">
+                                    <lightning:icon class="slds-icon slds-icon--small" iconName="custom:custom86" size="small" alternativeText="{!$Label.c.Competitive_Landscape_Medical_CD_Applet_Name}" />
+                                </span>
+                            </div>
+                            <div aura:id="spinner" class="slds-hide dotsSpinnerContainer display-right slds-is-relative">
+                                <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-grid slds-grid_algin-center">
+                                <!--<a href="javascript:void(0);" class="slds-card__header-link">-->
+                                <span class="slds-text-heading--small">{!$Label.c.Competitive_Landscape_Medical_CD_Applet_Name}</span>
+                                <!--</a>-->
+                                <div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small">
+                                    <c:tooltip helpLink="Help" helpText="{!$Label.c.Competitive_Landscape_Medical_CD_Instruction_Text}"/>
+                                </div>
+                            </h2>
+                        </div>
+                    </header>
+                </div>
+                <div class="slds-p-right--medium appletAddBtn action-bar-mobile">
+                    <aura:if isTrue="{!v.isEditAccess}">                    	                    	
+                        <lightning:button class="slds-button slds-button--neutral" aura:id="addMedicalCarrier" onclick="{!c.addMedicalCarrier}">{!$Label.c.Add}</lightning:button>                 
+                    </aura:if>
+                </div>
+            </div>                        
+            <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                <div class="slds-card__body d-inline-block">
+                    <div class="slds-card__body slds-m-bottom--none">
+                        <div class="slds-page-header slds-p-vertical--x-small">
+                            <div class="slds-grid slds-mobile--header">
+                            <header class="slds-media slds-media--center ml-auto">
+                                <div class="slds-grid">
+                                    <aura:if isTrue="{!v.isEditAccess}">                                        
+                                        <lightning:button class="slds-button slds-button--neutral" aura:id="editMedicalCarrier" disabled="false" onclick="{!c.editMedicalCarrier}">{!$Label.c.Edit}</lightning:button>
+                                        <lightning:button class="slds-button slds-button--neutral hide" aura:id="saveMedicalCarrier" onclick="{!c.saveMedicalCarrier}">{!$Label.c.Save}</lightning:button>
+                                        <lightning:button class="slds-button slds-button--neutral hide" aura:id="cancelMedicalCarrier" onclick="{!c.cancelMedicalCarrier}">{!$Label.c.Cancel}</lightning:button>                                                                                                                
+                                    </aura:if>
+                                </div>
+                            </header>
+                            </div>
+                        </div>
+                    </div>
+                    <ui:scrollerWrapper class="tbl-scroll">
+                        <table aura:id="clientSurveyTbl" id="clientSurveyTbl" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout table-alignment-mobile">
+                            <thead>
+                                <tr class="slds-hint-parent thBorderLeft divider">                                   
+                                    <th>&nbsp;</th>
+                                    <th width="85">&nbsp;</th>
+                                    <th width="85">&nbsp;</th>
+                                    <th width="100">&nbsp;</th>
+                                    <th width="170">&nbsp;</th>
+                                    <th width="270" class="slds-is-resizable align-center" colspan="3" scope="col">                                                                                                               
+                                        <span class="bold" title="Participating Member Breakdown by Actives and Retirees">{!$Label.c.Participating_Member_Breakdown_by_Actives_and_Retirees}</span>                                                                         
+                                    </th>                                
+                                    <th width="350" class="slds-is-resizable align-center" colspan="3" scope="col">                                                                                                               
+                                        <span class="bold" title="Participating Member Breakdown by Employee Class">{!$Label.c.Participating_Actives_Breakdown_by_Employee_Class}</span>                                                                         
+                                    </th>
+                                    <aura:if isTrue="{!v.isEditAccess}">
+                                        <th width="50">&nbsp;</th>
+                                    </aura:if>
+                                </tr>
+                                <tr class="slds-hint-parent thBorderLeft">                                   
+                                    <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                        <span class="bold" title="Medical Carrier">{!$Label.c.Medical_Carrier_Label}</span>                                                    
+                                    </th>
+                                    <th width="90" class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                        <span class="bold" title="Incumbent Primary">{!$Label.c.Incumbent_Primary_Label}</span>                                                                         
+                                    </th>
+                                    <th width="90" class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                        <span class="bold" title="Incumbent Secondary">{!$Label.c.Incumbent_Secondary_Label}</span>                                                                         
+                                    </th>
+                                    <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                        <span class="bold" title="Participating Members">{!$Label.c.Participating_Members_Label}</span>                                                                         
+                                    </th>
+                                    <th class="slds-is-resizable align-center" scope="col" width="180">                                                                                                               
+                                        <span class="bold" title="Comments">{!$Label.c.Comments}</span>                                                                         
+                                    </th>
+                                    <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                        <span class="bold" title="Participating Actives">{!$Label.c.Participating_Actives_Label}</span>                                                                         
+                                    </th>
+                                    <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                        <span class="bold" title="Participating U65 Retirees">{!$Label.c.Participating_U65_Retirees_Label}</span>                                                                         
+                                    </th>
+                                    <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                        <span class="bold" title="Participating O65 Retirees">{!$Label.c.Participating_O65_Retirees_Label}</span>                                                                         
+                                    </th>
+                                    <th class="slds-is-resizable align-center" scope="col">                                                                           
+                                        <span class="bold" title="Participating Bargained Full-Time Actives">{!$Label.c.Participating_Bargained_Full_Time_Actives_Label}</span>                                                                                         
+                                    </th>
+                                    <th width="125" class="slds-is-resizable align-center" scope="col">                                                                           
+                                        <span class="bold" title="Participating Non-Bargained Full-Time Actives">{!$Label.c.Participating_Non_Bargained_Full_Time_Actives_Label}</span>                                                                                                                        
+                                    </th>
+                                    <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                        <span class="bold" title="Participating Part-Time Actives">{!$Label.c.Participating_Part_Time_Actives_Label}</span>                                                                         
+                                    </th>
+                                    <aura:if isTrue="{!v.isEditAccess}">
+                                        <th></th>
+                                    </aura:if>
+                                </tr>
+                            </thead>
+                            <tbody aura:id="clientSurveyTblBody">
+                                <aura:if isTrue="{!v.compLandscapeMedicalEmptyList == false}">
+                                    <aura:iteration items="{!v.compLandscapeMedicalDataCD}" var="compLandscapeMedicalObj" indexVar="index">                             
+                                        <aura:if isTrue="{!compLandscapeMedicalObj.CompetitorAccount__r.Name != 'Total'}">
+                                            <tr class="slds-hint-parent">                                               
+                                                <td data-label="Medical Carrier" class="addBorderLeft">
+                                                    <div class="slds-form-element">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-cell-wrap" title="Medical Carrier">{!compLandscapeMedicalObj.CompetitorAccount__r.Name}</div>
+                                                        </div>                                           
+                                                    </div>
+                                                </td>
+                                                <td width="85" data-label="Incumbent Primary" class="addBorderLeft slds-text-align_center">
+                                                    <div class="slds-form-element readMode">
+                                                        <div class="slds-form-element__control">                                              
+                                                            <ui:inputRadio aura:id="primaryRadio" text="{!index}" mousedown="{!c.prevRadioVal}" click="{!c.onRadioPrimary}" updateOn="change" disabled="{!v.radioButtonVal}" value="{!compLandscapeMedicalObj.PrimaryIncumbent__c}"/>
+                                                        </div>
+                                                    </div>
+                                                    <!--<div class="slds-form-element hide" aura:id="editMode">                                            
+                                                 <div class="slds-form-element__control">
+                                                     <ui:inputRadio aura:id="r1" name="primaryIncumbent" disabled="false" value="{!compLandscapeMedicalObj.PrimaryIncumbent__c}"/>
+                                                 </div>                                                                                        
+                                            </div>-->
+                                                </td>
+                                                <td width="85" data-label="Incumbent Secondary" class="addBorderLeft slds-text-align_center">
+                                                    <div class="slds-form-element readMode">
+                                                        <div class="slds-form-element__control">                                                
+                                                            <ui:inputRadio aura:id="secondaryRadio" text="{!index}" mousedown="{!c.prevRadioVal}" click="{!c.onRadioSecondary}" updateOn="change" disabled="{!v.radioButtonVal}" value="{!compLandscapeMedicalObj.SecondaryIncumbent__c}"/>
+                                                        </div>
+                                                    </div>
+                                                    <!--<div class="slds-form-element hide" aura:id="editMode">                                            
+                                                 <div class="slds-form-element__control">
+                                                     <ui:inputRadio aura:id="r2" name="secondaryIncumbent" disabled="false" value="{!compLandscapeMedicalObj.SecondaryIncumbent__c}"/>
+                                                 </div>                                                                                        
+                                            </div>-->
+                                                </td>
+                                                <td width="100" data-label="Participating Members" class="addBorderLeft text-align-right">
+                                                    <div class="slds-form-element show" aura:id="readMode">
+                                                        <div class="slds-form-element__control">                                                
+                                                            <div class="slds-cell-wrap" title="Participating Members"><ui:outputNumber value="{!compLandscapeMedicalObj.MembershipEstimate__c}"/></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-form-element hide" aura:id="editMode">                                            
+                                                        <div class="slds-form-element__control">
+                                                            <ui:inputNumber maxlength="13" format="#,###,##0" change="{!c.calculateTotal}" class="slds-textarea slds-text-align_right" aura:id="input_Participating_Members" value="{!compLandscapeMedicalObj.MembershipEstimate__c}"></ui:inputNumber>
+                                                        </div>                                                                                        
+                                                    </div>
+                                                </td>
+                                                <td width="170" data-label="Comments" class="addBorderLeft">
+                                                    <div class="slds-form-element show" aura:id="readMode">
+                                                        <div class="slds-form-element__control">                                                
+                                                            <div class="slds-cell-wrap" title="Comments">{!compLandscapeMedicalObj.Comments__c}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-form-element hide" aura:id="editMode">                                            
+                                                        <div class="slds-form-element__control">                                                 
+                                                            <lightning:textarea name="myTextArea" aura:id="inputValues" value="{!compLandscapeMedicalObj.Comments__c}" maxlength="250" /> 
+                                                        </div>                                                                                        
+                                                    </div>
+                                                </td>
+                                                <td width="90" data-label="Participating Actives(Participating Member Breakdown by Actives and Retirees)" class="addBorderLeft text-align-right">
+                                                    <div class="slds-form-element show" aura:id="readMode">
+                                                        <div class="slds-form-element__control">                                                
+                                                            <div class="slds-cell-wrap no-wrap-in-mobile" title="Participating Actives"><ui:outputNumber value="{!compLandscapeMedicalObj.ParticipatingActives__c}"/></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-form-element hide" aura:id="editMode">                                            
+                                                        <div class="slds-form-element__control">
+                                                            <ui:inputNumber maxlength="13" format="#,###,##0" change="{!c.calculateTotal}" class="slds-textarea slds-text-align_right" aura:id="inputValues" value="{!compLandscapeMedicalObj.ParticipatingActives__c}"></ui:inputNumber>
+                                                        </div>                                                                                        
+                                                    </div>
+                                                </td>
+                                                <td width="90" data-label="Participating U65 Retirees(Participating Member Breakdown by Actives and Retirees)" class="addBorderLeft text-align-right">
+                                                    <div class="slds-form-element show" aura:id="readMode">
+                                                        <div class="slds-form-element__control">                                                
+                                                            <div class="slds-cell-wrap no-wrap-in-mobile" title="Participating U65 Retirees"><ui:outputNumber value="{!compLandscapeMedicalObj.ParticipatingU65Retirees__c}"/></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-form-element hide" aura:id="editMode">                                            
+                                                        <div class="slds-form-element__control">
+                                                            <ui:inputNumber maxlength="13" format="#,###,##0" change="{!c.calculateTotal}" class="slds-textarea slds-text-align_right" aura:id="inputValues" value="{!compLandscapeMedicalObj.ParticipatingU65Retirees__c}"></ui:inputNumber>
+                                                        </div>                                                                                        
+                                                    </div>
+                                                </td>
+                                                <td width="90" data-label="Participating O65 Retirees(Participating Member Breakdown by Actives and Retirees)" class="addBorderLeft text-align-right">
+                                                    <div class="slds-form-element show" aura:id="readMode">
+                                                        <div class="slds-form-element__control">                                                
+                                                            <div class="slds-cell-wrap no-wrap-in-mobile" title="Participating O65 Retirees"><ui:outputNumber value="{!compLandscapeMedicalObj.ParticipatingO65Retirees__c}"/></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-form-element hide" aura:id="editMode">                                            
+                                                        <div class="slds-form-element__control">
+                                                            <ui:inputNumber maxlength="13" format="#,###,##0" change="{!c.calculateTotal}" class="slds-textarea slds-text-align_right" aura:id="inputValues" value="{!compLandscapeMedicalObj.ParticipatingO65Retirees__c}"></ui:inputNumber>
+                                                        </div>                                                                                        
+                                                    </div>
+                                                </td>                                   
+                                                <td width="117" data-label="Participating Bargained Full-Time Actives(Participating Member Breakdown by Employee Class)" class="addBorderLeft text-align-right">
+                                                    <div class="slds-form-element show" aura:id="readMode">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-cell-wrap no-wrap-in-mobile" title="Participating Bargained Full-Time Actives"><ui:outputNumber value="{!compLandscapeMedicalObj.ParticipatingBargainedFullTimeActive__c}"/></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-form-element hide" aura:id="editMode">                                            
+                                                        <div class="slds-form-element__control">
+                                                            <ui:inputNumber maxlength="13" format="#,###,##0" change="{!c.calculateTotal}" class="slds-textarea slds-text-align_right" aura:id="inputValues" value="{!compLandscapeMedicalObj.ParticipatingBargainedFullTimeActive__c}"></ui:inputNumber>
+                                                        </div>                                                                                        
+                                                    </div>
+                                                </td>
+                                                <td width="116" data-label="Participating Non-Bargained Full-Time Actives(Participating Member Breakdown by Employee Class)" class="addBorderLeft text-align-right">
+                                                    <div class="slds-form-element show" aura:id="readMode">
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-cell-wrap no-wrap-in-mobile" title="Participating Non-Bargained Full-Time Actives"><ui:outputNumber value="{!compLandscapeMedicalObj.ParticipatingNonBargainedFullTimeAc__c}"/></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-form-element hide" aura:id="editMode">                                            
+                                                        <div class="slds-form-element__control">
+                                                            <ui:inputNumber maxlength="13" format="#,###,##0" change="{!c.calculateTotal}" class="slds-textarea slds-text-align_right" aura:id="inputValues" value="{!compLandscapeMedicalObj.ParticipatingNonBargainedFullTimeAc__c}"></ui:inputNumber>
+                                                        </div>                                                                                        
+                                                    </div>
+                                                </td>                                    
+                                                <td width="117" data-label="Participating Part-Time Actives(Participating Member Breakdown by Employee Class)" class="addBorderLeft text-align-right">
+                                                    <div class="slds-form-element show" aura:id="readMode">
+                                                        <div class="slds-form-element__control">                                                
+                                                            <div class="slds-cell-wrap no-wrap-in-mobile" title="Participating Part-Time Actives"><ui:outputNumber value="{!compLandscapeMedicalObj.ParticipatingPartTimeActives__c}"/></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-form-element hide" aura:id="editMode">                                            
+                                                        <div class="slds-form-element__control">
+                                                            <ui:inputNumber maxlength="13" format="#,###,##0" change="{!c.calculateTotal}" class="slds-textarea slds-text-align_right" aura:id="inputValues" value="{!compLandscapeMedicalObj.ParticipatingPartTimeActives__c}"></ui:inputNumber>
+                                                        </div>                                                                                        
+                                                    </div>
+                                                </td>
+                                                <aura:if isTrue="{!v.isEditAccess}">
+                                                    <td width="50" class="addBorderLeft">                                                
+                                                        <div class="slds-text-align--center mobile-align-right cursorPointer" id="{!index}" aura:id="cancelLink" data-record="{!compLandscapeMedicalObj.Id}" onclick="{!c.removeMedicalCarrier}">
+                                                            <lightning:icon class="slds-icon slds-icon--small"  iconName="utility:delete" size="x-small" alternativeText="Remove" />
+                                                        </div>
+                                                        <div aura:id="spinnerDelete" class="slds-hide dotsSpinnerContainer display-right">
+                                                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                                                <span class="slds-assistive-text">Loading</span>
+                                                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                                                    <div class="slds-spinner__dot-a"></div>
+                                                                    <div class="slds-spinner__dot-b"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>                                           
+                                                </aura:if>
+                                            </tr> 
+                                        </aura:if>                              	                                                       
+                                    </aura:iteration>
+                                    <aura:set attribute="else">
+                                        <tr><td colspan="12" class="align-center">{!$Label.c.Comp_Medical_Cd_No_records_found}</td></tr>
+                                    </aura:set>
+                                </aura:if>
+                                <aura:if isTrue="{!v.compLandscapeMedicalEmptyList == false}">
+                                    <aura:iteration items="{!v.compLandscapeMedicalDataCD}" var="compLandscapeMedicalObj" indexVar="index">                               
+                                        <aura:if isTrue="{!compLandscapeMedicalObj.CompetitorAccount__r.Name == 'Total'}">
+                                            <tr class="slds-hint-parent tdBorderLeft bold">                                                
+                                                <td data-label="Medical Carrier" class="slds-text-align_right">Total</td>
+                                                <td width="85" data-label="Incumbent Primary">&nbsp;</td>
+                                                <td width="85" data-label="Incumbent Secondary">&nbsp;</td>
+                                                <td width="100" data-label="Participating Members" class="text-align-right slds-cell-wrap"><ui:outputNumber value="{!v.participatingMembersinputCD}"/></td>                                     
+                                                <td width="170" data-label="Comments" class="text-align-right slds-cell-wrap">&nbsp;</td>                                        
+                                                <td width="90" data-label="Participating Actives(Participating Member Breakdown by Actives and Retirees)" class="text-align-right slds-cell-wrap no-wrap-in-mobile"><ui:outputNumber value="{!v.participatingActivesinputCD}"/></td>                                        
+                                                <td width="90" data-label="Participating U65 Retirees(Participating Member Breakdown by Actives and Retirees)" class="text-align-right slds-cell-wrap no-wrap-in-mobile"><ui:outputNumber value="{!v.participatingU65RinputCD}"/></td>                                       
+                                                <td width="90" data-label="Participating O65 Retirees(Participating Member Breakdown by Actives and Retirees)" class="text-align-right slds-cell-wrap no-wrap-in-mobile"><ui:outputNumber value="{!v.participatingO65RinputCD}"/></td>
+                                                <td width="117" data-label="Participating Bargained Full-Time Actives(Participating Member Breakdown by Employee Class)" class="text-align-right slds-cell-wrap no-wrap-in-mobile"><ui:outputNumber value="{!v.participatingBFTAinputCD}"/></td>
+                                                <td width="116" data-label="Participating Non-Bargained Full-Time Actives(Participating Member Breakdown by Employee Class)" class="text-align-right slds-cell-wrap no-wrap-in-mobile"><ui:outputNumber value="{!v.participatingNBFTAinputCD}"/></td>
+                                                <td width="117" data-label="Participating Part-Time Actives(Participating Member Breakdown by Employee Class)" class="text-align-right slds-cell-wrap no-wrap-in-mobile"><ui:outputNumber value="{!v.participatingPTAinputCD}"/></td>
+                                                <aura:if isTrue="{!v.isEditAccess}">
+                                                    <td width="50">&nbsp;</td>
+                                                </aura:if>
+                                            </tr>
+                                        </aura:if>                               
+                                    </aura:iteration>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </ui:scrollerWrapper>
+                </div>
+            </div>
+            <div class="slds-card__footer">
+            </div>            
+        </article>
+    </div>
+    
+    <div class="action-bar-mobile slds-hide" aura:id="action-bar-mobile">
+        <footer class="actionButtons oneActionBar forceActionsContainer sortEdit" aura:id="sortEdit" aria-hidden="false" data-aura-class="oneActionBar forceActionsContainer">
+            <div class="actionButtonsWrapper">
+                
+                <aura:if isTrue="{!v.compLandscapeMedicalEmptyList == false}">
+                    <aura:if isTrue="{!v.isEditAccess}">
+                        <div class="action" id="actionBarItem_Edit" aura:id="actionBarItem_Edit">
+                            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                                <button disabled="false" onclick="{!c.editMedicalCarrier}" class="actionButton slds-button slds-button--icon  uiButton" aria-live="off" type="button" data-aura-class="uiButton">
+                                    <span class="actionIcon slds-icon_container slds-icon_container--circle" style="background-color:#1DCCBF;">
+                                        <span class="uiImage" data-aura-class="uiImage">
+                                            <img src="https://crmit--UHGDEV1.cs14.my.salesforce.com/img/icon/t4v35/action/edit_120.png" class="slds-icon slds-icon--x-small" alt="Edit" title="Edit"></img>
+                                        </span>
+                                    </span>
+                                    <p class="slds-truncate actionTitle" aria-hidden="true">{!$Label.c.Edit}</p>
+                                </button>
+                            </div>
+                        </div>
+                    </aura:if>  
+                </aura:if>
+                
+                <aura:if isTrue="{!v.isEditAccess}">
+                    <div class="action" aria-hidden="false" id="actionBarItem_New">
+                        <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                            <button onclick="{!c.addMedicalCarrier}" class="actionButton slds-button slds-button--icon uiButton" aria-live="off" type="button" data-aura-class="uiButton">
+                                <span class="actionIcon slds-icon_container slds-icon_container--circle" style="background-color:#33BCE7;">
+                                    <span data-aura-rendered-by="7984:0" class="uiImage" data-aura-class="uiImage"><img data-aura-rendered-by="7982:0" src="https://crmit--UHGDEV1.cs14.my.salesforce.com/img/icon/t4v35/action/new_120.png" class="slds-icon slds-icon--x-small" alt="New" title="New"></img>
+                                    </span>
+                                </span>
+                                <p class="slds-truncate actionTitle" aria-hidden="true" data-aura-rendered-by="7985:0">{!$Label.c.Add}</p>
+                            </button>
+                        </div>
+                    </div>
+                </aura:if> 
+                
+            </div>                     
+        </footer>
+        <div class="actionButtons oneActionBar forceActionsContainer saveCancel hide" aura:id="saveCancel">
+            <div class="actionButtonsWrapper save-cancel-bg">
+                <div class="action">
+                    <div class="oneActionButtonIcon">
+                        <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancelMedicalCarrier}">{!$Label.c.Cancel}</button>
+                    </div>
+                </div>
+                <div class="action">
+                    <div class="oneActionButtonIcon"> 
+                        <button type="button" class="slds-button slds-button_brand" onclick="{!c.saveMedicalCarrier}">{!$Label.c.Save}</button>            
+                    </div>
+                </div>              			
+            </div>
+        </div>   
+    </div>    
+</aura:component>

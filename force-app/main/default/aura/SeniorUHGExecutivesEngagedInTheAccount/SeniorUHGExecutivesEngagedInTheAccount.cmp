@@ -1,0 +1,554 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 01-23-2024
+  @last modified by  : Spoorthy
+-->
+<aura:component controller="SeniorUHGExecutivesClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="seniorUhgExecutives" type="SeniorUHGExecutivesEngaged__c" />
+    <aura:attribute name="seniorUhgExecutives1" type="SeniorUHGExecutivesEngaged__c"/>
+    <aura:attribute name="oldSeniorUhgExecutives" type="SeniorUHGExecutivesEngaged__c"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isSpinnertoLoad"  type="Boolean"  default="false"/>
+    <aura:attribute name="isLoggedInUserValid"  type="Boolean"  default="false"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="enableEditMode"  type="Boolean"  default="false"/>
+    
+    <aura:attribute name="isGenericEventTriggered" type="Boolean" default="false"/>
+    
+    <!--STARTS-->
+    <aura:attribute name="isScrollStop" type="Boolean" default="true"/>
+    <aura:attribute name="isStop" type="Integer" default="1"/>
+    <aura:attribute name="lastCount" type="Integer" default="1"/>
+    <aura:attribute name="nextLastCount" type="Integer" default="1"/>   
+    <!--ENDS-->
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <aura:handler event="c:GeneralInfoAccountApplicationEvent" action="{!c.setGeneralValues}"/>
+    <aura:handler name="removeCustomLookUpSeniorUHGEevnt" event="c:removeCustomLookUpSeniorUHGEevnt" action="{!c.closeCustomLookUp}"/>
+    <style>
+        @media (max-width: 767px){
+        .cuf-scroller-inside{
+        padding: 0 !important;
+        }
+        }
+        @media (min-width: 768px) and (max-width: 1199px){
+        .cuf-content{
+        padding: 0 !important;
+        }
+        }
+        @media screen and (min-width: 320px) and (max-width: 1199px){
+        .panel-content.scrollable{
+        overflow-y: hidden !important;	
+        -webkit-overflow-scrolling: auto !important ;
+        }
+        }
+    </style>
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div aura:id="contact_History" class="slds-section" style="clear:both;">
+        <article aura:id="articleClass" class="slds-card slds-card_boundary slds-is-relative" onscroll="{!c.scrollBottom}">
+            <div class="slds-card__header appletHeader slds-grid slds-p-vertical--x-small slds-m-bottom--none flex-auto " data-record="contact_History" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile" >
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                        </button>
+                        <aura:if isTrue="{!v.isSpinnertoLoad}">
+                            <div aura:id="spinner" class="dotsSpinnerContainer">
+                                <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <aura:set attribute="else">
+                                <div>
+                                    <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Senior_UHG_Executives_Engaged_in_the_Account}">
+                                        <lightning:icon class="slds-icon slds-icon--small" iconName="standard:user" size="small" alternativeText="{!$Label.c.Senior_UHG_Executives_Engaged_in_the_Account}" />
+                                    </span>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-grid">
+                            <!--<a href="javascript:void(0);" class="slds-card__header-link">-->
+                            <span class="slds-text-heading--small">{!$Label.c.Senior_UHG_Executives_Engaged_in_the_Account}</span>
+                            <!--</a>-->
+                            <div class="slds-is-relative flex-alignCenter helptext show-md-up">
+                                <c:tooltip2 helpLink="Help" helpText="{!$Label.c.SeniorUHG_HelpText}"/>
+                            </div>
+                        </h2>
+                    </div>
+                </header>
+                <div class="slds-grid slds-grid--vertical-align-center appletAddBtn">
+                    <div class="slds-is-relative flex-alignCenter helptext show-md-down slds-p-horizontal_x-small">
+                        <c:tooltip2 helpLink="Help" helpText="{!$Label.c.SeniorUHG_HelpText}"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-is-relative">
+                <aura:if isTrue="{!v.isSpinnertoLoad}">    
+                    <div class="slds-spinner_container" aura:id="spinner1"></div>
+                </aura:if>
+                
+                <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                    <!--<aura:if isTrue="{!v.isSpinnertoLoad}">
+                    <div class="slds-spinner_container" aura:id="spinner">
+                        <div class="slds-spinner-brand  slds-spinner slds-spinner-medium slds-is-relative" role="status">
+                            <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </aura:if>-->
+                    
+                    
+                    <div class="slds-card__body d-inline-block" onclick="{!c.closeCustomLookUp}"> 
+                        <div class="slds-page-header subHeaderHeight">
+                            <div class="headerHeight slds-grid slds-float--right slds-p-right--none slds-p-bottom--small">
+                                <header class="slds-media slds-media--center action-bar-mobile">
+                                    <!--<div class="slds-media__body">-->
+                                    <aura:if isTrue="{!v.isLoggedInUserValid}">                                    
+                                        <lightning:button class="slds-button slds-button--neutral" aura:id="editExecutive" disabled="false" onclick="{!c.editExecutive}">{!$Label.c.Edit}</lightning:button>
+                                        <lightning:button class="slds-button slds-button--neutral hideShow" aura:id="saveExecutive" onclick="{!c.saveExecutive}">{!$Label.c.Save}</lightning:button>
+                                        <lightning:button class="slds-button slds-button--neutral hideShow" aura:id="cancelExecutive" onclick="{!c.cancelExecutive}">{!$Label.c.Cancel}</lightning:button>                                          
+                                    </aura:if>
+                                </header>
+                                <div class="slds-no-flex">                    
+                                </div>
+                            </div>
+                        </div>           
+                        
+                        <table aura:id="clientSurveyTbl" id="clientSurveyTbl" class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_col-bordered data-table slds-table--fixed-layout">
+                            <thead>
+                                <tr class="slds-hint-parent">
+                                    <th scope="row" class="slds-is-resizable">                                                                                                                                                  
+                                    </th>
+                                    <th scope="row" class="slds-is-resizable align-center">                                                                                                               
+                                        <span class="bold" title="2013">{!$Label.c.ExecutiveName}</span>
+                                    </th>
+                                    <th scope="row" class="slds-is-resizable align-center">                                                                           
+                                        <span class="bold" title="2013">{!$Label.c.Responsibilities_and_Frequency_of_Engagement}</span>                                                                                                                        
+                                    </th>     
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Table Row #1-->
+                                <tr class="slds-hint-parent">
+                                    <th scope="row">
+                                        <div class="slds-form-element readMode">
+                                            <div class="slds-form-element__control">
+                                                <div class="bold italic">{!$Label.c.Enterprise_Executive_Sponsor}</div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Name" style="overflow: visible;">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.EnterpriseExecutiveSponsorName__c}</div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="slds-form-element toggle" aura:id="editMode">                            
+                                            <c:customLookup aura:id="Enterprise_Executive_Sponsor" SearchKeyWord="{!v.seniorUhgExecutives.EnterpriseExecutiveSponsorName__c}" designation="enterpriseExecutives"/>   
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Responsibilities and Frequency of Engagement">
+                                        <div class="slds-form-element" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.EnterpriseExecutiveSponsorResponsibiliti__c}</div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">                                                                      
+                                            <!--<textarea id="textarea-id-01" class="slds-textarea" placeholder="Placeholder Text">{!seniorUhgExecutivesObj.Responsibilities}</textarea>-->
+                                            <c:TextAreaWithCounter aura:id="textCounter" inputKeyWord="{!v.seniorUhgExecutives.EnterpriseExecutiveSponsorResponsibiliti__c}" />
+                                        </div>
+                                    </th>
+                                </tr>  
+                                
+                                <!-- Table Row #2-->    
+                                <tr class="slds-hint-parent">
+                                    <th scope="row">
+                                        <div class="slds-form-element readMode">
+                                            <div class="slds-form-element__control">
+                                                <div class="bold italic">{!$Label.c.UHC_Executive_Sponsor}</div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Name" style="overflow: visible;">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.UHCExecutiveSponsorName__c}</div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="slds-form-element toggle" aura:id="editMode">                            
+                                            <c:customLookup aura:id="UHC_Executive_Sponsor" SearchKeyWord="{!v.seniorUhgExecutives.UHCExecutiveSponsorName__c}" designation="UHCExecutives"/>   
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Responsibilities and Frequency of Engagement">
+                                        <div class="slds-form-element" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.UHCExecutiveSponsorResponsibilities__c}</div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">                                                                      
+                                            <!--<textarea id="textarea-id-01" class="slds-textarea" placeholder="Placeholder Text">{!seniorUhgExecutivesObj.Responsibilities}</textarea>-->
+                                            <c:TextAreaWithCounter aura:id="textCounter" inputKeyWord="{!v.seniorUhgExecutives.UHCExecutiveSponsorResponsibilities__c}" />    
+                                        </div>
+                                    </th>
+                                </tr> 
+                                
+                                <!-- Table Row #3-->    
+                                <tr class="slds-hint-parent">
+                                    <th scope="row">
+                                        <div class="slds-form-element readMode">
+                                            <div class="slds-form-element__control">
+                                                <div class="bold italic">{!$Label.c.Optum_Executive_Sponsor}</div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Name" style="overflow: visible;">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OptumExecutiveSponsorName__c}</div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="slds-form-element toggle" aura:id="editMode">                            
+                                            <c:customLookup aura:id="Optum_Executive_Sponsor" SearchKeyWord="{!v.seniorUhgExecutives.OptumExecutiveSponsorName__c}" designation="optumExecutives"/>   
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Responsibilities and Frequency of Engagement">
+                                        <div class="slds-form-element" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OptumExecutiveSponsorResponsibilities__c}</div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">                                                                      
+                                            <!--<textarea id="textarea-id-01" class="slds-textarea" placeholder="Placeholder Text">{!seniorUhgExecutivesObj.Responsibilities}</textarea>-->
+                                            <c:TextAreaWithCounter aura:id="textCounter" inputKeyWord="{!v.seniorUhgExecutives.OptumExecutiveSponsorResponsibilities__c}" />                                      
+                                        </div>
+                                    </th>
+                                </tr> 
+
+                                <!-- Table Row #4-->    
+                                <tr class="slds-hint-parent">
+                                    <th scope="row">
+                                        <div class="slds-form-element readMode">
+                                            <div class="slds-form-element__control">
+                                                <div class="bold italic">{!$Label.c.Surest_Executive_Sponsor}</div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Name" style="overflow: visible;">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.SurestExecutiveSponsorName__c}</div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="slds-form-element toggle" aura:id="editMode">                            
+                                            <c:customLookup aura:id="Surest_Executive_Sponsor" SearchKeyWord="{!v.seniorUhgExecutives.SurestExecutiveSponsorName__c}" designation="surestExecutives"/>   
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Responsibilities and Frequency of Engagement">
+                                        <div class="slds-form-element" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.SurestExecutiveSponsorResponsibilities__c}</div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">                                                                      
+                                            <!--<textarea id="textarea-id-01" class="slds-textarea" placeholder="Placeholder Text">{!seniorUhgExecutivesObj.Responsibilities}</textarea>-->
+                                            <c:TextAreaWithCounter aura:id="textCounter" inputKeyWord="{!v.seniorUhgExecutives.SurestExecutiveSponsorResponsibilities__c}" />                                      
+                                        </div>
+                                    </th>
+                                </tr> 
+                                
+                                <!-- Table Row #5-->    
+                                <tr class="slds-hint-parent">
+                                    <th scope="row">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">
+                                                <aura:if isTrue="{!v.seniorUhgExecutives.OtherExecutiveTitle1__c.length > 0}">
+                                                    <div class="bold italic">{!v.seniorUhgExecutives.OtherExecutiveTitle1__c}</div>
+                                                    <aura:set attribute="else">
+                                                        <div class="bold">{!$Label.c.Other_Executive_Title}</div>
+                                                    </aura:set>  
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitle" value="{!v.seniorUhgExecutives.OtherExecutiveTitle1__c}" maxlength="40" placeholder="Other"></ui:inputText>
+                                            </div>                                                                                       
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Name" style="overflow: visible;">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveName1__c}</div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="slds-form-element toggle" aura:id="editMode">                            
+                                            <!--<c:customLookup SearchKeyWord="{!v.seniorUhgExecutives.OtherExecutiveName1__c}"/>   -->
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitleName" value="{!v.seniorUhgExecutives.OtherExecutiveName1__c}" maxlength="40" placeholder="Name"></ui:inputText>
+                                            </div> 
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Responsibilities and Frequency of Engagement">
+                                        <div class="slds-form-element" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveResponsibilities1__c}</div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">                                                                      
+                                            <!--<textarea id="textarea-id-01" class="slds-textarea" placeholder="Placeholder Text">{!seniorUhgExecutivesObj.Responsibilities}</textarea>-->
+                                            <c:TextAreaWithCounter aura:id="textCounter" inputKeyWord="{!v.seniorUhgExecutives.OtherExecutiveResponsibilities1__c}" />
+                                        </div>
+                                    </th>
+                                </tr>
+                                
+                                <!-- Table Row #6-->    
+                                <tr class="slds-hint-parent">
+                                    <th scope="row">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">
+                                                <aura:if isTrue="{!v.seniorUhgExecutives.OtherExecutiveTitle2__c.length > 0}">
+                                                    <div class="bold italic">{!v.seniorUhgExecutives.OtherExecutiveTitle2__c}</div>
+                                                    <aura:set attribute="else">
+                                                        <div class="bold">{!$Label.c.Other_Executive_Title}</div>
+                                                    </aura:set>  
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitle" value="{!v.seniorUhgExecutives.OtherExecutiveTitle2__c}" maxlength="40" placeholder="Other"></ui:inputText>
+                                            </div>                                                                                       
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Name" style="overflow: visible;">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveName2__c}</div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="slds-form-element toggle" aura:id="editMode">                            
+                                            <!--<c:customLookup SearchKeyWord="{!v.seniorUhgExecutives.OtherExecutiveName2__c}"/>  -->
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitleName" value="{!v.seniorUhgExecutives.OtherExecutiveName2__c}" maxlength="40" placeholder="Name"></ui:inputText>
+                                            </div> 
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Responsibilities and Frequency of Engagement">
+                                        <div class="slds-form-element" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveResponsibilities2__c}</div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">                                                                      
+                                            <!--<textarea id="textarea-id-01" class="slds-textarea" placeholder="Placeholder Text">{!seniorUhgExecutivesObj.Responsibilities}</textarea>-->
+                                            <c:TextAreaWithCounter aura:id="textCounter" inputKeyWord="{!v.seniorUhgExecutives.OtherExecutiveResponsibilities2__c}" />
+                                        </div>
+                                    </th>
+                                </tr>
+                                
+                                <!-- Table Row #7-->
+                                <tr class="slds-hint-parent">
+                                    <th scope="row">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">
+                                                <aura:if isTrue="{!v.seniorUhgExecutives.OtherExecutiveTitle3__c.length > 0}">
+                                                    <div class="bold italic">{!v.seniorUhgExecutives.OtherExecutiveTitle3__c}</div>
+                                                    <aura:set attribute="else">
+                                                        <div class="bold">{!$Label.c.Other_Executive_Title}</div>
+                                                    </aura:set>  
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitle" value="{!v.seniorUhgExecutives.OtherExecutiveTitle3__c}" maxlength="40" placeholder="Other"></ui:inputText>
+                                            </div>                                                                                       
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Name" style="overflow: visible;">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveName3__c}</div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="slds-form-element toggle" aura:id="editMode">                            
+                                            <!--<c:customLookup SearchKeyWord="{!v.seniorUhgExecutives.OtherExecutiveName3__c}"/>   -->
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitleName" value="{!v.seniorUhgExecutives.OtherExecutiveName3__c}" maxlength="40" placeholder="Name"></ui:inputText>
+                                            </div> 
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Responsibilities and Frequency of Engagement">
+                                        <div class="slds-form-element" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveResponsibilities3__c}</div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">                                                                      
+                                            <!--<textarea id="textarea-id-01" class="slds-textarea" placeholder="Placeholder Text">{!seniorUhgExecutivesObj.Responsibilities}</textarea>-->
+                                            <c:TextAreaWithCounter aura:id="textCounter" inputKeyWord="{!v.seniorUhgExecutives.OtherExecutiveResponsibilities3__c}" />
+                                        </div>
+                                    </th>
+                                </tr>
+                                
+                                <!-- Table Row #8-->
+                                <tr class="slds-hint-parent">
+                                    <th scope="row">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">
+                                                <aura:if isTrue="{!v.seniorUhgExecutives.OtherExecutiveTitle4__c.length > 0}">
+                                                    <div class="bold italic">{!v.seniorUhgExecutives.OtherExecutiveTitle4__c}</div>
+                                                    <aura:set attribute="else">
+                                                        <div class="bold">{!$Label.c.Other_Executive_Title}</div>
+                                                    </aura:set>  
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitle" value="{!v.seniorUhgExecutives.OtherExecutiveTitle4__c}" maxlength="40" placeholder="Other"></ui:inputText>
+                                            </div>                                                                                       
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Name" style="overflow: visible;">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveName4__c}</div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="slds-form-element toggle" aura:id="editMode">                            
+                                            <!--<c:customLookup SearchKeyWord="{!v.seniorUhgExecutives.OtherExecutiveName4__c}"/>   -->
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitleName" value="{!v.seniorUhgExecutives.OtherExecutiveName4__c}" maxlength="40" placeholder="Name"></ui:inputText>
+                                            </div> 
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Responsibilities and Frequency of Engagement">
+                                        <div class="slds-form-element" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveResponsibilities4__c}</div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">                                                                      
+                                            <!--<textarea id="textarea-id-01" class="slds-textarea" placeholder="Placeholder Text">{!seniorUhgExecutivesObj.Responsibilities}</textarea>-->
+                                            <c:TextAreaWithCounter aura:id="textCounter" inputKeyWord="{!v.seniorUhgExecutives.OtherExecutiveResponsibilities4__c}" />
+                                        </div>
+                                    </th>
+                                </tr>
+                                
+                                <!-- Table Row #9-->
+                                <tr class="slds-hint-parent">
+                                    <th scope="row">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control">
+                                                <aura:if isTrue="{!v.seniorUhgExecutives.OtherExecutiveTitle5__c.length > 0}">
+                                                    <div class="bold italic">{!v.seniorUhgExecutives.OtherExecutiveTitle5__c}</div>
+                                                    <aura:set attribute="else">
+                                                        <div class="bold">{!$Label.c.Other_Executive_Title}</div>
+                                                    </aura:set>  
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitle" value="{!v.seniorUhgExecutives.OtherExecutiveTitle5__c}" maxlength="40" placeholder="Other"></ui:inputText>
+                                            </div>                                                                                       
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Name" style="overflow: visible;">
+                                        <div class="slds-form-element readMode" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveName5__c}</div>
+                                            </div>
+                                        </div>                                        
+                                        <div class="slds-form-element toggle" aura:id="editMode">                            
+                                            <!--<c:customLookup SearchKeyWord="{!v.seniorUhgExecutives.OtherExecutiveName5__c}"/>   -->
+                                            <div class="slds-form-element__control">
+                                                <ui:inputText class="slds-textarea" aura:id="otherTitleName" value="{!v.seniorUhgExecutives.OtherExecutiveName5__c}" maxlength="40" placeholder="Name"></ui:inputText>
+                                            </div> 
+                                        </div>
+                                    </th>
+                                    <th scope="row" data-label="Responsibilities and Frequency of Engagement">
+                                        <div class="slds-form-element" aura:id="readMode">
+                                            <div class="slds-form-element__control slds-truncate">
+                                                <div class="fieldValidation-text-wrap" title="">{!v.seniorUhgExecutives.OtherExecutiveResponsibilities5__c}</div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-form-element toggle" aura:id="editMode">                                                                      
+                                            <!--<textarea id="textarea-id-01" class="slds-textarea" placeholder="Placeholder Text">{!seniorUhgExecutivesObj.Responsibilities}</textarea>-->
+                                            <c:TextAreaWithCounter aura:id="textCounter" inputKeyWord="{!v.seniorUhgExecutives.OtherExecutiveResponsibilities5__c}" />
+                                        </div>
+                                    </th>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+    <aura:if isTrue="{!v.isLoggedInUserValid}">
+        <div class="action-bar-mobile slds-hide" aura:id="action-bar-mobile">
+            <footer class="actionButtons oneActionBar forceActionsContainer sortEdit" aura:id="sortEdit" aria-hidden="false" data-aura-class="oneActionBar forceActionsContainer">
+                <div class="actionButtonsWrapper">
+                    
+                    
+                    <div class="action" id="actionBarItem_Edit">
+                        <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                            <button disabled="false" onclick="{!c.editExecutive}" class="actionButton slds-button slds-button--icon  uiButton" aria-live="off" type="button" data-aura-class="uiButton">                                                            	
+                                <lightning:icon iconName="action:edit" size="xx-small" alternativeText="Edit"/>
+                                <p class="slds-truncate actionTitle" aria-hidden="true">{!$Label.c.Edit}</p>
+                            </button>
+                        </div>
+                    </div>
+                    
+                </div>                     
+            </footer>
+            <div class="actionButtons oneActionBar forceActionsContainer saveCancel hide" aura:id="saveCancel">
+                <div class="actionButtonsWrapper save-cancel-bg">
+                    <div class="action">
+                        <div class="oneActionButtonIcon">
+                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancelExecutive}">{!$Label.c.Cancel}</button>
+                        </div>
+                    </div>
+                    <div class="action">
+                        <div class="oneActionButtonIcon"> 
+                            <button type="button" class="slds-button slds-button_brand" onclick="{!c.saveExecutive}">{!$Label.c.Save}</button>            
+                        </div>
+                    </div>              			
+                </div>
+            </div>   
+        </div>
+    </aura:if>
+</aura:component>

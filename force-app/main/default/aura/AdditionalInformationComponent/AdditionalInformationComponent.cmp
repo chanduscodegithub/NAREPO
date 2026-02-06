@@ -1,0 +1,86 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="memberShipActivityProductCategory" access="global" >
+    <aura:attribute name="productCategory" type="Object" />
+    <aura:attribute name="productCategoryCmp" type="String" />
+    <aura:attribute name="productCategoryName" type="String" default=''/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="MAChildAttrObj" type="Object"/>
+    <aura:attribute name="fieldSets" type="String[]"/>
+    <aura:attribute name="selectedProductTab" type="String"/>
+    <aura:attribute name="fieldsItag" type="String[]"/>
+    <aura:attribute name="progressionfeildItagList" type="String[]"/>
+    <aura:attribute name="requiredFieldsItag" type="Map"/>
+    <aura:attribute name="readOnlyFieldsItag" type="Map"/>
+    <aura:attribute name="requiredFieldsItagMO" type="Map"/>
+    <aura:attribute name="readOnlyFieldsItagMO" type="Map"/>
+    <aura:attribute name="medicalFieldsList" type="String[]"/>
+    <aura:attribute name="othersFieldsList" type="String[]"/>
+    <aura:attribute name="possibleSalesStageValues" type="String[]"/>
+    <aura:attribute name="possibleSalesMOStageValues" type="String[]"/>
+    <aura:attribute name="initailValues" type="String[]"/>
+    <aura:attribute name="MAGlobalData" type="Object"/>
+    <aura:attribute name="MACommentData" type="Object"/>
+    <aura:attribute name="DispositonMap" type="Object"/>
+    <aura:attribute name="DispositonItag" type="String" default=''/>
+    <aura:attribute name="isDataLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="isComments" type="Boolean" default="false"/>
+    <aura:attribute name="isProdCat" type="Boolean" default="false"/>
+    <aura:attribute name="isAdditionalInfo" type="Boolean" default="false"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="ErrorList" type="String[]"/>
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="initailMOValues" type="String[]"/>
+    <aura:attribute name="PreviousSelectedStage" type="String"/>
+    <aura:attribute name="CurrentSelectedStage" type="String"/>
+    <aura:attribute name="PreviousSelectedStageMO" type="String"/>
+    <aura:attribute name="CurrentSelectedStageMO" type="String"/>
+    <aura:attribute name="MA_Type" type="String"/>
+    <aura:attribute name="clearValueMap" type="Object"/>
+    <aura:attribute name="selectedCategoryMap" type="Object"/>
+    <aura:attribute name="accessVal" type="String" default="VIEW"/>
+    <aura:attribute name="possItag" type="String"/>
+    <aura:attribute name="isRendered" type="Boolean" default="false"/>
+    <aura:attribute name="isDataServiceTrasaction" type="Boolean" default="false"/>
+    <aura:handler name="refreshTab" event="c:Refresh_Tab_Event" action="{!c.refreshTab}"/>
+    <aura:attribute name="accessObj" type="Object"/>
+    <force:recordData aura:id="AdditionalDataId"
+                      recordId="{!v.recordId}"
+                      layoutType=""
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.MACommentData}"
+                      targetError="{!v.recordError}"
+                      fields="['MACategory__c',
+                              'Sales_Stage_Medical__c',
+                              'Progression_Sales_Stage_Medical__c',
+                              'Inital_Selected_Sales_Stage_Medical__c',
+                              'Product_Type_Involved_in_Opp__c',
+                              'Sales_Stage_Other__c',
+                              'Progression_Sales_Stage_Other__c',
+                              'Inital_Selected_Sales_Stage_Other__c',
+                              'Sales_Stage_Pharmacy__c',
+                              'Progression_Sales_Stage_Pharmacy__c',
+                              'Inital_Selected_Sales_Stage_Pharmacy__c',
+                              'Sales_Stage_Dental__c',
+                              'Progression_Sales_Stage_Dental__c',
+                              'Inital_Selected_Sales_Stage_Dental__c',
+                              'Sales_Stage_Vision__c',
+                              'Progression_Sales_Stage_Vision__c',
+                              'Inital_Selected_Sales_Stage_Vision__c',
+                              'Reason_for_the_Opportunity_Risk__c',
+                              'Membership_Activity_Type__c',
+                              'Reconciliation_Complete_Record_Locked__c']"
+                      recordUpdated="{!c.handleRecordUpdated}"
+                      />
+    
+    <aura:if isTrue="{!not(empty(v.recordError))}">
+        <div class="recordError">
+            <ui:message title="Error" severity="error" closable="true">
+                {!v.recordError}
+            </ui:message>
+        </div>
+    </aura:if>
+    <div class="slds-is-relative">
+        <lightning:spinner aura:id="mySpinner" class="slds-hide zIndexClass"/>
+    	{!v.body}
+    </div>    
+</aura:component>

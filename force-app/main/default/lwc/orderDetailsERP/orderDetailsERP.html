@@ -1,0 +1,14 @@
+<template>
+    <lightning-card title="Order List by Account ID">
+        <lightning-input label="Account ID" value={accountId} onchange={handleAccountIdChange}></lightning-input>
+        <lightning-button label="Fetch Orders" onclick={fetchOrders} class="slds-m-top_small"></lightning-button>
+
+        <template if:true={error}>
+            <p class="slds-text-color_error">{error}</p>
+        </template>
+
+        <template if:true={orders}>
+            <lightning-datatable data={orders} columns={columns} key-field="Id"></lightning-datatable>
+        </template>
+    </lightning-card>
+</template>

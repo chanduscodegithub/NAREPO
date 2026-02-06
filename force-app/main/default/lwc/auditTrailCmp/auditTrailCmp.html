@@ -1,0 +1,92 @@
+<template>
+    <span class={cssDisplay}>
+
+        <div class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                        role="status">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                </div>
+        </div>
+
+    </span>
+    <article class="slds-card slds-card_boundary">
+        <div class="slds-card__header slds-grid" style="background: #f3f2f2;">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <lightning-icon icon-name="standard:opportunity" alternative-text="Opportunity" title="Opportunity"></lightning-icon>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <template if:true={isSoldCaseAuditTrailRecListEmpty}>
+                            <span>&nbsp;&nbsp;Audit Trail ({recordCount})</span>
+                        </template>
+                        <template if:false={isSoldCaseAuditTrailRecListEmpty}>
+                       <!-- <a href={auditTrailRelatedListLink} target="_self" class="slds-card__header-link slds-truncate"> -->
+                        <a  class="slds-card__header-link slds-truncate" href="javascript:void(0);" onclick={navigateToRelatedList}>
+                            <span>&nbsp;&nbsp;Audit Trail ({recordCount})</span>
+                        </a>
+                    </template>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body">
+            <table
+                class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered slds-table_fixed-layout"
+                role="grid">
+                <thead style="background: #fafaf9;">
+                    <tr class="slds-line-height_reset">
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Date">Date</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="User">User</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Event">Event</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Field/Product">Field/Product</div>
+                        </th>
+                        
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Original Value">Original Value</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="New Value">New Value</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template if:true={isSoldCaseAuditTrailRecListEmpty}>
+                        <tr>
+                            <th colspan="6">
+                                    <div class="slds-text-align--center">
+                                            No Records Found
+                                    </div>
+
+                            </th>
+                    </tr>
+                    </template>
+                    <template if:false={isSoldCaseAuditTrailRecListEmpty}>
+                        <template for:each={soldCaseAuditTrailRecWrapperList} for:item="eachAuditTrailRec"
+                                for:index="index">
+                                <c-audit-trail-table-cmp key={eachAuditTrailRec.Id}
+                                        audit-trail-data={eachAuditTrailRec}
+                                        logged-in-user-time-zone={loggedInUserTimeZone}>
+                                </c-audit-trail-table-cmp>
+                        </template>
+                </template>
+                   
+                </tbody>
+            </table>
+        </div>
+        <template if:false={isSoldCaseAuditTrailRecListEmpty}>
+        <footer class="slds-card__footer">
+           <!-- <a class="slds-card__footer-action" href={auditTrailRelatedListLink}   target="_self">View All</a> -->
+           <a class="slds-card__footer-action" href="javascript:void(0);" onclick={navigateToRelatedList}>View All</a>
+        </footer>
+    </template>
+    </article>
+
+</template>

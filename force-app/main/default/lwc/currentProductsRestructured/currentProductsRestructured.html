@@ -1,0 +1,1599 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 02-05-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <div class="cssElement" lwc:dom="manual"></div>
+    <div>
+        <span class={cssDisplay}>
+            <div class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                    role="status">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </span>
+
+        <template if:true={openModal}>
+            <div class="slds-modal slds-fade-in-open slds-backdrop">
+                <div class="slds-modal__container">
+
+                    <div class="slds-modal__header">
+                        <lightning-button-icon icon-name="utility:close" alternative-text="Close this window"
+                            size="large" variant="bare-inverse" onclick={closeModal} class="slds-modal__close">
+                        </lightning-button-icon>
+                        <h2 style="font-size: 17px;">Send an Email to the CRM Help Desk</h2>
+                    </div>
+
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p style="border-bottom: 0.5px solid black; text-align: center;">Complete the below information
+                            and
+                            click Send. A member of the CRM Solutions team will generally respond within the same or
+                            next
+                            day of receipt.</p>
+                        <!-- <lightning-input data-id="Name" type="text" label="Product Name" value={ProductMix__c.Name}
+                            read-only=true style="padding-top: 10px;">
+                        </lightning-input> -->
+                        <br/>
+                        <label for="AdditionalComments"><b>Describe the Missing\Incorrect Information</b></label>
+                        <lightning-textarea class="AdditionalComments"  type="text" onchange={onChangeAddnComments} label-visible=false></lightning-textarea>
+                    </div>
+
+                    <div class="slds-modal__footer">
+                        <lightning-button label="Send" variant="brand" onclick={sendMail}>
+                        </lightning-button>
+                        &nbsp;
+                        <lightning-button label="Cancel" onclick={closeModal}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <div class="slds-grid" style="margin-bottom:13px; padding-top: 15px;">
+            <div class="slds-col slds-size_1-of-2" style="text-align:left;padding-left: 10px; ">
+                <!-- <span>
+                    <lightning-icon icon-name="standard:account" alternative-text="Account" title="Account">
+                    </lightning-icon>
+                </span>&nbsp;
+                <span style="font-weight:600; font-size: 16px;">Company Name : </span><span style="font-size: 14px;"><a
+                        onclick={navigateToObjectHome}>{accountName}</a></span>&nbsp;&nbsp;&nbsp;&nbsp; -->
+                <!-- <span style="font-weight:600; font-size: 16px;">Product Name : </span><span
+                    style="font-size: 14px;">{ProductMix__c.Name}</span> -->
+            </div>
+            <div class="slds-col slds-size_1-of-2" style="text-align:right;padding-right: 10px;">
+                <a onclick={showModal}>See Something Incorrect? Send an Email</a>
+                <template if:true={isSystemAdmin}>
+                    <template if:true={isSaveCancelDisabled}>
+                        <lightning-button label="Edit" title="Edit" onclick={handleEdit} class="slds-m-left_x-small">
+                        </lightning-button>
+                    </template>
+
+                    <template if:true={isEditDisabled}>
+                        <lightning-button label="Save" title="Save" onclick={handleSave} class="slds-m-left_x-small">
+                        </lightning-button>
+                        <lightning-button label="Cancel" title="Cancel" onclick={handleCancel}
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                    </template>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div style="text-align:right;padding-right: 17px; padding-bottom: 10px; padding-top: 10px;">
+            <a onclick={showModal}>Is Something Incorrect, Click Here</a>
+            <template if:true={isSystemAdmin}>
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-button label="Edit" title="Edit" onclick={handleEdit} class="slds-m-left_x-small">
+                    </lightning-button>
+                </template>
+
+                <template if:true={isEditDisabled}>
+                    <lightning-button label="Save" title="Save" onclick={handleSave} class="slds-m-left_x-small">
+                    </lightning-button>
+                    <lightning-button label="Cancel" title="Cancel" onclick={handleCancel} class="slds-m-left_x-small">
+                    </lightning-button>
+                </template>
+            </template>
+        </div> -->
+
+    <template if:true={isCpValueUmr}>
+        <b>This is a UMR client. UMR client data is currently limited. Additional product details are expected to be added in 2022.</b>
+        <br />
+        <br />
+    </template>
+
+    <div style="background-color: #fff;">
+        <p>The UHG Products tab is divided into two SUMMARY INFORMATION sections – one for Medical\Rx\Specialty
+            Benefits\Retiree, and one for Optum Products. Below the Summary Information sections are additional DETAIL
+            sections containing a deeper level of information on the Products that appear in <span
+                style="color:#426CA7;">BLUE</span> in the Summary sections. Clicking on the Product Name will bring you
+            to the applicable DETAIL section.<br />
+            The UHG Products tab is at the Client level. If a product is offered within at least one plan\policy, it
+            will display as Yes. <br />
+            This is a read-only section. If you see something incorrect, click the “See Something Incorrect? Send an Email”
+            link to submit your observations to the Merit Help Desk.<br /><br />
+        </p>
+        <lightning-accordion allow-multiple-sections-open active-section-name={activeSections} class="accordionClass">
+            <!--SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY-->
+            <lightning-accordion-section name="SUMMARY INFORMATION - MEDICAL \ RX \ SPECIALTY BENEFITS \ RETIREE:"
+                label="SUMMARY INFORMATION - MEDICAL \ RX \ SPECIALTY BENEFITS \ RETIREE:">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input data-id="Medical_Products__c" type="text" label="Medical Products"
+                                value={ProductMix__c.Medical_Products__c} onchange={handleInputChange}>
+                            </lightning-input>
+                            <template if:true={fundingArrangementsValues.data}>
+                                <lightning-dual-listbox data-id="Funding_Arrangements__c" name="Funding Arrangements"
+                                    label="Funding Arrangements" source-label="Available" selected-label="Chosen"
+                                    options={fundingArrangementsValues.data.values} value={fundingArrangements}
+                                    onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                            <!-- <lightning-combobox data-id="Tiered_Benefits__c" name="Tiered Benefits"
+                                label="Tiered Benefits" value={ProductMix__c.Tiered_Benefits__c}
+                                options={tieredBenefitsValues} onchange={handleInputChange}>
+                            </lightning-combobox> -->
+                            <lightning-input data-id="Shared_Savings_Program_Facility_R_C__c" type="text"
+                                label="Out-of-Network (OON) Reimbursement Program"
+                                value={ProductMix__c.Shared_Savings_Program_Facility_R_C__c}
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                            <lightning-combobox data-id="Medical_Necessity__c" name="Medical Necessity Add On Programs"
+                                label="Medical Necessity Add On Programs" value={ProductMix__c.Medical_Necessity__c}
+                                options={medicalNecessityValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Payment_Integrity__c" name="Payment Integrity"
+                                label="Payment Integrity" value={ProductMix__c.Payment_Integrity__c}
+                                options={paymentIntegrityValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Stop_Loss__c" name="Stop Loss" label="Stop Loss"
+                                value={ProductMix__c.Stop_Loss__c} options={stopLossValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Retiree_Products__c" name="Retiree Products"
+                            label="Retiree Products" value={ProductMix__c.Retiree_Products__c}
+                            options={retireeProductsValues} onchange={handleInputChange}>
+                        </lightning-combobox>
+                        <lightning-combobox data-id="UHC_Hub__c" name="UHC Hub"
+                        label="UHC Hub" value={ProductMix__c.UHC_Hub__c}
+                        options={uhcHubValues} onchange={handleInputChange}>
+                    </lightning-combobox>
+                    <!--------------------#3958------------------------------>
+                    <template if:true={globalProductValues.data}>
+                                <lightning-dual-listbox data-id="Global_Products__c" name="Global Products"
+                                    label="Global Products" source-label="Available" selected-label="Chosen"
+                                    options={globalProductValues.data.values} value={globalProducts}
+                                    onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                     <!--------------------#3958------------------------------>
+
+
+
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Pharmacy__c" name="Pharmacy" label="Pharmacy"
+                                value={ProductMix__c.Pharmacy__c} options={pharmacyValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Surest__c" name="Surest" label="Surest"
+                                value={ProductMix__c.Surest__c} options={surestValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Dental__c" name="Dental" label="Dental"
+                                value={ProductMix__c.Dental__c} options={dentalValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Vision__c" name="Vision" label="Vision"
+                                value={ProductMix__c.Vision__c} options={visionValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Supplemental_Health__c" name="Supplemental Health"
+                                label="Supplemental Health" value={ProductMix__c.Supplemental_Health__c}
+                                options={supplementalHealthValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Life__c" name="Life" label="Life" value={ProductMix__c.Life__c}
+                                options={lifeValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Disability__c" name="Disability" label="Disability"
+                                value={ProductMix__c.Disability__c} options={disabilityValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Pet_Insurance_FIGO__c" name="Pet Insurance (FIGO)"
+                                label="Pet Insurance (FIGO)" value={ProductMix__c.Pet_Insurance_FIGO__c}
+                                options={petInsuranceValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                           
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <label for="medProg" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Medical Products</label>
+                            <p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+                                {ProductMix__c.Medical_Products__c}</p>
+
+                            <label for="funArr" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Funding Arrangements</label>
+                            <p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+                                {ProductMix__c.Funding_Arrangements__c}</p>
+
+                            <!-- <lightning-input type="text" label="Tiered Benefits" class="readOnlyClass"
+                                value={ProductMix__c.Tiered_Benefits__c} read-only=true>
+                            </lightning-input> -->
+
+                            <label for="sharSavProg" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Out-of-Network (OON) Reimbursement
+                                Program</label>
+                            <p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+                                {ProductMix__c.Shared_Savings_Program_Facility_R_C__c}</p>
+
+                            <template if:false={isMedNesTrue}>
+                                <lightning-input type="text" label="Medical Necessity Add On Programs"
+                                    class="readOnlyClass" value={ProductMix__c.Medical_Necessity__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isMedNesTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="medNesDataId">Medical Necessity Add On
+                                    Programs</a>
+                                <lightning-input type="text" label="Medical Necessity Add On Programs"
+                                    class="readOnlyClass" variant='label-hidden'
+                                    value={ProductMix__c.Medical_Necessity__c} read-only=true>
+                                </lightning-input>
+                            </template>
+
+                            <!-- <lightning-input type="text" label="Payment Integrity"
+                                value={ProductMix__c.Payment_Integrity__c} class="readOnlyClass slds-wrap slds-truncate" read-only=true>
+                            </lightning-input> -->
+                            <label for="payInt"
+                                class="slds-form-element__label slds-no-flex">Payment Integrity</label>
+                            <p id="payInt" style="border-bottom: 1px solid #ccc;">{ProductMix__c.Payment_Integrity__c}</p>
+
+                            <lightning-input type="text" label="Stop Loss" value={ProductMix__c.Stop_Loss__c}
+                                class="readOnlyClass" read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Retiree Products" class="readOnlyClass"
+                            value={ProductMix__c.Retiree_Products__c} read-only=true>
+                            
+                        </lightning-input>
+                        <lightning-input type="text" label="UHC Hub" class="readOnlyClass"
+                        value={ProductMix__c.UHC_Hub__c} read-only=true>
+                        
+                    </lightning-input>
+                    <!--------------------#3958------------------------------>
+                    <label for="gloProd" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Global Products</label>
+                            <p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+                                {ProductMix__c.Global_Products__c}</p>
+                        </lightning-layout-item>
+                        <!--------------------#3958------------------------------>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Pharmacy" value={ProductMix__c.Pharmacy__c}
+                                class="readOnlyClass" read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Surest" value={ProductMix__c.Surest__c}
+                                class="readOnlyClass" read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Dental" value={ProductMix__c.Dental__c}
+                                class="readOnlyClass" read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Vision" value={ProductMix__c.Vision__c}
+                                class="readOnlyClass" read-only=true>
+                            </lightning-input>
+
+                            <template if:false={isSupplHealthTrue}>
+                                <lightning-input type="text" label="Supplemental Health" class="readOnlyClass"
+                                    value={ProductMix__c.Supplemental_Health__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isSupplHealthTrue}>
+                                <a onclick={handleHyperlinkClick}
+                                    data-target-id="supHealthLifeAndDisability">Supplemental
+                                    Health</a>
+                                <lightning-input type="text" label="Supplemental Health" class="readOnlyClass"
+                                    variant='label-hidden' value={ProductMix__c.Supplemental_Health__c} read-only=true>
+                                </lightning-input>
+                            </template>
+
+                            <template if:false={isLifeTrue}>
+                                <lightning-input type="text" label="Life" value={ProductMix__c.Life__c}
+                                    class="readOnlyClass" read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isLifeTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="supHealthLifeAndDisability">Life</a>
+                                <lightning-input type="text" label="Life" class="readOnlyClass" variant='label-hidden'
+                                    value={ProductMix__c.Life__c} read-only=true>
+                                </lightning-input>
+                            </template>
+
+                            <template if:false={isDisabilityTrue}>
+                                <lightning-input style="padding-bottom:7px;" type="text" label="Disability" value={ProductMix__c.Disability__c}
+                                    class="readOnlyClass" read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isDisabilityTrue}>
+                                <a onclick={handleHyperlinkClick}
+                                    data-target-id="supHealthLifeAndDisability">Disability</a>
+                                <lightning-input style="padding-bottom:12px;" type="text" label="Disability" class="readOnlyClass"
+                                    variant='label-hidden' value={ProductMix__c.Disability__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <lightning-input type="text" label="Pet Insurance (FIGO)"
+                                value={ProductMix__c.Pet_Insurance_FIGO__c} class="readOnlyClass" read-only=true>
+                            </lightning-input>
+                           
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY SUMMARY-->
+
+            <!--SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2-->
+            <lightning-accordion-section name="SUMMARY INFORMATION - OPTUM PRODUCTS:"
+                label="SUMMARY INFORMATION - OPTUM PRODUCTS:">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Financial_Accounts__c" name="Financial Accounts"
+                                label="Financial Accounts" value={ProductMix__c.Financial_Accounts__c}
+                                options={financialAccountsValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Care_Management__c" name="Care Management"
+                                label="Care Management" value={ProductMix__c.Care_Management__c}
+                                options={careManagementValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Centers_of_Excellence__c"
+                                name="Complex Conditions (Centers of Excellence)"
+                                label="Complex Conditions (Centers of Excellence)"
+                                value={ProductMix__c.Centers_of_Excellence__c} options={centersOfExcellenceValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Decision_Support__c" name="Decision Support"
+                                label="Decision Support" value={ProductMix__c.Decision_Support__c}
+                                options={decisionSupportValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Disease_Management__c" name="Disease Management"
+                                label="Disease Management" value={ProductMix__c.Disease_Management__c}
+                                options={diseaseManagementValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Women_s_Health__c" name="Women's Health" label="Women's Health"
+                                value={ProductMix__c.Women_s_Health__c} options={womensHealthValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Worksite_Wellness__c" name="Worksite Wellness"
+                                label="Worksite Wellness" value={ProductMix__c.Worksite_Wellness__c}
+                                options={worksiteWellnessValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Wellness_and_Wellness_Coaching__c"
+                                name="Wellness and Wellness Coaching" label="Wellness and Wellness Coaching"
+                                value={ProductMix__c.Wellness_and_Wellness_Coaching__c}
+                                options={wellnessAndWellnessCoachingValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Incentive_Products__c" name="Incentive Programs"
+                                label="Incentive Programs" value={ProductMix__c.Incentive_Products__c}
+                                options={incentiveProductsValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Rally_Client_above_base__c" name="Rally Client (above base)"
+                                label="Rally Client (above base)" value={ProductMix__c.Rally_Client_above_base__c}
+                                options={rallyClientValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Behavioral_Health__c" name="Behavioral Health"
+                                label="Behavioral Health" value={ProductMix__c.Behavioral_Health__c}
+                                options={behavioralHealthValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="EAP_Domestic__c" name="EAP - Domestic" label="EAP - Domestic"
+                                value={ProductMix__c.EAP_Domestic__c} options={eapDomesticValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="EAP_Global__c" name="EAP - Global" label="EAP - Global"
+                                value={ProductMix__c.EAP_Global__c} options={eapGlobalValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <template if:false={isFinAccTrue}>
+                                <lightning-input type="text" label="Financial Accounts" class="readOnlyClass"
+                                    value={ProductMix__c.Financial_Accounts__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isFinAccTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="finAccDataId">Financial Accounts</a>
+                                <lightning-input type="text" label="Financial Accounts" class="readOnlyClass"
+                                    variant='label-hidden' value={ProductMix__c.Financial_Accounts__c} read-only=true>
+                                </lightning-input>
+                            </template>
+
+
+                            <template if:false={isCareMgmtTrue}>
+                                <lightning-input type="text" label="Care Management" class="readOnlyClass"
+                                    value={ProductMix__c.Care_Management__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isCareMgmtTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="careManagement">Care Management</a>
+                                <lightning-input type="text" label="Care Management" class="readOnlyClass"
+                                    variant='label-hidden' value={ProductMix__c.Care_Management__c} read-only=true>
+                                </lightning-input>
+                            </template>
+
+
+                            <template if:false={isCmplxCondtnTrue}>
+                                <lightning-input type="text" label="Complex Conditions (Centers of Excellence)"
+                                    class="readOnlyClass" value={ProductMix__c.Centers_of_Excellence__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isCmplxCondtnTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="CentersofExcellence">Complex
+                                    Conditions
+                                    (Centers of Excellence)</a>
+                                <lightning-input type="text" label="Complex Conditions (Centers of Excellence)"
+                                    class="readOnlyClass" variant='label-hidden'
+                                    value={ProductMix__c.Centers_of_Excellence__c} read-only=true>
+                                </lightning-input>
+                            </template>
+
+
+                            <template if:false={isDescnSupprtTrue}>
+                                <lightning-input type="text" label="Decision Support" class="readOnlyClass"
+                                    value={ProductMix__c.Decision_Support__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isDescnSupprtTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="DecisionSupport">Decision Support</a>
+                                <lightning-input type="text" label="Decision Support" class="readOnlyClass"
+                                    variant='label-hidden' value={ProductMix__c.Decision_Support__c} read-only=true>
+                                </lightning-input>
+                            </template>
+
+
+                            <template if:false={isDiseaseMgmtTrue}>
+                                <lightning-input type="text" label="Disease Management" class="readOnlyClass"
+                                    value={ProductMix__c.Disease_Management__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isDiseaseMgmtTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="DiseaseManagement">Disease
+                                    Management</a>
+                                <lightning-input type="text" label="Disease Management" class="readOnlyClass"
+                                    variant='label-hidden' value={ProductMix__c.Disease_Management__c} read-only=true>
+                                </lightning-input>
+                            </template>
+
+
+                            <template if:false={isWomensHealthTrue}>
+                                <lightning-input type="text" label="Women's Health" class="readOnlyClass"
+                                    value={ProductMix__c.Women_s_Health__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isWomensHealthTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="WomensHealth">Women's Health</a>
+                                <lightning-input type="text" label="Women's Health" class="readOnlyClass"
+                                    variant='label-hidden' value={ProductMix__c.Women_s_Health__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <!--a onclick={handleHyperlinkClick} data-target-id="WorksiteWellness">Worksite Wellness</a-->
+                            <!-- <lightning-input type="text" label="Worksite Wellness" class="readOnlyClass"
+                                value={ProductMix__c.Worksite_Wellness__c} read-only=true>
+                            </lightning-input> -->
+                            <template if:false={isWorksiteWellnessTrue}>
+                                <lightning-input type="text" label="Worksite Wellness" class="readOnlyClass"
+                                    value={ProductMix__c.Worksite_Wellness__c} read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isWorksiteWellnessTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="WorksiteWellness">Worksite
+                                    Wellness</a>
+                                <lightning-input type="text" label="Worksite Wellness" class="readOnlyClass"
+                                    value={ProductMix__c.Worksite_Wellness__c} read-only=true variant='label-hidden'>
+                                </lightning-input>
+                            </template>
+
+
+                            <template if:false={isWandWTrue}>
+                                <lightning-input type="text" label="Wellness and Wellness Coaching"
+                                    class="readOnlyClass" value={ProductMix__c.Wellness_and_Wellness_Coaching__c}
+                                    read-only=true>
+                                </lightning-input>
+                            </template>
+                            <template if:true={isWandWTrue}>
+                                <a onclick={handleHyperlinkClick} data-target-id="WellnessandWellnessCoaching">Wellness
+                                    and
+                                    Wellness Coaching</a>
+                                <lightning-input type="text" label="Wellness and Wellness Coaching"
+                                    class="readOnlyClass" value={ProductMix__c.Wellness_and_Wellness_Coaching__c}
+                                    read-only=true variant='label-hidden'>
+                                </lightning-input>
+                            </template>
+
+                            <!--a onclick={handleHyperlinkClick} data-target-id="IncentiveProducts">Incentive Products</a-->
+                            <lightning-input type="text" label="Incentive Programs" class="readOnlyClass"
+                                value={ProductMix__c.Incentive_Products__c} read-only=true>
+                            </lightning-input>
+
+                            <!--a onclick={handleHyperlinkClick} data-target-id="RallyClient">Rally Client (above base)</a-->
+                            <lightning-input type="text" label="Rally Client (above base)" class="readOnlyClass"
+                                value={ProductMix__c.Rally_Client_above_base__c} read-only=true>
+                            </lightning-input>
+
+                            <!--a onclick={handleHyperlinkClick} data-target-id="BehavioralHealth">Behavioral Health</a-->
+                            <lightning-input type="text" label="Behavioral Health" class="readOnlyClass"
+                                value={ProductMix__c.Behavioral_Health__c} read-only=true>
+                            </lightning-input>
+
+                            <!--a onclick={handleHyperlinkClick} data-target-id="EAPDomestic">EAP - Domestic</a-->
+                            <lightning-input type="text" label="EAP - Domestic" class="readOnlyClass"
+                                value={ProductMix__c.EAP_Domestic__c} read-only=true>
+                            </lightning-input>
+
+                            <!--a onclick={handleHyperlinkClick} data-target-id="EAPGlobal">EAP - Global</a-->
+                            <lightning-input type="text" label="EAP - Global" class="readOnlyClass"
+                                value={ProductMix__c.EAP_Global__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2 SUMMARY2-->
+
+            <!--MEDICAL NECESSITY DETAILS MEDICAL NECESSITY DETAILS MEDICAL NECESSITY DETAILS MEDICAL NECESSITY DETAILS MEDICAL NECESSITY DETAILS-->
+            <lightning-accordion-section name="DETAILS - MEDICAL NECESSITY ADD ON PROGRAMS (from BTB System):"
+                label="DETAILS - MEDICAL NECESSITY ADD ON PROGRAMS (from BTB System):" id="medNesId"
+                data-id="medNesDataId">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Arthroscopy__c" name="Arthroscopy" label="Arthroscopy"
+                                value={ProductMix__c.Arthroscopy__c} options={arthroscopyValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Foot_Surgery__c" name="Foot Surgery" label="Foot Surgery"
+                                value={ProductMix__c.Foot_Surgery__c} options={footSurgeryValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Infertility__c" name="Infertility" label="Infertility"
+                                value={ProductMix__c.Infertility__c} options={infertilityValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Cancer_Guidance_Program__c" name="Cancer Guidance Program"
+                                label="Cancer Guidance Program" value={ProductMix__c.Cancer_Guidance_Program__c}
+                                options={cancerGuidanceValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <template if:true={radiologyValues.data}>
+                                <lightning-dual-listbox data-id="Radiology_Services__c" name="Radiology Services"
+                                    label="Radiology Services" source-label="Available" selected-label="Chosen"
+                                    options={radiologyValues.data.values} value={radiologyServices}
+                                    onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                            <template if:true={cardiologyValues.data}>
+                                <lightning-dual-listbox data-id="Cardiology_Services__c" name="Cardiology Services"
+                                    label="Cardiology Services" source-label="Available" selected-label="Chosen"
+                                    options={cardiologyValues.data.values} value={cardiologyServices}
+                                    onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                            <!-- <lightning-combobox data-id="Site_of_Service_SOS_Outpatient_Facility__c"
+                                name="Site of Service (SOS)-Outpatient Facility"
+                                label="Site of Service (SOS)-Outpatient Facility"
+                                value={ProductMix__c.Site_of_Service_SOS_Outpatient_Facility__c}
+                                options={siteOfServiceOutPatientValues} onchange={handleInputChange}>
+                            </lightning-combobox> -->
+                            <lightning-combobox data-id="Site_of_Service_SOS_Office_Based__c"
+                                name="Site of Service (SOS)-Office Based" label="Site of Service (SOS)"
+                                value={ProductMix__c.Site_of_Service_SOS_Office_Based__c} options={siteOfServiceValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Arthroscopy" value={ProductMix__c.Arthroscopy__c}
+                                class="readOnlyClass" read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Foot Surgery" value={ProductMix__c.Foot_Surgery__c}
+                                class="readOnlyClass" read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Infertility" value={ProductMix__c.Infertility__c}
+                                class="readOnlyClass" read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Cancer Guidance Program" class="readOnlyClass"
+                                value={ProductMix__c.Cancer_Guidance_Program__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-textarea type="text" label="Radiology Services" class="readOnlyClass"
+                                value={ProductMix__c.Radiology_Services__c} read-only=true>
+                            </lightning-textarea> -->
+                            <!-- <label for="radiology" style="padding-top:5px;" class="slds-form-element__label slds-no-flex">Radiology Services</label>
+                            <textarea id="radiology" name="Radiology Services"
+                                style="border:0px solid #58B9FA; width:100%; border-bottom: 1px solid #ddd; height: fit-content;
+                                    padding-top: 9px; padding-bottom: 4px; resize: none; overflow: hidden; height:auto; ">
+                                    {ProductMix__c.Radiology_Services__c}
+                            </textarea> -->
+                            <label for="radiology" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Radiology Services</label>
+                            <!-- <input type="text" id="radiology" name="Radiology Services"
+                                value={ProductMix__c.Radiology_Services__c} style="border:0px solid #58B9FA; width:100%; border-bottom: 1px solid #ddd;
+                                    padding-top: 9px; padding-bottom: 4px;" /> -->
+                            <p style="border-bottom: 1px solid #ccc;
+                                    padding-bottom: 10px;">{ProductMix__c.Radiology_Services__c}</p>
+                            <!-- <lightning-textarea type="text" label="Cardiology Services" class="readOnlyClass"
+                                value={ProductMix__c.Cardiology_Services__c} read-only=true>
+                            </lightning-textarea> -->
+                            <!-- <label for="cardiology" style="padding-top:5px;" class="slds-form-element__label slds-no-flex">Cardiology Services</label>
+                            <textarea id="cardiology" name="Cardiology Services"
+                                style="border:0px solid #58B9FA; width:100%; border-bottom: 1px solid #ddd; height: fit-content;
+                                    padding-top: 9px; padding-bottom: 4px; resize: none; overflow: hidden; height:auto; ">
+                                    {ProductMix__c.Cardiology_Services__c}
+                            </textarea> -->
+                            <label for="cardiology" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Cardiology Services</label>
+                            <!-- <input type="text" id="cardiology" name="Cardiology Services"
+                                value={ProductMix__c.Cardiology_Services__c} style="border:0px solid #58B9FA; width:100%; border-bottom: 1px solid #ddd;
+                                    padding-top: 9px; padding-bottom: 4px;" /> -->
+                            <p style="border-bottom: 1px solid #ccc;
+                                    padding-bottom: 10px;">{ProductMix__c.Cardiology_Services__c}</p>
+                            <!-- <lightning-input type="text" label="Site of Service (SOS)-Outpatient Facility"
+                                class="readOnlyClass" value={ProductMix__c.Site_of_Service_SOS_Outpatient_Facility__c}
+                                read-only=true>
+                            </lightning-input> -->
+                            <lightning-input type="text" label="Site of Service (SOS)"
+                                class="readOnlyClass" value={ProductMix__c.Site_of_Service_SOS_Office_Based__c}
+                                read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--MEDICAL NECESSITY DETAILS MEDICAL NECESSITY DETAILS MEDICAL NECESSITY DETAILS MEDICAL NECESSITY DETAILS MEDICAL NECESSITY DETAILS-->
+
+            <!-- SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH-->
+            <lightning-accordion-section
+                name="DETAILS - SUPPLEMENTAL HEALTH, LIFE AND DISABILITY (from Specialty Benefits):"
+                label="DETAILS - SUPPLEMENTAL HEALTH, LIFE AND DISABILITY (from Specialty Benefits):"
+                data-id="supHealthLifeAndDisability">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Accident_Protection__c" name="Accident Protection"
+                                label="Accident Protection" value={ProductMix__c.Accident_Protection__c}
+                                options={accidentProtectionValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Critical_Illness__c" name="Critical Illness"
+                                label="Critical Illness" value={ProductMix__c.Critical_Illness__c}
+                                options={criticalIllnesValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Hospital_Indemnity__c" name="Hospital Indemnity"
+                                label="Hospital Indemnity" value={ProductMix__c.Hospital_Indemnity__c}
+                                options={hospitalIndemnityValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Basic_Life__c" name="Basic Life" label="Basic Life"
+                                value={ProductMix__c.Basic_Life__c} options={basicLifeValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <!-- <lightning-combobox data-id="Dependent_Life__c" name="Dependent Life" label="Dependent Life"
+                                value={ProductMix__c.Dependent_Life__c} options={dependentLifeValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox> -->
+                            <lightning-combobox data-id="Supplemental_Life__c" name="Supplemental Life"
+                                label="Supplemental Life" value={ProductMix__c.Supplemental_Life__c}
+                                options={supplementalLifeValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Short_Term_Disability__c" name="Short Term Disability"
+                                label="Short Term Disability" value={ProductMix__c.Short_Term_Disability__c}
+                                options={shortTermDisabilityValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Long_Term_Disability__c" name="Long Term Disability"
+                                label="Long Term Disability" value={ProductMix__c.Long_Term_Disability__c}
+                                options={longTermDisabilityValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <!-- <lightning-combobox data-id="Absence_Managaement__c" name="Absence Management"
+                                label="Absence Management" value={ProductMix__c.Absence_Managaement__c}
+                                options={absenceManagementValues} onchange={handleInputChange}>
+                            </lightning-combobox> -->
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Accident Protection" class="readOnlyClass"
+                                value={ProductMix__c.Accident_Protection__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Critical Illness" class="readOnlyClass"
+                                value={ProductMix__c.Critical_Illness__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Hospital Indemnity" class="readOnlyClass"
+                                value={ProductMix__c.Hospital_Indemnity__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Basic Life" class="readOnlyClass"
+                                value={ProductMix__c.Basic_Life__c} read-only=true>
+                            </lightning-input>
+                            <!-- <lightning-input type="text" label="Dependent Life" class="readOnlyClass"
+                                value={ProductMix__c.Dependent_Life__c} read-only=true>
+                            </lightning-input> -->
+                            <lightning-input type="text" label="Supplemental Life" class="readOnlyClass"
+                                value={ProductMix__c.Supplemental_Life__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Short Term Disability" class="readOnlyClass"
+                                value={ProductMix__c.Short_Term_Disability__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Long Term Disability" class="readOnlyClass"
+                                value={ProductMix__c.Long_Term_Disability__c} read-only=true>
+                            </lightning-input>
+                            <!-- <lightning-input type="text" label="Absence Management" class="readOnlyClass"
+                                value={ProductMix__c.Absence_Managaement__c} read-only=true>
+                            </lightning-input> -->
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!-- SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH SUPPLEMENTAL HEALTH-->
+
+            <!--FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS -->
+            <lightning-accordion-section name="DETAILS - FINANCIAL ACCOUNTS (from Merit Renewal Details):"
+                label="DETAILS - FINANCIAL ACCOUNTS (from Merit Renewal Details):" class="finAccClass"
+                data-id="finAccDataId">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Commuter_Expense_Reimbursement_Account__c"
+                                name="Commuter Expense Reimbursement Account"
+                                label="Commuter Expense Reimbursement Account"
+                                value={ProductMix__c.Commuter_Expense_Reimbursement_Account__c}
+                                options={commuterExpenseReimbursementValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Flexible_Spending_Account_FSA__c"
+                                name="Flexible Spending Account (FSA)" label="Flexible Spending Account (FSA)"
+                                value={ProductMix__c.Flexible_Spending_Account_FSA__c}
+                                options={flexibleSpendingAccountValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Health_Incentive_Account_HIA__c"
+                                name="Health Incentive Account (HIA)" label="Health Incentive Account (HIA)"
+                                value={ProductMix__c.Health_Incentive_Account_HIA__c}
+                                options={healthIncentiveAccountValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Health_Reimbursement_Account_HRA__c"
+                                name="Health Reimbursment Account (HRA)" label="Health Reimbursment Account (HRA)"
+                                value={ProductMix__c.Health_Reimbursement_Account_HRA__c}
+                                options={healthReimbursmentAccountValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Health_Savings_Account_HSA__c"
+                                name="Health Savings Account (HSA)" label="Health Savings Account (HSA)"
+                                value={ProductMix__c.Health_Savings_Account_HSA__c} options={healthSavingsAccountValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Retiree_Reimbursement_Account_RRA__c"
+                                name="Retiree Reimbursement Account (RRA)" label="Retiree Reimbursement Account (RRA)"
+                                value={ProductMix__c.Retiree_Reimbursement_Account_RRA__c}
+                                options={retireeReimbursmentAccountValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Commuter Expense Reimbursement Account"
+                                class="readOnlyClass" value={ProductMix__c.Commuter_Expense_Reimbursement_Account__c}
+                                read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Flexible Spending Account (FSA)" class="readOnlyClass"
+                                value={ProductMix__c.Flexible_Spending_Account_FSA__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Health Incentive Account (HIA)" class="readOnlyClass"
+                                value={ProductMix__c.Health_Incentive_Account_HIA__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Health Reimbursment Account (HRA)" class="readOnlyClass"
+                                value={ProductMix__c.Health_Reimbursement_Account_HRA__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Health Savings Account (HSA)" class="readOnlyClass"
+                                value={ProductMix__c.Health_Savings_Account_HSA__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Retiree Reimbursement Account (RRA)"
+                                class="readOnlyClass" value={ProductMix__c.Retiree_Reimbursement_Account_RRA__c}
+                                read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS FINANCIAL ACCOUNTS -->
+
+            <!--CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT-->
+            <lightning-accordion-section name="DETAILS - CARE MANAGEMENT (from BTB System and Merit sales data):"
+                label="DETAILS - CARE MANAGEMENT (from BTB System and Merit sales data):" data-id="careManagement">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <template if:true={personalHealthSupportProgramValues.data}>
+                                <lightning-dual-listbox data-id="Personal_Health_Support_PHS_Program__c"
+                                    name="Personal Health Support (PHS) Program"
+                                    label="Personal Health Support (PHS) Program" source-label="Available"
+                                    selected-label="Chosen" options={personalHealthSupportProgramValues.data.values}
+                                    value={phsProgram} onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <template if:true={advocate4MeValues.data}>
+                                <lightning-dual-listbox data-id="Advocate4Me__c" name="Advocate4Me" label="Advocate4Me"
+                                    source-label="Available" selected-label="Chosen"
+                                    options={advocate4MeValues.data.values} value={advocate4Me}
+                                    onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                            <lightning-combobox data-id="Complex_Care_Concierge_C3__c"
+                                name="Complex Care Concierge (C3)" label="Complex Care Concierge (C3)"
+                                value={ProductMix__c.Complex_Care_Concierge_C3__c} options={complexCareValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <label for="phsProg" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Personal Health Support (PHS)
+                                Program</label>
+                            <p style="border-bottom: 1px solid #ccc;
+                          padding-bottom: 10px;">{ProductMix__c.Personal_Health_Support_PHS_Program__c}</p>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <label for="advMe" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Advocate4Me</label>
+                            <p style="border-bottom: 1px solid #ccc;
+                                    padding-bottom: 10px;">{ProductMix__c.Advocate4Me__c}</p>
+                            <lightning-input type="text" label="Complex Care Concierge (C3)" class="readOnlyClass"
+                                value={ProductMix__c.Complex_Care_Concierge_C3__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT CARE MANAGEMENT-->
+
+            <!--CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE-->
+            <lightning-accordion-section name="DETAILS - COMPLEX CONDITIONS (CENTERS OF EXCELLENCE) (from BTB System):"
+                label="DETAILS - COMPLEX CONDITIONS (CENTERS OF EXCELLENCE) (from BTB System):"
+                data-id='CentersofExcellence'>
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Bariatric_Resource_Services__c"
+                                name="Bariatric Resource Services" label="Bariatric Resource Services"
+                                value={ProductMix__c.Bariatric_Resource_Services__c}
+                                options={bariatricResourceServicesValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Cancer_Resource_Services__c" name="Cancer Resource Services"
+                                label="Cancer Resource Services" value={ProductMix__c.Cancer_Resource_Services__c}
+                                options={cancerResourceServicesValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Cancer_Support_Program__c" name="Cancer Support Program"
+                                label="Cancer Support Program" value={ProductMix__c.Cancer_Support_Program__c}
+                                options={cancerSupportProgramValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <!-- <lightning-combobox data-id="CHD_Center_of_Excellence__c" name="CHD Center of Excellence"
+                                label="CHD Center of Excellence" value={ProductMix__c.CHD_Center_of_Excellence__c}
+                                options={chdCenterOfExcellenceValues} onchange={handleInputChange}>
+                            </lightning-combobox> -->
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <template if:true={kidneyResourceServicesValues.data}>
+                                <lightning-dual-listbox data-id="Kidney_Resource_Services__c"
+                                    name="Kidney Resource Services" label="Kidney Resource Services"
+                                    source-label="Available" selected-label="Chosen"
+                                    options={kidneyResourceServicesValues.data.values} value={kidneyResourceServices}
+                                    onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                            <template if:true={orthopedicSolutionsValues.data}>
+                                <lightning-dual-listbox data-id="Orthopedic_Solutions__c" name="Orthopedic Solutions"
+                                    label="Spine and Joint Solutions" source-label="Available" selected-label="Chosen"
+                                    options={orthopedicSolutionsValues.data.values} value={orthopedicSolutions}
+                                    onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                            <lightning-combobox data-id="Transplant_Resource_Services__c"
+                                name="Transplant Resource Services" label="Transplant Resource Services"
+                                value={ProductMix__c.Transplant_Resource_Services__c}
+                                options={transplantResourceServicesValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Bariatric Resource Services" class="readOnlyClass"
+                                value={ProductMix__c.Bariatric_Resource_Services__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Cancer Resource Services" class="readOnlyClass"
+                                value={ProductMix__c.Cancer_Resource_Services__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Cancer Support Program" class="readOnlyClass"
+                                value={ProductMix__c.Cancer_Support_Program__c} read-only=true>
+                            </lightning-input>
+                            <!-- <lightning-input type="text" label="CHD Center of Excellence" class="readOnlyClass"
+                                value={ProductMix__c.CHD_Center_of_Excellence__c} read-only=true>
+                            </lightning-input> -->
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-textarea type="text" label="Kidney Resource Services" class="readOnlyClass"
+                                value={ProductMix__c.Kidney_Resource_Services__c} read-only=true>
+                            </lightning-textarea> -->
+                            <!-- <label for="kidnRes" style="padding-top:5px;" class="slds-form-element__label slds-no-flex">Kidney Resource Services</label>
+                            <textarea id="kidnRes" name="Kidney Resource Services"
+                                style="border:0px solid #58B9FA; width:100%; border-bottom: 1px solid #ddd; height: fit-content;
+                                    padding-top: 9px; padding-bottom: 4px; resize: none; overflow: hidden; height:auto; ">
+                                    {ProductMix__c.Kidney_Resource_Services__c}
+                            </textarea> -->
+                            <label for="kidnRes" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Kidney Resource Services</label>
+                            <!-- <input type="text" id="kidnRes" name="Kidney Resource Services"
+                                value={ProductMix__c.Kidney_Resource_Services__c} style="border:0px solid #58B9FA; width:100%; border-bottom: 1px solid #ddd;
+                                    padding-top: 9px; padding-bottom: 4px;" /> -->
+                            <p style="border-bottom: 1px solid #ccc;
+                          padding-bottom: 10px;">{ProductMix__c.Kidney_Resource_Services__c}</p>
+                            <!-- <lightning-textarea type="text" label="Orthopedic Solutions" class="readOnlyClass"
+                                value={ProductMix__c.Orthopedic_Solutions__c} read-only=true>
+                            </lightning-textarea> -->
+                            <!-- <label for="orthoSol" style="padding-top:5px;" class="slds-form-element__label slds-no-flex">Orthopedic Solutions</label>
+                            <textarea id="orthoSol" name="Orthopedic Solutions"
+                                style="border:0px solid #58B9FA; width:100%; border-bottom: 1px solid #ddd; height: fit-content;
+                                    padding-top: 9px; padding-bottom: 4px; resize: none; overflow: hidden; height:auto; ">
+                                    {ProductMix__c.Orthopedic_Solutions__c}
+                            </textarea> -->
+                            <label for="orthoSol" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Spine and Joint Solutions</label>
+                            <!-- <input type="text" id="orthoSol" name="Orthopedic Solutions"
+                                value={ProductMix__c.Kidney_Resource_Services__c} style="border:0px solid #58B9FA; width:100%; border-bottom: 1px solid #ddd;
+                                    padding-top: 9px; padding-bottom: 4px;" /> -->
+                            <p style="border-bottom: 1px solid #ccc;
+                                    padding-bottom: 10px;">{ProductMix__c.Orthopedic_Solutions__c}</p>
+                            <lightning-input type="text" label="Transplant Resource Services" class="readOnlyClass"
+                                value={ProductMix__c.Transplant_Resource_Services__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE CENTERS OF EXCELLENCE-->
+
+            <!--DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT-->
+            <lightning-accordion-section name="DETAILS - DECISION SUPPORT (from BTB System and Merit sales data):"
+                label="DETAILS - DECISION SUPPORT (from BTB System and Merit sales data):" data-id='DecisionSupport'>
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-combobox data-id="Buoy__c" name="Buoy" label="Buoy" value={ProductMix__c.Buoy__c}
+                                options={BuoyValues} onchange={handleInputChange}>
+                            </lightning-combobox> -->
+                            <lightning-combobox data-id="ER_Decision_Support__c" name="ER Decision Support"
+                                label="ER Decision Support" value={ProductMix__c.ER_Decision_Support__c}
+                                options={ErDecisionSupportValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <template if:true={NurselineProgramValues.data}>
+                                <lightning-dual-listbox data-id="Nurseline_Program__c" name="Nurseline Program"
+                                    label="Nurseline Program" source-label="Available" selected-label="Chosen"
+                                    options={NurselineProgramValues.data.values} value={nurselineProgram}
+                                    onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Second_Opinion_Services_2nd_MD__c"
+                                name="Second Opinion Services (2nd MD)" label="Second Opinion Services (2nd MD)"
+                                value={ProductMix__c.Second_Opinion_Services_2nd_MD__c}
+                                options={SecondOpinionServicesValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Surgical_Management_Solution_SMS__c"
+                                name="Surgical Management Solution (SMS)" label="Specialist Management Solution (SMS)"
+                                value={ProductMix__c.Surgical_Management_Solution_SMS__c}
+                                options={SurgicalManagementSolutionValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-input type="text" label="Buoy" class="readOnlyClass"
+                                value={ProductMix__c.Buoy__c} read-only=true>
+                            </lightning-input> -->
+                            <lightning-input type="text" label="ER Decision Support" class="readOnlyClass"
+                                value={ProductMix__c.ER_Decision_Support__c} read-only=true>
+                            </lightning-input>
+                            <label for="nursProg" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Nurseline Program</label>
+                            <p style="border-bottom: 1px solid #ccc;
+                                    padding-bottom: 10px;">{ProductMix__c.Nurseline_Program__c}</p>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Second Opinion Services (2nd MD)" class="readOnlyClass"
+                                value={ProductMix__c.Second_Opinion_Services_2nd_MD__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Specialist Management Solution (SMS)"
+                                class="readOnlyClass" value={ProductMix__c.Surgical_Management_Solution_SMS__c}
+                                read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT DECISION SUPPORT-->
+
+            <!--DISEASE MANAGEMENT DISEASE MANAGEMENT DISEASE MANAGEMENT DISEASE MANAGEMENT DISEASE MANAGEMENT DISEASE MANAGEMENT-->
+            <lightning-accordion-section name="DETAILS - DISEASE MANAGEMENT (from BTB System):"
+                label="DETAILS - DISEASE MANAGEMENT (from BTB System):" data-id="DiseaseManagement">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Asthma_Program__c" name="Asthma Program" label="Asthma Program"
+                                value={ProductMix__c.Asthma_Program__c} options={asthmaProgramValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Coronary_Artery_Disease_Program__c"
+                                name="Coronary Artery Disease Program" label="Coronary Artery Disease Program"
+                                value={ProductMix__c.Coronary_Artery_Disease_Program__c}
+                                options={coronaryArteryDiseaseProgramValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Heart_Failure_Program__c" name="Heart Failure Program"
+                                label="Heart Failure Program" value={ProductMix__c.Heart_Failure_Program__c}
+                                options={heartFailureProgramValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                             <!-- Added by Vignesh-->
+                             <lightning-combobox data-id="Diabetes_Program__c" name="Diabetes Program"
+                             label="Diabetes Program" value={ProductMix__c.Diabetes_Program__c}
+                             options={diabetesProgramValues} onchange={handleInputChange}>
+                         </lightning-combobox>
+                            
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                           
+                            <lightning-combobox data-id="Chronic_Obstructive_Pulmonary_Disease__c"
+                                name="Chronic Obstructive Pulmonary Disease"
+                                label="Chronic Obstructive Pulmonary Disease"
+                                value={ProductMix__c.Chronic_Obstructive_Pulmonary_Disease__c}
+                                options={chronicObstructivePulmonaryDiseaseValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <!-- Added by Vignesh-->
+                            <lightning-combobox data-id="UMR_Ongoing_Condition_CARE__c" name="UMR Ongoing Condition CARE"
+                                label="UMR Ongoing Condition CARE" value={ProductMix__c.UMR_Ongoing_Condition_CARE__c}
+                                options={UMROngoingConditionCAREValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="UMR_Emerging_CARE__c" name="UMR Emerging CARE"
+                            label="UMR Emerging CARE" value={ProductMix__c.UMR_Emerging_CARE__c}
+                            options={UMREmergingCAREValues} onchange={handleInputChange}>
+                        </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Asthma Program" class="readOnlyClass"
+                                value={ProductMix__c.Asthma_Program__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Coronary Artery Disease Program" class="readOnlyClass"
+                                value={ProductMix__c.Coronary_Artery_Disease_Program__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Heart Failure Program" class="readOnlyClass"
+                                value={ProductMix__c.Heart_Failure_Program__c} read-only=true>
+                            </lightning-input>
+                            <!-- Added by Vignesh-->
+                            <lightning-input type="text" label="Diabetes Program" class="readOnlyClass"
+                            value={ProductMix__c.Diabetes_Program__c} read-only=true>
+                        </lightning-input>
+                           
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                           
+                            <lightning-input type="text" label="Chronic Obstructive Pulmonary Disease"
+                                class="readOnlyClass" value={ProductMix__c.Chronic_Obstructive_Pulmonary_Disease__c}
+                                read-only=true>
+                            </lightning-input>
+                            <!-- Added by Vignesh-->
+                            <lightning-input type="text" label="UMR Ongoing Condition CARE" class="readOnlyClass"
+                                value={ProductMix__c.UMR_Ongoing_Condition_CARE__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="UMR Emerging CARE" class="readOnlyClass" 
+                            value={ProductMix__c.UMR_Emerging_CARE__c} read-only=true>
+                        </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--DISEASE MANAGEMENT DISEASE MANAGEMENT DISEASE MANAGEMENT DISEASE MANAGEMENT DISEASE MANAGEMENT DISEASE MANAGEMENT-->
+
+            <!--WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH-->
+            <lightning-accordion-section name="DETAILS - WOMEN'S HEALTH (from BTB System):"
+                label="DETAILS - WOMEN'S HEALTH (from BTB System):" data-id="WomensHealth">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Fertility_Solutions__c" name="Fertility Solutions"
+                                label="Fertility Solutions" value={ProductMix__c.Fertility_Solutions__c}
+                                options={fertilitySolutionsValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <!-- Added by Vignesh-->
+                            <lightning-combobox data-id="Maven_Maternity__c" name="Maven Maternity"
+                                label="Maven Maternity" value={ProductMix__c.Maven_Maternity__c}
+                                options={MavenMaternityValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="UMR_Maternity_CARE__c" name="UMR Maternity CARE"
+                                label="UMR Maternity CARE" value={ProductMix__c.UMR_Maternity_CARE__c}
+                                options={UMRMaternityCAREValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Neonatal_Resource_Services__c"
+                                name="Neonatal Resource Services" label="Neonatal Resource Services"
+                                value={ProductMix__c.Neonatal_Resource_Services__c}
+                                options={neonatalResourceServicesValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                             <!-- Added by Vignesh-->
+                             <lightning-combobox data-id="Doula_Support_programs__c" name="Doula Support programs"
+                             label="Doula Support programs" value={ProductMix__c.Doula_Support_programs__c}
+                             options={DoulaSupportprogramsValues} onchange={handleInputChange}>
+                         </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Fertility Solutions" class="readOnlyClass"
+                                value={ProductMix__c.Fertility_Solutions__c} read-only=true>
+                            </lightning-input>
+                            <!-- Added by Vignesh-->
+                            <lightning-input type="text" label="Maven Maternity" class="readOnlyClass"
+                                value={ProductMix__c.Maven_Maternity__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="UMR Maternity CARE" class="readOnlyClass"
+                                value={ProductMix__c.UMR_Maternity_CARE__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Neonatal Resource Services" class="readOnlyClass"
+                                value={ProductMix__c.Neonatal_Resource_Services__c} read-only=true>
+                            </lightning-input>
+                             <!-- Added by Vignesh-->
+                             <lightning-input type="text" label="Doula Support programs" class="readOnlyClass"
+                             value={ProductMix__c.Doula_Support_programs__c} read-only=true>
+                         </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH WOMENS HEALTH-->
+
+            <!--WORKSITE WELLNESS WORKSITE WELLNESS WORKSITE WELLNESS WORKSITE WELLNESS WORKSITE WELLNESS WORKSITE WELLNESS-->
+            <lightning-accordion-section name="DETAILS - WORKSITE WELLNESS (from Merit sales data):"
+                label="DETAILS - WORKSITE WELLNESS (from Merit sales data):" data-id="WorksiteWellness">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Adult_Flu_Clinic__c" name="Adult Flu Clinic"
+                                label="Adult Flu Clinic" value={ProductMix__c.Adult_Flu_Clinic__c}
+                                options={adultFluClinicValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Onsite_Fitness__c" name="Onsite Fitness" label="Onsite Fitness"
+                                value={ProductMix__c.Onsite_Fitness__c} options={onsiteFitnessValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Biometric_Screening__c" name="Biometric Screening"
+                                label="Biometric Screening" value={ProductMix__c.Biometric_Screening__c}
+                                options={biometricScreeningValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Optum_Onsite_Health_Promotion_Specialist__c"
+                                name="Optum Onsite Health Promotion Specialist"
+                                label="Optum Onsite Health Promotion Specialist"
+                                value={ProductMix__c.Optum_Onsite_Health_Promotion_Specialist__c}
+                                options={optumOnsiteValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Adult Flu Clinic" class="readOnlyClass"
+                                value={ProductMix__c.Adult_Flu_Clinic__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Onsite Fitness" class="readOnlyClass"
+                                value={ProductMix__c.Onsite_Fitness__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Biometric Screening" class="readOnlyClass"
+                                value={ProductMix__c.Biometric_Screening__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Optum Onsite Health Promotion Specialist"
+                                class="readOnlyClass" value={ProductMix__c.Optum_Onsite_Health_Promotion_Specialist__c}
+                                read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--WORKSITE WELLNESS WORKSITE WELLNESS WORKSITE WELLNESS WORKSITE WELLNESS WORKSITE WELLNESS WORKSITE WELLNESS-->
+
+            <!--WELLNESS AND WELLNESS WELLNESS AND WELLNESS WELLNESS AND WELLNESS WELLNESS AND WELLNESS WELLNESS AND WELLNESS -->
+            <lightning-accordion-section
+                name="DETAILS - WELLNESS AND WELLNESS COACHING (from BTB System and Merit sales data):"
+                label="DETAILS - WELLNESS AND WELLNESS COACHING (from BTB System and Merit sales data):"
+                data-id="WellnessandWellnessCoaching">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <template if:true={smokingCessationValues.data}>
+                                <lightning-dual-listbox data-id="Smoking_Cessation__c" name="Smoking Cessation"
+                                    label="Smoking Cessation" source-label="Available" selected-label="Chosen"
+                                    options={smokingCessationValues.data.values} value={smokingCessation}
+                                    onchange={handleInputChange}>
+                                </lightning-dual-listbox>
+                            </template>
+                            <!-- <lightning-combobox data-id="Healthy_Weight_Program__c" name="Healthy Weight Program"
+                                label="Healthy Weight Program" value={ProductMix__c.Healthy_Weight_Program__c}
+                                options={healthyWeightProgramValues} onchange={handleInputChange}>
+                            </lightning-combobox> -->
+                            <lightning-combobox data-id="Real_Appeal__c" name="Real Appeal" label="Real Appeal"
+                                value={ProductMix__c.Real_Appeal__c} options={realAppealValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                             <!-- Added by Vignesh-->
+                             <lightning-combobox data-id="Stride__c" name="Stride" label="Stride"
+                            value={ProductMix__c.Stride__c} options={strideValues} onchange={handleInputChange}>
+                        </lightning-combobox>
+                            
+                           
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-combobox data-id="UHC_Motion__c" name="UHC Motion" label="UHC Motion"
+                                value={ProductMix__c.UHC_Motion__c} options={uhcMotionValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox> -->
+                            
+                            <lightning-combobox data-id="Wellness_Coaching__c" name="Wellness Coaching"
+                                label="Wellness Coaching" value={ProductMix__c.Wellness_Coaching__c}
+                                options={wellnessCoachingValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Wellness_Rally__c" name="Wellness-Rally"
+                            label="Wellness-Rally" value={ProductMix__c.Wellness_Rally__c}
+                            options={WellnessRallyValues} onchange={handleInputChange}>
+                        </lightning-combobox>
+                            <!-- Added by Vignesh-->
+                            <lightning-combobox data-id="UMR_Wellness_CARE__c" name="UMR Wellness CARE"
+                                label="UMR Wellness CARE" value={ProductMix__c.UMR_Wellness_CARE__c}
+                                options={UMRWellnessCAREValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-textarea type="text" label="Smoking Cessation" class="readOnlyClass"
+                                value={ProductMix__c.Smoking_Cessation__c} read-only=true>
+                            </lightning-textarea> -->
+                            <label for="smokCess" style="padding-top:5px;"
+                                class="slds-form-element__label slds-no-flex">Smoking Cessation</label>
+                            <!-- <textarea id="smokCess" name="Smoking Cessation"
+                                style="border:0px solid #58B9FA; width:100%; border-bottom: 1px solid #ddd; height: fit-content;
+                                    padding-top: 9px; padding-bottom: 4px; resize: none; overflow: hidden; height:auto; ">
+                                    {ProductMix__c.Smoking_Cessation__c}
+                            </textarea> -->
+                            <p style="border-bottom: 1px solid #ccc;
+                          padding-bottom: 10px;">{ProductMix__c.Smoking_Cessation__c}</p>
+                            <!-- <lightning-input type="text" label="Healthy Weight Program" class="readOnlyClass"
+                                value={ProductMix__c.Healthy_Weight_Program__c} read-only=true>
+                            </lightning-input> -->
+                            <lightning-input type="text" label="Real Appeal" class="readOnlyClass"
+                                value={ProductMix__c.Real_Appeal__c} read-only=true>
+                            </lightning-input>
+                           <!-- Added by Vignesh-->
+                           <lightning-input type="text" label="Stride" class="readOnlyClass"
+                           value={ProductMix__c.Stride__c} read-only=true>
+                       </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-input type="text" label="UHC Motion" class="readOnlyClass"
+                                value={ProductMix__c.UHC_Motion__c} read-only=true>
+                            </lightning-input> -->
+                          
+                            <lightning-input type="text" label="Wellness Coaching" class="readOnlyClass"
+                                value={ProductMix__c.Wellness_Coaching__c} read-only=true>
+                            </lightning-input>
+                            
+                           <lightning-input type="text" label="Wellness-Rally" class="readOnlyClass"
+                           value={ProductMix__c.Wellness_Rally__c} read-only=true>
+                       </lightning-input>
+                            <!-- Added by Vignesh-->
+                            <lightning-input type="text" label="UMR Wellness CARE" class="readOnlyClass"
+                                value={ProductMix__c.UMR_Wellness_CARE__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--WELLNESS AND WELLNESS WELLNESS AND WELLNESS WELLNESS AND WELLNESS WELLNESS AND WELLNESS WELLNESS AND WELLNESS -->
+
+            <!--ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS-->
+            <lightning-accordion-section name="DETAILS - ADDITIONAL INFO FOR UMR CLIENTS:"
+                label="DETAILS - ADDITIONAL INFO FOR UMR CLIENTS:">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-combobox data-id="UHC_UMR_Telehealth_Solutions__c"
+                                name="UHC/UMR Telehealth Solutions" label="UHC/UMR Telehealth Solutions"
+                                value={ProductMix__c.UHC_UMR_Telehealth_Solutions__c} options={uhcUmrTelehealthValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox> --> <!-- Added by Vignesh -->
+                            <!-- <lightning-combobox data-id="UHC_UMR_Member_Service_and_Tools__c"
+                                name="UHC/UMR Member Service and Tools" label="UHC/UMR Member Service and Tools"
+                                value={ProductMix__c.UHC_UMR_Member_Service_and_Tools__c}
+                                options={uhcUmrMemberServiceValues} onchange={handleInputChange}>
+                            </lightning-combobox>  -->
+                            <lightning-combobox data-id="Member_Service_Vendor__c"
+                                name="Member Service Vendor" label="Member Service Vendor"
+                                value={ProductMix__c.Member_Service_Vendor__c}
+                                options={memberServiceVendor} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-combobox data-id="UMR_COBRA_Services__c" name="UMR COBRA Services"
+                                label="UMR COBRA Services" value={ProductMix__c.UMR_COBRA_Services__c}
+                                options={umrCobraValues} onchange={handleInputChange}>
+                            </lightning-combobox> -->  <!-- Added by Vignesh -->
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-input type="text" label="UHC/UMR Telehealth Solutions" class="readOnlyClass"
+                                value={ProductMix__c.UHC_UMR_Telehealth_Solutions__c} read-only=true>
+                            </lightning-input> --> <!-- Added by Vignesh -->
+                            <!-- <lightning-input type="text" label="UHC/UMR Member Service and Tools" class="readOnlyClass"
+                                value={ProductMix__c.UHC_UMR_Member_Service_and_Tools__c} read-only=true>
+                            </lightning-input>  -->  <!-- Added CR-3847 -->
+                            <lightning-input type="text" label="Member Service Vendor" class="readOnlyClass"
+                                value={ProductMix__c.Member_Service_Vendor__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <!-- <lightning-input type="text" label="UMR COBRA Services" class="readOnlyClass"
+                                value={ProductMix__c.UMR_COBRA_Services__c} read-only=true>
+                            </lightning-input> -->  <!-- Added by Vignesh -->
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS ADDITIONAL DETAILS-->
+
+            <!--OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS-->
+            <lightning-accordion-section name="OTHER PRODUCTS AND SERVICES (from various sources):"
+                label="OTHER PRODUCTS AND SERVICES (from various sources):">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="ECRS_client__c" name="ECRS Client" label="ECRS Client"
+                                value={ProductMix__c.ECRS_client__c} options={ecrsClientValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="ECRS_Type__c" name="ECRS Type" label="ECRS Type"
+                                value={ProductMix__c.ECRS_Type__c} options={ecrsTypeValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <!-- <lightning-combobox data-id="VHP_client__c" name="VHP client" label="VHP client"
+                                value={ProductMix__c.VHP_client__c} options={vhpClientValues}
+                                onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="VHP_client_type__c" name="VHP client type"
+                                label="VHP client type" value={ProductMix__c.VHP_client_type__c}
+                                options={vhpClientTypeValues} onchange={handleInputChange}>
+                            </lightning-combobox> -->
+                        </lightning-layout-item>
+
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Engagement_Solutions_Client__c"
+                                name="Engagement Solutions Client" label="Engagement Solutions Client"
+                                value={ProductMix__c.Engagement_Solutions_Client__c}
+                                options={engagementSolutionsClientValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="Engagement_Solutions_Tier__c" name="Engagement Solutions Tier"
+                                label="Engagement Solutions Tier" value={ProductMix__c.Engagement_Solutions_Tier__c}
+                                options={engagementSolutionsTierValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                            <lightning-combobox data-id="UHC_Cobra_Administration__c" name="UHC Cobra Administration"
+                                label="UHC Cobra Administration" value={ProductMix__c.UHC_Cobra_Administration__c}
+                                options={uhcCobraAdministrationValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="ECRS Client" class="readOnlyClass"
+                                value={ProductMix__c.ECRS_client__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="ECRS Type" class="readOnlyClass"
+                                value={ProductMix__c.ECRS_Type__c} read-only=true>
+                            </lightning-input>
+                            <!-- <lightning-input type="text" label="VHP client" class="readOnlyClass"
+                                value={ProductMix__c.VHP_client__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="VHP client type" class="readOnlyClass"
+                                value={ProductMix__c.VHP_client_type__c} read-only=true>
+                            </lightning-input> -->
+                        </lightning-layout-item>
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Engagement Solutions Client"
+                                class="readOnlyClass" value={ProductMix__c.Engagement_Solutions_Client__c}
+                                read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="Engagement Solutions Tier"
+                                class="readOnlyClass" value={ProductMix__c.Engagement_Solutions_Tier__c} read-only=true>
+                            </lightning-input>
+                            <lightning-input type="text" label="UHC Cobra Administration"
+                                class="readOnlyClass" value={ProductMix__c.UHC_Cobra_Administration__c} read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section>
+            <!--OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS OTHER PRODUCTS-->
+
+            <!--RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION-->
+            <!-- <lightning-accordion-section name="RECORD INFORMATION" label="RECORD INFORMATION">
+                <template if:true={isEditDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Care_Mgmt_Decision_Supprt_Women_s_Health__c"
+                                name="Care Mgmt\Decision Supprt\Women's Health"
+                                label="Care Mgmt\Decision Supprt\Women's Health"
+                                value={ProductMix__c.Care_Mgmt_Decision_Supprt_Women_s_Health__c}
+                                options={careMgmtDecisionSupprtValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+
+                <template if:true={isSaveCancelDisabled}>
+                    <lightning-layout horizontal-align='spread' class="layoutClass">
+                        <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Care Mgmt\Decision Supprt\Women's Health"
+                                class="readOnlyClass" value={ProductMix__c.Care_Mgmt_Decision_Supprt_Women_s_Health__c}
+                                read-only=true>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </lightning-accordion-section> -->
+            <!--RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION RECORD INFORMATION-->
+
+            <!--SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION-->
+            <lightning-accordion-section name="RECORD INFORMATION" label="RECORD INFORMATION">
+                <lightning-layout horizontal-align='spread' class="layoutClass">
+                    <lightning-layout-item class="layoutItemClass">
+                        <template if:true={isEditDisabled}>
+                            <lightning-combobox data-id="Care_Mgmt_Decision_Supprt_Women_s_Health__c"
+                                name="Care Mgmt\Decision Support\Women's Hlth"
+                                label="Care Mgmt\Decision Support\Women's Hlth"
+                                value={ProductMix__c.Care_Mgmt_Decision_Supprt_Women_s_Health__c}
+                                options={careMgmtDecisionSupprtValues} onchange={handleInputChange}>
+                            </lightning-combobox>
+                        </template>
+                        <template if:true={isSaveCancelDisabled}>
+                            <lightning-input type="text" label="Care Mgmt\Decision Support\Women's Hlth"
+                                class="readOnlyClass" value={ProductMix__c.Care_Mgmt_Decision_Supprt_Women_s_Health__c}
+                                read-only=true>
+                            </lightning-input>
+                        </template>
+                        <!-- <template if:true={isEditDisabled}>
+                            <lightning-input data-id="Current_Product_Name__c" type="text" label="Current Product Name"
+                                value={ProductMix__c.Current_Product_Name__c} onchange={handleInputChange}>
+                            </lightning-input>
+                        </template>
+                        <template if:true={isSaveCancelDisabled}>
+                            <lightning-input data-id="Current_Product_Name__c" type="text" label="Current Product Name"
+                                class="readOnlyClass" value={ProductMix__c.Current_Product_Name__c} read-only=true>
+                            </lightning-input>
+                        </template> -->
+                        <lightning-input data-id="createdBy" type="text" label="Created By" value={createdByWithDate}
+                            class="readOnlyClass" read-only=true>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="layoutItemClass">
+                        <template if:true={isEditDisabled}>
+                            <lightning-input data-id="Name" type="text" label="Name" value={ProductMix__c.Name}
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </template>
+                        <template if:true={isSaveCancelDisabled}>
+                            <lightning-input data-id="Name" type="text" label="Name" value={ProductMix__c.Name}
+                                class="readOnlyClass" read-only=true>
+                            </lightning-input>
+                        </template>
+                        <lightning-input data-id="accountName" type="text" label="Company/Firm" value={accountName}
+                            class="readOnlyClass" read-only=true>
+                        </lightning-input>
+                        <lightning-input data-id="modifiedBy" type="text" label="Last Modified By" value={modifiedByWithDate}
+                            class="readOnlyClass" read-only=true>
+                        </lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-accordion-section>
+            <!--SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION SYSTEM INFORMATION-->
+        </lightning-accordion>
+    </div>
+</template>

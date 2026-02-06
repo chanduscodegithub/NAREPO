@@ -1,0 +1,106 @@
+<template>
+    <span class={cssDisplay}>
+        <div class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </span>
+    <template if:true={isLggdInUsrHsAccessToICStatmnt}>
+        <lightning-tabset active-tab-value={defaultActiveTab} style="float:left;background: #fff;width:100%">
+            <template if:true={isLggdInUsrHsAccessToStatusSnapshotTab}>
+                <template if:false={isVPCROrRVP}>
+                    <lightning-tab label="my Growth and Renewal Status Snapshot" value="my Snapshot">
+                        <c-snapshot-cmp role={loggedInUserRole}></c-snapshot-cmp>
+                    </lightning-tab>
+                </template>
+                <template if:true={isVPCROrRVP}>
+                    <lightning-tab label="my Growth and Renewal Status Snapshot" value="my Snapshot">
+                        <template if:true={isLoggedInUserVPCR}>
+                            <c-vpcr-snapshot-with-prctv-rnwl-cmp role={loggedInUserRole}>
+                            </c-vpcr-snapshot-with-prctv-rnwl-cmp>
+                        </template>
+                        <template if:false={isLoggedInUserVPCR}>
+                            <c-vpcr-snapshot-cmp role={loggedInUserRole}>
+                            </c-vpcr-snapshot-cmp>
+                        </template>
+                        <!--<c-vpcr-snapshot-cmp role={loggedInUserRole}></c-vpcr-snapshot-cmp>-->
+
+                    </lightning-tab>
+                </template>
+            </template>
+            <template if:true={isLggdInUsrHsAccessToGrowthTab}>
+                <lightning-tab label="my Growth Data Sheet" value="my Growth Data Sheet">
+                    <c-growth-cmp isloggedinuservpcr={isLoggedInUserVPCR} logged-in-user-role={loggedInUserRole}>
+                    </c-growth-cmp>
+                </lightning-tab>
+            </template>
+            <template if:true={isLggdInUsrHsAccessToRetentionTab}>
+                <template if:false={isVPCROrRVP}>
+                    <lightning-tab label="my Renewal Data Sheet" value="my Renewal Data Sheet">
+                        <c-retention-cmp1 role={loggedInUserRole}></c-retention-cmp1>
+                        <!--Added role={loggedInUserRole} - SAMARTH-->
+                    </lightning-tab>
+                </template>
+                <template if:true={isVPCROrRVP}>
+                    <lightning-tab label="my Renewal Data Sheet" value="my Renewal Data Sheet">
+                        <c-retention-Parent-Vpcr-Cmp isloggedinuservpcr={isLoggedInUserVPCR}>
+                        </c-retention-Parent-Vpcr-Cmp>
+                    </lightning-tab>
+                </template>
+            </template>
+
+
+    <!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH-->
+
+            <template if:true={isSce}>
+                <lightning-tab label="my Medical Persistency Data Sheet" value="my Medical Persistency Data Sheet">
+                    <c-medical-persistency-cmp></c-medical-persistency-cmp>
+                </lightning-tab>
+            </template>
+
+            <template if:true={isVPCROrRVP}>
+                <template if:true={isLoggedInUserVPCR}>
+                    <lightning-tab label="my Medical Persistency Data Sheet" value="my Medical Persistency Data Sheet">
+                        <c-medical-persistency-cmp></c-medical-persistency-cmp>
+                    </lightning-tab>
+                </template>
+            </template>
+
+            <template if:true={isSce}>
+                <lightning-tab label="my Customer Satisfaction Data Sheet" value="my Customer Satisfaction Data Sheet">
+                    <c-calculate-nps-cmp role={loggedInUserRole}></c-calculate-nps-cmp>
+                </lightning-tab>
+            </template>
+
+            <!--FOR SPECIALTY BENEFITS SCE USER - SAMARTH-->
+            <template if:true={isSBSce}>
+                <lightning-tab label="my Customer Satisfaction Data Sheet" value="my Customer Satisfaction Data Sheet">
+                    <c-calculate-nps-cmp role={loggedInUserRole}></c-calculate-nps-cmp>
+                </lightning-tab>
+            </template>
+            <!--FOR SPECIALTY BENEFITS SCE USER - SAMARTH-->
+
+            <template if:true={isVPCROrRVP}>
+                <lightning-tab label="my Customer Satisfaction Data Sheet" value="my Customer Satisfaction Data Sheet">
+                    <c-calculate-nps-cmp role={loggedInUserRole}></c-calculate-nps-cmp>
+                </lightning-tab>
+            </template>
+    <!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH--><!--SAMARTH-->
+    
+        </lightning-tabset>
+    </template>
+    <template if:false={isLggdInUsrHsAccessToICStatmnt}>
+        <div class="slds-section">
+            <div class="slds-section" style="text-align: center;font-size: 1rem;">
+
+                <!--Access to the Incentive Compensation Statement is Restricted.-->
+                {label.ICM_Report_Not_Authorized_Text}
+
+            </div>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,1037 @@
+<template>
+  <!-- Check if the Logged in User Role & restrict the acces to  CM VP Role - START -->
+  <template if:true={hasTabAccess}>
+    <article class="slds-card slds-m-bottom_small">
+      <!-- Code for Instructions goes here -->
+      <div class="slds-p-left--small">
+        <p>
+          <!--<b>Instructions </b>:<br/>-->
+          <b
+            >All updates are due by: {softDueDate}. This tab will be removed on:
+            {softDueDate}</b
+          >
+          <br /><br />
+          SCE’s – Review the NPS Client Survey contacts listed below. Please
+          identify all Contacts to be included in this year’s Client Survey and
+          ensure the Contact Type, Survey Type and Email Address for each
+          Contact are correct.
+          <b> Every account must have at least one Primary Contact. </b>
+          <br />
+          To make changes to a contact listed below, click on the “Edit” button
+          and make the necessary changes. Make sure to click on the “Save”
+          button after you make the updates.
+          <br />
+          To remove a contact from your list, click on the trash can icon to
+          delete it from the Client Survey.
+          <br />
+          To add a new contact, click the “ Add Another Contact” button and
+          select your contact from the list. If you do not see your contact
+          listed, click the “Unable to find your Contact? Click here to add a
+          New Contact” link within the “Add Another Contact” screen.
+        </p>
+      </div>
+      <!-- Code for Edit Save button goes here -->
+      <div class="slds-card__header slds-grid slds-p-top_none">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+          <div class="slds-grid slds-wrap slds-size_2-of-7">
+            <!--<lightning-icon icon-name="action:update_status" size="xx-small">
+            </lightning-icon>
+            <h2 class="slds-card__header-title">
+              <span class="slds-m-top_xx-small slds-p-left--medium"
+                ><b>Client Survey Contacts Validation</b>
+              </span>
+            </h2>-->
+          </div>
+          <div class="slds-grid slds-wrap slds-size_5-of-7 slds-grid_reverse">
+            <template if:true={showSaveCancel}>
+              <div class="slds-no-flex">
+                <lightning-button
+                  type="submit"
+                  variant="Neutral"
+                  label="Cancel"
+                  class="slds-m-left_x-small"
+                  slot="actions"
+                  onclick={handleEditSave}
+                ></lightning-button>
+              </div>
+              <div class="slds-no-flex">
+                <lightning-button
+                  type="submit"
+                  variant="Neutral"
+                  label="Save"
+                  class="slds-m-left_x-small"
+                  slot="actions"
+                  onclick={handleEditSave}
+                ></lightning-button>
+              </div>
+            </template>
+            <template if:false={noRelatedContacts}>
+              <lightning-button
+                type="submit"
+                variant="Neutral"
+                label="Edit"
+                class="slds-m-left_x-small"
+                slot="actions"
+                onclick={handleEditSave}
+                disabled={disableEdit}
+              ></lightning-button>
+            </template>
+            <lightning-button
+              type="submit"
+              variant="Neutral"
+              label="Add Another Contact"
+              class="placeHolder"
+              slot="actions"
+              onclick={addNewContact}
+            ></lightning-button>
+          </div>
+        </header>
+      </div>
+      <!-- Code for displaying records in Table goes here -->
+      <div class="slds-p-around_xx-small">
+        <table
+          class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered"
+        >
+          <thead>
+            <tr class="slds-text-title--caps addHeightStyle">
+              <th
+                class="slds-size_2-of-12 slds-is-sortable slds-text-title--caps"
+                scope="col"
+              >
+                <a
+                  onclick={handleSort}
+                  data-record="Account.Name"
+                  class="slds-th__action slds-text-link--reset slds-cell-fixed"
+                  tabindex="0"
+                >
+                  Company
+                  <lightning-icon
+                    class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                    icon-name={handleCompanyIconDirection}
+                    size="xx-small"
+                  ></lightning-icon>
+                </a>
+              </th>
+              <th
+                class="slds-size_1-of-12 slds-is-sortable slds-text-title--caps"
+                scope="col"
+              >
+                <a
+                  onclick={handleSort}
+                  data-record="LastName"
+                  class="slds-th__action slds-text-link--reset slds-cell-fixed"
+                  tabindex="0"
+                >
+                  Last Name
+                  <lightning-icon
+                    class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                    icon-name={handleLastNameIconDirection}
+                    size="xx-small"
+                  ></lightning-icon>
+                </a>
+              </th>
+              <th
+                class="slds-size_1-of-12 slds-is-sortable slds-text-title--caps"
+                scope="col"
+              >
+                <a
+                  onclick={handleSort}
+                  data-record="FirstName"
+                  class="slds-th__action slds-text-link--reset slds-cell-fixed"
+                  tabindex="0"
+                >
+                  First Name
+                  <lightning-icon
+                    class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                    icon-name={handleFirstNameIconDirection}
+                    size="xx-small"
+                  ></lightning-icon>
+                </a>
+              </th>
+              <th
+                class="slds-size_2-of-12 slds-is-sortable slds-text-title--caps"
+                scope="col"
+              >
+                <a
+                  onclick={handleSort}
+                  data-record="Correspondence_Type__c"
+                  class="slds-th__action slds-text-link--reset slds-cell-fixed"
+                  tabindex="0"
+                >
+                  <span class="required">*</span>
+                  Correspondence Type
+                  <lightning-icon
+                    class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                    icon-name={handleCorrespondenceTypeIconDirection}
+                    size="xx-small"
+                  ></lightning-icon>
+                </a>
+              </th>
+              <th
+                class="slds-size_1-of-12 slds-is-sortable slds-text-title--caps"
+                scope="col" style="width:9%"
+              >
+                <a
+                  onclick={handleSort}
+                  data-record="Survey_Type__c"
+                  class="slds-th__action slds-text-link--reset slds-cell-fixed"
+                  tabindex="0"
+                >
+                  <span class="required">*</span>
+                  Survey Type
+                  <lightning-icon
+                    class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                    icon-name={handleSurveyTypeIconDirection}
+                    size="xx-small"
+                  ></lightning-icon>
+                </a>
+              </th>
+              <th
+                class="slds-size_2-of-12 slds-is-sortable slds-text-title--caps"
+                scope="col"
+              >
+                <span class="required">*</span>
+                <span class="slds-truncate"><b>Email Address</b></span>
+              </th>
+              <th class="adjustDeleteRowPosition" scope="col">
+                <div class=""></div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <template if:true={noRelatedContacts}>
+              <th colspan="10">
+                <div class="slds-text-align--center">{norecordsFound}</div>
+              </th>
+            </template>
+            <template if:false={noRelatedContacts}>
+              <template
+                for:each={surveyContacts}
+                for:item="eachContact"
+                for:index="index"
+              >
+                <c-client-nps-survey-child
+                  eachcontact={eachContact}
+                  index={index}
+                  oneditcontact={updateContactEdited}
+                  is-edit={isEdit}
+                  key={eachContact.Id}
+                ></c-client-nps-survey-child>
+              </template>
+              <!--<th colspan="10" style="height: 31px;">
+              <div class="slds-text-align--center">Loading....</div>
+            </th>-->
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <br />
+    </article>
+
+    <!-- Code for Pop up component starts  START-->
+    <template if:true={enablePopUp}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+        class="slds-modal slds-fade-in-open slds-modal_large"
+      >
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={closeModal}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                alternative-text="close"
+                variant="inverse"
+                size="small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+              Search Contacts
+            </h2>
+            <div class="slds-p-top_x-large" id="modal-content-id-2">
+              <div class="slds-grid slds-grid--vertical-align-end">
+                <!--<div class="" style="padding: 0.3rem 0.6rem;">
+                      <span>Search for Contact Where</span>
+                    </div>-->
+                <div class="slds-col slds-size_2-of-12 slds-m-right_x-small">
+                  <lightning-combobox
+                    name="choice"
+                    class="slds-text-align_left"
+                    value={filterSelected}
+                    variant="label-hidden"
+                    options={searchPickList}
+                    onchange={handleFilter}
+                  >
+                  </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-m-right_x-small">
+                  <lightning-combobox
+                    name="filterChoice"
+                    class="slds-text-align_left"
+                    value={filterConditionSelected}
+                    variant="label-hidden"
+                    options={searchFilterPickList}
+                    onchange={handleFilter}
+                  >
+                  </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_2-of-12">
+                  <div
+                    id="searchBox"
+                    class="slds-form-element__control"
+                    onkeypress={checkEnterButton}
+                  >
+                    <lightning-input
+                      type="text"
+                      variant="label-hidden"
+                      name="InputSearch"
+                      value={searchText}
+                      onchange={updateSearchValue}
+                      placeholder="Search Contact"
+                    ></lightning-input>
+                    <template if:true={blankSearchValue}>
+                      <span class="fontColorAndSize"
+                        >Enter value to search</span
+                      >
+                    </template>
+                  </div>
+                </div>
+                <div class="slds-m-right_x-small">
+                  <lightning-button
+                    variant="brand"
+                    label="Go"
+                    onclick={searchContacts}
+                    class="slds-m-left_x-small"
+                    data-target-id="inputSearch"
+                    disabled={disableGo}
+                  ></lightning-button>
+                </div>
+                <div class="slds-m-right_x-small">
+                  <lightning-button
+                    label="Clear"
+                    onclick={ClearSearch}
+                    disabled={disableClear}
+                  ></lightning-button>
+                </div>
+                <div class="slds-col slds-size_5-of-12 anchorLinkStyle">
+                  <a onclick={navigateToNewContactRecordPage}>
+                    Unable to find your Contact? Click here to add a New Contact
+                  </a>
+                </div>
+              </div>
+            </div>
+          </header>
+          <div
+            class="slds-modal__content addOverFlowScroll"
+            id="modal-content-id-3"
+          >
+            <table
+              class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped"
+            >
+              <thead>
+                <tr>
+                  <th class="paddingLeftStyle" scope="col" style="width: 2%;">
+                    <div class="slds-truncate" title=""></div>
+                  </th>
+
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="Company Name">
+                      Company Name
+                    </div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="Last Name">Last Name</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="First Name">
+                      First Name
+                    </div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="Email">Email</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template if:false={searchContactsFound}>
+                  <th colspan="10" style="height: 31px;">
+                    <div class="slds-text-align--center">
+                      {noSearchRecordsFound}
+                    </div>
+                  </th>
+                </template>
+                <template if:true={searchContactsFound}>
+                  <!-- Table Data Goes here -->
+                  <template
+                    for:each={searchedContacts}
+                    for:item="eachContact"
+                    for:index="index"
+                  >
+                    <c-search-results
+                      eachcontact={eachContact}
+                      onaddorremovecontact={addOrRemoveContacts}
+                      index={index}
+                      oneditcontact={updateContactEdited}
+                      key={eachContact.Id}
+                    ></c-search-results>
+                  </template>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <footer class="slds-modal__footer">
+            <!--<div>
+              <lightning-button
+                type="submit"
+                variant="Neutral"
+                label="Create New Contact"
+                class="placeHolder slds-p-left_small"
+                slot="actions"
+                onclick={navigateToNewContactRecordPage}
+              ></lightning-button>
+            </div>-->
+            <button
+              class="slds-button slds-button_neutral"
+              onclick={closeModal}
+            >
+              Cancel
+            </button>
+            <template if:true={showAddContactButton}>
+              <lightning-button
+                type="submit"
+                variant="Neutral"
+                label="Save"
+                class="placeHolder slds-p-left_small"
+                onclick={addContactsToList}
+              ></lightning-button>
+            </template>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- Code for Pop up component starts  END-->
+
+    <!-- Code for Create contact Pop up component starts  START-->
+    <template if:true={enableCreateContactPopUp}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-7"
+        class="slds-modal slds-fade-in-open"
+      >
+        <lightning-record-form
+          record-type-id="0126A000000T7jxQAC"
+          object-api-name={contactObject}
+          fields={myFields}
+          columns="2"
+          onsuccess={handleContactCreated}
+        >
+        </lightning-record-form>
+      </section>
+    </template>
+
+    <!-- Code for Delete Pop up Alert - START -->
+    <template if:true={showDeleteModel}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-4"
+        class="slds-modal slds-fade-in-open"
+      >
+        <div class="slds-modal__container">
+          <header class="slds-modal__header slds-theme--error">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={confirmCancel}
+            >
+              <lightning-icon icon-name="utility:close" size="medium">
+              </lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 class="slds-text-heading_medium slds-hyphenate">
+              Confirmation
+            </h2>
+          </header>
+
+          <div class="slds-modal__content slds-p-around_medium">
+            <h2><b>{deleteMsgContent}</b></h2>
+            <br />
+          </div>
+          <!-- modal footer start-->
+          <footer class="slds-modal__footer slds-theme--default">
+            <lightning-button
+              label="Remove from the Survey"
+              variant="brand"
+              onclick={confirmDelete}
+            ></lightning-button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+
+            <lightning-button
+              label="Remove from the Survey and Inactivate"
+              variant="brand"
+              onclick={confirmDelete}
+            ></lightning-button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+
+            <lightning-button
+              label="Cancel"
+              variant="neutral"
+              onclick={confirmCancel}
+            ></lightning-button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- Code for Delete Pop up Alert - END -->
+
+    <!-- Code for Warning Pop up Alert - START -->
+    <template if:true={showWarningModel}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-4"
+        class="slds-modal slds-fade-in-open"
+      >
+        <div class="slds-modal__container">
+          <header class="slds-modal__header slds-theme--warning">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={closeWarningPopUp}
+            >
+              <lightning-icon icon-name="utility:close" size="medium">
+              </lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 class="slds-text-heading_medium slds-hyphenate">
+              Reminder
+            </h2>
+          </header>
+
+          <div class="slds-modal__content slds-p-around_medium">
+            <h2><b>{warningMessageContent}</b></h2>
+            <br />
+          </div>
+          <!-- modal footer start-->
+          <footer class="slds-modal__footer slds-theme--default">
+            <!--<lightning-button
+              label="Continue"
+              class="slds-m-right_x-small"
+              variant="Brand"
+              onclick={closeAndSaveRecords}
+            ></lightning-button>-->
+            <lightning-button
+              label="OK"
+              variant="Neutral"
+              onclick={closeWarningPopUp}
+            ></lightning-button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- Code for Warning Pop up Alert - END -->
+
+    <!-- Code for Lightning Record form Pop Up START -->
+    <template if:true={showCreateContactModel}>
+      <!--  <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+        class="slds-modal slds-fade-in-open slds-scrollable--y marginTopStyling"
+      >
+        <div class="addCustomStylingForCreateNewContact">
+          <header class="slds-modal__header">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={closeModal}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                alternative-text="close"
+                variant="inverse"
+                size="small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2
+              id="modal-heading-04"
+              class="slds-text-heading_medium slds-hyphenate"
+            >
+            New Contact/Consultant: CM Contact
+            </h2>
+          </header>
+  
+          <div
+            class="slds-modal__content slds-p-around_medium"
+            id="modal-content-id-4"
+          >
+            <lightning-record-edit-form
+              object-api-name="Contact"
+              record-type-id={dynamicRecordTypeId}
+              onsuccess={handleSuccess}
+              onsubmit={handleSubmit}
+            >
+              <lightning-messages> </lightning-messages>
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="Name"
+                    required
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Email"
+                    required
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Title"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Key_Contact__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Role__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="ReportsTo__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="CorrespondenceInstructions__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="DoNotSendCorrespondence__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Status__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="InactiveStatusReason__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="InactiveDate__c"
+                  ></lightning-input-field>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="AccountId"
+                    required
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Correspondence_Type__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                  field-name="Survey_Type__c"
+                ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="UHGRelationshipwithExecutive__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="UHGPrimaryContactwithExecutive__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="AMT_Log__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Survey_Type__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Employment_History_Instructions__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="EmploymentStartDateApprox__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="EmploymentEndDateApprox__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="ActiveConsultant__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Description"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="RecordTypeId"
+                    disabled
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="OwnerId"
+                  ></lightning-input-field>
+                </div>
+              </div>
+              <div class="popup-footer slds-float_right">
+                <lightning-button
+                      label="Cancel"
+                      onclick={closeContactModel}
+                      class="slds-m-left_x-small"
+                    ></lightning-button>
+                    <lightning-button
+                      class="slds-m-top_small slds-m-left_x-small"
+                      variant="brand"
+                      type="submit"
+                      label="Save"
+                    >
+                    </lightning-button>
+              </div>
+            </lightning-record-edit-form>
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>-->
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-5"
+        class="slds-modal slds-fade-in-open slds-modal_medium"
+      >
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={closeContactModel}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                alternative-text="close"
+                variant="inverse"
+                size="small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2
+              id="modal-heading-04"
+              class="slds-text-heading_medium slds-hyphenate"
+            >
+              New Contact/Consultant: CM Contact
+            </h2>
+          </header>
+          <div
+            class="slds-modal__content slds-p-around_medium addOverFlowScroll"
+          >
+            <lightning-record-edit-form
+              object-api-name="Contact"
+              class="lightningrecordeditform"
+              record-type-id={dynamicRecordTypeId}
+              onsuccess={handleSuccess}
+              onsubmit={handleSubmit}
+              onerror={handleError}
+            >
+              <!--<lightning-messages class="lightningMessageClass">
+              </lightning-messages>-->
+              <template if:true={showErrorSpan}>
+                <div class="slds-box slds-theme_shade slds-theme_error">
+                  <p>Review the errors on this page.</p>
+                </div>
+              </template>
+              <template if:true={showRequiredFieldsError}>
+                <span class="textColorRed"
+                  >These required fields must be completed: {errorMessage}</span
+                >
+                <br />
+              </template>
+              <template if:true={showStatusErrorMessage}>
+                <span class="textColorRed"> {statusFieldError}</span>
+              </template>
+
+              <h3
+                class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container"
+              >
+                <span
+                  class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate"
+                >
+                  General Information:
+                </span>
+              </h3>
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="Name"
+                    required
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="ProfessionalDesignation__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="NickName__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="AccountId"
+                    required
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Title"
+                  ></lightning-input-field>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="Phone"
+                  ></lightning-input-field>
+                  <!-- Adding break tags to make it visualise like standard -->
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <lightning-input-field
+                    field-name="MobilePhone"
+                  ></lightning-input-field>
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <lightning-input-field
+                    field-name="Fax"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Email"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="MailingAddress"
+                  ></lightning-input-field>
+                </div>
+              </div>
+              <!-- Second section goes here -->
+              <h3
+                class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container"
+              >
+                <span
+                  class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate"
+                >
+                  Relationship Information:
+                </span>
+              </h3>
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="Key_Contact__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Role__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="ReportsTo__c"
+                  ></lightning-input-field>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="UHGRelationshipwithExecutive__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="UHGPrimaryContactwithExecutive__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="AMT_Log__c"
+                  ></lightning-input-field>
+                </div>
+              </div>
+
+              <!-- Third section goes here -->
+              <h3
+                class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container"
+              >
+                <span
+                  class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate"
+                >
+                  Correspondence:
+                </span>
+              </h3>
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="CorrespondenceInstructions__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="DoNotSendCorrespondence__c"
+                  ></lightning-input-field>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="Correspondence_Type__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="Survey_Type__c"
+                  ></lightning-input-field>
+                </div>
+              </div>
+
+              <!-- Fourth section goes here -->
+              <h3
+                class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container"
+              >
+                <span
+                  class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate"
+                >
+                  Employment Information and Status:
+                </span>
+              </h3>
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="Status__c"
+                    required
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="InactiveStatusReason__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="InactiveDate__c"
+                  ></lightning-input-field>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="Employment_History_Instructions__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="EmploymentStartDateApprox__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="EmploymentEndDateApprox__c"
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="ActiveConsultant__c"
+                  ></lightning-input-field>
+                </div>
+              </div>
+              <!-- Fifth section goes here -->
+              <h3
+                class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container"
+              >
+                <span
+                  class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate"
+                >
+                  Comments :
+                </span>
+              </h3>
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                  <lightning-input-field
+                    field-name="Description"
+                  ></lightning-input-field>
+                </div>
+              </div>
+              <!-- Sixth section goes here -->
+              <h3
+                class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container"
+              >
+                <span
+                  class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate"
+                >
+                  Record information:
+                </span>
+              </h3>
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2"></div>
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="RecordTypeId"
+                    disabled
+                  ></lightning-input-field>
+                  <lightning-input-field
+                    field-name="OwnerId"
+                  ></lightning-input-field>
+                </div>
+              </div>
+              <!-- Seventh section goes here -->
+              <!--<h3
+                class="slds-section__title slds-theme--shade primaryPaletteBorder test-id__section-header-container"
+              >
+                <span
+                  class="test-id__section-header-title section-header-title slds-p-horizontal--small slds-truncate"
+                >
+                  CRM Administrator :
+                </span>
+              </h3>
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                  
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                  <lightning-input-field
+                    field-name="Delete_Duplicate__c"
+                  ></lightning-input-field>
+                </div>
+              </div>-->
+            </lightning-record-edit-form>
+          </div>
+          <footer class="slds-modal__footer">
+            <!--<button class="slds-button slds-button_neutral">Cancel</button>
+            <button class="slds-button slds-button_brand">Save</button>
+          -->
+            <lightning-button
+              label="Cancel"
+              onclick={closeContactModel}
+              class="slds-m-left_x-small"
+            ></lightning-button>
+            <lightning-button
+              class="slds-m-top_small slds-m-left_x-small"
+              variant="brand"
+              type="submit"
+              label="Save"
+              onclick={handleSubmit}
+            >
+            </lightning-button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- Code for -->
+
+    <!-- Spinner Loading Code -->
+    <template if:true={showSpinner}>
+      <span>
+        <div class="slds-spinner_container">
+          <div
+            class="slds-spinner--brand slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+            role="status"
+          >
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+          </div>
+        </div>
+      </span>
+    </template>
+  </template>
+  <template if:false={hasTabAccess}>
+    <div class="slds-section">
+      <div class="slds-section" style="text-align: center;">
+        <b>
+          {noTabAccessMessage}
+        </b>
+      </div>
+    </div>
+  </template>
+</template>

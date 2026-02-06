@@ -1,0 +1,69 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <aura:attribute name="riskProfileSelectValues" type="Map" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>    
+    <aura:attribute name="selectedRiskProfile" type="String[]"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    
+    <aura:method name="selectOptionFocus" action="{!c.focusField}"></aura:method>
+    
+    <aura:attribute name="index" type="Integer" />    
+    
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    
+    <aura:attribute name="RiskTypeValues" type="Set" default=""/>
+    <aura:attribute name="RiskTypeMap" type="Map" default=""/>	
+    <aura:attribute name="comments" type="String" default=""/>	
+    
+    <aura:attribute name="ImpactValues" type="Set" default=""/>
+    <aura:attribute name="BidRiskValues" type="List[]" default=""/>
+    <aura:attribute name="AddlInfo" type="Set" default=""/>        
+    
+    <aura:attribute name="riskProfiledata" type="Object"/>
+    
+    <aura:registerEvent name="riskProfilePopUpEvent" type="c:Risk_Profile_Add_Popup_Event"/>    
+    <tr class="slds-hint-parent">                
+        <th scope="row" data-label="Risk Type">                                        
+            <div class="slds-form-element">
+                <ui:inputSelect class="generalPadding" aura:id="RiskTypes" label="" change="{!c.onSelectChange}" >
+                    <aura:iteration items="{!v.RiskTypeValues}" var="level">
+                        <ui:inputSelectOption class="generalPadding" text="{!level}" label="{!level}" />
+                    </aura:iteration>
+                </ui:inputSelect>
+            </div>
+        </th>
+        <th scope="row" data-label="Impact">                                      
+            <div class="slds-form-element">
+                <ui:inputSelect class="generalPadding" aura:id="Impacts" label="" change="{!c.onSelectChangeImpact}">
+                    <aura:iteration items="{!v.ImpactValues}" var="Impact">
+                        <ui:inputSelectOption class="generalPadding" text="{!Impact}" label="{!Impact}"/>
+                    </aura:iteration>
+                </ui:inputSelect>
+            </div>
+        </th>
+        <th scope="row" data-label="Additional Information">                                        
+            <div class="slds-form-element">
+                <ui:inputSelect class="generalPadding" aura:id="AddlInfos" label="" change="{!c.onSelectAddlInfo}">
+                    <aura:iteration items="{!v.AddlInfo}" var="Addl">
+                        <ui:inputSelectOption class="generalPadding" text="{!Addl}" label="{!Addl}"/>
+                    </aura:iteration>
+                </ui:inputSelect>
+            </div>
+        </th>
+        <th scope="row" data-label="Comments" class="slds-form-element">
+            <lightning:textarea class="generalPaddingComments" aura:id="commentsAuraId"  onblur="{!c.commentsfield}" value="{!v.comments}" maxlength="16000"/>  
+        </th>
+        <th scope="row">
+            <div class="slds-form-element readMode" aura:id="readMode">
+                <div class="slds-form-element__control">
+                    <div class="slds-truncate" onclick="{!c.removePopupRisk}" title="{!$Label.c.Remove}" style="text-align: left;">                    
+                        <button class="slds-button slds-text-body--regular" aura:id="editItem">
+                            <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                        </button>
+                    </div>                    
+                </div>
+            </div>
+        </th>       
+    </tr>
+</aura:component>

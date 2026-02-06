@@ -1,0 +1,14 @@
+<template>
+    <div class="slds-m-top_xx-large">
+    <lightning-tabset active-tab-value={defaultActiveTab}>
+        <lightning-tab label="Sold Case Checklist" value="Sold Case Checklist">
+            <template if:true={refreshTab}>
+            <c-sold-check-main-comp record-id={recordId}></c-sold-check-main-comp>
+            </template>
+        </lightning-tab>
+        <lightning-tab label="Audit Trail" value="Audit Trail" onactive={handleActive}>
+            <c-audit-trail-cmp record-id={recordId}></c-audit-trail-cmp>
+        </lightning-tab>
+    </lightning-tabset>
+    </div>
+</template>

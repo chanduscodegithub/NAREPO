@@ -1,0 +1,24 @@
+public class UHGMAConstants {
+
+    /*
+     *  Competitors Applet - START
+     */
+    public static String COMPETITOR_TYPE = 'MA Competitor';
+    
+    public static String NATIONAL_ACCOUNTS_NOOFMEMBERS_HELD_TOTALRECORD = 'NBEA-Medical:Lead;Existing_Members_Involved_in_the_Bid__c,Emerging Risk\\No Upside;Existing_Membership_at_Risk__c,Proposal;Existing_Members_Involved_in_the_Bid__c,In Review;Existing_Members_Involved_in_the_Bid__c,Finalist;Existing_Members_Involved_in_the_Bid__c,Lead->Notified;Existing_Members_Involved_in_the_Bid__c,Proposal->Notified;Existing_Members_Involved_in_the_Bid__c,In Review->Notified;Existing_Members_Involved_in_the_Bid__c,Finalist->Notified;Existing_Members_Involved_in_the_Bid__c,Emerging Risk\\No Upside->Notified;Existing_Membership_at_Risk__c::NBEA-Pharmacy:Lead;Existing_Members_Involved_in_the_Bid__c,Emerging Risk\\No Upside;Existing_Membership_at_Risk__c,Proposal;Existing_Members_Involved_in_the_Bid__c,In Review;Existing_Members_Involved_in_the_Bid__c,Finalist;Existing_Members_Involved_in_the_Bid__c,Lead->Notified;Existing_Members_Involved_in_the_Bid__c,Proposal->Notified;Existing_Members_Involved_in_the_Bid__c,In Review->Notified;Existing_Members_Involved_in_the_Bid__c,Finalist->Notified;Existing_Members_Involved_in_the_Bid__c,Emerging Risk\\No Upside->Notified;Existing_Membership_at_Risk__c::NBEA-Dental:Lead;Existing_Members_Involved_in_the_Bid__c,Emerging Risk\\No Upside;Existing_Membership_at_Risk__c,Proposal;Existing_Members_Involved_in_the_Bid__c,In Review;Existing_Members_Involved_in_the_Bid__c,Finalist;Existing_Members_Involved_in_the_Bid__c,Lead->Notified;Existing_Members_Involved_in_the_Bid__c,Proposal->Notified;Existing_Members_Involved_in_the_Bid__c,In Review->Notified;Existing_Members_Involved_in_the_Bid__c,Finalist->Notified;Existing_Members_Involved_in_the_Bid__c,Emerging Risk\\No Upside->Notified;Existing_Membership_at_Risk__c::NBEA-Vision:Lead;Existing_Members_Involved_in_the_Bid__c,Emerging Risk\\No Upside;Existing_Membership_at_Risk__c,Proposal;Existing_Members_Involved_in_the_Bid__c,In Review;Existing_Members_Involved_in_the_Bid__c,Finalist;Existing_Members_Involved_in_the_Bid__c,Lead->Notified;Existing_Members_Involved_in_the_Bid__c,Proposal->Notified;Existing_Members_Involved_in_the_Bid__c,In Review->Notified;Existing_Members_Involved_in_the_Bid__c,Finalist->Notified;Existing_Members_Involved_in_the_Bid__c,Emerging Risk\\No Upside->Notified;Existing_Membership_at_Risk__c';
+   
+    public static String MEMBERS_INVOLVED_IN_MA = 'NBEA-Medical:Lead;Estimated_Members_Existing_New__c,Emerging Risk\\No Upside;Existing_Membership_at_Risk__c,Lead->Notified;Estimated_Members_Existing_New__c,Emerging Risk\\No Upside->Notified;Existing_Membership_at_Risk__c::NBEA-Pharmacy:Lead;Estimated_Members_Existing_New__c,Emerging Risk\\No Upside;Existing_Membership_at_Risk__c,Proposal;Estimated_Members_Existing_New__c,In Review;Estimated_Members_Existing_New__c,Finalist;Estimated_Members_Existing_New__c,Lead->Notified;Estimated_Members_Existing_New__c,Proposal->Notified;Estimated_Members_Existing_New__c,In Review->Notified;Estimated_Members_Existing_New__c,Finalist->Notified;Estimated_Members_Existing_New__c,Emerging Risk\\No Upside->Notified;Existing_Membership_at_Risk__c::NBEA-Dental:Lead;Estimated_Members_Existing_New__c,Emerging Risk\\No Upside;Existing_Membership_at_Risk__c,Proposal;Estimated_Members_Existing_New__c,In Review;Estimated_Members_Existing_New__c,Finalist;Estimated_Members_Existing_New__c,Lead->Notified;Estimated_Members_Existing_New__c,Proposal->Notified;Estimated_Members_Existing_New__c,In Review->Notified;Estimated_Members_Existing_New__c,Finalist->Notified;Estimated_Members_Existing_New__c,Emerging Risk\\No Upside->Notified;Existing_Membership_at_Risk__c::NBEA-Vision:Lead;Estimated_Members_Existing_New__c,Emerging Risk\\No Upside;Existing_Membership_at_Risk__c,Proposal;Estimated_Members_Existing_New__c,In Review;Estimated_Members_Existing_New__c,Finalist;Estimated_Members_Existing_New__c,Lead->Notified;Estimated_Members_Existing_New__c,Proposal->Notified;Estimated_Members_Existing_New__c,In Review->Notified;Estimated_Members_Existing_New__c,Finalist->Notified;Estimated_Members_Existing_New__c,Emerging Risk\\No Upside->Notified;Existing_Membership_at_Risk__c';
+    
+    public static String NATIONAL_ACCOUNTS_NOOFAWARDED_HELD_TOTALRECORD = 'Sold_Retained_Members__c';
+    
+    public static String NATIONAL_ACCOUNTS = 'National Accounts';
+    
+    public static String NATIONAL_ACCOUNTS_COMPETITOR_GROUP = 'UnitedHealthcare';
+    
+    public static Integer POPUP_PAGESIZE = 5;
+        
+    /*
+     * Competitors Applet - END
+     */
+    
+}

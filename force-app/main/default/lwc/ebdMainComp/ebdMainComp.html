@@ -1,0 +1,361 @@
+<template>
+    <lightning-card title="">
+        <lightning-tabset active-tab-value={defaultActiveTab}>
+            <lightning-tab label="EBD" value="EBD">
+                <div>
+                    <template if:true={isEditMode}>
+                        <div class="slds-grid slds-grid_align-end slds-gutters">
+                            <!--<lightning-button label="Cancel" variant="Neutral" onclick={handleCancel}
+                                icon-name="utility:close" class="slds-m-left_x-small "></lightning-button>-->
+
+                            <lightning-button label="Clear All" variant="Nuetral" onclick={handleClear}
+                                icon-name="utility:refresh" class="slds-m-left_x-small"></lightning-button>
+                            <template if:true={showConfirmModalForClear}>
+                                <section role="dialog" class="slds-modal slds-fade-in-open">
+                                    <div class="slds-modal__container">
+                                        <header class="slds-modal__header"
+                                            style="background-color: #ba0517; color: white;">
+                                            <h2 class="slds-text-heading_medium">Confirmation</h2>
+                                        </header>
+                                        <div class="slds-modal__content slds-p-around_medium">
+                                            <p
+                                                class="slds-text-heading_small slds-text-align_center slds-p-horizontal_large">
+                                                This action will clear all user-entered data in the form, except for
+                                                prepopulated fields. Are you sure you want to proceed?
+                                            </p>
+                                            <div style="text-align: center;" class="slds-p-top_large">
+                                                <lightning-button label="Continue" onclick={handleConfirmDelete}>
+                                                </lightning-button>
+
+                                                <lightning-button label="Cancel" onclick={handleCancelClearDelete}
+                                                    class="slds-m-left_x-small">
+                                                </lightning-button>
+                                            </div>
+                                        </div>
+                                        <!--<footer class="slds-modal__footer">
+                                            <lightning-button label="Cancel"
+                                                onclick={handleCancelDelete}></lightning-button>
+                                            <lightning-button label="OK" variant="destructive"
+                                                onclick={handleConfirmDelete}
+                                                class="slds-m-left_small"></lightning-button>
+                                        </footer>-->
+                                    </div>
+                                </section>
+                                <div class="slds-backdrop slds-backdrop_open"></div>
+                            </template>
+                            <lightning-button label="Cancel" variant="Neutral" onclick={handleCancel}
+                                icon-name="utility:close" class="slds-m-left_x-small "></lightning-button>
+                            <lightning-button label="Save" variant="brand" onclick={handleSave} icon-name="utility:save"
+                                class="slds-m-left_x-small slds-p-right_large"></lightning-button>
+                        </div>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <div class="slds-grid slds-grid_align-end slds-gutters">
+                            <template if:true={canEdit}>
+                                <lightning-button label="Edit" variant="Neutral" onclick={handleClickEdit}
+                                    icon-name="utility:edit" class="slds-m-left_x-small"></lightning-button>
+                            </template>
+                            <lightning-button label="Print" variant="brand" onclick={handleClickPrint}
+                                icon-name="utility:print" class="slds-m-left_x-small slds-p-right_large">
+                            </lightning-button>
+                        </div>
+                    </template>
+                </div>
+                <div class="footer active"
+                    style="font-size: 12px; position: fixed; width: 98%; bottom: 3px; z-index: 100; background: #f3f2f2; left: 13px; border-radius: 2px; padding: 5px; padding-left:24px;">
+                    <div
+                        class="slds-grid slds-grid_align-center slds-wrap slds-size_7-of-7 slds-grid_reverse slds-p-right_large">
+                        <template if:true={isEditMode}>
+                            <div class="slds-grid slds-grid_align-end slds-gutters">
+                                <!--<lightning-button label="Cancel" variant="Neutral" onclick={handleCancel}
+                                    icon-name="utility:close" class="slds-m-left_x-small"></lightning-button>-->
+                                <!--<lightning-button label="Clear All" variant="Neutral" onclick={handleClear}
+                                    icon-name="utility:refresh" class="slds-m-left_x-small"></lightning-button>
+                                <template if:true={showConfirmModalForClear}>
+                                    <section role="dialog" class="slds-modal slds-fade-in-open">
+                                        <div class="slds-modal__container">
+                                            <header class="slds-modal__header">
+                                                <h2 class="slds-text-heading_medium">Confirm Delete</h2>
+                                            </header>
+                                            <div class="slds-modal__content slds-p-around_medium">
+                                                This will delete all Entertainment object data (including unsaved rows).
+                                                Are you
+                                                sure?
+                                            </div>
+                                            <footer class="slds-modal__footer">
+                                                <lightning-button label="Cancel"
+                                                    onclick={handleCancelDelete}></lightning-button>
+                                                <lightning-button label="OK" variant="destructive"
+                                                    onclick={handleConfirmDelete}
+                                                    class="slds-m-left_small"></lightning-button>
+                                            </footer>
+                                        </div>
+                                    </section>
+                                    <div class="slds-backdrop slds-backdrop_open"></div>
+                                </template>-->
+                                <lightning-button label="Cancel" variant="Neutral" onclick={handleCancel}
+                                    icon-name="utility:close" class="slds-m-left_x-small"></lightning-button>
+                                <lightning-button label="Save" variant="brand" onclick={handleSave}
+                                    icon-name="utility:save" class="slds-m-left_x-small"></lightning-button>
+                            </div>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <div class="slds-grid slds-grid_align-end slds-gutters">
+                                <template if:true={canEdit}>
+
+                                    <lightning-button label="Edit" variant="Neutral" onclick={handleClickEdit}
+                                        icon-name="utility:edit" class="slds-m-left_x-small"></lightning-button>
+                                </template>
+                                <lightning-button label="Print" variant="brand" onclick={handleClickPrint}
+                                    icon-name="utility:print" class="slds-m-left_x-small"></lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <!--<template if:true={isLoading}>
+                    <lightning-spinner alternative-text="Loading..." size="large" variant="brand"></lightning-spinner>
+                </template>-->
+                <!--<template if:false={isLoading}> -->
+                <div class="slds-modal__content slds-p-around_small">
+                    <template if:true={isLoading}>
+                        <div class="spinner-overlay">
+                            <lightning-spinner alternative-text="Loading..." size="large" variant="brand">
+                            </lightning-spinner>
+                        </div>
+                    </template>
+                    <div class="slds-p-horizontal_small">
+
+                        <c-ebd-corporation-overview is-edit-mode={isEditMode} record-id={recordId}
+                            onebdchange={handleEbdChange} ebd-list-data={ebdListData}
+                            current-medical-str={currentMedicalStr} next-medical-str={nextMedicalStr}
+                            bgh-data-str={bghDataStr} medical-membership-penetration={medicalMembershipPenetration}
+                            account-info={accountInfo} company-contacts-data={companyContactsData}
+                            senior-executive-list-data={seniorExecutiveListData}>
+                        </c-ebd-corporation-overview>
+                    </div>
+                    <div class="slds-p-horizontal_small">
+                        <c-ebd-entertainment is-edit-mode={isEditMode} record-id={recordId}
+                            entertainments-data={entertainmentsData} entertainment-delete-ids={entertainmentDeleteIds}
+                            onebdchange={handleEbdChange} ebd-id={ebdId}></c-ebd-entertainment>
+                    </div>
+                    <div class="slds-p-horizontal_small">
+                        <c-ebd-company-consultants is-edit-mode={isEditMode} record-id={recordId}
+                            consultants-data={consultantsData}>
+                        </c-ebd-company-consultants>
+                    </div>
+
+                    <div class="slds-p-horizontal_small">
+                        <c-ebd-client-top-priority-strategy record-id={recordId} is-edit-mode={isEditMode}
+                            onebdchange={handleEbdChange} ebd-id={ebdId} ebd-list-data={ebdListData}
+                            client-priority-details={clientPriorityDetails} delete-ids={deleteIds}>
+                        </c-ebd-client-top-priority-strategy>
+
+                        <!--<c-ebd-client-top-priority-strategy client-priority-details ={clientPriorityDetails} 
+                    delete-ids={deleteIds} is-edit-mode={isEditMode} onebdchange={handleEbdChange}
+                     ebd-id = {ebdId}></c-ebd-client-top-priority-strategy> -->
+                    </div>
+
+                    <div class="slds-p-horizontal_small ">
+                        <template if:true={finanicalData}>
+
+                            <c-ebd-net-promoter-score is-edit-mode={isEditMode} record-id={recordId}
+                                onebdchange={handleEbdChange} ebd-id={ebdId} ebd-list-data={ebdListData}
+                                finanical-data={finanicalData} nps-delete-ids={npsDeleteIds} nps-data={npsData}>
+                            </c-ebd-net-promoter-score>
+                        </template>
+
+                    </div>
+
+                    <div class="slds-p-horizontal_small ">
+                        <c-ebd-financials is-edit-mode={isEditMode} record-id={recordId} onebdchange={handleEbdChange}
+                            ebd-id={ebdId} ebd-list-data={ebdListData} surest-next-str={surestNextStr}
+                            surest-current-str={surestCurrentStr} current-medical-str={currentMedicalStr}
+                            detailed-financial={detailedFinancial}></c-ebd-financials>
+                    </div>
+
+                    <div class="slds-p-horizontal_small">
+                        <c-ebd-business-advocacy is-edit-mode={isEditMode} record-id={recordId} ebd-id={ebdId}
+                            onebdchange={handleEbdChange} business-data={businessData}
+                            business-delete-ids={businessDeleteIds} advocacy-delete-ids={advocacyDeleteIds}
+                            advocacy-data={advocacyData}></c-ebd-business-advocacy>
+
+                    </div>
+
+                    <div class="slds-p-horizontal_small">
+                        <c-ebd-current-uhc-competitors is-edit-mode={isEditMode} record-id={recordId}
+                            competitor-data={competitorData} onebdchange={handleEbdChange}>
+                        </c-ebd-current-uhc-competitors>
+                    </div>
+                    <div class="slds-p-horizontal_small">
+                        <c-ebd-anticipated-bid-cycle is-edit-mode={isEditMode} incumbent-medical={incumbentMedical}
+                            incumbent-pharmacy={incumbentPharmacy} incumbent-dental={incumbentDental}
+                            incumbent-vision={incumbentVision} record-id={recordId}
+                            anticipated-details-data={anticipatedDetailsData} ebd-id={ebdId} ebd-list-data={ebdListData}
+                            onebdchange={handleEbdChange}></c-ebd-anticipated-bid-cycle>
+                    </div>
+                    <!--</div>-->
+                    <div class="slds-p-horizontal_small">
+                        <div class="section-header">
+                            <div
+                                class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+                                <span><b>Validation Details</b></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-text-body_medium slds-p-left_x-small slds-p-around_small">
+                        <em>Required Validation: Click the button below if all the EBD information provided above is
+                            accurate.</em>
+                    </div>
+                    <div class="slds-p-horizontal_small slds-p-around_medium">
+                        <table
+                            class="slds-table slds-table_bordered slds-border_left slds-border_right slds-no-row-hover slds-table_cell-buffer slds-table--fixed-layout">
+                            <thead class="header-color">
+                                <tr>
+                                    <th class="slds-border_right"> Validated By</th>
+                                    <th> Date/Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="slds-border_right">{accountInfo.EBD_Validation_Name__c}</td>
+                                    <td>
+                                        <lightning-formatted-date-time value={accountInfo.EBD_Validated_On__c} year="numeric" month="numeric" day="numeric"
+                                            hour="2-digit" minute="2-digit" hour12 time-zone={userTimeZone} time-zone-name="short">
+                                        </lightning-formatted-date-time>
+                                        </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <template if:true={canEdit}>
+                        <div slot="footer" class="slds-text-align_center">
+                            <template if:true={isEditMode}>
+                                <lightning-button label="SCE Validation" class="slds-m-left_x-small" variant="Brand"
+                                    onclick={editValidationPrevent} icon-name="utility:check">
+                                </lightning-button>
+                                <template if:true={showConfirmModalForValidation}>
+                                    <section role="dialog" class="slds-modal slds-fade-in-open">
+                                        <div class="slds-modal__container">
+                                            <header class="slds-modal__header"
+                                                style="background-color: #ba0517; color: white;">
+                                                <h2 class="slds-text-heading_medium">Confirmation</h2>
+                                            </header>
+                                            <div class="slds-modal__content slds-p-around_medium">
+                                                You are in edit mode. Please complete and save your work. After clicking
+                                                the Save button, you will be able to Validate.
+
+                                                <div style="text-align: center;" class="slds-p-top_large">
+                                                    <!-- <lightning-button label="Continue" onclick={handleCancelDelete}>
+                                                    </lightning-button>-->
+
+                                                    <lightning-button label="Cancel" onclick={handleCancelDelete}
+                                                        class="slds-m-left_x-small">
+                                                    </lightning-button>
+                                                </div>
+                                            </div>
+
+                                            <!--<footer class="slds-modal__footer">
+                            <lightning-button label="Delete" variant="neutral" onclick={handleConfirmDelete}
+                                class="slds-m-left_small"></lightning-button>
+                            <lightning-button label="Cancel" onclick={handleCancelDelete}></lightning-button>
+
+                        </footer>-->
+                                        </div>
+                                    </section>
+                                    <div class="slds-backdrop slds-backdrop_open"></div>
+                                </template>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <lightning-button label="SCE Validation" class="slds-m-left_x-small" variant="Brand"
+                                    onclick={handleValidationClick} icon-name="utility:check">
+                                </lightning-button>
+                            </template>
+
+                        </div>
+                    </template>
+                </div>
+                <!--</template>-->
+            </lightning-tab>
+            <lightning-tab label="Files" value="EBD Files" onactive={handleActive}>
+                <lightning-card title="">
+
+                    <template if:true={fileList}>
+                        <!--<lightning-card title="Files">-->
+                        <!-- <div class="slds-p-left_small slds-p-bottom_small">
+                                <b>EBD ({fileCount})</b>
+                            </div>-->
+                        <div class="slds-p-left_small slds-p-bottom_small slds-grid slds-grid_vertical-align-center">
+                            <lightning-icon icon-name="doctype:attachment" size="small" class="slds-m-right_x-small">
+                            </lightning-icon>
+                            <b>EBD ({fileCount})</b>
+                        </div>
+
+                        <div>
+                            <table
+                                class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                                <thead class="header-color">
+                                    <tr class="slds-line-height_reset">
+                                        <td class="slds-border_right slds-p-bottom_x-small slds-p-top_x-small">
+                                            <b>NAME</b>
+                                        </td>
+                                        <td class="slds-border_right slds-p-bottom_x-small slds-p-top_x-small">
+                                            <b>Year</b>
+                                        </td>
+                                        <td class="slds-border_right slds-p-bottom_x-small slds-p-top_x-small">
+                                            <b>DOWNLOAD HERE</b>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--  <template for:each={fileList} for:item="file">
+                                          <tr key={file.contentDocumentId}>
+                                                <td class="slds-border_right">{file.fileName}</td>
+                                                <a href={file.downloadUrl} target="_blank"></a>
+                                                <td class="slds-border_right">{file.timestamp}</td>
+                                                
+                                                <td class="slds-border_right">
+                                                    <a href={file.downloadUrl} target="_blank"
+                                                        onclick={handleDownloadClick} title="Download">
+                                                        <lightning-icon icon-name="utility:download" size="xx-small"
+                                                            alternative-text="Download"></lightning-icon>
+                                                    </a>
+                                                </td>
+
+                                            </tr>
+                                            </template-->
+                                    <template if:true={fileList}>
+                                        <template for:each={fileList} for:item="file">
+                                            <tr key={file.contentDocumentId}>
+                                                <td class="slds-border_right">{file.fileName}</td>
+                                                <td class="slds-border_right">{file.timestamp}</td>
+                                                <td class="slds-border_right slds-p-left_large"
+                                                    style="padding-right:20px; colour:rgb(9, 9, 232);">
+                                                    <a href={file.downloadUrl} target="_blank"
+                                                        onclick={handleDownloadClick} title="Download">
+                                                        <lightning-icon icon-name="utility:download" size="xx-small"
+                                                            alternative-text="Download"></lightning-icon>
+                                                    </a>
+                                                    <!-- <a href={file.downloadUrl} target="_blank"
+                                                        onclick={handleDownloadClick}>Download</a>-->
+                                                </td>
+                                            </tr>
+                                        </template>
+
+                                    </template>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--</lightning-card>-->
+                    </template>
+                    <template if:true={error}>
+                        <div class="slds-text-color_error">{error}</div>
+                    </template>
+
+                </lightning-card>
+            </lightning-tab>
+        </lightning-tabset>
+    </lightning-card>
+</template>

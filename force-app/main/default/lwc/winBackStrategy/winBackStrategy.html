@@ -1,0 +1,181 @@
+<!--***************************************************************************************************** 
+Name: winBackStrategy  
+====================================================== 
+======================================================
+Purpose:  CM Prior Client Win Back Activity which represents a user interface and sections for displaying and editing relevant information.
+====================================================== 
+======================================================  
+History 
+VERSION     AUTHOR                DATE                 DETAIL                       
+1.0 -       Vignesh             05/02/2024          INITIAL DEVELOPMENT           
+******************************************************************************************************-->
+
+<template>
+	<article class="slds-card slds-card_boundary slds-is-relative component-card flex-auto">
+		<template if:true={isShowSpinner}>
+			<lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+		</template>
+
+		<template if:true={openSection1}>
+			<ul class="slds-accordion">
+				<li class="slds-accordion__list-item">
+					<section class="slds-accordion__section">
+						<div class="slds-accordion__summary">
+							<h2 class="slds-accordion__summary-heading">
+								<template if:true={onLoadSpinner}>
+									<lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+								</template>
+								<button class="slds-button slds-button_reset slds-accordion__summary-action"
+                    aria-controls="referenceId-21" aria-expanded="false" title="" onclick={expandCollapse} >
+                <div class="chevron">
+
+                  <template if:true={ExpandDetails}>
+                    <lightning-icon icon-name="utility:chevronright" alternative-text="Utility chevronright"
+                      title="" size="x-small"></lightning-icon>
+                  </template>
+                  <template if:false={ExpandDetails}>
+                    <lightning-icon icon-name="utility:chevrondown" alternative-text="Utility chevrondown"
+                      title="" size="x-small"></lightning-icon>
+                  </template>
+                </div>
+                <div class="custom-icon">
+                  <lightning-icon class="slds-icon slds-icon--small" icon-name="standard:poll"
+                    size="small"></lightning-icon>
+                  </div>
+
+                    <span class="slds-accordion__summary-content slds-p-left_small ">CM Prior Client Win Back Activity</span>
+              </button>
+							</h2>
+						</div>
+					</section>
+				</li>
+			</ul>
+		</template>
+
+		<!-- Edit Mode for CM Prior Client WinBack Activity -->
+
+		<lightning-accordion allow-multiple-sections-open active-section-name={activeSections} class="accordionClass">
+<template if:true={isExpand}>
+			<template if:true={isEditDisabled}>
+
+
+				<div class="slds-col-right slds-no-flex slds-grid slds-align-end">
+					<div style="width: 10px;"></div>
+					<lightning-button label="Save" title="" variant="brand" onclick={handleSave} class="button-font"
+						style="padding-right:4px;"></lightning-button>&nbsp;
+					<lightning-button label="Cancel" title="" onclick={handleCancel} class="button-font"
+						style="padding-right:4px;"></lightning-button>
+				</div>
+
+				<lightning-layout horizontal-align='spread' class="layoutClass">
+					<lightning-layout-item class="layoutItemClass">
+
+						<lightning-combobox name="Win_Back_Project_Tagged_Former_Client__c"
+							label="Win Back Project Tagged Former Client"
+							value={accData.Win_Back_Project_Tagged_Former_Client__c}
+							options={winBackProjectTaggedFormerClientOption} onchange={handleChangeEventCtrl}>
+						</lightning-combobox>
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">Full Cancellation Date</label>
+						<!-- <p style='padding-bottom: 10px;'>{formattedCancellationDate}</p> -->
+						<p style='padding-bottom: 10px;'>
+								<lightning-formatted-date-time value={accData.Cancellation_Date__c} year="numeric"
+									month="numeric" day="numeric"></lightning-formatted-date-time>
+							</p>
+
+						<lightning-input type="text" name="SCE_at_Term__c" label="CM Relationship Pursuit Owner"
+							value={accData.SCE_at_Term__c} onchange={handleChangeEventCtrl}></lightning-input>
+
+						<lightning-combobox name="Win_Back_Primary_Owner__c" label="Win Back Primary Owner"
+							value={accData.Win_Back_Primary_Owner__c} options={winBackPrimaryOwnerOption}
+							onchange={handleChangeEventCtrl}></lightning-combobox>
+
+							<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">CD Owner</label>
+						<p style='padding-bottom: 10px;'><a href={accUrl} target="_blank"
+								onclick={handleOwnerClick}>{accData.Owner.Name}</a></p>
+					</lightning-layout-item>
+
+					<lightning-layout-item class="layoutItemClass">
+
+						<lightning-dual-listbox name="Name_s_of_Client_Contact_s_Backend__c"
+							label="Name(s) of Client Contact(s)" source-label="Available" selected-label="Selected"
+							options={availableContacts} value={selectedContacts} onchange={handleKeyChange}>
+						</lightning-dual-listbox>
+
+            <lightning-combobox name="Status__c" label="Status" value={accData.Status__c}
+							options={statusOption} onchange={handleChangeEventCtrl}></lightning-combobox>
+
+						<lightning-combobox name="Outcome__c" label="Outcome" value={accData.Outcome__c}
+							options={outcomeOption} onchange={handleChangeEventCtrl}></lightning-combobox>
+
+					    <lightning-textarea name="Reason_for_Term_Comments__c" label="Reason for Term Comments"
+							value={accData.Reason_for_Term_Comments__c} onchange={handleChangeEventCtrl} maxlength="500"></lightning-textarea>
+					</lightning-layout-item>
+				</lightning-layout>
+			</template>
+</template>
+
+<!-- Display Mode for CM Prior Client WinBack Activity -->
+
+  <template if:true={isExpand}>
+			<template if:false={isEditDisabled}>
+				<div class="slds-col-right slds-no-flex slds-grid slds-align_absolute-right">
+					<template if:true={hasEditAccess}>
+					<lightning-button label="Edit" title="" variant="Neutral" onclick={handleEdit}
+						class="button-font" style="padding-right:4px;"></lightning-button>
+					</template>
+				</div>
+
+				<lightning-layout horizontal-align='spread' class="layoutClass">
+
+					<lightning-layout-item class="layoutItemClass">
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">Win Back Project Tagged Former Client</label>
+						<p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+							{accData.Win_Back_Project_Tagged_Former_Client__c}</p>
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">Full Cancellation Date</label>
+						<p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+							{formattedCancellationDate}</p>
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">CM Relationship Pursuit Owner</label>
+						<p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+							{accData.SCE_at_Term__c}</p>
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">Win Back Primary Owner</label>
+						<p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+							{accData.Win_Back_Primary_Owner__c}</p>
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">CD Owner</label>
+						<p style='padding-bottom: 10px;'><a href={accUrl} readonly="true">
+								{accData.Owner.Name}</a> </p>
+
+					</lightning-layout-item>
+ 
+					<lightning-layout-item class="layoutItemClass">
+
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">Name(s) of Client Contact(s)</label>
+						<p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+							{selectedValueName} </p>
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">Status</label>
+						<p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+							{accData.Status__c} </p>
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">Outcome</label>
+						<p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+							{accData.Outcome__c} </p>
+
+						<label style="padding-top:10px;" class="slds-form-element__label slds-no-flex">Reason for Term Comments</label>
+						<p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
+							{accData.Reason_for_Term_Comments__c} </p>
+
+					</lightning-layout-item>
+				</lightning-layout>
+			</template>
+  </template>
+		</lightning-accordion>
+	</article>
+
+</template>

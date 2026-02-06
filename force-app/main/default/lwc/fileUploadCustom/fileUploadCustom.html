@@ -1,0 +1,21 @@
+<template>
+    <div class={linkPadding}>
+        <template if:false={isLoaded}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>              
+        <!--<lightning-input type="checkbox" class="slds-p-bottom_x-small" checked={isFileUploaded} label="Proactive Renewal – Documents Attached" name="isAttachment" disabled></lightning-input>-->
+        <template if:true={isFileUploaded}>
+            <a onclick={navigateToRelatedList}>A Document is Attached. Click Here to View or Replace Your File</a>
+        </template>    
+        <template if:false={isFileUploaded}>
+            <lightning-file-upload
+            label = ''
+            variant="label-hidden"        
+            name="fileUploader"
+            record-id={recordId}
+            onuploadfinished={handleUploadFinished}
+            multiple>
+        </lightning-file-upload>
+        </template>
+    </div>       
+</template>

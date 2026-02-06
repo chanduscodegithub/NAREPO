@@ -1,0 +1,63 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasSObjectName" access="global" 
+                controller="IRAD_LOG_Controller">
+    
+    
+    <aura:attribute name="fieldLabelMap" type="Map" />
+    <aura:attribute name="iradRecordList" type="IRAD__c[]"/>
+    <aura:attribute name="isIRADListEmpty" type="boolean" default="false"/>
+    <aura:attribute name="FieldSetMap" type="Map" />
+    <aura:attribute name="isValidExport" type="boolean" default="true"/>
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'External', 'value': 'external'},
+                                                        {'label': 'All', 'value': 'all'}
+                                                        ]"/>
+    <aura:attribute name="value" type="String" default=""/>
+    <aura:attribute name="errorMsg" type="String" default=""/>
+    <aura:attribute name="timeZone" type="String" />
+    
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    
+    
+    <!-- <div class="" style="position:relative">
+        <lightning:spinner aura:id="loadingSpinner" variant="brand" size="large" class="slds-hide"/>
+    </div> -->
+    
+    <div class="modal-header slds-modal__header">
+        <h4 class="title slds-text-heading--medium" >{!$Label.c.Export_IRAD_QuickAction_Header}</h4>
+    </div>
+    
+    <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative" aura:id="modalbody" id="modalbody">
+        <div class="" style="position:relative">
+            <lightning:spinner aura:id="loadingSpinner" variant="brand" size="large" class="slds-hide" alternativeText="Loading"/>
+            <aura:if isTrue="{!v.isIRADListEmpty == false}">
+                
+                
+                <lightning:radioGroup name="radioGroup"
+                                      label="Choose either External/All"
+                                      options="{! v.options }"
+                                      value="{! v.value }"
+                                      type="radio"
+                                      onchange="{!c.handleChange}"
+                                      />
+                <div style="color:red">{!v.errorMsg}</div>
+            </aura:if> 
+        </div>
+        
+    </div>
+    
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1" style="overflow-y:hidden !important;
+                                                                         height:unset !important;max-height:unset !important;
+                                                                         ">
+        <div class="forceChangeRecordTypeFooter">
+            <lightning:button class="slds-button slds-button--brand"
+                              label="{!$Label.c.Export}" onclick="{!c.export}"/>
+            <lightning:button class="slds-button slds-button--brand" label="{!$Label.c.Cancel}" onclick="{! c.cancel}" /> 
+            
+        </div>
+    </div>
+    
+    
+    
+</aura:component>

@@ -1,0 +1,122 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:registerEvent name="service_amt_Popup_table_event" type="c:Service_AMT_Search_Popup_Table_Event"/>
+    
+    <aura:attribute name="serviceAMTObj" type="Service_AMT__c" />
+    <aura:attribute name="serviceAMTObjId" type="String" />
+    <aura:attribute name="isEditable" type="boolean" default="false" />
+    <aura:attribute name="userRolePLValues" type="String[]"/>
+    <aura:attribute name="contactRolePLValues" type="String[]"/>
+    <aura:attribute name="RolePicklist" type="String[]"/>
+    <aura:attribute name="PolicyPicklist" type="String[]" default=""/>
+    <ltng:require styles="{!$Resource.SLDS + '/assets/styles/salesforce-lightning-design-system.min.css'}"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <aura:method name="editFields" action="{!c.editRecords}" access="PUBLIC">
+        <aura:attribute name="cancelEdit" type="Boolean" default="false" />
+    </aura:method>
+    
+    <aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>
+    
+    <tr class="slds-hint-parent">
+        <th scope="row" data-label="Last Name">
+            <div class="slds-cell-wrap" title="Last Name">{!v.serviceAMTObj.Last_Name__c}</div>
+        </th>
+        <th scope="row" data-label="First Name">
+            <div class="slds-cell-wrap" title="First Name">{!v.serviceAMTObj.First_Name__c}</div>
+        </th>
+        <th scope="row" data-label="Title">
+            <div class="slds-cell-wrap" title="Title">{!v.serviceAMTObj.Job_Title__c}</div>
+        </th>
+        <th scope="row" data-label="E-mail">
+            <div class="slds-cell-wrap" title="E-mail">{!v.serviceAMTObj.Email__c}</div>
+        </th>
+        <th scope="row" data-label="Case Management Start Date">
+            <ui:inputDate class="alignDateField" aura:id="editableField" displayDatePicker="true" disabled="true" value="{!v.serviceAMTObj.Case_Management_Start_Date__c}"/>
+        </th>
+        <th scope="row" data-label="Case Management End Date">
+            <ui:inputDate class="alignDateField" aura:id="editableField" displayDatePicker="true" disabled="true" value="{!v.serviceAMTObj.Case_Management_End_Date__c}"/>
+        </th>
+        
+        <aura:if isTrue="{!v.isEditable}">
+            <th scope="row" data-label="Role">                
+                <ui:inputSelect class="slds-form-control" aura:id="Role" multiple="false" change="{!c.onSelectRoleChange}">
+                    <aura:iteration items="{!v.RolePicklist}" var="RolePicklistVar">  
+                        <aura:if isTrue="{!v.serviceAMTObj.unknown_custom_field == 'User'}">
+                            <aura:if isTrue="{!RolePicklistVar == v.serviceAMTObj.unknown_custom_field}">
+                                <ui:inputSelectOption text="{!RolePicklistVar}" value="true"/> 
+                                <aura:set attribute="else">
+                                    <ui:inputSelectOption text="{!RolePicklistVar}" value="true"/> 
+                                </aura:set>
+                            </aura:if>                            
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!RolePicklistVar == v.serviceAMTObj.Contact_Role__c}">
+                                    <ui:inputSelectOption text="{!RolePicklistVar}" value="true"/> 
+                                    <aura:set attribute="else">
+                                        <ui:inputSelectOption text="{!RolePicklistVar}" value="true"/> 
+                                    </aura:set>
+                                </aura:if>                                
+                            </aura:set>
+                        </aura:if>                        
+                    </aura:iteration>
+                </ui:inputSelect>
+            </th>
+            <!-- <aura:set attribute="else">
+                <aura:if isTrue="{!v.serviceAMTObj.unknown_custom_field == 'User'}">
+                    <th scope="row" data-label="Type">
+                        <div class="slds-cell-wrap" title="Type">{!v.serviceAMTObj.unknown_custom_field}</div>
+                    </th>
+                    <aura:set attribute="else">
+                        <th scope="row" data-label="Type">
+                            <div class="slds-cell-wrap" title="Type">{!v.serviceAMTObj.Contact_Role__c}</div>
+                        </th> 
+                    </aura:set>
+                </aura:if>
+                
+            </aura:set>-->
+        </aura:if>
+        
+        <th scope="row" data-label="Type">
+            <aura:if isTrue="{!v.isEditable}">
+                <ui:inputNumber value="{!v.serviceAMTObj.UserHierarchy__c}"/>
+                <aura:set attribute="else">
+                    <ui:outputNumber value="{!v.serviceAMTObj.UserHierarchy__c}" format=""/>
+                </aura:set>
+            </aura:if>
+            <!--<div class="slds-cell-wrap" title="Type">{!v.serviceAMTObj.UserHierarchy__c}</div>-->
+        </th>
+        <th scope="row" data-label="PolicyId">                           
+            <ui:inputSelect class="slds-form-control" aura:id="Role" multiple="false" change="{!c.onSelectRoleChange}">
+                <aura:iteration items="{!v.PolicyPicklist}" var="policyPicklistVar">                        
+                    <aura:if isTrue="{!policyPicklistVar == v.serviceAMTObj.PolicyId}">
+                        <ui:inputSelectOption text="{!policyPicklistVar}" value="true"/> 
+                        <aura:set attribute="else">
+                            <ui:inputSelectOption text="{!policyPicklistVar}" value="true"/> 
+                        </aura:set>
+                    </aura:if>                        
+                </aura:iteration>
+            </ui:inputSelect>            
+        </th>
+        <th scope="row" data-label="">            
+            <div class="" aura:id="deleteIcon" title="Remove">
+                <button class="slds-button slds-button_icon" onclick="{!c.confirmDelete}" title="Delete">
+                    <div class="slds-icon_container">
+                    	<lightning:icon class="slds-icon slds-icon_x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:delete" size="x-small" alternativeText="Remove" />
+                    </div>
+                    <span class="slds-assistive-text">Delete</span>
+                </button>
+            </div>
+            <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </div>
+        </th>
+    </tr>
+    
+</aura:component>

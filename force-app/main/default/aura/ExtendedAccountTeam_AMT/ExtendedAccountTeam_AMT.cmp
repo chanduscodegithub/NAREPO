@@ -1,0 +1,79 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >   
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <div aura:id="Extended_Account_Team_AMT" class="slds-section ipadbottom container forceRelatedListSingleContainer">
+        <article class="slds-card forceRelatedListCardDesktop class slds-card_boundary">
+            <div class="slds-card__header slds-grid slds-p-vertical--x-small slds-m-bottom--none appletHeader flex-auto  avoid-clicks" data-record="Extended_Account_Team_AMT" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                        </button>
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Client_Survey_Results_Heading}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:poll" size="small" alternativeText="{!$Label.c.Client_Survey_Results_Heading}" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2>
+                            <!--<a href="javascript:void(0);" class="slds-card__header-link slds-truncate">-->
+                                <span class="slds-text-heading--small">Extended Account Team/AMT</span>
+                            <!--</a>-->
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-is-relative">
+               <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+            <!--  Error PopUp STARTS --> 
+                <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                                <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                                <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                            </button>
+                            <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <p style="text-align:center;">{!v.ErrorMessage}</p>
+                        </div>
+                        <div class="slds-modal__footer slds-theme--default">
+                            <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="ErrorMessage"></div>
+                <!--  Error PopUp ENDS -->
+            
+            <div class="slds-section__content" style="padding-top:0px;position:relative;">   
+                <div class="slds-card__body d-inline-block">                    
+                    <table aura:id="clientSurveyTbl" id="clientSurveyTbl" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout clientSurveyTbl">
+                        <thead>
+                            <tr class="slds-hint-parent">
+                               
+                            </tr>
+                        </thead>
+                        <tbody>                           
+                            <tr class="slds-hint-parent" style="height: 100px;">
+                                <td class="slds-text-align_center" style="font-size: 18pt;opacity: .4;">Under Construction</td>
+                            </tr>                            	                                                               
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-card__footer">
+            </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

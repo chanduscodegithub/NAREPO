@@ -1,0 +1,146 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,force:hasSObjectName" access="global" controller="SalesIncentiveValidationController">
+    <aura:attribute name="picklistFieldsMapData" type="Map"/>
+    <aura:attribute name="isLoggedInUserAnAdmin" type="Boolean" default="false"/>
+    
+    <aura:attribute name="renewalStatusListOfTwoYear" type="List" default="[]"/>
+    
+    <aura:attribute name="eachYearRenewalStatusList" type="List" default="[]"/>
+    
+    <aura:attribute name="renewalStatusRecordsTobeUpdatedMap" type="Map" default='{}'/>
+    
+    <aura:attribute name="productsConfirmedPicklistValueMap" type="Map"/>
+    <aura:attribute name="renewalConfirmedPicklistValueMap" type="Map"/>
+    <aura:attribute name="pdtTypesForWhichPrdctDtlToBeEnableLst" type="List" default="[]"/>
+    
+    <aura:attribute name="loggedInUserName" type="String" default=""/>
+    
+    <aura:attribute name="loggedInUserTimeZone" type="String" default=""/>
+    
+    <aura:attribute name="loggedInUserProfile" type="String" default=""/>
+    
+    <aura:attribute name="salesCyclePickListValues" type="List" default="[]"/>
+    
+    <aura:attribute name="accountKeyRenewalDateFieldNames1" type="List" default="[]"/>
+    <aura:attribute name="accountKeyRenewalDateFieldNames2" type="List" default="[]"/>
+    <aura:attribute name="accountKeyRenewalDateFieldNames3" type="List" default="[]"/>
+    
+    <aura:attribute name="accountKeyRenewalDateFieldNames" type="List" default="[]"/>
+    <aura:attribute name="accountKeyRenewalDateFieldNamesStr" type="String" default=""/>
+    
+    
+    <aura:attribute name="salesCycle" type="String" default=""/>
+    
+    <aura:attribute name="fieldSetMap" type="Map" default="{}"/>
+    <aura:attribute name="loggedInUserInfoObj" type="Object"/>
+    
+    <aura:attribute name="sbSCEData" type="Map" default="{}"/> <!--SAMARTH-->
+    <aura:attribute name="renewalDataBeforeSave" type="List"/> <!--SAMARTH for storing data before save-->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="salesIncentivesValidationEvnt" event="c:Sales_Incentives_Validation_Event" action="{!c.salesCycleChangeHandler}"/>
+    <ltng:require styles="{! $Resource.IpadResetCSS}"/>
+    
+    <article class="slds-card slds-card_boundary">
+        <div class="slds-spinner_container slds-hide" aura:id="loadingSpinner">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        
+        <div class="slds-p-vertical_small slds-p-horizontal_medium" data-record="RenewalInformation" id="UtilityToggleRenewalInformation" onclick="{!c.expandCollapseSection}">
+            <div class="slds-grid">
+                <header class="slds-text-heading_small slds-accordion__summary-heading slds-media--center slds-has-flexi-truncate">
+                    <button class="slds-button slds-button_reset slds-accordion__summary-action accordion-link">
+                        <lightning:icon aura:id="UtilityToggleRenewalInformation" iconName="utility:chevronright" size="x-small" />
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:poll" size="small" alternativeText="" />
+                            </span>
+                        </div>
+                       <div class="slds-media__body" style="padding : 1.0%" >
+                            <h2 class="slds-grid">
+                                
+                                <span class="slds-text-heading--small">{!$Label.c.Renewal_Details_Applet_Header}</span> 
+                                <div class="slds-is-relative flex-alignCenter helptext show-md-up " >
+                                    <aura:if isTrue="{!and(v.loggedInUserInfoObj!=undefined,v.loggedInUserInfoObj.isLggdInUsrHsViewAccessToRnwlStatusSctn==true)}">
+                                    	<c:tooltip2 helpLink="Help" helpText="{!$Label.c.Renewal_Details_Tooltip_Text}"/>
+                                        <aura:set attribute="else">
+                                            <c:tooltip2 helpLink="Help" helpText="{!$Label.c.Rnwl_Dtls_Tltp_Txt_For_Usrs_Hvng_AccssToKeyRnwlDtSctnOnly}"/>
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                            </h2>
+                        </div>
+                    </button>
+                </header>
+            </div>
+        </div>
+        <section class="collapsible-sec slds-hide" aura:id="RenewalInformation">
+            
+            
+            <!-- <aura:iteration items="{!v.renewalStatusListOfTwoYear}" var="eachRenewalStatusList" indexVar="indx">
+            
+            <c:Sales_Incentives_Validation renewalStatusList="{!eachRenewalStatusList}" picklistFieldsMapData="{!v.picklistFieldsMapData}" accountId="{! v.recordId }"/>
+        </aura:iteration> -->
+            <!--<c:Key_Renewal_Dates accountKeyRenewalDateFieldNames="{!v.accountKeyRenewalDateFieldNames}" objectName="{!v.sObjectName}" rcrdId="{!v.recordId}" 
+                                 accountKeyRenewalDateFieldNames1="{!v.accountKeyRenewalDateFieldNames1}"
+                                 accountKeyRenewalDateFieldNames2="{!v.accountKeyRenewalDateFieldNames2}"/>-->
+            <!-- <c:Key_Renewal_Dates objectName="{!v.sObjectName}" rcrdId="{!v.recordId}" loggedInUserProfile="{!v.loggedInUserProfile}"/> -->
+            
+            <aura:if isTrue="{!and(v.loggedInUserInfoObj!=undefined,v.loggedInUserInfoObj.isLggdInUsrHsViewAccessToKeyRnwlDtSctn==true)}">
+                <c:Key_Renewal_Date_LDS fieldSetMap="{!v.fieldSetMap}" rcrdId="{!v.recordId}" 
+                                        accountKeyRenewalDateFieldNames="{!v.accountKeyRenewalDateFieldNames}"
+                                        loggedInUserProfile="{!v.loggedInUserProfile}"
+                                        accountKeyRenewalDateFieldNamesStr="{!v.accountKeyRenewalDateFieldNamesStr}"
+                                        isLoggedInUserAnAdmin="{!v.isLoggedInUserAnAdmin}"
+                                        loggedInUserInfoObj="{!v.loggedInUserInfoObj}"/>
+            </aura:if>
+            <!--<div class="slds-grid">
+             <div style="padding: 10px;">
+            <lightning:select aura:id="Sales_Cycle__c" name="Sales Cycle" label="Choose Sales Cycle" 
+                                  value="{!v.eachYearRenewalStatusList[0].salesCycle}"
+                                  onchange="{! c.salesCycleChangeHandler }" >
+                    <aura:iteration items="{!v.salesCyclePickListValues}" var="option">
+                        <option text="{!option}" value="{!option}" selected="{!option==v.eachYearRenewalStatusList[0].salesCycle}"/>
+                    </aura:iteration>
+                </lightning:select>
+                 </div>
+            </div>
+             <br/>-->
+            <aura:if isTrue="{!and(v.loggedInUserInfoObj!=undefined,v.loggedInUserInfoObj.isLggdInUsrHsViewAccessToRnwlStatusSctn==true)}">
+                <div class="slds-grid slds-grid_align-spread slds-p-top_x-small slds-grid_vertical-align-start action-bar-mobile slds-theme_shade slds-p-horizontal_medium">
+                    
+                    <div class="slds-col slds-size_1-of-4">
+                        <span style="padding-left: 3%;"><b>{!$Label.c.Renewal_Status_Section_Header}</b></span>
+                    </div>
+                    <div class="slds-col slds-size_3-of-4">
+                        <span><b>This section should be used to initiate Sales Incentive compensation payments for eligible <br/>Renewals. If you do not submit, nothing will be sent to Comp for payment.</b></span>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1">
+                        <span></span>
+                    </div>
+                    
+                </div>
+                
+                <aura:iteration items="{!v.eachYearRenewalStatusList}" var="eachYearRenewalStatusDataObj" indexVar="indx">
+                    
+                    <c:Sales_Incentives_Validation aura:id="salesIncentivesValidationCmpAuraId" renewalStatusList="{!eachYearRenewalStatusDataObj.eachYearRenewalStatusList}" picklistFieldsMapData="{!v.picklistFieldsMapData}" accountId="{! v.recordId }" 
+                                                   year="{!eachYearRenewalStatusDataObj.year}" renewalStatusRecordsTobeUpdatedMap="{!v.renewalStatusRecordsTobeUpdatedMap}" productsConfirmedPicklistValueMap="{!v.productsConfirmedPicklistValueMap}"
+                                                   loggedInUserName="{!v.loggedInUserName}" salesCycle="{!eachYearRenewalStatusDataObj.salesCycle}" isRenewalStatusListEmpty="{!eachYearRenewalStatusDataObj.isRenewalStatusListEmpty}"
+                                                   loggedInUserTimeZone="{!v.loggedInUserTimeZone}" 
+                                                   isLoggedInUserAnAdmin="{!v.isLoggedInUserAnAdmin}" salesCyclePickListValues="{!v.salesCyclePickListValues}"
+                                                   loggedInUserProfile="{!v.loggedInUserProfile}"
+                                                   renewalConfirmedPicklistValueMap="{!v.renewalConfirmedPicklistValueMap}"
+                                                   loggedInUserInfoObj="{!v.loggedInUserInfoObj}"
+                                                   sbMapFromParent="{!v.sbSCEData}"
+                                                   rsDataBeforeSave="{!v.renewalDataBeforeSave}"/> <!--sbMapFromParent="{!v.sbSCEData}" , rsDataBeforeSave="{!v.renewalDataBeforeSave}" Added by SAMARTH-->
+                    
+                </aura:iteration>
+            </aura:if>
+        </section>
+        
+    </article>
+</aura:component>

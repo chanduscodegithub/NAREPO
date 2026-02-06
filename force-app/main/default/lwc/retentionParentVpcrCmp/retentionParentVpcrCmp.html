@@ -1,0 +1,994 @@
+<template>
+  <span class={cssDisplay}>
+
+      <div class="slds-spinner_container">
+              <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                      role="status">
+                      <span class="slds-assistive-text">Loading</span>
+                      <div class="slds-spinner__dot-a"></div>
+                      <div class="slds-spinner__dot-b"></div>
+              </div>
+      </div>
+
+</span>
+  <div class="slds-col slds-size_2-of-3 slds-text-heading_large aligntext">
+      {reportTitle}
+  </div>
+<br/>
+
+<div class="container">
+  <div class="div-left">
+      <div class="inner-container">
+          <div class="inner-left" style="padding-top: 6px;">{salesCycleLabelName}</div>
+          <div class="inner-right" >
+            <template if:true={regionPicklist}> 
+              <lightning-combobox
+                  name="region" 
+                  value={salesCycle}                                                              
+                  placeholder="Select Region"
+                  options={regionPicklist}
+                  variant="label-hidden"
+                  onchange={filterBasedOnPicklistValue}></lightning-combobox>
+                
+          </template>
+              
+          </div>
+      </div>
+  </div>
+  <div class="div-right">
+    <lightning-button type="submit" variant="Neutral" label={printLabel} class="slds-m-left_x-small"
+                  onclick={print} disabled={disablePrintButton}></lightning-button>
+  </div>
+</div>
+<br/>
+<div class="slds-form-element__group">
+      <div class="slds-form-element__row slds-grid">
+          &nbsp;&nbsp;&nbsp;
+          <div class="slds-col slds-size_1-of-6 slds-p-left_medium">
+            <lightning-combobox name="Company" label="Company" value={filterCompanyName}
+                                options={companyNamePicklist} onchange={filtercompanyPicklistValue}>
+            </lightning-combobox>
+            </div> &nbsp;&nbsp;&nbsp;
+      <div class="slds-col slds-size_1-of-6 slds-p-left_medium">
+      <lightning-combobox name="Current SCE" label="Current SCE" value={filtersce}
+                          options={scePicklist} onchange={filterscePicklistValue}>
+      </lightning-combobox>
+      </div>
+     &nbsp;&nbsp;&nbsp;&nbsp;
+     
+      <div class="slds-form-element slds-size_1-of-2 slds-large-size_1-of-12" style="margin-top:  1.8%">
+                      <lightning-button type="submit" variant="brand" label={go} class="slds-m-left_x-small" onclick={filterAllRetentionData} disabled={disableGoAndClearAction}></lightning-button>
+      </div>&nbsp;
+      <div class="slds-form-element slds-size_1-of-2 slds-large-size_1-of-12" style="margin-top:  1.8%;margin-left: -4%;">
+          <lightning-button type="submit" variant="brand" label={clear} class="slds-m-left_x-small" onclick={clearAllfilterData} disabled={disableGoAndClearAction}></lightning-button>
+       </div>
+      </div>
+      </div>
+    <br/>
+<template if:true={isloggedinuservpcr}> 
+  <lightning-accordion class="section-header-style-vpcr-renewal" allow-multiple-sections-open
+                         active-section-name={activeSections}>
+          <lightning-accordion-section class="section-header-vpcr-renewal" name="A" label={sectionHeader1}>
+            <lightning-accordion-section class="section-sub-header-vpcr-renewal" style="color: #003366;" name="B" label={currentCompanyHeader}>
+            <lightning-card>
+              <div class="slds-card__body slds-m-bottom_none">
+                <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                    <template if:true={isretentionDataCurrentCompanyListEmpty}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+                          <colgroup>
+                            <col  style="width:18%;" />
+                            <col  style="width:12%;" />
+                            <col  style="width:15%;" />
+                            <col  style="width:16%;"/>
+                            <col  style="width:15%;" />
+                            <col  style="width:24%;" />
+                        </colgroup>
+                          <thead>
+                              <tr>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;" >
+                                    <div class="slds-cell-wrap" title="Company">Company</div>
+                                  
+                                </th>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap"  title="Effective Date">Effective Date</div>
+                                 
+                                </th>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap" title="Product Types">Product Types</div>
+                                </th>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap" title="Product Details">Product Details</div>
+                                </th>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap" title="Current SCE">Current SCE</div>
+                                </th>
+                                
+                                <!--<th class="" scope="col">
+                                  <div class="slds-truncate" title="Date Ready to Send to IncentiveComp Team">Date Sent to the Incentive Comp Team
+                                   </div>
+                                </th>-->
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap" style="text-transform: none;" title="SCE Receiving Compensation">SCE(s) Receiving COMPENSATION</div>
+                                </th>
+                               
+                                <!--<th class="" scope="col">
+                                  <div class="slds-truncate" title="Date Incentive Comp Team Extracted Data">Date Incentive Comp Team Extracted Data</div>
+                                </th>-->
+                                
+                              </tr>
+                            </thead>
+                            <tbody class="FontSize">
+                             <template if:true={isretentionDataCurrentCompanyListEmpty}>
+                                <tr>
+                                        <th colspan="6">
+                                                <div class="slds-text-align--center fontColor">
+                                                        No Records Found
+                                                </div>
+                
+                                        </th>
+                                </tr>
+                        </template>
+                        <template if:false={isretentionDataCurrentCompanyListEmpty}>
+                          <template for:each={currentVPCRList} for:item="row">
+                            <c-retention-child-cmp key={row} eachdata={row}></c-retention-child-cmp>
+                          </template>
+                         </template>
+                            </tbody>
+                          </table>
+              
+              
+                   </template>
+                 <template if:false={isretentionDataCurrentCompanyListEmpty}>
+                      <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+                        <colgroup>
+                          <col  style="width:18%;" />
+                          <col  style="width:12%;" />
+                          <col  style="width:15%;" />
+                          <col  style="width:16%;"/>
+                          <col  style="width:15%;" />
+                          <col  style="width:24%;" />
+                      </colgroup>
+                          <thead>
+                            <tr>
+                              <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                                  <!--<div class="slds-truncate" title="Company">Company</div>-->
+                                  <a onclick={sortFields} data-record="Company__r.name" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                                      <span class="slds-cell-wrap" title="Company">Company</span>
+                                    <div class="slds-icon_container sortIconPadding">
+                                        <template
+                                        if:true={sortByCompanyNameAsc}>
+                                        <lightning-icon
+                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                icon-name="utility:arrowup"
+                                                size="xx-small"
+                                                alternative-text="Indicates approval">
+                                        </lightning-icon>
+                                </template>
+                                <template
+                                        if:false={sortByCompanyNameAsc}>
+                                        <lightning-icon
+                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                icon-name="utility:arrowdown"
+                                                size="xx-small"
+                                                alternative-text="Indicates approval">
+                                        </lightning-icon>
+                                </template>
+                                  </div>
+                                </a> 
+                                
+                              </th>
+                              <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                                <!--<div class="slds-truncate"  title="Effective Date">Effective Date</div>-->
+                                <a onclick={sortFields} data-record="Efective_Date__c" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                                    <span class="slds-cell-wrap" title="Effective Date">Effective Date</span>
+                                  <div class="slds-icon_container sortIconPadding">
+                                      <template
+                                      if:true={sortByEffectiveDateAsc}>
+                                      <lightning-icon
+                                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                              icon-name="utility:arrowup"
+                                              size="xx-small"
+                                              alternative-text="Indicates approval">
+                                      </lightning-icon>
+                              </template>
+                              <template
+                                      if:false={sortByEffectiveDateAsc}>
+                                      <lightning-icon
+                                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                              icon-name="utility:arrowdown"
+                                              size="xx-small"
+                                              alternative-text="Indicates approval">
+                                      </lightning-icon>
+                              </template>
+                                </div>
+                              </a> 
+                               
+                              </th>
+                              <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                               <!-- <div class="slds-truncate" title="Product Types">Product Type</div>-->
+                               <a onclick={sortFields} data-record="Product_Line__c" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                                  <span class="slds-cell-wrap" title="Product Types">Product Types</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template
+                                    if:true={sortByProductFamilyAsc}>
+                                    <lightning-icon
+                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup"
+                                            size="xx-small"
+                                            alternative-text="Indicates approval">
+                                    </lightning-icon>
+                            </template>
+                            <template
+                                    if:false={sortByProductFamilyAsc}>
+                                    <lightning-icon
+                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown"
+                                            size="xx-small"
+                                            alternative-text="Indicates approval">
+                                    </lightning-icon>
+                            </template>
+                              </div>
+                            </a> 
+                              </th>
+                              <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                <div class="slds-cell-wrap" title="Product Details">Product Details</div>
+                              </th>
+                              <th class="" scope="col">
+                                <!--<div class="slds-truncate" title="Current SCE">Current SCE</div>-->
+                                <a onclick={sortFields} data-record="Company__r.Owner.name" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                                  <span class="slds-cell-wrap" title="Current SCE">Current SCE</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template
+                                    if:true={sortByCurrentSCEAsc}>
+                                    <lightning-icon
+                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup"
+                                            size="xx-small"
+                                            alternative-text="Indicates approval">
+                                    </lightning-icon>
+                            </template>
+                            <template
+                                    if:false={sortByCurrentSCEAsc}>
+                                    <lightning-icon
+                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown"
+                                            size="xx-small"
+                                            alternative-text="Indicates approval">
+                                    </lightning-icon>
+                            </template>
+                              </div>
+                            </a> 
+                              </th>
+                              
+                              <!-- <th class="" scope="col">
+                                <div class="slds-truncate" title="Date Ready to Send to IncentiveComp Team">Date Sent to the Incentive Comp Team
+                                 </div>
+                              </th>-->
+                              <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                <div class="slds-cell-wrap" style="text-transform: none;" title="SCE Receiving Compensation">SCE(s) RECEIVING COMPENSATION</div>
+                              </th>
+                             <!--<th class="" scope="col">
+                                <div class="slds-truncate" title="Date Incentive Comp Team Extracted Data">Date Incentive Comp Team Extracted Data</div>
+                              </th>-->
+                              
+                            </tr>
+                          </thead>
+                          <tbody class="FontSize">
+                           <template if:true={isretentionDataCurrentCompanyListEmpty}>
+                              <tr>
+                                      <th colspan="6">
+                                              <div class="slds-text-align--center fontColor">
+                                                      No Records Found
+                                              </div>
+              
+                                      </th>
+                              </tr>
+                      </template>
+                      <template if:false={isretentionDataCurrentCompanyListEmpty}>
+                        <template for:each={currentVPCRList} for:item="row">
+                          <c-retention-child-cmp key={row} eachdata={row}></c-retention-child-cmp>
+                        </template>
+                       </template>
+                          </tbody>
+                        </table>
+              
+              
+                 </template>
+                  
+                </div>
+              </div>
+            </lightning-card>
+            </lightning-accordion-section>
+          
+            <lightning-accordion-section class="section-sub-header-vpcr-renewal" style="color: #003366;" name="C" label={PreviousCompanyHeader}>
+              <lightning-card>
+              <div class="slds-card__body slds-m-bottom_none">
+                <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                    <template if:true={isretentionDataPreviousCompanyListEmpty}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+                          <colgroup>
+                            <col  style="width:18%;" />
+                            <col  style="width:12%;" />
+                            <col  style="width:15%;" />
+                            <col  style="width:16%;"/>
+                            <col  style="width:15%;" />
+                            <col  style="width:24%;" />
+                        </colgroup>
+                          <thead>
+                              <tr>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                    <div class="slds-cell-wrap" title="Company">Company</div>
+                                  
+                                </th>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap"  title="Effective Date">Effective Date</div>
+                                 
+                                </th>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap" title="Product Types">Product Types</div>
+                                </th>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap" title="Product Details">Product Details</div>
+                                </th>
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap" title="Current SCE">Current SCE</div>
+                                </th>
+                                
+                                <!-- <th class="" scope="col">
+                                  <div class="slds-truncate" title="Date Ready to Send to IncentiveComp Team">Date Sent to the Incentive Comp Team
+                                   </div>
+                                </th>-->
+                                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                  <div class="slds-cell-wrap" style="text-transform: none;" title="SCE Receiving Compensation">SCE(s) RECEIVING COMPENSATION</div>
+                                </th>
+                               <!--<th class="" scope="col">
+                                  <div class="slds-truncate" title="Date Incentive Comp Team Extracted Data">Date Incentive Comp Team Extracted Data</div>
+                                </th>-->
+                                
+                              </tr>
+                            </thead>
+                            <tbody class="FontSize">
+                              <template if:true={isretentionDataPreviousCompanyListEmpty}>
+                                <tr>
+                                        <th colspan="6">
+                                                <div class="slds-text-align--center fontColor">
+                                                        No Records Found
+                                                </div>
+                
+                                        </th>
+                                </tr>
+                        </template>
+                       <template if:false={isretentionDataPreviousCompanyListEmpty}>-->
+                          <template for:each={previousVPCRList} for:item="row">
+                            <c-retention-child-cmp key={row} eachdata={row}></c-retention-child-cmp>
+                          </template>
+                         </template>
+                            </tbody>
+                          </table>
+                       </template>
+                  <template if:false={isretentionDataPreviousCompanyListEmpty}>
+                      <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+                        <colgroup>
+                          <col  style="width:18%;" />
+                          <col  style="width:12%;" />
+                          <col  style="width:15%;" />
+                          <col  style="width:16%;"/>
+                          <col  style="width:15%;" />
+                          <col  style="width:24%;" />
+                      </colgroup>
+                        <thead>
+                            <tr>
+                              <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                                 <!-- <div class="slds-truncate" title="Company">Company</div>-->
+                                <a onclick={sortFields1} data-record="Company__r.name" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                                      <span class="slds-cell-wrap" title="Company">Company</span>
+                                    <div class="slds-icon_container sortIconPadding">
+                                        <template
+                                        if:true={sortByCompanyNameAsc1}>
+                                        <lightning-icon
+                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                icon-name="utility:arrowup"
+                                                size="xx-small"
+                                                alternative-text="Indicates approval">
+                                        </lightning-icon>
+                                </template>
+                                <template
+                                        if:false={sortByCompanyNameAsc1}>
+                                        <lightning-icon
+                                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                                icon-name="utility:arrowdown"
+                                                size="xx-small"
+                                                alternative-text="Indicates approval">
+                                        </lightning-icon>
+                                </template>
+                                  </div>
+                                </a> 
+                              </th>
+                              <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                               <!-- <div class="slds-truncate"  title="Effective Date">Effective Date</div>-->
+                                <a onclick={sortFields1} data-record="Efective_Date__c" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                                    <span class="slds-cell-wrap" title="Effective Date">Effective Date</span>
+                                  <div class="slds-icon_container sortIconPadding">
+                                      <template
+                                      if:true={sortByEffectiveDateAsc1}>
+                                      <lightning-icon
+                                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                              icon-name="utility:arrowup"
+                                              size="xx-small"
+                                              alternative-text="Indicates approval">
+                                      </lightning-icon>
+                              </template>
+                              <template
+                                      if:false={sortByEffectiveDateAsc1}>
+                                      <lightning-icon
+                                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                              icon-name="utility:arrowdown"
+                                              size="xx-small"
+                                              alternative-text="Indicates approval">
+                                      </lightning-icon>
+                              </template>
+                                </div>
+                              </a>
+                              </th>
+                              <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                                <!--<div class="slds-truncate" title="Product Types">Product Type</div>-->
+                                <a onclick={sortFields1} data-record="Product_Line__c" class="slds-th__action slds-text-link--reset" tabindex="0"> 
+                                    <span class="slds-cell-wrap" title="Product Types">Product Types</span>
+                                  <div class="slds-icon_container sortIconPadding">
+                                      <template
+                                      if:true={sortByProductFamilyAsc1}>
+                                      <lightning-icon
+                                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                              icon-name="utility:arrowup"
+                                              size="xx-small"
+                                              alternative-text="Indicates approval">
+                                      </lightning-icon>
+                              </template>
+                              <template
+                                      if:false={sortByProductFamilyAsc1}>
+                                      <lightning-icon
+                                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                              icon-name="utility:arrowdown"
+                                              size="xx-small"
+                                              alternative-text="Indicates approval">
+                                      </lightning-icon>
+                              </template>
+                                </div>
+                              </a> 
+                              </th>
+                              <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                <div class="slds-cell-wrap" title="Product Details">Product Details</div>
+                              </th>
+                              <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                                <a onclick={sortFields1} data-record="Company__r.Owner.name" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                                  <span class="slds-cell-wrap" title="Current SCE">Current SCE</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template
+                                    if:true={sortByCurrentSCEAsc1}>
+                                    <lightning-icon
+                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup"
+                                            size="xx-small"
+                                            alternative-text="Indicates approval">
+                                    </lightning-icon>
+                            </template>
+                            <template
+                                    if:false={sortByCurrentSCEAsc1}>
+                                    <lightning-icon
+                                            class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown"
+                                            size="xx-small"
+                                            alternative-text="Indicates approval">
+                                    </lightning-icon>
+                            </template>
+                              </div>
+                            </a> 
+                              </th>
+                              
+                             <!-- <th class="" scope="col">
+                                <div class="slds-truncate" title="Date Ready to Send to IncentiveComp Team">Date Sent to the Incentive Comp Team
+                                 </div>
+                              </th>-->
+                              <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                                <div class="slds-cell-wrap" style="text-transform: none;" title="SCE Receiving Compensation">SCE(s) RECEIVING COMPENSATION</div>
+                              </th>
+                              <!--<th class="" scope="col">
+                                <div class="slds-truncate" title="Date Incentive Comp Team Extracted Data">Date Incentive Comp Team Extracted Data</div>
+                              </th>-->
+                              
+                            </tr>
+                          </thead>
+                          <tbody class="FontSize">
+                            <template if:true={isretentionDataPreviousCompanyListEmpty}>
+                              <tr>
+                                      <th colspan="6">
+                                              <div class="slds-text-align--center fontColor">
+                                                      No Records Found
+                                              </div>
+              
+                                      </th>
+                              </tr>
+                      </template>
+                     <template if:false={isretentionDataPreviousCompanyListEmpty}>
+                        <template for:each={previousVPCRList} for:item="row">
+                          <c-retention-child-cmp key={row} eachdata={row}></c-retention-child-cmp>
+                        </template>
+                       </template>
+                          </tbody>
+                        </table>
+                     </template>
+                </div>
+              </div>
+            </lightning-card>
+            </lightning-accordion-section> 
+          </lightning-accordion-section>
+          <lightning-accordion-section class="section-header-vpcr-renewal" name="D" label={sectionHeader2}>
+            <c-vpcr-proactive-renewal-cmp onprctvrnwldataload={prctvRnwlDataloadHandler}></c-vpcr-proactive-renewal-cmp>
+          </lightning-accordion-section>
+            </lightning-accordion>
+</template>
+<template if:false={isloggedinuservpcr}>  
+    <lightning-accordion class="section-header-style-rvp-renewal" allow-multiple-sections-open
+                         active-section-name={activeSections1}>
+          <lightning-accordion-section class="section-header-rvp-renewal" name="A" label={sectionHeader1}>
+            <lightning-card>
+<div class="slds-card__body slds-m-bottom_none">
+  <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+      <template if:true={isretentionDataCurrentCompanyListEmpty}>
+          <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+            <colgroup>
+              <col  style="width:18%;" />
+              <col  style="width:12%;" />
+              <col  style="width:15%;" />
+              <col  style="width:16%;"/>
+              <col  style="width:15%;" />
+              <col  style="width:24%;" />
+          </colgroup>
+            <thead>
+                <tr>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;" >
+                      <div class="slds-cell-wrap" title="Company">Company</div>
+                    
+                  </th>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap"  title="Effective Date">Effective Date</div>
+                   
+                  </th>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap" title="Product Types">Product Types</div>
+                  </th>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap" title="Product Details">Product Details</div>
+                  </th>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap" title="Current SCE">Current SCE</div>
+                  </th>
+                  
+                  <!--<th class="" scope="col">
+                    <div class="slds-truncate" title="Date Ready to Send to IncentiveComp Team">Date Sent to the Incentive Comp Team
+                     </div>
+                  </th>-->
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap" style="text-transform: none;" title="SCE Receiving Compensation">SCE(s) Receiving COMPENSATION</div>
+                  </th>
+                 
+                  <!--<th class="" scope="col">
+                    <div class="slds-truncate" title="Date Incentive Comp Team Extracted Data">Date Incentive Comp Team Extracted Data</div>
+                  </th>-->
+                  
+                </tr>
+              </thead>
+              <tbody class="FontSize">
+               <template if:true={isretentionDataCurrentCompanyListEmpty}>
+                  <tr>
+                          <th colspan="6">
+                                  <div class="slds-text-align--center">
+                                          No Records Found
+                                  </div>
+  
+                          </th>
+                  </tr>
+          </template>
+          <template if:false={isretentionDataCurrentCompanyListEmpty}>
+            <template for:each={currentVPCRList} for:item="row">
+              <c-retention-child-cmp key={row} eachdata={row}></c-retention-child-cmp>
+            </template>
+           </template>
+              </tbody>
+            </table>
+
+
+     </template>
+   <template if:false={isretentionDataCurrentCompanyListEmpty}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+          <colgroup>
+            <col  style="width:18%;" />
+            <col  style="width:12%;" />
+            <col  style="width:15%;" />
+            <col  style="width:16%;"/>
+            <col  style="width:15%;" />
+            <col  style="width:24%;" />
+        </colgroup>
+            <thead>
+              <tr>
+                <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                    <!--<div class="slds-truncate" title="Company">Company</div>-->
+                    <a onclick={sortFields} data-record="Company__r.name" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                        <span class="slds-cell-wrap" title="Company">Company</span>
+                      <div class="slds-icon_container sortIconPadding">
+                          <template
+                          if:true={sortByCompanyNameAsc}>
+                          <lightning-icon
+                                  class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                  icon-name="utility:arrowup"
+                                  size="xx-small"
+                                  alternative-text="Indicates approval">
+                          </lightning-icon>
+                  </template>
+                  <template
+                          if:false={sortByCompanyNameAsc}>
+                          <lightning-icon
+                                  class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                  icon-name="utility:arrowdown"
+                                  size="xx-small"
+                                  alternative-text="Indicates approval">
+                          </lightning-icon>
+                  </template>
+                    </div>
+                  </a> 
+                  
+                </th>
+                <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                  <!--<div class="slds-truncate"  title="Effective Date">Effective Date</div>-->
+                  <a onclick={sortFields} data-record="Efective_Date__c" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                      <span class="slds-cell-wrap" title="Effective Date">Effective Date</span>
+                    <div class="slds-icon_container sortIconPadding">
+                        <template
+                        if:true={sortByEffectiveDateAsc}>
+                        <lightning-icon
+                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowup"
+                                size="xx-small"
+                                alternative-text="Indicates approval">
+                        </lightning-icon>
+                </template>
+                <template
+                        if:false={sortByEffectiveDateAsc}>
+                        <lightning-icon
+                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowdown"
+                                size="xx-small"
+                                alternative-text="Indicates approval">
+                        </lightning-icon>
+                </template>
+                  </div>
+                </a> 
+                 
+                </th>
+                <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                 <!-- <div class="slds-truncate" title="Product Types">Product Type</div>-->
+                 <a onclick={sortFields} data-record="Product_Line__c" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                    <span class="slds-cell-wrap" title="Product Types">Product Types</span>
+                  <div class="slds-icon_container sortIconPadding">
+                      <template
+                      if:true={sortByProductFamilyAsc}>
+                      <lightning-icon
+                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                              icon-name="utility:arrowup"
+                              size="xx-small"
+                              alternative-text="Indicates approval">
+                      </lightning-icon>
+              </template>
+              <template
+                      if:false={sortByProductFamilyAsc}>
+                      <lightning-icon
+                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                              icon-name="utility:arrowdown"
+                              size="xx-small"
+                              alternative-text="Indicates approval">
+                      </lightning-icon>
+              </template>
+                </div>
+              </a> 
+                </th>
+                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                  <div class="slds-cell-wrap" title="Product Details">Product Details</div>
+                </th>
+                <th class="" scope="col">
+                  <!--<div class="slds-truncate" title="Current SCE">Current SCE</div>-->
+                  <a onclick={sortFields} data-record="Company__r.Owner.name" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                    <span class="slds-cell-wrap" title="Current SCE">Current SCE</span>
+                  <div class="slds-icon_container sortIconPadding">
+                      <template
+                      if:true={sortByCurrentSCEAsc}>
+                      <lightning-icon
+                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                              icon-name="utility:arrowup"
+                              size="xx-small"
+                              alternative-text="Indicates approval">
+                      </lightning-icon>
+              </template>
+              <template
+                      if:false={sortByCurrentSCEAsc}>
+                      <lightning-icon
+                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                              icon-name="utility:arrowdown"
+                              size="xx-small"
+                              alternative-text="Indicates approval">
+                      </lightning-icon>
+              </template>
+                </div>
+              </a> 
+                </th>
+                
+                <!-- <th class="" scope="col">
+                  <div class="slds-truncate" title="Date Ready to Send to IncentiveComp Team">Date Sent to the Incentive Comp Team
+                   </div>
+                </th>-->
+                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                  <div class="slds-cell-wrap" style="text-transform: none;" title="SCE Receiving Compensation">SCE(s) RECEIVING COMPENSATION</div>
+                </th>
+               <!--<th class="" scope="col">
+                  <div class="slds-truncate" title="Date Incentive Comp Team Extracted Data">Date Incentive Comp Team Extracted Data</div>
+                </th>-->
+                
+              </tr>
+            </thead>
+            <tbody class="FontSize">
+             <template if:true={isretentionDataCurrentCompanyListEmpty}>
+                <tr>
+                        <th colspan="6">
+                                <div class="slds-text-align--center">
+                                        No Records Found
+                                </div>
+
+                        </th>
+                </tr>
+        </template>
+        <template if:false={isretentionDataCurrentCompanyListEmpty}>
+          <template for:each={currentVPCRList} for:item="row">
+            <c-retention-child-cmp key={row} eachdata={row}></c-retention-child-cmp>
+          </template>
+         </template>
+            </tbody>
+          </table>
+
+
+   </template>
+    
+  </div>
+</div>
+</lightning-card>
+</lightning-accordion-section>
+<lightning-accordion-section class="section-header-rvp-renewal" name="B" label={sectionHeader2}>
+
+
+<lightning-card>
+<div class="slds-card__body slds-m-bottom_none">
+  <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+      <template if:true={isretentionDataPreviousCompanyListEmpty}>
+          <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+            <colgroup>
+              <col  style="width:18%;" />
+              <col  style="width:12%;" />
+              <col  style="width:15%;" />
+              <col  style="width:16%;"/>
+              <col  style="width:15%;" />
+              <col  style="width:24%;" />
+          </colgroup>
+            <thead>
+                <tr>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                      <div class="slds-cell-wrap" title="Company">Company</div>
+                    
+                  </th>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap"  title="Effective Date">Effective Date</div>
+                   
+                  </th>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap" title="Product Types">Product Types</div>
+                  </th>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap" title="Product Details">Product Details</div>
+                  </th>
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap" title="Current SCE">Current SCE</div>
+                  </th>
+                  
+                  <!-- <th class="" scope="col">
+                    <div class="slds-truncate" title="Date Ready to Send to IncentiveComp Team">Date Sent to the Incentive Comp Team
+                     </div>
+                  </th>-->
+                  <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                    <div class="slds-cell-wrap" style="text-transform: none;" title="SCE Receiving Compensation">SCE(s) RECEIVING COMPENSATION</div>
+                  </th>
+                 <!--<th class="" scope="col">
+                    <div class="slds-truncate" title="Date Incentive Comp Team Extracted Data">Date Incentive Comp Team Extracted Data</div>
+                  </th>-->
+                  
+                </tr>
+              </thead>
+              <tbody class="FontSize">
+                <template if:true={isretentionDataPreviousCompanyListEmpty}>
+                  <tr>
+                          <th colspan="6">
+                                  <div class="slds-text-align--center">
+                                          No Records Found
+                                  </div>
+  
+                          </th>
+                  </tr>
+          </template>
+         <template if:false={isretentionDataPreviousCompanyListEmpty}>-->
+            <template for:each={previousVPCRList} for:item="row">
+              <c-retention-child-cmp key={row} eachdata={row}></c-retention-child-cmp>
+            </template>
+           </template>
+              </tbody>
+            </table>
+         </template>
+    <template if:false={isretentionDataPreviousCompanyListEmpty}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout">
+          <colgroup>
+            <col  style="width:18%;" />
+            <col  style="width:12%;" />
+            <col  style="width:15%;" />
+            <col  style="width:16%;"/>
+            <col  style="width:15%;" />
+            <col  style="width:24%;" />
+        </colgroup>
+          <thead>
+              <tr>
+                <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                   <!-- <div class="slds-truncate" title="Company">Company</div>-->
+                  <a onclick={sortFields1} data-record="Company__r.name" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                        <span class="slds-cell-wrap" title="Company">Company</span>
+                      <div class="slds-icon_container sortIconPadding">
+                          <template
+                          if:true={sortByCompanyNameAsc1}>
+                          <lightning-icon
+                                  class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                  icon-name="utility:arrowup"
+                                  size="xx-small"
+                                  alternative-text="Indicates approval">
+                          </lightning-icon>
+                  </template>
+                  <template
+                          if:false={sortByCompanyNameAsc1}>
+                          <lightning-icon
+                                  class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                  icon-name="utility:arrowdown"
+                                  size="xx-small"
+                                  alternative-text="Indicates approval">
+                          </lightning-icon>
+                  </template>
+                    </div>
+                  </a> 
+                </th>
+                <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                 <!-- <div class="slds-truncate"  title="Effective Date">Effective Date</div>-->
+                  <a onclick={sortFields1} data-record="Efective_Date__c" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                      <span class="slds-cell-wrap" title="Effective Date">Effective Date</span>
+                    <div class="slds-icon_container sortIconPadding">
+                        <template
+                        if:true={sortByEffectiveDateAsc1}>
+                        <lightning-icon
+                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowup"
+                                size="xx-small"
+                                alternative-text="Indicates approval">
+                        </lightning-icon>
+                </template>
+                <template
+                        if:false={sortByEffectiveDateAsc1}>
+                        <lightning-icon
+                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowdown"
+                                size="xx-small"
+                                alternative-text="Indicates approval">
+                        </lightning-icon>
+                </template>
+                  </div>
+                </a>
+                </th>
+                <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                  <!--<div class="slds-truncate" title="Product Types">Product Type</div>-->
+                  <a onclick={sortFields1} data-record="Product_Line__c" class="slds-th__action slds-text-link--reset" tabindex="0"> 
+                      <span class="slds-cell-wrap" title="Product Types">Product Types</span>
+                    <div class="slds-icon_container sortIconPadding">
+                        <template
+                        if:true={sortByProductFamilyAsc1}>
+                        <lightning-icon
+                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowup"
+                                size="xx-small"
+                                alternative-text="Indicates approval">
+                        </lightning-icon>
+                </template>
+                <template
+                        if:false={sortByProductFamilyAsc1}>
+                        <lightning-icon
+                                class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                icon-name="utility:arrowdown"
+                                size="xx-small"
+                                alternative-text="Indicates approval">
+                        </lightning-icon>
+                </template>
+                  </div>
+                </a> 
+                </th>
+                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                  <div class="slds-cell-wrap" title="Product Details">Product Details</div>
+                </th>
+                <th class="" scope="col"  style="padding-left: 2px; padding-top: 2px;">
+                  <a onclick={sortFields1} data-record="Company__r.Owner.name" class="slds-th__action slds-text-link--reset" tabindex="0" > 
+                    <span class="slds-cell-wrap" title="Current SCE">Current SCE</span>
+                  <div class="slds-icon_container sortIconPadding">
+                      <template
+                      if:true={sortByCurrentSCEAsc1}>
+                      <lightning-icon
+                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                              icon-name="utility:arrowup"
+                              size="xx-small"
+                              alternative-text="Indicates approval">
+                      </lightning-icon>
+              </template>
+              <template
+                      if:false={sortByCurrentSCEAsc1}>
+                      <lightning-icon
+                              class="slds-icon slds-icon--x-small slds-icon-text-default"
+                              icon-name="utility:arrowdown"
+                              size="xx-small"
+                              alternative-text="Indicates approval">
+                      </lightning-icon>
+              </template>
+                </div>
+              </a> 
+                </th>
+                
+               <!-- <th class="" scope="col">
+                  <div class="slds-truncate" title="Date Ready to Send to IncentiveComp Team">Date Sent to the Incentive Comp Team
+                   </div>
+                </th>-->
+                <th class="" scope="col"  style="padding-left: 10px; padding-top: 4px;">
+                  <div class="slds-cell-wrap" style="text-transform: none;" title="SCE Receiving Compensation">SCE(s) RECEIVING COMPENSATION</div>
+                </th>
+                <!--<th class="" scope="col">
+                  <div class="slds-truncate" title="Date Incentive Comp Team Extracted Data">Date Incentive Comp Team Extracted Data</div>
+                </th>-->
+                
+              </tr>
+            </thead>
+            <tbody class="FontSize">
+              <template if:true={isretentionDataPreviousCompanyListEmpty}>
+                <tr>
+                        <th colspan="6">
+                                <div class="slds-text-align--center">
+                                        No Records Found
+                                </div>
+
+                        </th>
+                </tr>
+        </template>
+       <template if:false={isretentionDataPreviousCompanyListEmpty}>
+          <template for:each={previousVPCRList} for:item="row">
+            <c-retention-child-cmp key={row} eachdata={row}></c-retention-child-cmp>
+          </template>
+         </template>
+            </tbody>
+          </table>
+       </template>
+  </div>
+</div>
+</lightning-card>
+
+</lightning-accordion-section>
+</lightning-accordion>
+</template>
+
+<div class="slds-text-body_small">
+  {IntructionalHeader}
+</div>
+
+</template>

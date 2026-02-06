@@ -1,0 +1,253 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="SalesIncentiveValidationController">
+    
+    <aura:attribute name="renewalStatusList" type="Object[]" />
+    <aura:attribute name="picklistFieldsMapData" type="Map"/>
+    <aura:attribute name="isLoggedInUserAnAdmin" type="Boolean"/>
+    <aura:attribute name="accountId" type="String"/>
+    
+    <aura:attribute name="year" type="Integer"/>
+    
+    <aura:attribute name="renewalStatusRecordsTobeUpdatedMap" type="Map"/>
+    
+    <aura:attribute name="productsConfirmedPicklistValueMap" type="Map"/>
+    
+    <aura:attribute name="eachYearRenewalStatusRecordsTobeUpdatedMap" type="Map" default='{}'/>
+    
+    <aura:attribute name="loggedInUserName" type="String"/>
+    
+    <aura:attribute name="salesCycle" type="String"/>
+    
+    <aura:attribute name="isRenewalStatusListEmpty" type="boolean"/>
+    
+    <aura:attribute name="loggedInUserTimeZone" type="String"/>
+    
+    <aura:attribute name="bannerErrorMessage" type="String" default=""/>
+    
+    <aura:attribute name="salesCyclePickListValues" type="List"/>
+    
+    <aura:attribute name="loggedInUserProfile" type="String"/>
+    
+    <aura:attribute name="renewalConfirmedPicklistValueMap" type="Map"/>
+    
+    <aura:attribute name="enableSelectAllCheckBox" type="boolean" default="false"/>
+    <aura:attribute name="selectAllCheckBoxValue" type="boolean" default="false"/>
+    
+    <aura:attribute name="existingReadyToSendCheckedRecordsMap" type="Map" default="{}"/>
+    <aura:attribute name="selectAllReadyToSendRecordsMap" type="Map" default="{}"/>
+    <aura:attribute name="firstRecordFromWhichDataFlows" type="Object" default="{}"/>
+    <aura:attribute name="firstRecordFromWhichDataFlowsBeforeRecordEdit" type="Object" default="{}"/>
+    
+    <aura:attribute name="isFrstRcrdSbmtFrSlsIncntvChckdBfrSndAllChk" type="boolean" default="false"/>
+    
+    <aura:attribute name="loggedInUserInfoObj" type="Object"/>
+    
+    <aura:attribute name="openHelpPopUp" type="boolean" default="false"/>
+    
+    <aura:attribute name="sbMapFromParent" type="Map" default="{}"/> <!--SAMARTH (coming from Parent)-->
+    <aura:attribute name="rsDataBeforeSave" type="List"/> <!--SAMARTH for storing data before save-->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="salesIncentivesValidationTableEvnt" event="c:Sales_Incentives_Validation_Table_Event" action="{!c.firstRecordDataChangeHandler}"/>
+    <aura:registerEvent name="salesIncentivesValidationEvnt" type="c:Sales_Incentives_Validation_Event"/>
+    <ltng:require styles="{! $Resource.IpadResetCSS}"/>
+    <!--<div class="slds-section__content slds-p-top_none">
+       <div class="slds-card slds-m-bottom_none">-->
+    <!-- <article class="slds-card slds-card_boundary"> -->
+    
+    <!--   <section class="collapsible-sec slds-hide" aura:id="RenewalInformation"> -->
+
+    <div>
+        <div class="slds-spinner_container slds-hide" aura:id="tableLoadingSpinner">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div aura:id="errorToastMessage" class="slds-hide slds-theme--error slds-size_12-of-12 slds-m-bottom_medium" style="padding:0.2rem">
+            <div class="general-notification slds-font-size">
+                <!-- <span>Please complete the fields that are highlighted in RED.</span> -->
+                <span>{!v.bannerErrorMessage}</span>
+            </div>
+        </div>
+        <!--<div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-start action-bar-mobile slds-theme_shade slds-p-horizontal_medium">
+            <div style="padding: 14px;"><b>Renewal Status</b></div>
+        </div>-->
+        <!-- <div class="slds-grid slds-grid_align-end action-bar-mobile slds-theme_shade slds-p-horizontal_medium"> -->
+        <div class="slds-grid  action-bar-mobile slds-theme_shade slds-p-left_large slds-p-right_medium">
+            <div class="slds-col slds-size_2-of-6 slds-p-bottom_x-small">
+                <span style="display: inline-block; margin-right: 5px;">Choose Sales Cycle - </span>
+                <lightning:select class="selectCustomClass" aura:id="Sales_Cycle__c" name="Sales Cycle"
+                                  value="{!v.salesCycle}"
+                                  onchange="{! c.salesCycleChangeHandler1 }" >
+                    <aura:iteration items="{!v.salesCyclePickListValues}" var="option">
+                        <option text="{!option}" value="{!option}" selected="{!option==v.salesCycle}"/>
+                    </aura:iteration>
+                </lightning:select>
+            </div>
+            <div class="slds-col slds-size_4-of-6 slds-grid slds-grid_align-end">
+                <!--<aura:if isTrue="{!and(v.isRenewalStatusListEmpty !=true,v.loggedInUserProfile!='Compensation Team Profile')}"> -->
+                <aura:if isTrue="{!and(v.isRenewalStatusListEmpty !=true,v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToRnwlStatusSctn==true)}">
+                    <a onclick="{!c.openHelpPopup}" style="padding-top: 14px;">{!$Label.c.Account_Renewal_Help_Link}</a>
+                    <div style="margin: 0px 6px;"><ui:button class="slds-button slds-button--neutral slds-m-vertical_x-small" aura:id="printBtn" disabled="false" press="{!c.print}">{!$Label.c.Print}</ui:button></div>
+                    <div><ui:button class="slds-button slds-button--neutral slds-m-vertical_x-small" aura:id="editBtn" disabled="false" press="{!c.editRenewalStatusRecords}">{!$Label.c.Edit}</ui:button></div>
+                    <div><ui:button class="slds-button slds-button--neutral slds-hide slds-m-vertical_x-small" aura:id="saveBtn" press="{!c.saveRenewalStatusRecords}">{!$Label.c.Save}</ui:button></div>
+                    <div><ui:button class="slds-button slds-button--neutral slds-hide slds-m-vertical_x-small" aura:id="cancelBtn" press="{!c.cancelChanges}">{!$Label.c.Cancel}</ui:button></div>
+                    <!--</aura:if>-->  
+                   
+                </aura:if>
+            </div>
+        </div>
+        
+        
+        <!--<ui:scrollerWrapper class="scrollerSize table-scroll slds-p-bottom_small">-->
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered table-scroll slds-no-row-hover sales-th">
+            <thead>
+                <!--  <tr class="slds-text-title__caps"> -->
+                <tr class="sales-th">
+                    <th class="slds-cell-wrap slds-truncate" scope="col" style="padding : 0.5rem" width="8%">
+                        <div class="slds-truncate slds-cell-wrap" title="Products"><b>Product Types</b></div>    
+                    </th>
+                    <!--  <th class="slds-cell-wrap slds-truncate" scope="col">
+                                <div class="slds-truncate slds-cell-wrap" title="Renewal Status Record"><b>Renewal Status Record</b></div>    
+                            </th> -->
+                    <th class="slds-cell-wrap slds-truncate" scope="col" width="16%" style="padding-top: 1.5%;">
+                        <div class="slds-truncate slds-cell-wrap" title="Renewal Confirmed/Members Safe">Renewal Confirmed/Members Safe</div>
+                    </th>                                                           
+                    <th class="slds-cell-wrap slds-truncate" style="padding-top: 20px;" scope="col" width="14%">
+                        <!-- <div class="slds-truncate slds-cell-wrap" title="Products Confirmed"><b>Products Confirmed</b></div> -->
+                        <div class="slds-truncate slds-cell-wrap" title="Products Renewed"><b>Product Details </b><span style="font-weight:400!important;font-size:89%;"><br/>(indicate the specific products that were renewed, where applicable)</span></div>
+                    </th> 
+                    <th class="slds-cell-wrap slds-truncate" scope="col" width="8%">
+                        <!--<div class="slds-truncate slds-cell-wrap" title="Submit for Sales Incentives"><b>Ready to Send to Incentive Comp Team</b></div>-->
+                        <b>Ready to Send to Incentive Comp Team</b>
+                        <aura:if isTrue="{!v.enableSelectAllCheckBox}">
+                        <div class="slds-grid slds-truncate si" title="" style="white-space:normal; letter-spacing: 0.4px; color: rgb(255, 0, 0);">
+
+                                <ui:inputCheckbox aura:id="selectAll" value="{!v.selectAllCheckBoxValue}" change="{!c.selectAllChangeHandler}" 
+                                                  class="chk-inline" /> <span style="width: 0.6rem;"/><span style="left:5px;">Select All</span>
+
+                        </div>
+                        </aura:if>
+                    </th>
+                    <th class="slds-cell-wrap slds-truncate" scope="col" width="5%">
+                        <div class="slds-truncate slds-cell-wrap" title="Will Sales Incentives be Split"><b>Will Sales Incentives </b>be Split</div>
+                    </th>
+                    <th class="slds-cell-wrap slds-truncate" scope="col" width="11%">
+                        <div class="slds-truncate slds-cell-wrap" title="Sales Person 1"><b>Sales Person 1</b></div>
+                    </th>                                        
+                    <th class="slds-cell-wrap slds-truncate" scope="col" width="6%">
+                        <div class="slds-truncate slds-cell-wrap" title="Sales Person 1 Split Percent"><b>Sales Person 1 </b>Split Percent</div>
+                    </th>
+                    <th  class="slds-cell-wrap slds-truncate" style="padding-top: 21px;"  scope="col" width="11%">
+                        <div class="slds-truncate slds-cell-wrap" title="Sales Person 2"><b>Sales Person 2 </b><span style="font-weight:400!important;font-size:89%"><br/>(if applicable)</span></div>
+                    </th>
+                    <th class="slds-cell-wrap slds-truncate" scope="col" width="6%">
+                        <div class="slds-truncate slds-cell-wrap" title="Sales Person 2 Split Percent"><b>Sales Person 2 </b>Split Percent</div>
+                    </th>
+                    <!--   <th class="slds-cell-wrap slds-truncate" scope="col" width="10%">
+                        <div class="slds-truncate slds-cell-wrap" title="Confirmed By"><b>Confirmed By</b></div>
+                    </th>
+                    <th class="slds-cell-wrap slds-truncate" scope="col" width="10%">
+                        <div class="slds-truncate slds-cell-wrap" title="Confirmed Date"><b>Confirmed Date</b></div>
+                    </th> 
+                    <th class="slds-cell-wrap slds-truncate" scope="col" width="7%">
+                        <div class="slds-truncate slds-cell-wrap" title="Date Submitted for Incentives"><b>Date Submitted for Incentives</b></div>
+                    </th>-->
+                    <th class="slds-cell-wrap slds-truncate" scope="col" width="8%">
+                        <div class="slds-truncate slds-cell-wrap" title="Date Sent to ISI Site"><b>Date Incentive Comp Team Extracted Data</b></div>
+                    </th>
+                    <!--<th class="slds-cell-wrap has-tooltip" scope="col" width="11%">
+                        <div class="slds-popover slds-popover_tooltip th-tooltip slds-nubbin_bottom" role="tooltip">
+                            <div class="slds-popover__body">This field is pre-populated every January.</div>
+                        </div>
+                        <div class="slds-truncate slds-cell-wrap" title="Current Deal Next Renewal Date"><b>Current Deal Next Renewal Date</b></div>
+                    </th>
+                    <th class="slds-cell-wrap slds-truncate" scope="col">
+                        <div class="slds-truncate slds-cell-wrap" title="Renewal Status Record"><b>Renewal Status Record</b></div>    
+                    </th> -->
+                </tr>
+            </thead>
+            <tbody class="slds-text-align--left" >
+                <aura:if isTrue="{!v.isRenewalStatusListEmpty}">
+                    <tr>
+                        <th colspan="10">
+                            <div class="slds-text-align--center">
+                                No Records Found
+                            </div>
+                            
+                        </th>
+                    </tr>
+                    <aura:set attribute="else">
+                        <aura:iteration items="{!v.renewalStatusList}" var="renewalStatusObj" indexVar="index"	>
+                            <!--  <c:Sales_Incentive_Child aura:id="renewalStatusAuraId" renewalStatus="{!renewalStatusObj}" picklistFieldsMapData="{!v.picklistFieldsMapData}" /> -->
+                            <c:Sales_Incentive_Validation_Table aura:id="renewalStatusAuraId" renewalStatus="{!renewalStatusObj}" picklistFieldsMapData="{!v.picklistFieldsMapData}" 
+                                                                renewalStatusRecordsTobeUpdatedMap="{!v.renewalStatusRecordsTobeUpdatedMap}"
+                                                                productsConfirmedPicklistValueMap="{!v.productsConfirmedPicklistValueMap}"
+                                                                eachYearRenewalStatusRecordsTobeUpdatedMap="{!v.eachYearRenewalStatusRecordsTobeUpdatedMap}"
+                                                                loggedInUserTimeZone="{!v.loggedInUserTimeZone}"
+                                                                renewalConfirmedPicklistValueMap="{!v.renewalConfirmedPicklistValueMap}"
+                                                                accountId="{!v.accountId}"
+                                                                firstRecordFromWhichDataFlows="{!v.firstRecordFromWhichDataFlows}"
+                                                                selectAllCheckBoxValue="{!v.selectAllCheckBoxValue}"
+                                                                selectAllReadyToSendRecordsMap="{!v.selectAllReadyToSendRecordsMap}"
+                                                                existingReadyToSendCheckedRecordsMap="{!v.existingReadyToSendCheckedRecordsMap}"
+                                                                loggedInUserName="{!v.loggedInUserName}"
+                                                                loggedInUserInfoObj="{!v.loggedInUserInfoObj}"/>
+
+                        </aura:iteration>
+                    </aura:set>
+                </aura:if>
+            </tbody>
+        </table>
+    </div>
+	
+    <!-- Help Popup-->
+    <aura:if isTrue="{!v.openHelpPopUp}">
+        <div class="slds-show" aura:id="popup">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open popup-scroll">
+                <div class="slds-modal__container popup-padding popup-btn-close">
+                    <header class="slds-modal__header">
+                        
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate bold-heading">INSTRUCTIONS</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div>
+                            <article class="slds-card">
+                                <div class="slds-card__body slds-card__body_inner">
+                                    <div class="slds-form-element slds-grid">                            
+                                        <div class="slds-size_1-of-1">
+                                            To send information about a Confirmed Renewal to the Incentive Compensation Team:
+                                            <br/><br/>
+                                            (1) Click the Edit button; (2) Check the “Ready to Send to Incentive Comp Team” box next to the applicable products—to send information about all the products, click the Select All box;<br/> (3) Indicate whether Sales Incentives will be Split. <b>Remember to Save when Complete.</b>
+                                            <br/><br/>
+                                            This information can be updated at any time up until the Incentive Compensation Team extracts the data, at which point the information will be locked.
+                                            <br/><br/>
+                                            <b>If you do not submit, nothing will be sent to Comp for payment.</b>
+                                            <br/><br/>
+                                            <b>ADDITIONAL INSTRUCTIONS</b><br/>
+                                            For additional instructions, click the below link to access the complete Reference Guide.<br/>                                            
+                                            <a style="width:100%;" href='https://oneconnect.uhc.com/content/oneconnect/home/training-skills/course-calendar-and-programs/merit.html' target="_blank"> 
+                                                Click Here to Access the Reference Guide </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </article>
+                        </div>
+                    </div>
+                    
+                    <footer class="slds-modal__footer">
+                        <ui:button class=" slds-Show button" label="OK" press="{!c.onpresscancel}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    <!--</ui:scrollerWrapper>-->
+    <!--  </section> -->
+    <!--</div>
+    </div>-->
+    <!--   </article> -->
+</aura:component>

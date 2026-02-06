@@ -1,0 +1,41 @@
+<aura:component controller="ReadAndGenerateXmlAMT" implements="force:hasSObjectName,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="isDesktop" type="Boolean" default="true"/>   
+    <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="isPolicyAMT" type="Boolean"/>
+    <aura:attribute name="policyId" type="String"/>
+    <aura:attribute name="accId" type="String"/>    
+    <aura:attribute name="serviceAmtList" type="Service_AMT__c[]" default="[]"/>
+    <aura:attribute name="externalServiceAmtList" type="Service_AMT__c[]" default="[]"/>
+    <aura:if isTrue="{!v.isDesktop}">      
+        <div class="action" id="actionBarItem_Down1">
+            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                <button disabled="false" onclick="{!c.amtTempInt}" class="actionButton slds-button slds-button--icon uiButton" aria-live="off" type="button" data-aura-class="uiButton">                                                            	
+                    <lightning:icon iconName="action:download" size="xx-small" alternativeText="Download"/>
+                    <p class="slds-truncate actionTitle" aria-hidden="true">AMT Internal</p>
+                </button>
+            </div>
+        </div>       
+        <div class="action" id="actionBarItem_Down2">
+            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                <button disabled="false" onclick="{!c.amtTempExt}" class="actionButton slds-button slds-button--icon uiButton" aria-live="off" type="button" data-aura-class="uiButton">                                                            	
+                    <lightning:icon iconName="action:download" size="xx-small" alternativeText="Download"/>
+                    <p class="slds-truncate actionTitle" aria-hidden="true">AMT External</p>
+                </button>
+            </div>
+        </div> 
+        <div class="action" id="actionBarItem_Down3">
+            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                <button disabled="false" onclick="{!c.amtReferenceGuide}" class="actionButton slds-button slds-button--icon uiButton" aria-live="off" type="button" data-aura-class="uiButton">                                                            	
+                    <lightning:icon iconName="action:download" size="xx-small" alternativeText="Download"/>
+                    <p class="slds-truncate actionTitle" aria-hidden="true">AMT Reference Guide</p>
+                </button>
+            </div>
+        </div> 
+        <aura:set attribute="else">
+            <ui:button class="slds-button slds-button--neutral" aura:id="addBtn" disabled="false" press="{!c.amtTempInt}">AMT Internal Template</ui:button>
+            <ui:button class="slds-button slds-button--neutral" aura:id="addBtn" disabled="false" press="{!c.amtTempExt}">AMT External Template</ui:button> 
+            <ui:button class="slds-button slds-button--neutral" aura:id="addBtn" disabled="false" press="{!c.amtReferenceGuide}">AMT Reference Guide</ui:button> 
+        </aura:set>
+    </aura:if>	
+</aura:component>

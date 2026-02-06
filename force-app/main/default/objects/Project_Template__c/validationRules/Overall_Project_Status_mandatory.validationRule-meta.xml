@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Overall_Project_Status_mandatory</fullName>
+    <active>true</active>
+    <description>If Template field is unchecked then Overall Project Status Field is mandatory</description>
+    <errorConditionFormula>AND(
+Template__c =FALSE,
+ISBLANK(TEXT(Overall_Project_Status__c ))
+)</errorConditionFormula>
+    <errorDisplayField>Overall_Project_Status__c</errorDisplayField>
+    <errorMessage>Please select a value in Overall Project Status Field</errorMessage>
+</ValidationRule>

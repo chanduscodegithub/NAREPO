@@ -1,0 +1,282 @@
+<!-- sldsValidatorIgnore -->
+<template>
+
+  <template if:true={isAddVendor}>
+    <c-competitive-landscape-addvendor-modal onclosemodal={handleCloseModal} acc-id={recordId}
+      onmodalsave={handleModalSave}></c-competitive-landscape-addvendor-modal>
+  </template>
+
+  <template lwc:if={isLoading}>
+    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+  </template>
+
+  <div class="slds-card">
+    <ul class="slds-accordion">
+      <li class="slds-accordion__list-item">
+        <section class="slds-accordion__section" style="padding-left: 0px; padding-right: 0px;">
+          <div class="slds-accordion__summary" style="padding-left: 1.8rem;padding-right: 1.8rem;">
+            <h2 class="slds-accordion__summary-heading">
+              <button class="slds-button slds-button_reset slds-accordion__summary-action"
+                aria-controls="referenceId-21" aria-expanded="false" 
+                onclick={handleExpandCollapse}>
+                <div class="chevron">
+                  <template lwc:if={isExpand}>
+                    <lightning-icon icon-name="utility:chevrondown" alternative-text="Utility chevrondown"
+                      title="chevrondown" size="x-small"></lightning-icon>
+                  </template>
+                  <template lwc:else>
+                    <lightning-icon icon-name="utility:chevronright" alternative-text="Utility chevronright"
+                      title="chevronright" size="x-small"></lightning-icon>
+                  </template>
+                </div>
+                <div class="custom-icon">
+                  <lightning-icon icon-name="custom:custom86" alternative-text="custom custom86" title="custom86"
+                    size="small"></lightning-icon>
+                </div>
+                <span class="slds-accordion__summary-content slds-p-left_small">Competitive Landscape -
+                  Other
+                  Products</span>
+              </button>
+              <div class="slds-no-flex slds-text-body_regular">
+                <c-competitive-landscape-non-medical-print-cmp account-type={accountType}
+                  disable-print-button={hasAccess} is-other-product-print={enableOtherProdPrint}
+                  account-id={recordId}></c-competitive-landscape-non-medical-print-cmp>
+                <button class="slds-button slds-button_neutral slds-text-body_regular slds-m-left_small"
+                  onclick={handleAddVendor} disabled={addCompetitor}>Add</button>
+              </div>
+            </h2>
+          </div>
+
+          <div class="slds-accordion__content" id="referenceId-21">
+
+            <div class="buttons slds-float_right slds-m-bottom_small cursor" style="padding-right: 1.1rem;">
+              <template lwc:if={isEdit}>
+                <button class="slds-button slds-button_neutral slds-text-body_regular"
+                  onclick={handleSave}>Save</button>
+                <button class="slds-button slds-button_neutral slds-text-body_regular"
+                  onclick={handleCancel}>Cancel</button>
+              </template>
+              <template lwc:else>
+                <button class="slds-button slds-button_neutral slds-text-body_regular" disabled={hasAccess}
+                  onclick={handleEdit}>Edit</button>
+              </template>
+            </div>
+
+            <template lwc:if={isEdit}>
+              <table
+                class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered table-dropdown-selector">
+                <colgroup>
+                  <col style="width: 14%;">
+                  <col style="width: 21%;">
+                  <!-- <col style="width: 8%;"> -->
+                  <col style="width: 14%;">
+                  <col style="width: 23%;">
+                  <col style="width: 10%;">
+                  <col style="width: 16%;">
+                  <col style="width: 2%;">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <div class="cell-width"></div>
+                    <th scope="col">
+                      <div class="cell-width">Other Products\Services Carrier</div>
+                    </th>
+                    <th scope="col">
+                      <div class="cell-width">Type of Other Products\Services Provided</div>
+                    </th>
+                    <th scope="col">
+                      <div class="cell-width">Contract Type</div>
+                    </th>
+                    <th scope="col">
+                      <div class="cell-width">Set Up/Data Exchanges</div>
+                    </th>
+                    <th scope="col">
+                      <div class="cell-width">Special MyUhc.com Customization</div>
+                    </th>
+                    <th scope="col">
+                      <div class="cell-width">Notes</div>
+                    </th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template for:each={otherProdData} for:item="prod" for:index="index">
+                    <tr key={prod.Id}>
+                      <th scope="col">
+                        <div class="cell-width">{prod.CompetitorAccount__r.Name}</div>
+                      </th>
+                      <th scope="col">
+                        <div class="cell-width dropown-width">
+                          <lightning-combobox value={prod.Type_of_Products_Services_Provided__c} placeholder="None"
+                            options={productsServicesProvided} onchange={handleEditChange} data-id={prod.Id}
+                            data-index={index} name="Type_of_Products_Services_Provided__c"
+                            variant="label-hidden"></lightning-combobox>
+                        </div>
+                      </th>
+                      <th scope="col">
+                        <div class="cell-width dropown-width">
+                          <lightning-combobox value={prod.Hub_vendor__c} placeholder="None" options={hubVendor}
+                            data-index={index} onchange={handleEditChange} data-id={prod.Id} name="Hub_vendor__c"
+                            class="toggle-enable" data-record={prod} variant="label-hidden"></lightning-combobox>
+                        </div>
+                      </th>
+                      <th scope="col">
+                        <div class="cell-width">
+                          <!-- is-disabled={prod.disableEdit} -->
+                          <c-competitivelandscapelwc
+                            type-of-other-products-or-services-provided-array-pick-list-values={prod.typeOfFile}
+                            other-products-data-competitor-account={index}
+                            oneventcall={handleChildDropdown}></c-competitivelandscapelwc>
+                        </div>
+                      </th>
+                      <th scope="col">
+                        <div class="cell-width dropown-width">
+                          <lightning-combobox value={prod.Special_MyUhc_com_Customization_column__c} placeholder="None"
+                            data-index={index} options={myUhcCustomization} onchange={handleEditChange}
+                            data-id={prod.Id} data-record={prod} name="Special_MyUhc_com_Customization_column__c"
+                            class="toggle-enable purge-data" variant="label-hidden"></lightning-combobox>
+                        </div>
+                      </th>
+                      <th scope="col">
+                        <div class="cell-width">
+                          <lightning-textarea value={prod.Comments__c} onchange={handleEditChange} data-id={prod.Id}
+                            data-index={index} variant="label-hidden" name="Comments__c" class="toggle-enable"
+                            data-record={prod} max-length="400"></lightning-textarea>
+                        </div>
+                      </th>
+                      <th><lightning-icon icon-name="utility:delete"
+                          data-record={prod} data-index={index} onclick={handleRecDelete} data-id={prod.Id}
+                          size="xx-small" class={disableDeleteRec}></lightning-icon></th>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </template>
+            <template lwc:else>
+              <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                <colgroup>
+                  <col style="width: 14%;">
+                  <col style="width: 14%;">
+                  <!-- <col style="width: 8%;"> -->
+                  <col style="width: 14%;">
+                  <col style="width: 24%;">
+                  <col style="width: 10%;">
+                  <col style="width: 19%;">
+                  <col style="width: 2%;">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <div class="cell-width"></div>
+                    <th scope="col">
+                      <div class="cell-width">Other Products\Services Carrier</div>
+                    </th>
+                    <th scope="col">
+                      <div class="cell-width">Type of Other Products\Services Provided</div>
+                    </th>
+                    <!-- <th scope="col">
+                      <div class="cell-width">Point Solution Vendor</div>
+                    </th> -->
+                    <th scope="col">
+                      <div class="cell-width">Contract Type</div>
+                    </th>
+                    <th scope="col">
+                      <div class="cell-width">Set Up/Data Exchanges</div>
+                    </th>
+                    <th scope="col">
+                      <div class="cell-width">Special MyUhc.com Customization</div>
+                    </th>
+                    <th scope="col">
+                      <div class="cell-width">Notes</div>
+                    </th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template for:each={otherProdData} for:item="prod" for:index="index">
+                    <tr key={prod.Id}>
+                      <th scope="col">
+                        <div class="cell-width">{prod.CompetitorAccount__r.Name}</div>
+                      </th>
+                      <th scope="col">
+                        <div class="cell-width">{prod.Type_of_Products_Services_Provided__c}</div>
+                      </th>
+                      <!-- <th scope="col">
+                        <div class="cell-width">{prod.Point_Solution__c}</div>
+                      </th> -->
+                      <th scope="col">
+                        <div class="cell-width">{prod.Hub_vendor__c}</div>
+                      </th>
+                      <th scope="col">
+                        <div class="cell-width">{prod.Type_of_File__c}</div>
+                      </th>
+                      <th scope="col">
+                        <div class="cell-width">{prod.Special_MyUhc_com_Customization_column__c}
+                        </div>
+                      </th>
+                      <th scope="col">
+                        <div class="cell-width">{prod.Comments__c}</div>
+                      </th>
+                      <th scope="col">
+                        <lightning-icon icon-name="utility:delete" 
+                          onclick={handleRecDelete} data-id={prod.Id} size="xx-small" class={disableDeleteRec}
+                          data-index={index}></lightning-icon>
+                      </th>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </template>
+          </div>
+        </section>
+      </li>
+    </ul>
+  </div>
+  <template lwc:if={isDeleteRec}>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+      class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+          <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+            <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+          </svg>
+          <span class="slds-assistive-text">Cancel and close</span>
+        </button>
+        <div class="slds-modal__header record-delete-warning">
+          <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">Confirmation</h1>
+        </div>
+        <div class="slds-modal__content slds-p-around_medium slds-text-align_center" id="modal-content-id-1">
+
+            <template lwc:if={isTermination}>
+              <div class="popup-buttons">
+                <lightning-input type="date" name="input1" label="Please enter a termination date"
+                  value={terminationDate} date-style="short" onchange={handleDate} class="date-picker"
+                  required></lightning-input>
+                <div>
+                  <lightning-button label="Delete" onclick={handleRemoveRecord}
+                    class="slds-m-left_x-small delete-button" name="Inactive_Competitor_Status__c"
+                    data-date="Inactive_Competitor_Date__c" data-termination="Termination_Date__c"
+                    disabled={isDateNotPicked}></lightning-button>
+                  <lightning-button label="Cancel" onclick={handleDeleteCancel}
+                    class="slds-m-left_x-small cancel-button"></lightning-button>
+                </div>
+              </div>
+            </template>
+
+            <template lwc:else>
+              <p>Do you want to remove this Competitor?</p>
+              <div class="slds-m-top_large">
+                <lightning-button label="Delete" onclick={handleRemoveRecord} class="slds-m-left_x-small"
+                  name="Inactive_Competitor_Status__c" data-date="Inactive_Competitor_Date__c"></lightning-button>
+                <lightning-button label="Delete with Termination Date" onclick={handleVendorTermination}
+                  class="slds-m-left_x-small" name="Inactive_Competitor_Status__c"
+                  data-date="Inactive_Competitor_Date__c" data-termination="Termination_Date__c"></lightning-button>
+                <lightning-button label="Cancel" onclick={handleDeleteCancel}
+                  class="slds-m-left_x-small"></lightning-button>
+              </div>
+            </template>
+        </div>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+  </template>
+</template>

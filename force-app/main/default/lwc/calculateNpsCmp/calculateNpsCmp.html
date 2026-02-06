@@ -1,0 +1,779 @@
+<template>
+    <div class="slds-col slds-size_3-of-3 slds-text-heading_large aligntext">
+        {reportTitle}
+    </div>
+
+    <div class="container is-relative">
+        <template if:true={isLoad}>
+            <lightning-spinner alternative-text="Loading" variant="brand" size="medium">
+            </lightning-spinner>
+        </template>
+
+        <div class="div-left">
+            <div class="inner-container">
+                <div class="inner-left" style="padding-top: 6px;">Choose Sales Cycle </div>
+                <div class="inner-right">
+                    <lightning-combobox name="region" value={salesCycle} placeholder="Select Sales Cycle"
+                        options={regionPicklist} variant="label-hidden" onchange={filterBasedOnPicklistValue}>
+                    </lightning-combobox>
+                </div>
+            </div>
+        </div>
+
+        <div class="div-right">
+            <lightning-button type="submit" variant="Neutral" label="Print" class="slds-m-left_x-small"
+                onclick={exportRecords} disabled={disablePrintButton}></lightning-button>
+        </div>
+    </div>
+
+
+
+
+
+
+    <template if:false={isRvpUser}>
+        <template if:false={isSbSceUser}>
+            <template if:true={isCmSceUser}>
+        <table
+            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout blue-border">
+            <colgroup>
+                <col style="width:20%;" />
+                <col style="width:13%;" />
+                <col style="width:14%;" />
+                <col style="width:13%;" />
+                <col style="width:14%;" />
+                <col style="width:13%;" />
+                <col style="width:13%;" />
+            </colgroup>
+            <thead class="slds-truncate">
+                <tr>
+                    <th colspan="1" style="border-right:3px solid #dfe9f9;"></th>
+                    <th colspan="2" style="text-align: center; border-right:3px solid #dfe9f9;">Current Year</th>
+                    <th colspan="2" style="text-align: center; border-right:3px solid #dfe9f9;">Prior Year</th>
+                    <th colspan="2"></th>
+                </tr>
+                <tr class="slds-line-height_reset">
+                    <th class="slds-cell-wrap" scope="col" style="border-right:3px solid #dfe9f9;">
+                        <template if:true={isCalculateNpsListEmpty}>
+                            <div class="slds-truncate" title="Company" >Company</div>
+                        </template>
+                        <template if:false={isCalculateNpsListEmpty}>
+                            <a onclick={sortFields} data-record="Account__r.Name"
+                                class="slds-th__action slds-text-link--reset" style="padding-left:0px;" tabindex="0">
+                                <span class="slds-truncate" title="Company">Company&nbsp;</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template if:true={sortCompanyAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:false={sortCompanyAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </div>
+                            </a>
+                        </template>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap slds-p-left_xx-small slds-p-right_small" title="Likelihood to Recommend Score">UHC: Likelihood to Recommend Score
+                        </div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col" style="border-right:3px solid #dfe9f9;">
+                        <div class="slds-cell-wrap slds-p-left_xx-small slds-p-right_small" title="Overall Satisfaction with SCE">Overall Satisfaction with SCE
+                        </div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap slds-p-left_xx-small slds-p-right_small" title="Likelihood to Recommend Score">UHC: Likelihood to Recommend Score</div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col" style="border-right:3px solid #dfe9f9;">
+                        <div class="slds-cell-wrap slds-p-left_xx-small slds-p-right_small" title="Overall Satisfaction with SCE">Overall Satisfaction with SCE
+                        </div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Case Management Start Date">Case Management Start Date</div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Case Management End Date">Case Management End Date</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template if:true={isCalculateNpsListEmpty}>
+                    <tr>
+                        <td colspan="12" style="width:100%">
+                            <div class="slds-text-align--center slds-p-around_x-small">
+                                {noRecordsMessage}
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <template if:false={isCalculateNpsListEmpty}>
+                    <template for:each={backEndData} for:item="res">
+                        <template if:true={res.currentYearRecordId}>
+                            <tr key={res.Id}>
+                                <!-- <td class="tableVerticleAlign">
+                                <div class="slds-truncate slds-cell-wrap" title="Company">{res.accountName}</div>
+                            </td> -->
+                                <td class="tableVerticleAlign" data-label="Company" style="border-right:3px solid #dfe9f9;">
+                                    <p class="slds-truncate slds-cell-wrap"><a href={res.companyLink} variant="base"
+                                            label={res.accountName} title="Company" value={res.accountName}
+                                            target="_self" onclick={goToRecordPage}>{res.accountName}</a></p>
+                                </td>
+                                <td class="tableVerticleAlign">
+                                    <div class="slds-truncate slds-cell-wrap"
+                                        title="Likelihood To Recommend Score">
+                                        {res.currentYearLikelihood}</div>
+                                </td>
+                                <td class="tableVerticleAlign" style="border-right:3px solid #dfe9f9;">
+                                    <div class="slds-truncate slds-cell-wrap"
+                                        title="Overall Satisfaction with SCE">
+                                        {res.currentOverallSatisfactionWithSceScore}</div>
+                                </td>
+                                <td class="tableVerticleAlign">
+                                    <div class="slds-truncate slds-cell-wrap"
+                                        title="Likelihood To Recommend Score">
+                                        {res.previousYearLikelihood}</div>
+                                </td>
+                                <td class="tableVerticleAlign" style="border-right:3px solid #dfe9f9;">
+                                    <div class="slds-truncate slds-cell-wrap"
+                                        title="Overall Satisfaction with SCE">
+                                        {res.priorOverallSatisfactionWithSceScore}</div>
+                                </td>
+                                <td class="tableVerticleAlign">
+                                    <div class="slds-truncate slds-cell-wrap" title="Case Management Start Date">
+                                        {res.cmStartDate}</div>
+                                </td>
+                                <template if:true={res.fullyTermedClient}>
+                                    <td class="tableVerticleAlign">
+                                        <div class="slds-truncate slds-cell-wrap" title="Case Management End Date">
+                                            {res.cmEndDate}&nbsp;<span class="termed-client">Termed Client</span>
+                                        </div>
+                                    </td>
+                                </template>
+                                <template if:false={res.fullyTermedClient}>
+                                    <td class="tableVerticleAlign">
+                                        <div class="slds-truncate slds-cell-wrap" title="Case Management End Date">
+                                            {res.cmEndDate}
+                                        </div>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </template>
+                    <tr>
+                        <td colspan="7">
+                            <div class="slds-text-body_small slds-truncate slds-cell-wrap">
+                                {npsFootNote}
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    <template if:false={isCmSceUser}>
+        <table
+            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout blue-border">
+            <colgroup>
+                <col style="width:24%;" />
+                <col style="width:19%;" />
+                <col style="width:19%;" />
+                <col style="width:19%;" />
+                <col style="width:19%;" />
+            </colgroup>
+            <thead class="slds-truncate">
+                <tr class="slds-line-height_reset">
+                    <th class="slds-cell-wrap" scope="col">
+                        <template if:true={isCalculateNpsListEmpty}>
+                            <div class="slds-truncate" title="Company">Company</div>
+                        </template>
+                        <template if:false={isCalculateNpsListEmpty}>
+                            <a onclick={sortFields} data-record="Account__r.Name"
+                                class="slds-th__action slds-text-link--reset" style="padding-left:0px;" tabindex="0">
+                                <span class="slds-truncate" title="Company">Company&nbsp;</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template if:true={sortCompanyAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:false={sortCompanyAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </div>
+                            </a>
+                        </template>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap slds-p-left_xx-small slds-p-right_small" title="Current Year Likelihood to Recommend Score">Current Year
+                            Likelihood
+                            to Recommend Score
+                        </div>
+                    </th>
+                    <th class="slds-cell-wrap" style="border-right:3px solid #dfe9f9;" scope="col">
+                        <div class="slds-cell-wrap slds-p-left_xx-small slds-p-right_small" title="Prior Year Likelihood to Recommend Score">Prior Year
+                            Likelihood
+                            to Recommend Score</div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Case Management Start Date">Case Management Start Date</div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Case Management End Date">Case Management End Date</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template if:true={isCalculateNpsListEmpty}>
+                    <tr>
+                        <td colspan="12" style="width:100%">
+                            <div class="slds-text-align--center slds-p-around_x-small">
+                                {noRecordsMessage}
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <template if:false={isCalculateNpsListEmpty}>
+                    <template for:each={backEndData} for:item="res">
+                        <template if:true={res.currentYearRecordId}>
+                            <tr key={res.Id}>
+                                <!-- <td class="tableVerticleAlign">
+                                <div class="slds-truncate slds-cell-wrap" title="Company">{res.accountName}</div>
+                            </td> -->
+                                <td class="tableVerticleAlign" data-label="Company">
+                                    <p class="slds-truncate slds-cell-wrap"><a href={res.companyLink} variant="base"
+                                            label={res.accountName} title="Company" value={res.accountName}
+                                            target="_self" onclick={goToRecordPage}>{res.accountName}</a></p>
+                                </td>
+                                <td class="tableVerticleAlign">
+                                    <div class="slds-truncate slds-cell-wrap"
+                                        title="Current Year Likelihood To Recommend Score">
+                                        {res.currentYearLikelihood}</div>
+                                </td>
+                                <td class="tableVerticleAlign" style="border-right:3px solid #dfe9f9;">
+                                    <div class="slds-truncate slds-cell-wrap"
+                                        title="Prior Year Likelihood To Recommend Score">
+                                        {res.previousYearLikelihood}</div>
+                                </td>
+                                <td class="tableVerticleAlign">
+                                    <div class="slds-truncate slds-cell-wrap" title="Case Management Start Date">
+                                        {res.cmStartDate}</div>
+                                </td>
+                                <template if:true={res.fullyTermedClient}>
+                                    <td class="tableVerticleAlign">
+                                        <div class="slds-truncate slds-cell-wrap" title="Case Management End Date">
+                                            {res.cmEndDate}&nbsp;<span class="termed-client">Termed Client</span>
+                                        </div>
+                                    </td>
+                                </template>
+                                <template if:false={res.fullyTermedClient}>
+                                    <td class="tableVerticleAlign">
+                                        <div class="slds-truncate slds-cell-wrap" title="Case Management End Date">
+                                            {res.cmEndDate}
+                                        </div>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </template>
+                    <tr>
+                        <td colspan="5">
+                            <div class="slds-text-body_small slds-truncate slds-cell-wrap">
+                                {npsFootNote}
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+</template>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <template if:true={isSbSceUser}>
+        <table
+            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout blue-border">
+            <colgroup>
+                <col style="width:24%;" />
+                <col style="width:19%;" />
+                <col style="width:19%;" />
+                <col style="width:19%;" />
+                <col style="width:19%;" />
+            </colgroup>
+            <thead class="slds-truncate">
+                <tr class="slds-line-height_reset">
+                    <th class="slds-cell-wrap" scope="col">
+                        <template if:true={isCalculateNpsListEmpty}>
+                            <div class="slds-truncate" title="Company">Company</div>
+                        </template>
+                        <template if:false={isCalculateNpsListEmpty}>
+                            <a onclick={sortFields} data-record="Account__r.Name"
+                                class="slds-th__action slds-text-link--reset" style="padding-left:0px;" tabindex="0">
+                                <span class="slds-truncate" title="Company">Company&nbsp;</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template if:true={sortCompanyAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:false={sortCompanyAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </div>
+                            </a>
+                        </template>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap slds-p-left_xx-small slds-p-right_small" title="Current Year Likelihood to Recommend Score">Current Year
+                            Likelihood
+                            to Recommend Score
+                        </div>
+                    </th>
+                    <th class="slds-cell-wrap" style="border-right:3px solid #dfe9f9;" scope="col">
+                        <div class="slds-cell-wrap slds-p-left_xx-small slds-p-right_small" title="Prior Year Likelihood to Recommend Score">Prior Year
+                            Likelihood
+                            to Recommend Score</div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Case Management Start Date">Case Management Start Date</div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Case Management End Date">Case Management End Date</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template if:true={isCalculateNpsListEmpty}>
+                    <tr>
+                        <td colspan="12" style="width:100%">
+                            <div class="slds-text-align--center slds-p-around_x-small">
+                                {noRecordsMessage}
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <template if:false={isCalculateNpsListEmpty}>
+                    <template for:each={backEndData} for:item="res">
+                        <template if:true={res.currentYearRecordId}>
+                            <tr key={res.Id}>
+                                <!-- <td class="tableVerticleAlign">
+                                <div class="slds-truncate slds-cell-wrap" title="Company">{res.accountName}</div>
+                            </td> -->
+                                <td class="tableVerticleAlign" data-label="Company">
+                                    <p class="slds-truncate slds-cell-wrap"><a href={res.companyLink} variant="base"
+                                            label={res.accountName} title="Company" value={res.accountName}
+                                            target="_self" onclick={goToRecordPage}>{res.accountName}</a></p>
+                                </td>
+                                <td class="tableVerticleAlign">
+                                    <div class="slds-truncate slds-cell-wrap"
+                                        title="Current Year Likelihood To Recommend Score">
+                                        {res.currentYearLikelihood}</div>
+                                </td>
+                                <td class="tableVerticleAlign" style="border-right:3px solid #dfe9f9;">
+                                    <div class="slds-truncate slds-cell-wrap"
+                                        title="Prior Year Likelihood To Recommend Score">
+                                        {res.previousYearLikelihood}</div>
+                                </td>
+                                <td class="tableVerticleAlign">
+                                    <div class="slds-truncate slds-cell-wrap" title="Case Management Start Date">
+                                        {res.cmStartDate}</div>
+                                </td>
+                                <template if:true={res.fullyTermedClient}>
+                                    <td class="tableVerticleAlign">
+                                        <div class="slds-truncate slds-cell-wrap" title="Case Management End Date">
+                                            {res.cmEndDate}&nbsp;<span class="termed-client">Termed Client</span>
+                                        </div>
+                                    </td>
+                                </template>
+                                <template if:false={res.fullyTermedClient}>
+                                    <td class="tableVerticleAlign">
+                                        <div class="slds-truncate slds-cell-wrap" title="Case Management End Date">
+                                            {res.cmEndDate}
+                                        </div>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </template>
+                    <tr>
+                        <td colspan="5">
+                            <div class="slds-text-body_small slds-truncate slds-cell-wrap">
+                                {npsFootNote}
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+
+    </template>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <template if:true={isRvpUser}>
+        <table
+            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout blue-border">
+            <colgroup>
+                <col style="width:19%;" />
+                <col style="width:12%;" />
+                <col style="width:11%;" />
+                <col style="width:11.5%;" />
+                <col style="width:11%;" />
+                <col style="width:11.5%;" />
+                <col style="width:11.5%;" />
+                <col style="width:12.5%;" />
+            </colgroup>
+            <thead class="slds-truncate">
+                <tr>
+                    <th colspan="2" style="border-right:3px solid #dfe9f9;"></th>
+                    <th colspan="2" style="text-align: center; border-right:3px solid #dfe9f9;">Current Year</th>
+                    <th colspan="2" style="text-align: center; border-right:3px solid #dfe9f9;">Prior Year</th>
+                    <th colspan="2"></th>
+                    <!-- <th></th>
+                    <th></th>
+                    <th></th> -->
+                </tr>
+                <tr class="slds-line-height_reset">
+                    <th class="slds-cell-wrap" scope="col">
+                        <template if:true={isCalculateNpsListEmpty}>
+                            <div class="slds-truncate" title="Company">Company</div>
+                        </template>
+                        <template if:false={isCalculateNpsListEmpty}>
+                            <a onclick={sortFields} data-record="Account__r.Name"
+                                class="slds-th__action slds-text-link--reset" style="padding-left:0px;" tabindex="0">
+                                <span class="slds-truncate" title="Company">Company&nbsp;</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template if:true={sortCompanyAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:false={sortCompanyAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </div>
+                            </a>
+                        </template>
+                    </th>
+
+                    <!-- <th class="slds-cell-wrap" style="border-right:3px solid #dfe9f9;" scope="col">
+                        <div class="slds-cell-wrap" title="SCE Named in the Survey">SCE Named in the Survey
+                        </div>
+                    </th> -->
+
+                    <th class="slds-cell-wrap" style="border-right:3px solid #dfe9f9;" scope="col">
+                        <!--border-right:3px solid #dfe9f9;-->
+                        <template if:true={isCalculateNpsListEmpty}>
+                            <div class="slds-truncate slds-cell-wrap" title="SCE Named in the Survey">SCE Named in the
+                                Survey</div>
+                        </template>
+                        <template if:false={isCalculateNpsListEmpty}>
+                            <a onclick={sortFields} data-record="currentSce"
+                                class="slds-th__action slds-text-link--reset slds-cell-wrap"
+                                style="padding-right:17px; padding-left:1px;" tabindex="0">
+                                <span class="slds-truncate slds-cell-wrap" title="SCE Named in the Survey">SCE Named in
+                                    the Survey&nbsp;</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template if:true={sortCurrentSceAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:false={sortCurrentSceAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </div>
+                            </a>
+                        </template>
+                    </th>
+
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Likelihood to Recommend Score">Likelihood to Recommend Score
+                        </div>
+                    </th>
+
+                    <!-- <th class="slds-cell-wrap" scope="col"> 
+                        <template if:true={isCalculateNpsListEmpty}>
+                            <div class="slds-truncate slds-cell-wrap" title="Likelihood To Recommend Score">Likelihood To Recommend Score</div>
+                        </template>
+                        <template if:false={isCalculateNpsListEmpty}>
+                            <a onclick={sortFields} data-record="currentScore"
+                                class="slds-th__action slds-text-link--reset slds-cell-wrap" style="padding-right:17px; padding-left:1px;" tabindex="0">
+                                <span class="slds-truncate slds-cell-wrap" title="Likelihood To Recommend Score">Likelihood To Recommend Score&nbsp;</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template if:true={sortCurrentScoreAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:false={sortCurrentScoreAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </div>
+                            </a>
+                        </template>
+                    </th> -->
+
+                    <!-- <th class="slds-cell-wrap" scope="col" style="border-right:3px solid #dfe9f9;">
+                        <div class="slds-cell-wrap" title="Net Promoter Type">Net Promoter Type</div>
+                    </th> -->
+
+                    <th class="slds-cell-wrap" style="border-right:3px solid #dfe9f9;" scope="col">
+                        <!--border-right:3px solid #dfe9f9;-->
+                        <template if:true={isCalculateNpsListEmpty}>
+                            <div class="slds-truncate slds-cell-wrap" title="Net Promoter Type">Net Promoter Type</div>
+                        </template>
+                        <template if:false={isCalculateNpsListEmpty}>
+                            <a onclick={sortFields} data-record="currentNetPromoter"
+                                class="slds-th__action slds-text-link--reset slds-cell-wrap"
+                                style="padding-right:17px; padding-left:1px;" tabindex="0">
+                                <span class="slds-truncate slds-cell-wrap" title="Net Promoter Type">Net Promoter
+                                    Type&nbsp;</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template if:true={sortCurrentNetPromoterAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:false={sortCurrentNetPromoterAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </div>
+                            </a>
+                        </template>
+                    </th>
+
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Likelihood to Recommend Score">Likelihood to Recommend Score
+                        </div>
+                    </th>
+
+                    <!-- <th class="slds-cell-wrap" scope="col"> 
+                        <template if:true={isCalculateNpsListEmpty}>
+                            <div class="slds-truncate slds-cell-wrap" title="Likelihood To Recommend Score">Likelihood To Recommend Score</div>
+                        </template>
+                        <template if:false={isCalculateNpsListEmpty}>
+                            <a onclick={sortFields} data-record="priorScore"
+                                class="slds-th__action slds-text-link--reset slds-cell-wrap" style="padding-right:17px; padding-left:1px;" tabindex="0">
+                                <span class="slds-truncate slds-cell-wrap" title="Likelihood To Recommend Score">Likelihood To Recommend Score&nbsp;</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template if:true={sortPriorScoreAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:false={sortPriorScoreAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </div>
+                            </a>
+                        </template>
+                    </th> -->
+
+                    <!-- <th class="slds-cell-wrap" scope="col" style="border-right:3px solid #dfe9f9;">
+                        <div class="slds-cell-wrap" title="Net Promoter Type">Net Promoter Type</div>
+                    </th> -->
+
+                    <th class="slds-cell-wrap" style="border-right:3px solid #dfe9f9;" scope="col">
+                        <!--border-right:3px solid #dfe9f9;-->
+                        <template if:true={isCalculateNpsListEmpty}>
+                            <div class="slds-truncate slds-cell-wrap" title="Net Promoter Type">Net Promoter Type</div>
+                        </template>
+                        <template if:false={isCalculateNpsListEmpty}>
+                            <a onclick={sortFields} data-record="priorNetPromoter"
+                                class="slds-th__action slds-text-link--reset slds-cell-wrap"
+                                style="padding-right:17px; padding-left:1px;" tabindex="0">
+                                <span class="slds-truncate slds-cell-wrap" title="Net Promoter Type">Net Promoter
+                                    Type&nbsp;</span>
+                                <div class="slds-icon_container sortIconPadding">
+                                    <template if:true={sortPriorNetPromoterAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowdown" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    <template if:false={sortPriorNetPromoterAsc}>
+                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                            icon-name="utility:arrowup" size="xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </div>
+                            </a>
+                        </template>
+                    </th>
+
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Case Management Start Date">Case Management Start Date</div>
+                    </th>
+                    <th class="slds-cell-wrap" scope="col">
+                        <div class="slds-cell-wrap" title="Case Management End Date">Case Management End Date</div>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <template if:true={isCalculateNpsListEmpty}>
+                    <tr>
+                        <td colspan="12" style="width:100%">
+                            <div class="slds-text-align--center slds-p-around_x-small">
+                                {noRecordsMessage}
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <template if:false={isCalculateNpsListEmpty}>
+                    <template for:each={backEndData} for:item="res">
+                        <template if:false={res.isSpecialityBenefit}>
+                            <template if:true={res.currentYearRecordId}>
+                                <tr key={res.Id}>
+                                    <!-- <td class="tableVerticleAlign" style="border-right:3px solid #dfe9f9;">
+                                <div class="slds-truncate slds-cell-wrap" title="Company">{res.accountName}</div>
+                            </td> -->
+                                    <td class="tableVerticleAlign" data-label="Company">
+                                        <p class="slds-truncate slds-cell-wrap"><a href={res.companyLink} variant="base"
+                                                label={res.accountName} title="Company" value={res.accountName}
+                                                target="_self" onclick={goToRecordPage}>{res.accountName}</a></p>
+                                    </td>
+
+                                    <td class="tableVerticleAlign" style="border-right:3px solid #dfe9f9;">
+                                        <div class="slds-truncate slds-cell-wrap" title="SCE Named in the Survey">
+                                            {res.currentSce}</div>
+                                    </td>
+
+                                    <td class="tableVerticleAlign">
+                                        <div class="slds-truncate slds-cell-wrap" title="Likelihood To Recommend Score">
+                                            {res.currentYearLikelihood}</div>
+                                    </td>
+                                    <td class="tableVerticleAlign" style="border-right:3px solid #dfe9f9;">
+                                        <div class="slds-truncate slds-cell-wrap" title="Net Promoter Type">
+                                            {res.currentNetPromoterType}</div>
+                                    </td>
+                                    <td class="tableVerticleAlign">
+                                        <div class="slds-truncate slds-cell-wrap" title="Likelihood To Recommend Score">
+                                            {res.previousYearLikelihood}</div>
+                                    </td>
+                                    <td class="tableVerticleAlign" style="border-right:3px solid #dfe9f9;">
+                                        <div class="slds-truncate slds-cell-wrap" title="Net Promoter Type">
+                                            {res.previousNetPromoterType}</div>
+                                    </td>
+                                    <td class="tableVerticleAlign">
+                                        <div class="slds-truncate slds-cell-wrap" title="Case Management Start Date">
+                                            {res.cmStartDate}</div>
+                                    </td>
+                                    <template if:true={res.fullyTermedClient}>
+                                        <td class="tableVerticleAlign">
+                                            <div class="slds-truncate slds-cell-wrap" title="Case Management End Date">
+                                                {res.cmEndDate}<span class="termed-client">Termed Client</span>
+                                            </div>
+                                        </td>
+                                    </template>
+                                    <template if:false={res.fullyTermedClient}>
+                                        <td class="tableVerticleAlign">
+                                            <div class="slds-truncate slds-cell-wrap" title="Case Management End Date">
+                                                {res.cmEndDate}
+                                            </div>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </template>
+                    </template>
+                    <tr>
+                        <td colspan="8">
+                            <div class="slds-text-body_small slds-truncate slds-cell-wrap">
+                                {npsFootNote}
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+
+
+
+
+
+
+</template>

@@ -1,0 +1,183 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    <div class="slds-p-around_small">
+        <div class="header slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small"
+            style="background-color:#9cb3dd;text-align: left;">
+            <span>
+                <b>Product Change Checklist Summary</b>
+            </span>
+        </div>
+        <br>
+        <!-- <p class="slds-p-left_large"><b>Current Sales Cycle: </b>{salesCycle}</p>  label="Current Sales Cycle:"-->
+        <div class="slds-p-left_large" style="display: flex;">
+            <p class="slds-p-left_large" style="width:30%"><b style="float: left; margin-top: 0.2rem;">Current Sales Cycle:
+                    &nbsp;&nbsp;</b> <lightning-combobox value={selectedCycle} options={dateOptions}
+                    onchange={handleOptionChange} variant="label-hidden" style="float: left;width:45%">
+                </lightning-combobox></p>
+
+
+
+            <!-- <div><lightning-combobox value={selectedCycle} options={dateOptions} onchange={handleOptionChange}
+                    style="width: 20%;" variant="label hidden">
+                </lightning-combobox></div> -->
+
+            <!-- <lightning-combobox label="Current Sales Cycle:" value={selectedCycle} options={dateOptions} onchange={handleOptionChange}
+                    style="width: 20%;" variant="label hidden">
+            </lightning-combobox> -->
+        </div>
+    </div>
+    <br>
+    <div>
+        <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+            <p> Clients to Validate</p>
+        </div>
+        <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+            style="background-color:#F7F8E0;">{label.Renewal_Checklist_Clients_to_validate_instruction}</p>
+        <div>
+            <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-no-row-hover">
+                <colgroup>
+                    <col style="width:40%;" />
+                    <col style="width:60%;" />
+                </colgroup>
+                <template for:each={accData} for:item="acc">
+                    <tr key={acc.Id}>
+                        <template if:false={acc.isValidated}>
+                            <th class="slds-cell-wrap" scope="col"
+                                style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);">
+                                <a href={accUrl} onclick={handleAccView} data-accid={acc.Id}>
+                                    {acc.Name}
+                                </a>
+                            </th>
+                            <th scope="col" class="slds-float_left">
+                                <lightning-button label="Complete Product Change Checklist" variant="brand"
+                                    onclick={handleComplete} icon-name="utility:check" class="slds-m-left_x-small"
+                                    data-id={acc.Id} data-name={acc.Name}>
+                                </lightning-button>
+                            </th>
+                        </template>
+                    </tr>
+                </template>
+            </table>
+        </div>
+        <br>
+        <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small">
+            <p> Validated Clients</p>
+        </div>
+        <div class="slds-p-around_x-small slds-m-top_small" style="background-color:#F7F8E0;">
+            <p style="word-wrap: break-word;" class="slds-p-left_medium">
+                REMINDER: For Incentive Compensation, you will need to initiate your Growth and Renewal
+                Incentive
+                Compensation payments. To initiate your Renewal Incentive Compensation payments,
+                (1) navigate to the
+                Company record;
+                (2) go to the Renewal Details section with the Details tab;
+                (3) complete the Renewal
+                Status information. To initiate your Growth payments, navigate to the Membership Activity record and
+                complete the information in the Sales Incentives tab.
+
+            </p>
+        </div>
+        <div class="slds-float_right slds-p-right_large slds-m-top_x-small">
+            <lightning-button label="Expand/Collapse All" class="slds-m-left_x-small slds-m-bottom_small"
+                onclick={handleExpandCollapse} icon-name="utility:expand_all"></lightning-button>
+        </div>
+        <div class="slds-m-top_xx-large">
+            <template for:each={accData} for:item="acc">
+                <lightning-accordion key={acc.Id} allow-multiple-sections-open class="section-header-style"
+                    active-section-name={activeSectionsSub}>
+                    <template if:true={acc.isValidated}>
+                        <lightning-accordion-section name={acc.Name} label={acc.nameAndDate} section-header-sub>
+                            <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-no-row-hover">
+                                <colgroup>
+                                    <col style="width:33.33%;" />
+                                    <col style="width:33.33%;" />
+                                    <col style="width:33.33%;" />
+                                </colgroup>
+                                <tr>
+                                    <th class="slds-cell-wrap" scope="col">
+                                        <a href={accUrl} onclick={handleAccView} data-accid={acc.Id}>
+                                            {acc.Name}
+                                        </a>
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col">&nbsp;</b></th>
+                                    <th scope="col" class="slds-float_right">
+                                        <lightning-button label="View/Edit Product Change Checklist" variant="brand"
+                                            onclick={handleComplete} class="slds-m-left_x-small" data-id={acc.Id}
+                                            data-name={acc.Name}  icon-name="action:edit">
+                                        </lightning-button>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th class="slds-cell-wrap" scope="col" style="background-color:#e1e8f4;">
+                                        <b>New Products Sold or NBEA Growth on Existing Products</b>
+                                    </th>
+                                    <td style="background-color:#e1e8f4;"></td>
+                                    <td></td>
+                                </tr>
+                                <template if:true={acc.showExistingProducts}>
+                                    <template for:each={acc.ExistingProducts} for:item="ExistingProducts">
+                                        <tr key={acc.ExistingProducts}>
+                                            <td class="validated-products-background"></td>
+                                            <td class="slds-cell-wrap validated-products-background bottom-border"
+                                                scope="col">
+                                                {ExistingProducts.Product2_Name}</td>
+                                            <td></td>
+                                        </tr>
+                                    </template>
+                                </template>
+                                <template if:false={acc.showExistingProducts}>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <b>
+                                                {label.Renewal_Checklist_no_new_products}
+                                            </b>
+                                        </td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                </template>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                </tr>
+
+                                <tr>
+                                    <th class="slds-cell-wrap" scope="col" style="background-color:#f3f3f3;">
+                                        <b>Fully or Partially Terming Products</b>
+                                    </th>
+                                    <td style="background-color:#f3f3f3;"></td>
+                                    <td></td>
+                                </tr>
+                                <template if:true={acc.showTermingProducts}>
+                                    <template for:each={acc.TermingProducts} for:item="TermingProducts">
+                                        <tr key={acc.TermingProducts}>
+                                            <td class="validated-products-background"></td>
+                                            <td class="slds-cell-wrap validated-products-background bottom-border"
+                                                scope="col">
+                                                {TermingProducts.Product2_Name}</td>
+                                            <td></td>
+                                        </tr>
+                                    </template>
+                                </template>
+                                <template if:false={acc.showTermingProducts}>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <b>
+                                                {label.Renewal_Checklist_no_terming_products}
+                                            </b>
+                                        </td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                </template>
+                            </table>
+                        </lightning-accordion-section>
+                    </template>
+                </lightning-accordion>
+            </template>
+        </div>
+    </div>
+</template>

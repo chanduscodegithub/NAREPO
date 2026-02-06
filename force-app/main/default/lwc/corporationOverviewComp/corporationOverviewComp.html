@@ -1,0 +1,196 @@
+<!--
+  @description       : 
+  @author            : Thanushree
+  @group             : 
+  @last modified on  : 03-05-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+
+        <div >
+                <div class="section-header" >
+                    <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+                    <span ><b>Client Overview</b></span>
+                </div>
+                </div>
+            </div>
+            <div  >
+                   
+                        <div class="slds-p-top_xx-small  slds-p-left_x-small slds-text-body_small" >
+                                <span><i>Most of the information for this section comes from the General Info tab. The Start and Renewal Dates come from the Renewal Details section under the Details tab. The Involvement in Business Groups on Health comes from the Business Groups on Health/Coalitions section under the Details tab.</i></span>                       
+                            </div>
+                            
+                       
+                    </div>
+        <div class="slds-p-top_x-small ">
+        <table class=" slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+           
+           
+            <tbody>
+                
+                <tr >
+                    <td class="slds-border_right">
+                        <div >Traditional Medical Current Deal Start Date</div>
+                    </td>
+                    <td  colspan="2">
+                        <template if:true={currentDealStartDateStr}>                          
+                            <span>{currentDealStartDateStr}</span>    
+                        </template>                            
+                    </td>                   
+                </tr>
+                <tr>
+                    <td class="slds-border_right">
+                        <div>Traditional Medical Current Deal Next Renewal Date</div>
+                    </td>
+                    <td  colspan="2">
+                        <template if:true={currentDealRenewalDateStr}>                          
+                            <span>{currentDealRenewalDateStr}</span>    
+                        </template>                            
+                    </td>                   
+                </tr>
+                <tr >
+                    <td class="slds-border_right">
+                        <div >Surest Medical Current Deal Start Date</div>
+                    </td>
+                    <td  colspan="2">
+                        <template if:true={surestCurrentDealStartDateStr}>                          
+                            <span>{surestCurrentDealStartDateStr}</span>    
+                        </template>                            
+                    </td>                   
+                </tr>
+                <tr >
+                    <td class="slds-border_right">
+                        <div >Surest Medical Current Deal Next Renewal Date</div>
+                    </td>
+                    <td  colspan="2">
+                        <template if:true={surestNextRenewalDateStr}>                          
+                            <span>{surestNextRenewalDateStr}</span>    
+                        </template>                            
+                    </td>                   
+                </tr>
+                <tr>
+                        <td class="slds-border_right">
+                            <div>Tenure</div>
+                        </td>
+                        <td colspan="2">
+                            <template if:true={corporationOverviewData.Tenure__c}>  
+                                <span>{corporationOverviewData.Tenure__c}</span>   
+                            </template>                             
+                        </td>                    
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>Business Line</div>
+                        </td>
+                        <td colspan="2"> 
+                            <template if:true={corporationOverviewData.Subtype__c}>                                    
+                                <span>{corporationOverviewData.Subtype__c}</span>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>Fortune 1000 Ranking</div>
+                        </td>
+                        <td colspan="2">
+                            <template if:true={corporationOverviewData.Fortune_500_Ranking__c}> 
+                                <span>{corporationOverviewData.Fortune_500_Ranking__c}</span>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>Annual Revenue</div>
+                        </td>
+                        <td colspan="2">
+                          
+                                <span><lightning-formatted-number value={corporationOverviewData.AnnualRevenue__c}  currency-code="USD" format-style="currency" minimum-fraction-digits="2"></lightning-formatted-number></span>
+                            
+                         </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>Eligible US Ees</div>
+                        </td>
+                        <td colspan="2">
+                            <template if:true={corporationOverviewData.Eligible_US_EEs__c}> 
+                                <span><lightning-formatted-number value={corporationOverviewData.Eligible_US_EEs__c}></lightning-formatted-number></span>
+                            </template>
+                         </td>
+                     </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>Worldwide Ees</div>
+                        </td>
+                        <td colspan="2">
+                            <template if:true={corporationOverviewData.Worldwide_EEs__c}> 
+                                <span><lightning-formatted-number value={corporationOverviewData.Worldwide_EEs__c}></lightning-formatted-number></span>
+                            </template>
+                        </td>
+                     </tr>
+                     <tr>
+                            <td class="slds-border_right">
+                                <div>Annual B2B Spend</div>
+                            </td>
+                            <td colspan="2">
+                                 <span><lightning-formatted-number value={corporationOverviewData.AnnualB2BSpend__c} currency-code="USD" format-style="currency" minimum-fraction-digits="2"></lightning-formatted-number></span>
+                               
+                            </td>
+                         </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>Health Plan Manager Industry</div>
+                        </td>
+                        <td colspan="2">
+                            <template if:true={corporationOverviewData.Health_Plan_Manager_Industry__c}> 
+                                <span>{corporationOverviewData.Health_Plan_Manager_Industry__c}</span>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>HQ Address</div>
+                        </td>
+                        <td colspan="2">
+                            <template if:true={corporationOverviewData.BillingAddress}> 
+                                    <template if:true={corporationOverviewData.BillingAddress.street}>
+                                <span>{corporationOverviewData.BillingAddress.street}</span><br/>
+                                </template>
+                                <template if:true={corporationOverviewData.BillingAddress.city}>
+                                        <span>{corporationOverviewData.BillingAddress.city}</span> <span>, </span> <span>{corporationOverviewData.BillingAddress.stateCode}</span> <span> {corporationOverviewData.BillingAddress.postalCode}</span><br/>
+                                </template>
+                                <template if:true={corporationOverviewData.BillingAddress.country}>
+                                        <span>{corporationOverviewData.BillingAddress.country}</span>
+                                </template>
+                               
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>Primary Situs State</div>
+                        </td>
+                        <td colspan="2">
+                            <template if:true={corporationOverviewData.Primary_Situs_State__c}> 
+                                
+                                <span>{corporationOverviewData.Primary_Situs_State__c}</span>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right">
+                            <div>Involvement in Business Groups on Health</div>
+                        </td>
+                        <td class="slds-cell-wrap" colspan="2">
+                                <template if:true={bghData}> 
+                               <span>{bghData}</span>
+                            </template>
+                        </td>
+                    </tr>
+                 
+                
+            </tbody>
+       
+        </table>
+        </div>
+    </template>

@@ -1,0 +1,1056 @@
+<apex:page controller="RenewalChecklistPdfController" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" standardStylesheets="false" renderAs="advanced_pdf">
+    <head>
+        <style>
+            @page{            
+            margin:  .8cm;
+            @bottom-right {
+            content: "Page " counter(page) " of " counter(pages);
+            font-size:12px;
+            padding-right:12px;
+            }
+            }
+            body{
+            font-family: Arial;
+            font-size: 13px;
+            line-height:120%;
+            }
+            table{
+            border-collapse: collapse;
+            border:1px solid black;
+            }
+            table tr td{
+            border:1px solid black;
+            }
+            table tr th{
+            border:1px solid black;
+            }
+            .customTable,.customTable td {  <!-- CR - 3826 Vignesh -->
+            border:0 !important;
+            }   
+            .heading {
+            font-size:20px;
+            font-weight:bold;
+            width:100%;
+            padding:0px;
+            margin-top:15px;
+            border-bottom:1px solid black;
+            color:#193e63;
+            line-height:130%;
+            }
+            
+            .sub-heading {
+            /*font-size:15px;
+            font-weight:bold;
+            background-color:#9cb3dd;
+            width:100%;
+            padding:3px;
+            border-radius: 2px;*/
+            background: #8aa6d9;
+            padding: 9px 13px;
+            width: 100%;
+            font-size: 14px;
+            border:1px solid #8aa6d9;
+            border-radius:9px;
+            font-weight:bold;
+            }
+            
+            .right-allign{
+            text-align: right;
+            }
+            
+            .cell-padding{
+            padding-left:5px
+            }
+            
+            .page-break{
+            page-break-inside:avoid; 
+            page-break-after:auto}
+            
+        </style>
+        
+    </head> 
+    <body>
+        <div style="float:right;">
+            <img src="{!$Resource.SoldCaseCheckListLogo}"/>
+        </div>
+        <br/><br/>
+        <div class="heading" style="margin-bottom:0px">            
+            <p style="margin-bottom:5px">
+                {!accountName} Product Change Checklist
+            </p>
+            <p style="font-size:13px;margin-bottom:0px;margin-top:0px">
+                <!--apex:outputText value="{0,date,M/d/yyyy h:mm a}"><apex:param value="{!formatedDate}"/></apex:outputText-->
+                {!formatedDate}
+            </p>
+        </div>
+        <!-- CR - 3826 Vignesh -->
+         <table class = "customTable" border="0" width="100%">
+             <tr>
+                 <td width="60%">
+                     <p style="color:#193e63;">
+                         <b>Total Current Medical UHC Members:<apex:outputText value="{0,number, ###,###}"><apex:param value="{!totalCurrentUHCMembers}"/></apex:outputText></b>                         
+                     </p>  
+                 </td>
+                 <td width="40%">
+                     <p style="color:#193e63;">           
+                         <b style='text-align:right;'>Surest Members:<apex:outputText value="{0,number, ###,###}"><apex:param value="{!totalSurestMembers}"/></apex:outputText></b>                            
+                     </p>
+                 </td>
+             </tr>
+        </table>
+       <!-- <p style="color:#193e63;">
+            <b>Total Current Medical UHC Members:<apex:outputText value="{0,number, ###,###}"><apex:param value="{!totalCurrentUHCMembers}"/></apex:outputText></b>          
+        </p>  -->
+        <div class="sub-heading">
+            New Products Sold or NBEA Growth on Existing Products
+        </div>
+        <br/>
+        <div>
+            <apex:outputText rendered="{!vfPrintData.detailExistingProductsList.size==0}" >
+                <b style='width:100%;text-align:center;float:left;'>{!$label.Renewal_Checklist_no_new_products}</b><br/>
+            </apex:outputText>
+            
+            <apex:outputText rendered="{!vfPrintData.detailExistingProductsList.size>0}" >
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%">
+                    <colgroup>
+                        <col style = "width:40%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                    </colgroup>
+                    <thead>
+                        <tr class="page-break" style="background:#f6f4f4;">
+                            <th scope="col">
+                                Product
+                            </th>
+                            <th scope="col" class="right-allign">
+                                Product Selection
+                            </th>
+                            <th scope="col" class="right-allign">
+                                Sold New Mbrs
+                            </th>
+                            <!--th scope="col">
+                                Existing Mbrs Retained
+                            </th-->
+                            <th scope="col" class="right-allign">
+                                Effective Date
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <apex:repeat value="{!vfPrintData.detailExistingProductsList}" var="existingProduct">
+                                <tr class="page-break">
+                                    <td scope="col">{!existingProduct.Product2.Name}</td>
+                                    <td scope="col" class="right-allign">{!existingProduct.Buyup_Product_Selection__c}</td>
+                                    <td scope="col" class="right-allign"><apex:outputText value="{0,number, ###,###}"><apex:param value="{!existingProduct.Net_Results__c}"/></apex:outputText></td>
+                                    <!--td scope="col" class="right-allign"><apex:outputText value="{0,number, ###,###}"><apex:param value="{!existingProduct.Existing_Members_Retained__c}"/></apex:outputText></td-->
+                                    <td scope="col" class="right-allign"><apex:outputText value="{0,date,M/d/yyyy}"><apex:param value="{!existingProduct.Opportunity.EffectiveDate__c}"/></apex:outputText></td>
+                                </tr>
+                        </apex:repeat> 
+                    </tbody>
+                </table>
+            </apex:outputText>
+        </div>
+        <br/>
+        
+        <div class="sub-heading">
+            Fully or Partially Terming Products
+        </div>
+        <br/>
+        <div>
+            <apex:outputText rendered="{!vfPrintData.detailTermingProductsList.size==0}" >
+                <b style='width:100%;text-align:center;float:left;'>{!$label.Renewal_Checklist_no_terming_products}</b><br/>
+            </apex:outputText>
+            
+            <apex:outputText rendered="{!vfPrintData.detailTermingProductsList.size>0}" >
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%">
+                    <colgroup>
+                        <col style = "width:40%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                    </colgroup>
+                    <thead>
+                        <tr class="page-break" style="background:#f6f4f4;">
+                            <th scope="col">
+                                Product
+                            </th>
+                            <th scope="col" class="right-allign">
+                                Product Selection
+                            </th>
+                            <th scope="col" class="right-allign">
+                                Mbrs Termed
+                            </th>
+                            <!--th scope="col">
+                                Existing Mbrs Retained
+                            </th-->
+                            <th scope="col" class="right-allign">
+                                Effective Date
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!vfPrintData.detailTermingProductsList}" var="termingProducts">
+                                <tr class="page-break">
+                                    <td scope="col">{!termingProducts.Product2.Name}</td>
+                                    <td scope="col" class="right-allign">{!termingProducts.Buyup_Product_Selection__c}</td>
+                                    <td scope="col" class="right-allign"><apex:outputText value="{0,number, (###,###)}"><apex:param value="{!termingProducts.Net_Results__c * -1}"/></apex:outputText></td>
+                                    <!--td scope="col" class="right-allign"><apex:outputText value="{0,number, ###,###}"><apex:param value="{!termingProducts.Existing_Members_Retained__c}"/></apex:outputText></td-->
+                                    <td scope="col" class="right-allign"><apex:outputText value="{0,date,M/d/yyyy}"><apex:param value="{!termingProducts.Opportunity.EffectiveDate__c}"/></apex:outputText></td>
+                                </tr>
+                        </apex:repeat>
+                        
+                    </tbody>
+                </table>
+            </apex:outputText>
+        </div>
+        <br/>
+        
+        <div class="sub-heading">
+            Open Membership Activities
+        </div>
+        <br/>
+        <div>
+            <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                <colgroup>
+                    <col style = "width:50%;height:30px;"/>
+                    <col style = "width:50%;height:30px;"/>
+                </colgroup>
+                <apex:outputText rendered="{!vfPrintData.openMembership.size==0}">
+                    <b style='width:100%;text-align:center;float:left;'>There are no open membership activities for this client.</b><br/>
+                </apex:outputText>
+                
+                <apex:outputText rendered="{!vfPrintData.openMembership.size>0}">
+                    <apex:repeat value="{!vfPrintData.openMembership}" var="openMembership">
+                        <apex:outputText rendered="{!IF(NOT(ISBLANK(openMembership)),true,false)}">
+                            <tr class="page-break">
+                                <td scope="col">{!openMembership.Name}</td>
+                            </tr>
+                        </apex:outputText>
+                    </apex:repeat>
+                </apex:outputText>
+            </table>
+        </div>
+        <br/>
+        
+        <apex:outputPanel rendered="{!IF(isNaviguardSurest,true,false)}">
+        <div class="sub-heading page-break">
+            Naviguard - Surest - Customer Credits &amp; Fees 
+        </div>
+        <br/>
+        <div>
+            <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                <colgroup>
+                    <col style = "width:60%;height:30px;"/>
+                    <col style = "width:40%;height:30px;"/>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td scope="col">Cap Type</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Cap_Type__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Cap Category</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Cap_Category__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Cap Value</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Cap_Value__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Amount Type</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Amount_Type__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Amount</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Amount__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Additional Comments</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Additional_Comments_Naviguard__c}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        </apex:outputPanel>
+        <br/>
+        
+        <apex:outputPanel rendered="{!IF((isBHSP1 || isBHSP2),true,false)}">
+        <div class="sub-heading page-break">
+            {!BHSPName}
+        </div>
+        <br/>
+        <div>
+        <apex:outputPanel rendered="{!isBHSP1}">
+            <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                <colgroup>
+                    <col style = "width:80%;height:30px;"/>
+                    <col style = "width:20%;height:30px;"/>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td scope="col">National Network, Outpatient/Inpatient, Utilization Management</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].National_Network_Outpatient_Inpatient_UM__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Behavioral Health Virtual Visits</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Behavioral_Health_Virtual_Visits__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Substance Use Disorder Helpline</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Substance_Use_Disorder_Helpline__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Care Explorer (myuhc.com® and mobile app digital navigation)</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Care_Explorer__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Calm Health app</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Calm_Health_app__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Virtual Behavioral Coaching for adults (provided by AbleTo Coaching+, for age 18+)</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Virtual_Behavioral_Coaching_for_adults__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Child and Family Behavioral Coaching (provided by Bend Health, for age 25 and under)</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Child_and_Family_Behavioral_Coaching__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">24/7 in-the-moment and crisis support (previously Emotional Health Line and Crisis Support)</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].X24_7_in_the_moment_and_crisis_support__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Family Support (previously Family Support Program and Family Support Plus)</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Family_Support__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Case Management</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Case_Management__c}</td>
+                </tr>
+                <tr rendered="{!isBHSP2}">
+                    <td scope="col">Enhanced Case Management</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Enhanced_Case_Management__c}</td>
+                </tr>
+                <tr rendered="{!isBHSP2}">
+                    <td scope="col">Behavioral Care Connect Guaranteed time to care – 5 days (curated by AbleTo and Alma)</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Behavioral_Care_Connect_5_Day_Access__c}</td>
+                </tr>
+                </tbody>
+            </table>
+        </apex:outputPanel>
+        </div>
+        </apex:outputPanel>
+        <br/>
+
+        <div class="sub-heading page-break">
+            Payment Integrity - Traditional
+        </div>
+        <br/>
+        <div>
+            <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                <colgroup>
+                    <col style = "width:60%;height:30px;"/>
+                    <col style = "width:40%;height:30px;"/>
+                </colgroup>
+                <tr>
+                    <td scope="col">
+                        <p>
+                            Payment Integrity Bundles
+                        </p>
+                    </td>
+                    <td scope="col">
+                        {!vfPrintData.renewalCheckListData[0].Payment_Integrity_Bundles__c}
+                    </td>
+                </tr>
+            </table> 
+            <apex:outputPanel rendered="{!isSimplified}">
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    <colgroup>
+                        <col style = "width:60%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                    </colgroup>
+                    <tr>
+                        <td scope="col">Pre-Pay</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Pre_Pay_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Pre_Pay_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Post-Pay</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Post_Pay_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Post_Pay_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Subrogation</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Subrogation_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Subrogation_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Coordination of Benefits</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Coordination_of_Benefits_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Coordination_of_Benefits_Status__c}</td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!isSimplified1NonStandard}">
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    <colgroup>
+                        <col style = "width:60%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                    </colgroup>
+                    <tr>
+                        <td scope="col">Pre-Pay</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Pre_Pay_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Pre_Pay_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Post-Pay</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Post_Pay_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Post_Pay_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Subrogation</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Subrogation_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Subrogation_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Coordination of Benefits</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Coordination_of_Benefits_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Coordination_of_Benefits_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Claims Tracking and Validation (CTV) Audit</td>
+                        <td scope="col">${!vfPrintData.renewalCheckListData[0].Claims_Tracking_and_Validation_CTV_Rt__c}</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Claims_Tracking_and_Validation_CTV_St__c}</td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!isLegacy}">
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    <colgroup>
+                        <col style = "width:60%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                    </colgroup>
+                    <tr>
+                        <td scope="col">Payment Policy</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Payment_Policy_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Payment_Policy_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Coordination of Benefits</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Coordination_of_Benefits_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Coordination_of_Benefits_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Prospective Fraud &amp; Abuse</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Prospective_Fraud_Abuse_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Prospective_Fraud_Abuse_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Retrospective Fraud &amp; Abuse</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Retrospective_Fraud_Abuse_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Retrospective_Fraud_Abuse_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Enhanced Fraud &amp; Abuse/CCD</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Enhanced_Fraud_Abuse_CCD_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Enhanced_Fraud_Abuse_CCD_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">EDC Analyzer</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].EDC_Analyzer_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].EDC_Analyzer_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Itemized Bill Review</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Itemized_Bill_Review_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Itemized_Bill_Review_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Focused Claim Review</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Focused_Claim_Review_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Focused_Claim_Review_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Hospital Bill Audit</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Hospital_Bill_Audit_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Hospital_Bill_Audit_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Credit Balance Recovery Services</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Credit_Balance_Recovery_Services_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Credit_Balance_Recovery_Services_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Third Party Liability Recovery (Subro)</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Third_Party_Liability_Recovery_Subro_R__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Third_Party_Liability_Recovery_Subro_S__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Third Party Liability Recovery (ICC)</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Third_Party_Liability_Recovery_ICC_Rat__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Third_Party_Liability_Recovery_ICC_Sta__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Advanced Analytic and Recovery Services (AARS)</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Advanced_Analytic_and_Recovery_Service_R__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Advanced_Analytic_and_Recovery_Service_S__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Claims Tracking and Validation (CTV) Audit</td>
+                        <td scope="col">${!vfPrintData.renewalCheckListData[0].Claims_Tracking_and_Validation_CTV_Rt__c}</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Claims_Tracking_and_Validation_CTV_St__c}</td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+        </div>
+        <br/>
+        <div class="sub-heading page-break">
+            Payment Integrity - Surest
+        </div>
+        <br/>
+        <div>
+            <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                <colgroup>
+                    <col style = "width:60%;height:30px;"/>
+                    <col style = "width:40%;height:30px;"/>
+                </colgroup>
+                <tr>
+                    <td scope="col">
+                        <p>
+                            Payment Integrity Bundles
+                        </p>
+                    </td>
+                    <td scope="col">
+                        {!vfPrintData.renewalCheckListData[0].Payment_Integrity_Bundles_Surest__c}
+                    </td>
+                </tr>
+            </table> 
+            <apex:outputPanel rendered="{!isSimplifiedSurest}">
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    <colgroup>
+                        <col style = "width:60%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                    </colgroup>
+                    <tr>
+                        <td scope="col">Pre-Pay</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Pre_Pay_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Pre_Pay_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Post-Pay</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Post_Pay_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Post_Pay_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Subrogation</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Subrogation_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Subrogation_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Coordination of Benefits</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Coordination_of_Benefits_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Coordination_of_Benefits_Status__c}</td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!isNonStandard}">
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    <colgroup>
+                        <col style = "width:60%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                    </colgroup>
+                    <tr>
+                        <td scope="col">Pre-Pay</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Pre_Pay_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Pre_Pay_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Post-Pay</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Post_Pay_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Post_Pay_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Subrogation</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Subrogation_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Subrogation_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Coordination of Benefits</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Coordination_of_Benefits_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Coordination_of_Benefits_Status__c}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Claims Tracking and Validation (CTV) Audit </td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_CTV_Audit_Rate__c}%</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_CTV_Audit_Status__c}</td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!isLegacySurest}">
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    <colgroup>
+                        <col style = "width:80%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                    </colgroup>
+                    <tr>
+                        <td scope="col">Fraud Waste and Abuse Management Program</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Fraud_Waste_and_Abuse_Mgmt_Prgrm__c}%</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Credit Balance Recovery Program</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Credit_Balance_Recovery_Prgm_Rate__c}%</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Coordination of Benefits</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Coordination_of_Benefits_Rate__c}%</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Subrogation Services</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Subrogation_Services_Rate__c}%</td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+        </div>
+        <br/>
+        <div class="sub-heading page-break">
+            Additional Information
+        </div>
+        <br/>
+        <div>
+            <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                <colgroup>
+                    <col style = "width:45%;height:30px;"/>
+                    <col style = "width:15%;height:30px;"/>
+                    <col style = "width:40%;height:30px;"/>
+                </colgroup>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Supplemental Compensation Payee
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Supplemental_Compensation_Payee__c}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Are PGs confirmed as final? Please note PGs that sold. (If NO - please specify in comments)
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].PGs_confirmed__c}</td>
+                    <td scope="col"><apex:outputText escape="false" value="{!vfPrintData.renewalCheckListData[0].PGs_confirmed_Write_In__c}" ></apex:outputText></td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Did the Client move to a high-performing network?	
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].High_performing_network__c} 
+                        {!HighPerformingAdditional}
+                    </td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].high_performing_network_Write_In__c}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Has there been a change to the OON program?	
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].Change_to_OON_Program__c}</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Change_to_OON_Program_Write_In__c}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Has there been a change to the Stop Loss Vendor?
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].X3rd_Party_Stop_Loss__c}</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].X3rd_Party_Stop_Loss_Write_In__c}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Has there been a change to the PPO Network &amp; Access Discounts? (Applies only to Out of Area Plans)	
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].PPO_Network_Access__c}</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].PPO_Network_Access_Write_In__c}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Has there been a change to the Offshore Provisions?	
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].Offshore_Provisions__c}</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Offshore_Provisions_Write_In__c}</td>
+                </tr>
+            </table>
+        </div>
+        <br/>
+        
+        <div class="page-break">
+            <p style="margin-bottom:1%;">
+                <b>Additional Comments</b>
+            </p>
+            <apex:outputText rendered="{!!ISBLANK(vfPrintData.renewalCheckListData[0].Additional_Comments__c)}">
+                <p style="border: 1px solid black;padding:10px;">
+                    {!vfPrintData.renewalCheckListData[0].Additional_Comments__c}
+                </p>
+            </apex:outputText>
+            <apex:outputText rendered="{ISBLANK(!vfPrintData.renewalCheckListData[0].Additional_Comments__c)}">
+            </apex:outputText>
+        </div>
+        <br/>
+    <apex:outputText rendered="{!showAISurestSec}" >
+        <div class="sub-heading page-break">
+            Additional Information - Surest
+        </div>
+        <br/>
+        <div>
+            <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                <colgroup>
+                    <col style = "width:45%;height:30px;"/>
+                    <col style = "width:15%;height:30px;"/>
+                    <col style = "width:40%;height:30px;"/>
+                </colgroup>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Surest Policy Number
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!IF(ISBLANK(joinedPolicyNumbersSurest), '', joinedPolicyNumbersSurest)}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Medical Policy Number
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!IF(ISBLANK(joinedPolicyNumbers), '', joinedPolicyNumbers)}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            VPCR / RVP
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!VPCRRVP}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Account Partner
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!surestAP}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            SCE
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!CMSCE}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Account Associate
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!surestCM}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Client Manager
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!clientManager}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Business Line
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!businessLine}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Join Surest Go Live Date
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">
+                        <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                            <apex:param value="{!vfPrintData.renewalCheckListData[0].Join_Surest_Go_Live_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Join Surest URL
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col" style="word-wrap: break-word; white-space: pre-wrap; max-width: 100px;"><apex:outputText escape="false" value="{!breakableJoinSurestUrl}" ></apex:outputText></td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Access Code
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Access_Code__c}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Open Enrollment Date
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding"></td>
+                    <td scope="col">
+                        <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                            <apex:param value="{!vfPrintData.renewalCheckListData[0].Open_Enrollment_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Structure Changes
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].Structure_Changes__c}</td>
+                    <td scope="col"><apex:outputText escape="false" value="{!vfPrintData.renewalCheckListData[0].Structure_Changes_Write_In__c}" ></apex:outputText></td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Changes in Rx 
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].Changes_in_Rx__c}</td>
+                    <td scope="col"><apex:outputText escape="false" value="{!vfPrintData.renewalCheckListData[0].Rx_Changes_Write_In__c}" ></apex:outputText></td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Addition or removal of a Surest Benefit Plan 	
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].Sures_Benefit_Plan__c} </td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Benefit_Plan_Write_In__c}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Benefit Admin Vendor changes? 
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].Benefit_Admin_Vendor_changes__c}</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Benefit_Admin_Vendor_Write_In__c}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Client Specific Programs (HelloHeart, Kindbody, EdisonHealth, etc) that need to be featured in Surest app?
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].Client_Specific_Programs__c}</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Client_Specific_Programs_Write_In__c}</td>
+                </tr>
+                <tr class="page-break">
+                    <td scope="col">
+                        <p>
+                            Change in/or addition Surest Products (i.e. Surest Flex to Surest, Surest HSA)?
+                        </p>
+                    </td>
+                    <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].Surest_Product_Change__c}</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Product_Change_Write_In__c}</td>
+                </tr>
+            </table>
+        </div>
+        <br/>
+    </apex:outputText>
+    <br/>
+
+    <apex:outputPanel rendered="{!showCPWSection}">
+        <div class="sub-heading page-break">
+            Clinical Programs - Surest
+        </div>
+        <br/>
+        <div>
+            <div class="page-break">
+                <p style="margin-bottom:1%;">
+                    <b>Account Information:</b>
+                </p>
+            </div>
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                <colgroup>
+                    <col style = "width:80%;height:30px;"/>
+                    <col style = "width:20%;height:30px;"/>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td scope="col">Policy Number</td>
+                    <td scope="col">{!IF(ISBLANK(policyInfoNumberSurest), '', policyInfoNumberSurest)}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Policy Name</td>
+                    <td scope="col">{!IF(ISBLANK(policyInfoNameSurest), '', policyInfoNameSurest)}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Pharmacy Benefit Administrator Name</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Pharmacy_Benefit_Administrator_Name__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Pharmacy Benefit Administrator Phone #</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Pharmacy_Benefit_Administrator_Phone__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Employee Assistance Program Name</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Employee_Assistance_Program_Name__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Employee Assistance Program Phone #</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Employee_Assistance_Program_Phone__c}</td>
+                </tr>
+                </tbody>
+                </table>
+
+                <div class="page-break">
+                    <p style="margin-bottom:1%;">
+                        <b>Standard Clinical Offering:</b>
+                    </p>
+                </div>
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    <colgroup>
+                        <col style = "width:80%;height:30px;"/>
+                        <col style = "width:20%;height:30px;"/>
+                    </colgroup>
+                <tbody>
+                <tr>
+                    <td scope="col">Transplant Resource Services</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Transplant_Resource_Services__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Utilization Management</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Utilization_Management__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Specialty Guidance Program</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Specialty_Guidance_Program_CPSurest__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Cancer Guidance Program</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Cancer_Guidance_Program_CPSurest__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Behavioral Health Utilization Management, ABA UM</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].BHU_Management_ABA_UM__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Surest Case Management (CM)</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Surest_Case_Management_CM_CPSurest__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Optum Behavioral Network</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Optum_Behavioral_Network__c}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Optum Physical Health Network</td>
+                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Optum_Physical_Health_Network__c}</td>
+                </tr>
+                </tbody>
+                </table>
+                <div class="page-break">
+                    <p style="margin-bottom:1%;">
+                        <b>Optional Programs:</b>
+                    </p>
+                </div>
+                <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
+                    <colgroup>
+                        <col style = "width:70%;height:30px;"/>
+                        <col style = "width:15%;height:30px;"/>
+                        <col style = "width:15%;height:30px;"/>
+                    </colgroup>
+                <tbody>
+                <apex:repeat value="{!surestFields}" var="field">
+                    <tr>
+                        <td scope="col">{!field.fieldLabel}</td>
+
+                        <td scope="col" style="padding-left:10px;">
+                            <apex:outputText rendered="{!field.isDual}" value="Dual" />
+                        </td>
+
+                        <td scope="col">
+                            <apex:outputPanel rendered="{!field.fieldApiName == 'One_Pass_Select__c'}">
+                                {!vfPrintData.renewalCheckListData[0].One_Pass_Select__c}
+                                <apex:outputText rendered="{!NOT(ISBLANK(vfPrintData.renewalCheckListData[0].One_Pass_Subsidized__c))}">
+                                    &nbsp;&nbsp;&nbsp;{!vfPrintData.renewalCheckListData[0].One_Pass_Subsidized__c}
+                                </apex:outputText>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!field.fieldApiName != 'One_Pass_Select__c'}">
+                                <apex:outputText value="{!vfPrintData.renewalCheckListData[0][field.fieldApiName]}" />
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                </apex:repeat>
+                </tbody>
+            </table>
+        </div>
+        </apex:outputPanel>
+        <br/>
+
+            <!--div class="sub-heading page-break">
+                <p>
+                    Validation
+                </p>
+            </div>
+            <br/>
+            <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%">
+                <colgroup>
+                    <col style="width:50%;height:30px;"/>
+                    <col style="width:50%;height:30px;"/>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th scope="col">SCE Validated By</th>
+                        <th scope="col">Date/Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Renewal_Checklist_Validated_By__r.Name}</td>
+                        <td scope="col">{!vfPrintData.renewalCheckListData[0].Renewal_Checklist_Validated_Date__c}</td>
+                    </tr>
+                </tbody>
+            </table-->
+    </body>
+</apex:page>

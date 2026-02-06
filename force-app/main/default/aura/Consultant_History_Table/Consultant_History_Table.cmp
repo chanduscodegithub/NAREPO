@@ -1,0 +1,79 @@
+<aura:component controller="ConsultantHistoryController">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="consultingHistoryobj" type="ConsultantHistory__c"/>
+    <aura:attribute name="consultingHistoryIndex" type="String"/>
+    <aura:attribute name="isEditAccess" type="Boolean"/>
+    <aura:attribute name="enableEditDeleteButton" type="Boolean" default="true"/>
+    
+	<aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>    
+    
+    <aura:registerEvent name="consultantHistoryTable" type="c:Consultant_History_Table_Event"/>        
+    <aura:registerEvent name="alertEvent" type="c:Consultant_History_Alert_Event"/>        
+    
+    <tr class="slds-hint-parent">                
+        <th scope="row" data-label="Last Name">
+            <span class="slds-grid slds-grid--align-spread"><a onclick="{!c.navigateToContactPage}" class="slds-truncate" tabindex="0" title="{!v.consultingHistoryobj.LastName__c}">{!v.consultingHistoryobj.LastName__c}</a></span>
+        </th>
+        <th scope="row" data-label="First Name">
+            <div class="slds-truncate" title="{!v.consultingHistoryobj.Name}">{!v.consultingHistoryobj.Name}</div>
+        </th>
+        <th scope="row" data-label="Job Title">
+            <div class="slds-truncate" title="Job Title">{!v.consultingHistoryobj.JobTitle__c}</div>
+        </th>
+        <th scope="row" data-label="Start Date" class="slds-is-relative DateFieldAlignment">            
+            <ui:inputDate aura:id="StartDate" class="calendarIconAlign" disabled="true" value="{!v.consultingHistoryobj.StartDate__c}" displayDatePicker="true"  format="M/d/yyyy"/>
+        </th>
+        <th scope="row" data-label="End Date" class="slds-is-relative DateFieldAlignment">
+            <ui:inputDate aura:id="EndDate" class="calendarIconAlign" disabled="true" value="{!v.consultingHistoryobj.EndDate__c}" displayDatePicker="true" format="M/d/yyyy"/>
+        </th>
+        <th scope="row" data-label="Status">
+            <div class="slds-truncate" title="Status">{!v.consultingHistoryobj.Status__c}</div>
+        </th>
+        <th scope="row" data-label="Status Reason">
+            <div class="status-reason-wrap" title="Status Reason">{!v.consultingHistoryobj.StatusReason__c}</div>
+        </th>
+        <aura:if isTrue="{!v.enableEditDeleteButton}">
+        <aura:if isTrue="{!v.isEditAccess}">
+            <th scope="row" data-label="Edit" >
+                <div class="slds-truncate" onclick="{!c.edit}" title="">                    
+                    <button class="slds-button slds-text-body--regular boxShadow" aura:id="editItem">
+                        <lightning:icon class="slds-icon slds-icon--small" iconName="utility:edit" size="x-small" alternativeText="Product" />
+                    </button>
+                </div>               
+            </th>
+            <th scope="row" data-label="Remove" >
+                <div aura:id="deleteIcon" class="slds-truncate" onclick="{!c.remove}" title="">                    
+                    <button class="slds-button slds-text-body--regular boxShadow" aura:id="editItem">
+                        <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                    </button>
+                </div>                
+                <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-float--left">
+                    <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </div>
+            </th>  
+        </aura:if>
+            <aura:set attribute="else">
+            <th scope="row" data-label="cancel">
+            <div class="slds-truncate" onclick="{!c.cancelInlineEdit}" title="">
+            <button class="slds-button slds-text-body--regular boxShadow"  aura:id="inlineEdit">
+               <lightning:icon class="slds-icon slds-icon--small" iconName="utility:close" size="x-small" alternativeText="Product" />
+            </button>
+            </div>
+        </th>
+        <th scope="row" data-label="save">
+            <div class="slds-truncate" onclick="{!c.saveInlineEdit}" title="">
+            <button class="slds-button slds-text-body--regular boxShadow" aura:id="inlineEdit">
+               <lightning:icon class="slds-icon slds-icon--small" iconName="utility:check" size="x-small" alternativeText="Product" />
+            </button>
+            </div>            
+        </th>
+            </aura:set>
+        </aura:if>                
+    </tr>
+</aura:component>

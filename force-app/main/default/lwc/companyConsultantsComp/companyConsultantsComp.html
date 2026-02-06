@@ -1,0 +1,110 @@
+<template>
+
+        <div >
+                <div class="section-header" >
+                    <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small">
+                    <span ><b>{label.headerName}</b></span>
+                </div>
+                </div>
+            </div>
+            <div >
+                   
+                        <div class="slds-p-top_xx-small  slds-p-left_x-small slds-text-body_small" >
+                                <span ><i>{label.instText}</i></span>                       
+                            </div>
+                            
+                       
+                    </div>
+        <div class="slds-p-top_x-small ">
+    
+        <table class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <thead>
+               
+                <tr class="slds-border_top header-color">
+                        <td class="slds-border_right " >
+                                <div class="slds-truncate">
+                                    <span ><b>Company Primary</b></span>
+                                </div>
+                            </td>
+                        <td class="slds-border_right " >
+                            <div class="slds-truncate">
+                                <span ><b>Last Name</b></span>
+                            </div>
+                        </td>
+                        <td class="slds-border_right ">
+                                <div class="slds-truncate" >
+                                    <span  ><b>First Name</b></span>
+                                </div>
+                            </td>
+                            <td  class="slds-border_right ">
+                                    <div class="slds-truncate" >
+                                        <span ><b>Consulting Firm</b></span>
+                                    </div>
+                                </td>
+                                <td  class="slds-border_right ">
+                                        <div class="slds-truncate" >
+                                            <span><b>Consultant Location</b></span>
+                                        </div>
+                                    </td>
+                </tr>
+                   
+            </thead>
+           
+            <tbody>
+                
+                    <template for:each={companyConsultantData} for:item="eachcompanyConsultantData"
+                    for:index="index">
+
+                    <tr key={eachcompanyConsultantData.Contact.Id}>
+                            <td class="slds-border_right" >
+                                                          
+                                            <div class="slds-p-left_xx-large">
+                                                <input type="radio" name="colors" disabled = {radioDisabled} checked={eachcompanyConsultantData.Primary__c}>
+                                            </div>
+
+                            </td>
+                            <td class="slds-border_right">
+                                <template if:true={eachcompanyConsultantData.Contact.LastName}>                          
+                                    <span>{eachcompanyConsultantData.Contact.LastName}</span>    
+                                </template>                            
+                            </td> 
+                            <td class="slds-border_right">
+                                    <template if:true={eachcompanyConsultantData.Contact.FirstName}>                          
+                                        <span>{eachcompanyConsultantData.Contact.FirstName}</span>    
+                                    </template>                            
+                                </td> 
+                                <td class="slds-border_right">
+                                        <template if:true={eachcompanyConsultantData.Contact.Account.Name}>                          
+                                            <span>{eachcompanyConsultantData.Contact.Account.Name}</span>    
+                                        </template>                            
+                                    </td> 
+                                    <td class="slds-border_right">
+                                            <template if:true={eachcompanyConsultantData.Contact.MailingStateCode}> 
+                                                    <template if:true={eachcompanyConsultantData.Contact.MailingCity}>                         
+                                                        <span>{eachcompanyConsultantData.Contact.MailingCity}</span> 
+                                                        <span>, </span>
+                                                        <span>{eachcompanyConsultantData.Contact.MailingStateCode}</span>    
+                                                     </template> 
+                                                     <template if:false={eachcompanyConsultantData.Contact.MailingCity}>                         
+                                                            <span>{eachcompanyConsultantData.Contact.MailingStateCode}</span>    
+                                                         </template> 
+                                            </template>
+                                            <template if:false={eachcompanyConsultantData.Contact.MailingStateCode}> 
+                                                    
+                                                         <template if:true={eachcompanyConsultantData.Contact.MailingCity}>                         
+                                                                <span>{eachcompanyConsultantData.Contact.MailingStateCode}</span>    
+                                                             </template> 
+                                            </template>    
+                                                                        
+                                        </td>                   
+                        </tr>
+
+
+                    </template>
+                
+  
+            </tbody>
+     
+        </table>
+        </div>
+    </template>

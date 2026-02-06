@@ -1,0 +1,82 @@
+<!--
+  @description       : 
+  @author            : Thanushree
+  @group             : 
+  @last modified on  : 03-01-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+  <div class="is-relative" style="overflow: hidden ">
+
+    <template if:false={loaded}>
+      <lightning-spinner variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    <div class="button-position">
+      <lightning-button type="submit" variant="brand" label="Refresh" class="slds-m-left_x-small "
+        onclick={refreshData}></lightning-button>
+        <c-client-profile-print record-id={recordId} onloaded={load}></c-client-profile-print>
+      <!-- <lightning-button type="submit" variant="brand" label="Print" class="slds-m-left_x-small "
+        onclick={exportRecords}></lightning-button> -->
+    </div>
+
+
+    <div class="slds-p-horizontal_medium slds-m-top_xx-large slds-p-bottom_x-small">
+      <div class="slds-border_top "></div>
+    </div>
+
+    <div class="slds-p-horizontal_large">
+      <c-corporation-overview-comp bgh-data={bghData} corporation-overview-data={corporationOverviewData}
+        record-id={recordId} current-deal-renewal-date-str={currentDealRenewalDateStr} surest-next-renewal-date-str={surestNextRenewalDateStr}
+        current-deal-start-date-str={currentDealStartDateStr} surest-current-deal-start-date-str={surestCurrentDealStartDateStr}
+        is-corporation-overview-data-empty={isClientProfileDataEmpty}></c-corporation-overview-comp>
+    </div>
+
+    <div class="slds-p-top_large slds-p-horizontal_large">
+      <c-senior-executives-engaged-comp senior-executive-data={seniorExecutiveData}></c-senior-executives-engaged-comp>
+    </div>
+
+    <div class="slds-p-top_large slds-p-horizontal_large">
+      <c-core-u-h-g-account-team-comp core-u-h-g-team-data={coreUHGTeamData}
+        corporation-overview-data={corporationOverviewData}
+        uhg-account-team-enhancement-list={uhgAccountTeamEnhancementList}
+        specialty-benefit-involved={specialtyBenefitInvolved}
+        contact-role-map={finalContactRoleMap}></c-core-u-h-g-account-team-comp>
+    </div>
+
+    <div class="slds-p-top_large slds-p-horizontal_large">
+      <c-company-consultants-comp company-consultants-data={companyConsultantData}></c-company-consultants-comp>
+    </div>
+
+<template if:true={isNotISBAuser}>
+    <div class="slds-p-top_large slds-p-horizontal_large">
+      <c-financials-comp financial-data={financialData} header-label="Financial - Traditional"></c-financials-comp>
+    </div>
+    <template if:true={financialDataSurest}>
+      <div class="slds-p-top_large slds-p-horizontal_large">
+        <c-financials-comp financial-data={financialDataSurest} header-label="Financial - Surest"></c-financials-comp>
+      </div>
+    </template>
+  </template>
+    <div class="slds-p-top_large slds-p-horizontal_large">
+      <c-medical-trends-com med-list-data={medListData} header-label="Policy Level Medical Trend - Traditional"></c-medical-trends-com>
+    </div>
+    <div class="slds-p-top_large slds-p-horizontal_large">
+      <c-medical-trends-com med-list-data={medListDataSurest} header-label="Policy Level Medical Trend - Surest"></c-medical-trends-com>
+    </div>
+    <div class="slds-p-top_large slds-p-horizontal_large" style="overflow: hidden ">
+      <c-competitive-landscape-comp competitor-data={competitorData}></c-competitive-landscape-comp>
+    </div>
+
+    <div class="slds-p-top_large slds-p-horizontal_large " style="overflow: hidden ">
+      <c-client-plan-n-p-s-survey-comp client-survey-result-data={clientSurveyResultData}>
+      </c-client-plan-n-p-s-survey-comp>
+    </div>
+
+    <div class="slds-p-top_large slds-p-horizontal_large " style="overflow: hidden ">
+      <c-client-plan-comp refresh={refresh} record-id={recordId}></c-client-plan-comp>
+    </div>
+
+
+
+  </div>
+</template>

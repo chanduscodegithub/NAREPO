@@ -1,0 +1,152 @@
+<template>
+    <!--Updated Help text and added in custom Label for Case No:00003464 ******SHRUTI***START*****-->
+    <p style='margin: 15px 0px 0px 15px;width:100%'>{labelAcctTeamMemberHelpText}</br></p>
+    <div class="slds-text-align_right slds-p-bottom_small slds-p-top_small">
+    
+   <template if:true={hasEditAccess}>
+            <template if:false={isEdit}>
+                <lightning-button label="Edit" title="Edit" onclick={handleEditClick} class="slds-m-right_small"></lightning-button>
+                <lightning-button class="refresh" label="Refresh"  onclick={refresh}></lightning-button>
+            </template>
+       
+            <template if:true={isEdit}>
+                <lightning-button label="Save" title="Save" onclick={handleSave} class="slds-m-right_small"></lightning-button>
+                <lightning-button label="Cancel" title="Edit" onclick={handleCancel} class="slds-m-right_small"></lightning-button>
+            </template>
+        </template>
+    </div>
+    <template if:true={showTable}>
+        <div class="slds-p-around_xx-small">
+            
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_bordered slds-table_col-bordered">
+                <thead>
+                    <tr class="slds-text-title--caps addHeightStyle">
+                        <th style='height:30px;'>AMT Role </th>
+                        <th>Last Name </th>
+                        <th>First Name </th>
+                        <template if:true={isColumnVisible}>
+                            <th style="white-space: break-spaces;">Exclude AMT Role from Survey
+                                <lightning-helptext style="position: relative;top: -4px;"
+                                content={label_Exclude_AMT_Role_From_Survey_Section_Help_Text}></lightning-helptext>
+                            </th>
+                        </template>
+                        <!--Updated Help text and added in custom Label for Case No:00003464 ******SHRUTI***START*****-->
+                        <th>Main AMT
+                            <lightning-helptext style="position: relative;top: -4px;"
+                             content={mainRoleHelpText}></lightning-helptext>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CM SCE</td>
+                        <td>{cmSCELastName}</td>
+                        <td>{cmSCE}</td>
+                        <td></td>
+                        <td></td>
+                        <!--<td class='grayOut'></td>--> 
+                    </tr>
+                  
+                    <template if:true={onShow}>
+                    <tr>
+                        <td>Specialty Benefits SCE</td>
+                        <td>{specialitySCEInLN} </td>
+                        <td>{specialitySCEInFN} </td>
+                        <td>
+                            <template if:true={showSCECheckBox}>
+                                <lightning-input 
+                                type="checkbox" 
+                                checked={excludeSpecialtyBenefitsSCESurvey} 
+                                class="excludeSCECheckbox"
+                                disabled={isDisabled}></lightning-input>
+                            </template>
+                        </td>
+                        <td></td>
+                        <!--<td class='grayOut'></td>-->
+                    </tr>
+                    </template>
+                   
+                    <template if:true={isSBC}>
+                        <template for:each={SBC} for:item="eachAMT" for:index="index">
+                            <tr key={eachAMT.Id}>
+                               <!-- <td>Specialty Benefits Client Manager</td>-->
+                               <td>Specialty Benefits  Consultant</td>
+                                <td>{eachAMT.LastName}</td>
+                                <td>{eachAMT.FirstName}</td>
+                                <td>
+                                    
+                                        <lightning-input 
+                                        type="checkbox" 
+                                        checked={eachAMT.Exclude_AMT_Role_from_Survey} 
+                                        data-index={eachAMT.index} 
+                                        onchange={checkboxChange}
+                                        disabled={isDisabled}> </lightning-input>
+                                    
+                                </td>
+                                <td></td>
+                                <!--<td class='grayOut'></td>--> 
+                            </tr>
+                        </template>
+                    </template>
+                    <template for:each={previewArray} for:item="element" for:index="index">
+                        
+                        <template if:true={element.hasMembers}>
+                            <template for:each={element.surveyAMTmembers} for:item="eachAMT" for:index="index">
+                                <tr key={eachAMT.Id}>
+                                    <td>{eachAMT.role}</td>
+                                    <td>{eachAMT.LastName}</td>
+                                    <td>{eachAMT.FirstName}</td>
+                                    <td>
+                                        <template if:true={eachAMT.ShowExcludeAMTCheckBox}>
+                                            <lightning-input 
+                                            type="checkbox" 
+                                            checked={eachAMT.Exclude_AMT_Role_from_Survey} 
+                                            data-index={eachAMT.index}
+                                            onchange={checkboxChange}
+                                            disabled={isDisabled}> </lightning-input>
+                                        </template>
+                                    </td>
+                                    	  <template lwc:if={eachAMT.Primary}>
+                                    <td><lightning-input type="checkbox" checked={eachAMT.Primary} data-index={eachAMT.index} disabled={isDisabledAMT} onchange={checkPrimaryValue} data-id={eachAMT.index}></lightning-input>
+                                     </td>
+                                   </template>
+                                   <template lwc:else>
+                                    <td><lightning-input type="checkbox" data-index={eachAMT.index} disabled={isDisabledAMT} onchange={checkPrimaryValue} data-id={eachAMT.index}></lightning-input>
+                                       </td>
+                                   </template>
+                                    
+                                </tr>
+                            </template>
+                        </template> 
+                        
+                        
+                        
+                        <template if:false={element.hasMembers}>
+                            <tr key={element.roleName}>
+                                <td>{element.roleName}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <!--<td class='grayOut'></td>--> 
+                            </tr>
+                        </template>
+                    </template>
+                 
+                </tbody>
+            </table>
+        </div>
+    </template>
+        <template if:true={showSpinner}>
+            <span>
+              <div class="slds-spinner_container" style="position:fixed;">
+                <div class="slds-spinner--brand slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                  <span class="slds-assistive-text">Loading</span>
+                  <div class="slds-spinner__dot-a"></div>
+                  <div class="slds-spinner__dot-b"></div>
+                </div>
+              </div>
+            </span>
+          </template>
+    
+    </template>

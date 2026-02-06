@@ -1,0 +1,168 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="CasePolicyController">    
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="CasePolicyList" type="Policycase__c[]"/>
+    <aura:attribute name="hasRecords" type="Boolean" default='true'/> 
+   <aura:attribute name="dbOperation" type="String"/>  
+     <aura:attribute name="PolicyCaseId" type="Id"/>  
+     <aura:attribute name="savePolicyId" type="Id"/>  
+    <aura:attribute name="PolicyToBeRemovedFromApplet" type="String"/>     
+    <aura:handler name="IndividualPolicyChildEvent" event="c:IndividualPolicyChildEvent" action="{!c.adddeleteSelectedPolicy}"/>
+    <!--<aura:handler name="addPolicyEvent" event="c:AddPolicyEvent" action="{!c.addSelectedPolicy}"/> -->
+    <aura:handler name="casePolicyRemove" event="c:casePolicyRemove" action="{!c.deleteSelectedPolicy}"/>
+    <aura:handler name="CloseCasePolicyModalEvent" event="c:CloseCasePolicyModalEvent" action="{!c.modelCloseComponentEvent}"/>
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    {!v.body}     
+    
+    <div role="alertdialog" tabindex="-1" aura:id="casePolicyAlert" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmClose}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!$Label.c.Case_Policy_Remove_Alert}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmDelete}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmClose}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="casePolicyAlert"></div>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div aura:id="BGH_Applet" class="slds-section container forceRelatedListSingleContainer slds-is-open">
+        <article aura:id="articleClass" class="slds-card slds-card_boundary forceRelatedListCardDesktop slds-is-relative" onscroll="{!c.scrollBottom}">
+           <!--<div class="slds-spinner_container slds-hide" aura:id="spinner1"></div> -->
+            <div class="slds-spinner_container slds-hide" aura:id="spinner1">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                        <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            <div class="slds-card__header slds-grid slds-p-vertical--x-small slds-m-bottom_small appletHeader flex-auto" data-record="BGH_Applet" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevrondown" size="x-small" alternativeText="Product" />
+                        </button>
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="Policies">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:relationship" size="small" alternativeText="{!$Label.c.Business_Groups_on_Health}" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-is-relative">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="slds-grid flex-alignCenter">
+                            <span class="slds-text-heading--small IpadHeading;font-weight:bold">Policies</span>
+                            <div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small">
+                                <!--<c:RiskProfileToolTip helpLink="Help" helpText="Risks Tracked by the SCE" RiskHelptTextSet="{!v.RiskHelptTextSet}"/>-->
+                               <!-- <c:tooltip helpLink="Help" helpText="{!$Label.c.Risk_Profile_Header_Text}"/>  -->
+                            </div>
+                            <!--<div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small">
+                                <aura:if isTrue="{!v.isContact}">
+                                    <c:tooltip helpLink="Help" helpText="{!$Label.c.BGH_Contact_Help_Text}"/>
+                                    <aura:set attribute="else">
+                                        <c:tooltip helpLink="Help" helpText="{!$Label.c.BGH_Help_Text}"/>
+                                    </aura:set>
+                                </aura:if>
+                            </div>-->
+                        </h2>
+                    </div>
+                    <lightning:button class="slds-button slds-button--neutral ml-auto" aura:id="addPolicyBtn" onclick="{!c.addPolicies}">New</lightning:button>
+                </header>
+            </div>
+            <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                <div class="slds-card__body slds-m-bottom--none">
+                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout applet-scrollable-table">
+                        <aura:if isTrue="{!v.hasRecords}">
+                            <thead>
+                                <tr class="slds-text-title--caps">                                
+                                    <th class="slds-is-resizable slds-text-title_caps" scope="col" style="padding:0.5rem 0.5rem;">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.POLICY_NUMBER}">POLICY NUMBER</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>                                 
+                                         <th class="slds-is-resizable slds-text-title_caps" scope="col" style="padding:0.5rem 0.5rem;">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.POLICY_NAME1}">POLICY NAME</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th>   
+                                     <th class="slds-is-resizable slds-text-title_caps" scope="col" style="padding:0.5rem 0.5rem;">                                    
+                                        <span class="slds-assistive-text">Sort </span>
+                                        <span class="slds-cell-wrap" title="{!$Label.c.POLICY_TYPE}">POLICY TYPE</span>
+                                        <div class="slds-icon_container">           
+                                        </div>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-1" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-1" tabindex="0"/>                                       
+                                        </div>
+                                    </th> 
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:9%">                                    
+                                    </th>
+                                </tr>
+                            </thead>
+                            <p></p>
+                            <tbody>
+                                <aura:iteration items="{!v.CasePolicyList}" var="CasePolicyListObj">
+                                    <c:Policy_Table aura:id="IndividualPolicy" PolicyObject="{!CasePolicyListObj}" />
+                                </aura:iteration> 
+                            </tbody>
+                            <aura:set attribute="else">
+                                <div style="text-align:Center">
+                                    <label>No Policies</label>                                         
+                                </div>
+                            </aura:set>
+                        </aura:if>                       
+                    </table>
+                </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

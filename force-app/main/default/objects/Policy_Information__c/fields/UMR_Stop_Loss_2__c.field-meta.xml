@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>UMR_Stop_Loss_2__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( ISPICKVAL(UMR_Stop_Loss__c, &apos;No Stop Loss&apos;) ,  $CustomMetadata.Policy_Picklist_Weightage__mdt.Capacity_Plan_UMR_Stop_Loss_NSL.Weightage__c , 
+
+ IF(ISPICKVAL(UMR_Stop_Loss__c, &apos;Internal Stop Loss Vendor&apos;) ,   $CustomMetadata.Policy_Picklist_Weightage__mdt.Capacity_Plan_UMR_Stop_Loss_ISLV.Weightage__c , 
+
+ IF(ISPICKVAL(UMR_Stop_Loss__c, &apos;External Stop Loss Vendor&apos;),  $CustomMetadata.Policy_Picklist_Weightage__mdt.Capacity_Plan_UMR_Stop_Loss_ESLV.Weightage__c 
+, 0) ) )</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>UMR Stop Loss</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

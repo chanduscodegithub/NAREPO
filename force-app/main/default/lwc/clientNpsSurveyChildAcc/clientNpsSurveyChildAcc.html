@@ -1,0 +1,123 @@
+<template>
+  <template if:true={isEdit}>
+    <!-- <td data-label="Company" class="companyDiv">
+      <div class="slds-cell-wrap">
+        {eachcontactRecord.Account.Name}
+      </div>
+    </td> -->
+    <td data-label="Last Name" class="LastNameDiv cTd">
+      <div class="slds-cell-wrap">
+        <a onclick={navigateToObjectHome}>{eachcontactRecord.LastName}</a>
+      </div>
+    </td>
+    <td data-label="First Name" class="FirstNameDiv cTd">
+      <div class="slds-cell-wrap">
+        {eachcontactRecord.FirstName}
+      </div>
+    </td>
+    <td class="CorrespondenceTypeDiv cTd">
+      <lightning-combobox name="Correspondence_Type__c" variant="label-hidden"
+        options={correspondanceTypePickListValues} value={correspondenceTypeValue} onchange={updateChanges}
+        readonly={isReadonlyCmc}></lightning-combobox>
+      <template if:true={showCorrespondenceErrorMessage}>
+        <span class="fontColorAndSize">
+          *Complete this field
+        </span>
+      </template>
+    </td>
+    <td data-label="Survey Type" class="SurveyTypeDiv cTd">
+      <!--**** Added variable to enable survey type for editing ****SHRUTI**** -->
+      <lightning-combobox name="Survey_Type__c" variant="label-hidden" options={surveyTypePickListValues}
+        value={eachcontactRecord.Survey_Type__c} onchange={updateChanges} readonly={isReadonlyCmcSurveyType}></lightning-combobox>
+      <template if:true={showSurveyTypeErrorMessage}>
+        <span class="fontColorAndSize">
+          *Complete this field
+        </span>
+      </template>
+    </td>
+    <td data-label="Email Address" class="EmailDiv cTd">
+      <lightning-input name="Email" variant="label-hidden" type="text" value={eachcontactRecord.Email}
+        onchange={updateChanges} readonly={isReadonlyCmcEmail}></lightning-input>
+      <template if:true={showEmailErrorMessage}>
+        <span class="fontColorAndSize">
+          *Complete this field
+        </span>
+      </template>
+      <template if:true={showvalidationMessage}>
+        <span class="fontColorAndSize">
+          Enter a valid Email Address
+        </span>
+      </template> 
+    </td>
+      <td data-label="CM/CMC Survey Contact" class="EmailDiv cTd">
+        <lightning-input type="checkbox" 
+          name='CSI Survey Contact'  
+          onchange={updateChanges}
+          value={eachcontactRecord.CSI_Survey_Contact__c}   
+          checked={eachcontactRecord.CSI_Survey_Contact__c} 
+          disabled={sce}>
+        </lightning-input>
+      </td>
+    
+    <td data-label="Contact Source" class="contactSourceDiv cTd">
+      {contactSourceListSelectedValues}
+    </td>
+    
+    <template if:true={hasTabAccess}>
+      <td data-label="Delete" class="slds-text-align_center cTd" style="width: 4%;">
+          <template if:false={isReadonlyCmc}>
+            <template if:true={hasDeleteAccess}>
+              <lightning-icon icon-name="utility:delete" class="cursor"
+                name="Delete" size="xx-small" 
+                onclick={updateChanges}
+               >
+              </lightning-icon>
+            </template>
+        </template>
+      </td>
+    </template>
+  </template>
+  <template if:false={isEdit}>
+    <!-- <td data-label="Company">
+      <div class="slds-cell-wrap">
+        {eachcontactRecord.Account.Name}
+      </div>
+    </td> -->
+    <td data-label="Last Name" class='cTd'>
+      <a onclick={navigateToObjectHome}>{eachcontactRecord.LastName}</a>
+    </td>
+    <td data-label="First Name" class='cTd'>
+      <div class="slds-cell-wrap">
+        {eachcontactRecord.FirstName}
+      </div>
+    </td>
+    <td data-label="Correspondence Type" class='cTd'>
+      <div class="slds-cell-wrap">{correspondenceTypeValue}</div>
+    </td>
+    <td data-label="Survey Type" class='cTd'>
+      <div class="slds-cell-wrap">{eachcontactRecord.Survey_Type__c}</div>
+    </td>
+    <td data-label="Email Address" class='cTd'>
+      <div class="slds-cell-wrap">{eachcontactRecord.Email}</div>
+    </td>
+      <td data-label="CSI Survey Contact" class="EmailDiv cTd">
+        <lightning-input type="checkbox" name='CSI Survey Contact'  onchange={updateChanges}
+        value={eachcontactRecord.CSI_Survey_Contact__c}   checked={eachcontactRecord.CSI_Survey_Contact__c} disabled='true'>
+  </lightning-input>
+      </td>
+    <td data-label="Contact Source" class="EmailDiv cTd">
+      {contactSourceListSelectedValues}
+    </td>
+   
+    <template if:true={hasTabAccess}>
+      <td data-label="Delete" class="slds-text-align_center cTd" style="width: 4%;">
+        <template if:false={isReadonlyCmc}>
+          <template if:true={hasDeleteAccess}>
+            <lightning-icon icon-name="utility:delete" name="Delete" size="xx-small" class="cursor"
+            onclick={updateChanges} ></lightning-icon>
+          </template>
+        </template>
+      </td>
+    </template>
+  </template>
+</template>

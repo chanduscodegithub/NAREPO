@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PIM_Availability_Compare__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+    AND(
+        NOT(ISBLANK(PIM_Availability_Stage__c)),
+        NOT(ISBLANK(PIM_Availability_Prod__c)),
+        PIM_Availability_Stage__c = PIM_Availability_Prod__c
+    ),
+    &quot;Match&quot;,
+    &quot;No Match&quot;
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>PIM Availability (Compare)</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

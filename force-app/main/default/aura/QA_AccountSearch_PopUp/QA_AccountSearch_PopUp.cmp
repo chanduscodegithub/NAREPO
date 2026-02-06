@@ -1,0 +1,167 @@
+<aura:component access="global" controller="Membership_QA_Controller">
+    
+    <aura:attribute name="Child_Data" type="Object" />
+    <aura:attribute name="IsAggregator" type="Boolean" default="false" />
+    <aura:attribute name="AccountsList" type="String[]"/>
+    <aura:attribute name="isAccountListEmpty" type="Boolean" default="true" />
+    <aura:attribute name="sortLastNameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortFirstNameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortDepartmentAsc" type="Boolean" default="true"/>
+    <aura:attribute name="user_SearchFieldValues" type="String[]" default="Name,Category"/>
+    <aura:attribute name="user_SearchFieldValuesForAggregator" type="String[]" default="Name"/>
+    <aura:attribute name="user_SearchFieldValues1" type="String[]" default="Begins With,Equals to,Contains"/>
+    <aura:attribute name="ErrorMessage" type="String" default=""/>
+    <aura:attribute name="isGoButtonClicked" type="Boolean" default="false"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String" />
+    <aura:attribute name="isAggregatorsToBeShown" type="Boolean" />
+    
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:handler name="QA_AccountSearchPopUpEvent" action="{!c.addAccountData}" event="c:QA_AccountSearch_PopUpEvent" />
+    <aura:registerEvent name="QA_Event" type="c:QA_Event" />
+    <aura:registerEvent name="modalCmpCloseEvent" type="c:Model_Closing_Event"/>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    <style>
+    	.QA-modal-body{
+            margin: 0!important;
+            padding: 0!important;
+        }
+    </style>
+    <div class="slds-section ipadbottom slds-m-vertical--none">
+        <article class="slds-card">
+            <div class="slds-p-top_none slds-is-relative">
+                <div class="slds-spinner_container slds-hide" aura:id="userLoadingspinner">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                        <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div> 
+                <div class="slds-card__header slds-grid uiInputSelect">
+                    <div class="uiInputSelect uiMenuList">
+                        <form class="uiMenuList slds-form--inline slds-grid slds-grid--vertical-align-center account-team--popup slds-wrap">
+                            <div class="slds-form-element" aura:id="searchLabel">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-form-element__label" title="Search Results Where">{!$Label.c.Search_Results_Where}</label>
+                                </div>
+                            </div>
+                            <div class="slds-form-element" aura:id="serachField">
+                                <div class="slds-form-element__control w-100">
+                                    <ui:inputSelect class="slds-form-control search-filter--droplist_name" aura:id="SearchDropDown" multiple="false" change="{!c.clearSearchKeyValues}">
+                                        <aura:if isTrue="{!v.IsAggregator}">
+                                            <aura:iteration items="{!v.user_SearchFieldValuesForAggregator}" var="user_SearchFieldVal"> 
+                                                <ui:inputSelectOption text="{!user_SearchFieldVal}"/> 
+                                            </aura:iteration>
+                                        	<aura:set attribute="else">
+                                                <aura:iteration items="{!v.user_SearchFieldValues}" var="user_SearchFieldVal"> 
+                                                    <ui:inputSelectOption text="{!user_SearchFieldVal}"/> 
+                                                </aura:iteration>
+                                            </aura:set>
+                                        </aura:if>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <ui:inputSelect class="slds-form-control search-filter--droplist_begins" aura:id="SearchDropDown1" multiple="false" change="{!c.clearSearchKeyValues}">
+                                        <aura:iteration items="{!v.user_SearchFieldValues1}" var="user_SearchFieldVal1"> 
+                                            <ui:inputSelectOption text="{!user_SearchFieldVal1}"/> 
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                            <div class="slds-form-element search-input slds-p-right_none">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-hide">
+                                        <ui:inputText class="slds-form-control"></ui:inputText>
+                                    </div> 
+                                    <ui:inputText class="slds-form-control" updateOn="keyup" aura:id="searchKey" keyup="{!c.enableGoBtn}"></ui:inputText>
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="goBtn" disabled="true" press="{!c.searchUserRecords}">{!$Label.c.Go}</ui:button>
+                            </div>
+                            <div class="slds-form-element">
+                                <div class="d-inline-flex slds-p-right--small seperator-md">
+                                	<ui:button class="slds-button slds-button--brand mt-md-0" aura:id="clrBtn" press="{!c.doInit}">{!$Label.c.Clear}</ui:button>
+                                </div>
+                            </div>
+                            <div class="slds-col--bump-left navigation-top">
+                                <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="slds-card__body slds-m-bottom--none">
+                    <ui:scrollerWrapper class="scrollerSize">
+                    <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                        <thead>
+                            <tr class="slds-text-title--caps headData">
+                                <th class="slds-is-sortable slds-is-resizable bold" scope="col" width="60"></th>
+                                <th class="slds-is-sortable slds-is-resizable bold" style="padding: .5rem .5rem;" scope="col">
+                                    <span class="slds-cell-wrap" title="Last Name">Name</span>
+                                </th>
+                                <aura:if isTrue="{!v.IsAggregator == false}">
+                                    <th class="slds-is-sortable slds-is-resizable bold" style="padding: .5rem .5rem;" scope="col">
+                                        <span class="slds-cell-wrap" title="First Name">Category</span>                                          
+                                    </th>
+                                </aura:if>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.isAccountListEmpty}">
+                                <p></p>
+                                <tr>
+                                    <aura:if isTrue="{!v.IsAggregator}">
+                                        <th colspan="2">
+                                            <div class="slds-text-align--center">No Records Found</div>
+                                        </th>
+                                        <aura:set attribute="else">
+                                            <th colspan="3">
+                                                <div class="slds-text-align--center">No Records Found</div>
+                                            </th>
+                                        </aura:set>
+                                    </aura:if>
+                                </tr>
+                                <aura:set attribute="else">
+                                    <p></p>
+                                    <aura:iteration items="{!v.AccountsList}" var="obj">    
+                                        <c:QA_AccountSearch_PopUpChild accountData="{!obj}" IsAggregator="{!v.IsAggregator}"/>
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                        </tbody>
+                    </table>
+                    </ui:scrollerWrapper>
+                    <div class="footer-navigation">
+                    	<c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                    </div>
+                </div>                
+            </div>
+        </article>
+    </div>
+</aura:component>

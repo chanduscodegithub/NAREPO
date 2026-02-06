@@ -1,0 +1,33 @@
+<aura:component access="global">
+    
+    <aura:attribute name="userData" type="String"/>
+    
+    <aura:registerEvent name="nationalAccountSalesTeamUserModalEvent" type="c:NationalAccountSalesTeam_AddPopUpEvent"/>
+    
+    <tr class="slds-hint-parent rowData">
+        <th scope="row" width="80">
+            <div class="slds-truncate" title="Select">
+            	<a href="javascript:void()" onclick="{!c.selectRecord}">Select</a>
+            </div>
+        </th>
+        <th scope="row" data-label="Last Name">
+            <div class="slds-cell-wrap" title="Last Name">{!v.userData.LastName}</div>
+        </th>
+        <th scope="row" data-label="First Name">
+            <div class="slds-cell-wrap" title="First Name">{!v.userData.FirstName}</div>
+        </th>
+        <th scope="row" data-label="Job Title">
+            <div class="slds-cell-wrap" title="Job Title">{!v.userData.Title}</div>
+        </th>
+        <th scope="row" data-label="Role">
+            <div class="slds-cell-wrap" title="Role">{!v.userData.UserRole.Name}</div>
+        </th>
+        <th scope="row" data-label="Email">
+            <ui:outputEmail class="slds-cell-wrap" value="{!v.userData.Email}"/>
+            <!--<div class="slds-cell-wrap" title="Email"><a><u>{!v.userData.Email}</u></a></div>-->
+        </th>
+        <th scope="row" data-label="Reports To">
+            <div class="slds-cell-wrap" title="Reports To">{!v.userData.Manager.Name}</div>
+        </th>
+    </tr>
+</aura:component>

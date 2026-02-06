@@ -1,0 +1,543 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 11-19-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium" style="font-size:12px; width:100%;">
+        <table class="slds-table slds-no-row-hover">
+            <tr>
+                <td class="left" style="vertical-align: middle;">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom"
+                        style="width:100%;">
+                        <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small">
+                            <span><b>Payment Integrity Bundles</b></span>
+                        </div>
+                        <div
+                            class="slds-col slds-size_2-of-5 slds-p-around_xx-small slds-text-align_right">
+                            <span>
+                                <template if:false={editmode}>
+                                    <template if:true={soldCaseDataCopy.Surest_Payment_Integrity__c}>
+                                        {soldCaseDataCopy.Surest_Payment_Integrity__c}
+                                    </template>
+                                </template>
+                                <template if:true={editmode}>
+                                    <template if:true={payIntegValues}>
+                                        <lightning-combobox style="text-align:left;"
+                                            name="Sold_Case_Checklist__c.Surest_Payment_Integrity__c"
+                                            variant="label-hidden"
+                                            value={soldCaseDataCopy.Surest_Payment_Integrity__c}
+                                            options={payIntegValues}
+                                            onchange={FieldChangeHandler}>
+                                        </lightning-combobox>
+                                    </template>
+                                </template>
+                            </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <template if:true={showPayIntFields}>
+                <template if:true={option1234}>
+                    <tr>
+                        <td class="right">
+                            <table class="slds-table slds-no-row-hover">
+                                <tr>
+                                    <td>
+                                        <div class="slds-grid slds-grid--vertical-align-center"
+                                            style="width:100%;">
+                                            <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+                                                style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+                                                <span>Pre-Pay</span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        <lightning-formatted-number
+                                                            value={soldCaseDataCopy.Surest_Pre_Pay_Percentage__c}
+                                                            minimum-fraction-digits="2">
+                                                        </lightning-formatted-number>%
+                                                    </template>
+                                                        
+                                                    <template if:true={editmode}>
+                                                        <lightning-input class="prePay"
+                                                            name="Sold_Case_Checklist__c.Surest_Pre_Pay_Percentage__c"
+                                                            type="number" step=".01"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Pre_Pay_Percentage__c}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-input>
+                                                    </template>
+                                                </span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        {soldCaseDataCopy.Surest_Pre_Pay__c}
+                                                    </template>
+                                                        
+                                                    <template if:true={editmode}>
+                                                        <lightning-combobox
+                                                            class="slds-text-align_left refreshValueOnChangeSO"
+                                                            name="Sold_Case_Checklist__c.Surest_Pre_Pay__c"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Pre_Pay__c}
+                                                            placeholder="Select an Option"
+                                                            options={includedCarveOut}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-grid slds-grid--vertical-align-center"
+                                            style="width:100%;">
+                                            <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+                                                style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+                                                <span>Post-Pay</span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        <lightning-formatted-number
+                                                            value={soldCaseDataCopy.Surest_Post_Pay_Percentage__c}
+                                                            minimum-fraction-digits="2">
+                                                        </lightning-formatted-number>%
+                                                    </template>
+                                                    <template if:true={editmode}>
+                                                        <lightning-input class="postPay"
+                                                            name="Sold_Case_Checklist__c.Surest_Post_Pay_Percentage__c"
+                                                            type="number" step=".01"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Post_Pay_Percentage__c}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-input>
+                                                    </template>
+                                                </span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        {soldCaseDataCopy.Surest_Post_Pay__c}
+                                                    </template>
+                                                    <template if:true={editmode}>
+                                                        <lightning-combobox
+                                                            class="slds-text-align_left refreshValueOnChangeSO"
+                                                            name="Sold_Case_Checklist__c.Surest_Post_Pay__c"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Post_Pay__c}
+                                                            placeholder="Select an Option"
+                                                            options={includedCarveOut}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-grid slds-grid--vertical-align-center"
+                                            style="width:100%;">
+                                            <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+                                                style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+                                                <span>Subrogation</span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        <lightning-formatted-number
+                                                            value={soldCaseDataCopy.Surest_Subrogation_Percentage__c}
+                                                            minimum-fraction-digits="2">
+                                                        </lightning-formatted-number>%
+                                                    </template>
+                                                    <template if:true={editmode}>
+                                                        <lightning-input class="subro"
+                                                            name="Sold_Case_Checklist__c.Surest_Subrogation_Percentage__c"
+                                                            type="number" step=".01"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Subrogation_Percentage__c}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-input>
+                                                    </template>
+                                                </span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        {soldCaseDataCopy.Surest_Subrogation__c}
+                                                    </template>
+                                                    <template if:true={editmode}>
+                                                        <lightning-combobox
+                                                            class="slds-text-align_left refreshValueOnChangeSO"
+                                                            name="Sold_Case_Checklist__c.Surest_Subrogation__c"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Subrogation__c}
+                                                            placeholder="Select an Option"
+                                                            options={includedCarveOut}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-grid slds-grid--vertical-align-center"
+                                            style="width:100%;">
+                                            <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+                                                style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+                                                <span>Coordination of Benefits</span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        <lightning-formatted-number
+                                                            value={soldCaseDataCopy.Surest_Coordination_of_Benefit_Percent__c}
+                                                            minimum-fraction-digits="2">
+                                                        </lightning-formatted-number>%
+                                                    </template>
+                                                        
+                                                    <template if:true={editmode}>
+                                                        <lightning-input class="coOrdBenSO"
+                                                            name="Sold_Case_Checklist__c.Surest_Coordination_of_Benefit_Percent__c"
+                                                            type="number" step=".01"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Coordination_of_Benefit_Percent__c}
+                                                            onchange={FieldChangeHandler}  disabled={simplified123}>
+                                                        </lightning-input>
+                                                    </template>
+                                                </span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        {soldCaseDataCopy.Surest_Coordination_of_Benefits__c}
+                                                    </template>
+                                                        
+                                                    <template if:true={editmode}>
+                                                        <lightning-combobox
+                                                            class="slds-text-align_left refreshValueOnChangeCB"
+                                                            name="Sold_Case_Checklist__c.Surest_Coordination_of_Benefits__c"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Coordination_of_Benefits__c}
+                                                            placeholder="Select an Option"
+                                                            options={enhancedCOB}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <template if:false={simplified123}>
+                                    <tr>
+                                        <td>
+                                            <div class="slds-grid slds-grid--vertical-align-center"
+                                                style="width:100%;">
+                                                <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+                                                    style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+                                                    <span>Claims Tracking and Validation (CTV) Audit</span>
+                                                </div>
+
+                                                <div
+                                                    class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={editmode}>
+                                                            <lightning-formatted-number
+                                                                value={soldCaseDataCopy.Surest_CTV_Audit_Percentage__c}
+                                                                minimum-fraction-digits="2">
+                                                            </lightning-formatted-number>%
+                                                        </template>
+                                                            
+                                                        <template if:true={editmode}>
+                                                            <lightning-input class="claimTrk"
+                                                                name="Sold_Case_Checklist__c.Surest_CTV_Audit_Percentage__c"
+                                                                type="number" step=".01"
+                                                                variant="label-hidden"
+                                                                value={soldCaseDataCopy.Surest_CTV_Audit_Percentage__c}
+                                                                onchange={FieldChangeHandler}  disabled={simplified123}>
+                                                            </lightning-input>
+                                                        </template>
+                                                    </span>
+                                                </div>
+
+                                                <div
+                                                    class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                    <span>
+                                                        <template if:false={editmode}>
+                                                            {soldCaseDataCopy.Surest_CTV_Audit__c}
+                                                        </template>
+                                                            
+                                                        <template if:true={editmode}>
+                                                            <lightning-combobox
+                                                                class="slds-text-align_left refreshValueOnChangeSO clmTrk"
+                                                                name="Sold_Case_Checklist__c.Surest_CTV_Audit__c"
+                                                                variant="label-hidden"
+                                                                value={soldCaseDataCopy.Surest_CTV_Audit__c}
+                                                                placeholder="Select an Option"
+                                                                options={includedCarveOut}
+                                                                onchange={FieldChangeHandler}  disabled={simplified123}>
+                                                            </lightning-combobox>
+                                                        </template>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </table>
+                        </td>
+                    </tr>
+                </template>
+                <template if:true={option5}>
+                    <tr>
+                        <td class="right">
+                            <table class="slds-table slds-no-row-hover">
+                                <tr>
+                                    <td>
+                                        <div class="slds-grid slds-grid--vertical-align-center"
+                                            style="width:100%;">
+                                            <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+                                                style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+                                                <span>Fraud Waste and Abuse Management Program</span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        <lightning-formatted-number
+                                                            value={soldCaseDataCopy.Surest_Fraud_Waste_and_Abuse_Mgmt_prgrm__c}
+                                                            minimum-fraction-digits="2">
+                                                        </lightning-formatted-number>%
+                                                    </template>
+                                                        
+                                                    <template if:true={editmode}>
+                                                        <lightning-input class="fwamp"
+                                                            name="Sold_Case_Checklist__c.Surest_Fraud_Waste_and_Abuse_Mgmt_prgrm__c"
+                                                            type="number" step=".01"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Fraud_Waste_and_Abuse_Mgmt_prgrm__c}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-input>
+                                                    </template>
+                                                </span>
+                                            </div>
+
+                                            <!-- <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        {soldCaseDataCopy.Surest_Credit_Balance_Rcvry_Prgrm_Prcnt__c}
+                                                    </template>
+                                                        
+                                                    <template if:true={editmode}>
+                                                        <lightning-combobox
+                                                            class="slds-text-align_left refreshValueOnChangeSO"
+                                                            name="Sold_Case_Checklist__c.Surest_Pre_Pay__c"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Pre_Pay__c}
+                                                            placeholder="Select an Option"
+                                                            options={includedCarveOut}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </span>
+                                            </div> -->
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-grid slds-grid--vertical-align-center"
+                                            style="width:100%;">
+                                            <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+                                                style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+                                                <span>Credit Balance Recovery Program</span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        <lightning-formatted-number
+                                                            value={soldCaseDataCopy.Surest_Credit_Balance_Rcvry_Prgrm_Prcnt__c}
+                                                            minimum-fraction-digits="2">
+                                                        </lightning-formatted-number>%
+                                                    </template>
+                                                    <template if:true={editmode}>
+                                                        <lightning-input class="cbrp"
+                                                            name="Sold_Case_Checklist__c.Surest_Credit_Balance_Rcvry_Prgrm_Prcnt__c"
+                                                            type="number" step=".01"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Credit_Balance_Rcvry_Prgrm_Prcnt__c}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-input>
+                                                    </template>
+                                                </span>
+                                            </div>
+
+                                            <!-- <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        {soldCaseDataCopy.Surest_Post_Pay__c}
+                                                    </template>
+                                                    <template if:true={editmode}>
+                                                        <lightning-combobox
+                                                            class="slds-text-align_left refreshValueOnChangeSO"
+                                                            name="Sold_Case_Checklist__c.Surest_Post_Pay__c"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Post_Pay__c}
+                                                            placeholder="Select an Option"
+                                                            options={includedCarveOut}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </span>
+                                            </div> -->
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-grid slds-grid--vertical-align-center"
+                                            style="width:100%;">
+                                            <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+                                                style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
+                                                <span>Coordination of Benefits</span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        <lightning-formatted-number
+                                                            value={soldCaseDataCopy.Surest_Coordination_of_Benefit_Percent__c}
+                                                            minimum-fraction-digits="2">
+                                                        </lightning-formatted-number>%
+                                                    </template>
+                                                        
+                                                    <template if:true={editmode}>
+                                                        <lightning-input class="coOrdBen"
+                                                            name="Sold_Case_Checklist__c.Surest_Coordination_of_Benefit_Percent__c"
+                                                            type="number" step=".01"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Coordination_of_Benefit_Percent__c}
+                                                            onchange={FieldChangeHandler}  disabled={simplified123}>
+                                                        </lightning-input>
+                                                    </template>
+                                                </span>
+                                            </div>
+
+                                            <!-- <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        {soldCaseDataCopy.Surest_Coordination_of_Benefits__c}
+                                                    </template>
+                                                        
+                                                    <template if:true={editmode}>
+                                                        <lightning-combobox
+                                                            class="slds-text-align_left refreshValueOnChangeCB"
+                                                            name="Sold_Case_Checklist__c.Surest_Coordination_of_Benefits__c"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Coordination_of_Benefits__c}
+                                                            placeholder="Select an Option"
+                                                            options={enhancedCOB}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </span>
+                                            </div> -->
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="slds-grid slds-grid--vertical-align-center"
+                                            style="width:100%;">
+                                            <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-cell-wrap"
+                                                style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79);padding-bottom: 2px;">
+                                                <span>Subrogation Services</span>
+                                            </div>
+
+                                            <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        <lightning-formatted-number
+                                                            value={soldCaseDataCopy.Surest_Subrogation_Services_Percentage__c}
+                                                            minimum-fraction-digits="2">
+                                                        </lightning-formatted-number>%
+                                                    </template>
+                                                    <template if:true={editmode}>
+                                                        <lightning-input class="subroSP"
+                                                            name="Sold_Case_Checklist__c.Surest_Subrogation_Services_Percentage__c"
+                                                            type="number" step=".01"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Subrogation_Services_Percentage__c}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-input>
+                                                    </template>
+                                                </span>
+                                            </div>
+
+                                            <!-- <div
+                                                class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                                <span>
+                                                    <template if:false={editmode}>
+                                                        {soldCaseDataCopy.Surest_Subrogation__c}
+                                                    </template>
+                                                    <template if:true={editmode}>
+                                                        <lightning-combobox
+                                                            class="slds-text-align_left refreshValueOnChangeSO"
+                                                            name="Sold_Case_Checklist__c.Surest_Subrogation__c"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Subrogation__c}
+                                                            placeholder="Select an Option"
+                                                            options={includedCarveOut}
+                                                            onchange={FieldChangeHandler} disabled={simplified123}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </span>
+                                            </div> -->
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </template>
+            </template>
+        </table>
+    </div>
+</template>

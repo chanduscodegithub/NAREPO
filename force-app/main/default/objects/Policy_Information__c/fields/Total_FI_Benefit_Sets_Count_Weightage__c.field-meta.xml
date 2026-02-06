@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_FI_Benefit_Sets_Count_Weightage__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(Company__r.Private_Exchange_Client__c, &quot;Aon Active Health Exchange&quot;),IF(AND( Total_Active_FI_Benefit_Sets_Count__c &gt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_1_8.Start_Range__c, Total_Active_FI_Benefit_Sets_Count__c &lt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_1_8.End_Range__c), $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_1_8.Weightage__c*2, IF(AND( Total_Active_FI_Benefit_Sets_Count__c &gt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_9_15.Start_Range__c, Total_Active_FI_Benefit_Sets_Count__c &lt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_9_15.End_Range__c), $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_9_15.Weightage__c*2, IF(AND( Total_Active_FI_Benefit_Sets_Count__c &gt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_16_25.Start_Range__c, Total_Active_FI_Benefit_Sets_Count__c &lt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_16_25.End_Range__c), $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_16_25.Weightage__c*2, IF(AND( Total_Active_FI_Benefit_Sets_Count__c &gt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_26_35.Start_Range__c, Total_Active_FI_Benefit_Sets_Count__c &lt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_26_35.End_Range__c), $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_26_35.Weightage__c*2, $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_101_More.Weightage__c)))) , 
+IF(AND( Total_Active_FI_Benefit_Sets_Count__c &gt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_1_8.Start_Range__c, Total_Active_FI_Benefit_Sets_Count__c &lt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_1_8.End_Range__c), $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_1_8.Weightage__c, IF(AND( Total_Active_FI_Benefit_Sets_Count__c &gt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_9_15.Start_Range__c, Total_Active_FI_Benefit_Sets_Count__c &lt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_9_15.End_Range__c), $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_9_15.Weightage__c, IF(AND( Total_Active_FI_Benefit_Sets_Count__c &gt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_16_25.Start_Range__c, Total_Active_FI_Benefit_Sets_Count__c &lt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_16_25.End_Range__c), $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_16_25.Weightage__c, IF(AND( Total_Active_FI_Benefit_Sets_Count__c &gt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_26_35.Start_Range__c, Total_Active_FI_Benefit_Sets_Count__c &lt;= $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_26_35.End_Range__c), $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_26_35.Weightage__c, $CustomMetadata.Total_FI_Benefit_Sets_Count__mdt.Range_101_More.Weightage__c))))
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>FI requires COC&apos;s, member mailings, state mandates are housed in KA, single case filings/state filings.  Should not be included in the active benefit set count. Pulled from ACIS twice a year except for AT&amp;T. Any frozen FI sets subtracted from this field.</inlineHelpText>
+    <label>Total FI Benefit Sets Count Weightage</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

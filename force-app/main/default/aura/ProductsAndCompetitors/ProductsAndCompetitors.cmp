@@ -1,0 +1,468 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="ProductsAndCompetitorsAppletController" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>    
+    <aura:attribute name="productTypeList" type="List" default="['Medical','Pharmarcy','Dental','Vision','Other Buy Up Program']"/>
+    <aura:attribute name="SalesStageValues" type="List" default="['Emerging Risk\No Upside','Lead','Proposal','Notified','In Review']"/>          
+    <aura:attribute name="fundingTypePicklistVals" type="List" />    
+    <aura:attribute name="dispositionPicklistVals" type="List" />
+    <aura:attribute name="totalRecordObj" type="Object" />
+    <aura:attribute name="account" type="Account" />    
+    <aura:attribute name="deleteEvent" type="Object" />
+    <aura:attribute name="BuyupProductList" type="List" />
+    
+
+    
+    <aura:attribute name="isChangeStageFromEmrgToProposal" type="Boolean" default="false" />
+    
+    <aura:attribute name="needToShowAlertInformation" type="Boolean" default="true"/>    
+    
+    <aura:attribute name="isOpptyLineItems" type="Boolean" />    
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>    
+    
+    <aura:attribute name="totalRecordId" type="sObject"/>    
+    
+    <aura:attribute name="SalesStage" type="String" default=""/> 
+    
+    <aura:attribute name="isReset" type="Boolean" default="false"/>    
+    
+    <aura:attribute name="isReadOnly" type="Boolean" default="false" />        
+    
+    <aura:attribute name="isAlertShowned" type="String" default="false" />
+    <aura:attribute name="isPendingSpinOff" type="boolean" default="false" />
+    <aura:attribute name="isPendingTransfer" type="boolean" default="false" />
+    <aura:attribute name="isPendingTransferforOther" type="boolean" default="false" />
+    <aura:attribute name="alertType" type="String" default="Alert" />
+    <aura:attribute name="exceptionType" type="String" default="Exception" />
+    
+    <aura:attribute name="maTypeName" type="String" default="Traditional"/>
+    
+    <aura:attribute name="previousSalesStage" type="String" default=""/>
+    <aura:attribute name="Disposition" type="String" default=""/>
+    <aura:attribute name="isExapand" type="Boolean" default="false"/>
+    <aura:attribute name="hasMedical" type="Boolean" default="false"/>
+    <aura:attribute name="SalesStageOther" type="String" default=""/>    
+    
+    <aura:attribute name="previousSalesStageOther" type="String" default=""/>
+    
+    <aura:attribute name="DispositionOther" type="String" default=""/>
+    <aura:attribute name="maType" type="String" default="NB"/>    
+    <aura:attribute name="opportunityRecord" type="Object" />    
+    <aura:attribute name="RiskProbability" type="String" default=""/>
+    <aura:attribute name="RiskProbabilityOther" type="String" default=""/>    
+    <aura:attribute name="isEditRecord" type="Boolean" default="false"/>
+    <aura:attribute name="isEditRecordForCompetitors" type="Boolean" default="false"/>
+    <aura:attribute name="isMedicalAndOthersTab" type="Boolean" default="false"/>
+    <aura:attribute name="productsList" type="List" />    
+    <aura:attribute name="accountId" type="Id" default=""/>
+    <aura:attribute name="productTypesValues" type="String" default=""/>
+    <aura:handler name="change" value="{!v.isEditRecord}" action="{!c.chageEditEvent}"/>
+    <aura:attribute name="MArecordId" type="Id" />
+    <aura:attribute name="deleteMessage" type="String" />
+    <aura:attribute name="CompetitorsListObject" type="List" />
+    <aura:attribute name="alertMessage" type="String" />
+    <aura:attribute name="SelectedMemInPropsal" type="Integer" default="0" />
+    <aura:attribute name="isQA" type="Boolean"/>
+    <aura:attribute name="isCompetitorsShown" type="Boolean" default="false"/>
+    <aura:attribute name="isCompetitorReminderToBeShown" type="Boolean" default="false"/>
+    
+    <aura:attribute name="isCompAndPdtsReminderToReview" type="Boolean" default="false"/>
+    <aura:attribute name="isProductsReminderToReview" type="Boolean" default="false"/>
+    <aura:attribute name="isProductsReminderToAdd" type="Boolean" default="false"/>
+    <aura:attribute name="isProductsReminderToUpdate" type="Boolean" default="false"/>
+    <aura:attribute name="isMedOthrsProductsReminder" type="String" default=""/>
+    <aura:attribute name="Helper" type="Object" />
+    <aura:attribute name="alertForOnlyOnePdt" type="Boolean" default="false" />
+    
+    <aura:handler name="change" value="{!v.SelectedMemInPropsal}" action="{!c.updateMembersInvolvedInProposalInCompetitors}"/>   
+    
+    <aura:method name="openProductsAndCompetitor" action="{!c.openProductsAndCompetitorMethod}"></aura:method>
+    <aura:method name="validateRecrodsMethod" action="{!c.validateOpportunitiesProductsAndCompetitors}"></aura:method>
+    <aura:method name="saveOpptyPrdssAndCompetitorsRecords" action="{!c.saveOpptyPrdssAndCompetitorsRecordsMethod}"></aura:method>    
+    
+    <aura:method name="resetProductAndComp" action="{!c.resetProductAndComp}">
+    	<aura:attribute name="ResetSalesStage" type="String" />    
+    </aura:method>    
+    
+    <aura:method name="cancelRecordsMethod" action="{!c.cancelRecords}"></aura:method>       
+    <aura:method name="restButton" action="{!c.restButton}"></aura:method>       
+    
+    <aura:handler name="change" value="{!v.SalesStage}" action="{!c.salesStageChangeEvent}"/> 
+    <aura:handler name="change" value="{!v.SalesStageOther}" action="{!c.salesStageOtherChangeEvent}"/>
+    
+    <aura:handler name="change" value="{!v.maType}" action="{!c.changeGenericEvent}"/>            
+    <aura:handler name="change" value="{!v.RiskProbability}" action="{!c.changeSalesStagesGeneralEvent}"/>            
+    <aura:handler name="change" value="{!v.Disposition}" action="{!c.changeGenericEvent}"/>    
+    
+    <aura:handler name="change" value="{!v.RiskProbabilityOther}" action="{!c.changeSalesStagesOtherEvent}"/>    
+    
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
+    <aura:handler name="ProductsToOpportunityProductEvents" event="c:ProductsToOpportunityProductEvents" action="{!c.addProductsToOpportunityProducts}"/>
+    <aura:handler name="ProductsListToProductCompEvent" event="c:ProductsListToProductCompEvent" action="{!c.eachProductEventsFromProductList}"/>
+    <aura:handler name="ProductsListCompEvent" event="c:ProductsListCompEvent" action="{!c.productActionEventsMethod}"/>
+    <aura:handler name="competitorsEvent" action="{!c.removeCompetitorsData}" event="c:CompetitorsEvent" />
+    <aura:handler name="productsAndCompetitorsPopUpEvent" action="{!c.addAccountCompetitors}" event="c:ProductsAndCompetitorsPopUpEvent" />    
+    <aura:registerEvent name="productsAndCompetitorsEvent" type="c:ProductsAndCompetitorsEvent"/>    
+    <aura:attribute name="scrollStyleForDevice" type="String" default="@media screen and (min-width: 320px) and (max-width: 1199px){.panel-content.scrollable{overflow-y: hidden !important;-webkit-overflow-scrolling: touch !important ;}}"/>    
+    <aura:registerEvent name="focusCompetitorsSectionEvent" type="c:FocusCompetitorsSection_Event"/> 
+    <aura:registerEvent name="NBEAOtherBuyUpValidation" type="c:NBEA_OtherBuyUpValidation"/>    
+    
+    {!v.body}
+    <style>
+        {!v.scrollStyleForDevice}
+        @media (max-width: 1199px){
+            .cuf-scroller-inside{
+            	padding: 0 !important;
+            }        
+        }
+        @media (min-width: 768px) and (max-width: 1199px){        
+            .oneActionBar.actionButtons{
+            	left: 0;
+            }
+        }        
+    </style>
+    
+    <!--maType : {!v.maType} <br></br>
+    maActivity : {!v.opportunityRecord.Membership_Activity_Type__c} <br></br>
+    isMedical : {!v.isMedical} <br></br>
+    isMedicalAndOthersTab : {!v.isMedicalAndOthersTab} <br></br>
+    OR : {!or(v.isMedical, v.isMedicalAndOthersTab)}
+    AND : {!and(v.maType == 'NBEA', v.maTypeName == 'Traditional', (or(v.isMedical, v.isMedicalAndOthersTab)))}
+    productTypesValues : {!v.productTypesValues}  <br></br>
+    MArecordId : {!v.MArecordId}    <br></br>
+    Disposition : {!v.Disposition} <br></br>
+    accountId : {!v.accountId} <br></br>
+    SalesStage : {!v.SalesStage} <br></br>
+    previousSalesStage : {!v.previousSalesStage} <br></br>
+    SalesStageOther : {!v.SalesStageOther} <br></br>
+    previousSalesStageOther : {!v.previousSalesStageOther} <br></br>
+    opportunityRecordId : {!v.opportunityRecord.Id} <br></br>
+    RiskProbability : {!v.RiskProbability} <br>   </br>
+    RiskProbabilityOther : {!v.RiskProbabilityOther} <br>   </br>
+    isPendingTransfer : {!v.isPendingTransfer} <br>   </br>
+    isPendingTransferforOther : {!v.isPendingTransferforOther} <br>   </br>-->
+    
+     
+    
+    <div role="alertdialog" tabindex="-1" aura:id="alertAuraId" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide z-9052">
+        <div class="slds-modal__container">
+            
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture" aura:id="alertClass">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!v.alertType}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">            
+                <aura:if isTrue="{!v.isCompetitorReminderToBeShown}">
+                    <p style="text-align:left">{!$Label.c.Competitor_ReminderText1}<a onclick="{!c.focusCompetitorsSection}"><strong>Competitors</strong></a>{!$Label.c.Competitor_ReminderText2}</p>
+                    <aura:if isTrue="{!and(v.maType == 'NBEA', v.opportunityRecord.Membership_Activity_Type__c == 'Traditional')}">
+                        <aura:if isTrue="{!or(v.hasMedical, v.isMedicalAndOthersTab)}">
+                            <p>&nbsp;</p>
+                            <p>(Reminder: You will later be required to update the Competitors section by entering the Number of Members Held by each Medical Incumbent when the <b>Medical</b> Sales Stage is moved to <b>In Review</b>.)</p> 
+                    	</aura:if>
+                    </aura:if>
+                    <aura:set attribute="else">
+                        <p></p>
+                        <aura:if isTrue="{!and(v.isProductsReminderToReview != null, v.isProductsReminderToReview)}">
+                        	<aura:if isTrue="{!and(v.isCompAndPdtsReminderToReview != null, v.isCompAndPdtsReminderToReview)}">
+                                <p style="text-align:left">{!$Label.c.CompetitorProducts_ReminderText}<br/><br/>Click one of these links (<a onclick="{!c.focusProductsSection}"><strong>Products</strong></a>&nbsp;{!$Label.c.CompetitorProducts_ReminderText1}&nbsp;<a onclick="{!c.focusCompetitorsSection}"><strong>Competitors</strong></a>{!$Label.c.CompetitorProducts_ReminderText2}</p>
+                                <aura:if isTrue="{!and(v.maType == 'NBEA', v.opportunityRecord.Membership_Activity_Type__c == 'Traditional')}">
+                                    <aura:if isTrue="{!or(v.hasMedical, v.isMedicalAndOthersTab)}">
+                                        <p>&nbsp;</p>
+                                        <p>(Reminder: You will later be required to update the Competitors section by entering the Number of Members Held by each Medical Incumbent when the <b>Medical</b> Sales Stage is moved to <b>In Review</b>.)</p> 
+                                    </aura:if>
+                                </aura:if>
+                                <aura:set attribute="else">
+                             		<p style="text-align:left">{!$Label.c.Products_ReminderText}&nbsp;<a onclick="{!c.focusProductsSection}"><strong>Products</strong></a>.</p>
+                                </aura:set>
+                            </aura:if>
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!and(v.isProductsReminderToAdd != null, v.isProductsReminderToAdd)}">
+                                    <p style="text-align:left">{!$Label.c.Competitor_ReminderText}&nbsp;{!$Label.c.Products_ReminderText1}<a onclick="{!c.focusProductsSection}"><strong>Products</strong></a>{!$Label.c.Products_ReminderText4}</p>
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!and(v.isProductsReminderToUpdate != null, v.isProductsReminderToUpdate)}">
+                                            <p style="text-align:left">{!$Label.c.Products_ReminderText2}&nbsp;<a onclick="{!c.focusProductsSection}"><strong>Products</strong></a>&nbsp;{!$Label.c.Products_ReminderText3}</p>
+                                            <aura:set attribute="else">
+                                                <lightning:formattedRichText value="{!v.alertMessage}" />
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:set>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </div>
+            <div class="slds-modal__footer slds-theme--default ">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeAlert}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide z-9051" aura:id="alertAuraId"></div>
+    <div role="alertdialog" tabindex="-1" aura:id="deleteAlert" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.deleteMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmDelete}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="deleteAlert"></div>
+    
+    <aura:if isTrue="{!and(v.MArecordId != null, v.MArecordId != '')}">
+        <h3 class="slds-section__title slds-m-bottom_small">
+            <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggleExpandCollapse}">
+                <aura:if isTrue="{!v.isExapand}">
+                    <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevrondown" size="xx-small" alternativeText="Product" />                
+                    <aura:set attribute="else">
+                        <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="xx-small" alternativeText="Product" /> 
+                    </aura:set>               
+                </aura:if>
+                <aura:if isTrue="{!v.isPendingTransfer == false}">
+                    <span class="slds-truncate slds-m-left_x-small" title="Section Title">Products and Competitors</span>
+                    <aura:set attribute="else">
+                        <span class="slds-truncate slds-m-left_x-small" title="Section Title">Products</span>
+                    </aura:set>
+                </aura:if>
+            </button>                                     
+        </h3>
+    </aura:if>
+
+    <aura:if isTrue="{!v.isExapand}">
+        <article class="slds-card competitor-section slds-size_1-of-1">
+            <div class="slds-page-header section-header slds-p-vertical_x-small">
+                <div class="slds-grid">
+                    <div class="slds-col slds-has-flexi-truncate slds-grid">
+                        <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                            <span class="slds-icon_container slds-icon-standard-opportunity">
+                                <lightning:icon iconName="standard:product" size="small" alternativeText="Products"/>
+                            </span>                    	
+                        </div>
+                        <div class="slds-media__body subtitle slds-grid slds-grid_vertical-align-center">                        
+                            <h4 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate" title="Products" data-aura-rendered-by="25:1312;a">Products</h4>
+                        </div>                    
+                    </div>
+                    <aura:if isTrue="{!v.isReadOnly == false}" >
+                        <div class="slds-col slds-no-flex slds-grid slds-align-top">
+                            <ui:button class="slds-button slds-button--neutral" label="Add" aura:id="addRecordsAuraId" press="{!c.openProductSearchComponent}"/>
+                        </div>
+                    </aura:if>
+                </div>
+            </div>
+            <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                <aura:if isTrue="{!v.isMedicalAndOthersTab}">
+                    <div class="slds-size_1-of-1 slds-p-vertical_small slds-p-horizontal_medium help-text">
+                        <p class="slds-text-body_small slds-text-color_weak"><em><strong>Note : </strong>Hover over the column headings for additional instructions.</em></p>
+                    </div>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.productTypesValues != $Label.c.Medical}">
+                            <aura:if isTrue="{!v.productTypesValues == 'Other_Buy_Up_Programs'}">
+                                <div class="slds-size_1-of-1 slds-p-vertical_small slds-p-horizontal_medium help-text">
+                                    <p class="slds-text-body_small slds-text-color_weak"><em><strong>Caution : </strong>Enter only the existing Other Buy Up Program members that are involved in the bid or at risk. Hover over the column headings for additional instructions.</em></p>
+                                </div>                    
+                                <aura:set attribute="else">
+                                    <div class="slds-size_1-of-1 slds-p-vertical_small slds-p-horizontal_medium help-text">
+                                        <p class="slds-text-body_small slds-text-color_weak"><em><strong>Caution : </strong>Enter only the existing {!v.productTypesValues} members that are involved in the bid or at risk. (Do not enter existing Medical members.)  Hover over the column headings for additional instructions.</em></p>
+                                    </div>
+                                </aura:set>
+                            </aura:if>                    
+                            <aura:set attribute="else">
+                                <div class="slds-size_1-of-1 slds-p-vertical_small slds-p-horizontal_medium help-text">
+                                    <p class="slds-text-body_small slds-text-color_weak"><em><strong>Note : </strong>Hover over the column headings for additional instructions.</em></p>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>                
+            </aura:if>               
+            <div class="slds-card__body slds-m-bottom_medium">
+                <aura:iteration items="{!v.productsList}" var="productObject" indexVar="index">             
+                    <aura:if isTrue="{!v.isMedicalAndOthersTab}" >
+                        <aura:if isTrue="{!productObject.MA_Category == $Label.c.Medical}" >                 
+                            <c:ProductsList aura:id="eachProductAuraId" 
+                                            productObject="{!productObject}"
+                                            fundingTypePicklistVals="{!v.fundingTypePicklistVals}"
+                                            productType="{!productObject.MA_Category}"  
+                                            isEditRecord="{!v.isEditRecord}" 
+                                            maType="{!v.maType}"
+                                            SalesStage="{!v.SalesStage}"
+                                            Disposition="{!v.Disposition}" 
+                                            totalRecordObj="{!v.totalRecordObj}" 
+                                            isMedicalAndOthersTab="{!v.isMedicalAndOthersTab}" 
+                                            account="{!v.account}"
+                                            dispositionPicklistVals="{!v.dispositionPicklistVals}"
+                                            isPendingTransfer="{!v.isPendingTransfer}"
+                                            isPendingSpinOff="{!v.isPendingSpinOff}"
+                                            isReadOnly="{!v.isReadOnly}"
+                                            isQA="{!v.isQA}"
+                                            BuyupProductList='{!v.BuyupProductList}'
+                                            >
+                            </c:ProductsList>
+                            <aura:set attribute="else">                      
+                                <c:ProductsList aura:id="eachProductAuraId" 
+                                                productObject="{!productObject}" 
+                                                fundingTypePicklistVals="{!v.fundingTypePicklistVals}" 
+                                                productType="{!productObject.MA_Category}"
+                                                isEditRecord="{!v.isEditRecord}"
+                                                maType="{!v.maType}" 
+                                                SalesStage="{!v.SalesStageOther}" 
+                                                Disposition="{!v.DispositionOther}" 
+                                                totalRecordObj="{!v.totalRecordObj}" 
+                                                isMedicalAndOthersTab="{!v.isMedicalAndOthersTab}" 
+                                                account="{!v.account}"
+                                                dispositionPicklistVals="{!v.dispositionPicklistVals}"
+                                                isPendingTransfer="{!v.isPendingTransferforOther}"
+                                                isPendingSpinOff="{!v.isPendingSpinOff}"
+                                                isReadOnly="{!v.isReadOnly}"
+                                                isQA="{!v.isQA}"
+                                                BuyupProductList='{!v.BuyupProductList}'
+                                                >
+                                </c:ProductsList>            
+                            </aura:set>
+                        </aura:if>      
+                        <aura:set attribute="else">  
+                            <aura:if isTrue="{!or(productObject.MA_Category == $Label.c.Medical, productObject.MA_Category == $Label.c.Other_Buy_Up_Program)}">    
+                                <c:ProductsList aura:id="eachProductAuraId"
+                                                productObject="{!productObject}"
+                                                fundingTypePicklistVals="{!v.fundingTypePicklistVals}"
+                                                dispositionPicklistVals="{!v.dispositionPicklistVals}"
+                                                productType="{!productObject.MA_Category}" 
+                                                isEditRecord="{!v.isEditRecord}"
+                                                maType="{!v.maType}"
+                                                SalesStage="{!v.SalesStage}" 
+                                                Disposition="{!v.Disposition}" 
+                                                totalRecordObj="{!v.totalRecordObj}" 
+                                                isMedicalAndOthersTab="{!v.isMedicalAndOthersTab}" 
+                                                account="{!v.account}"
+                                                isPendingTransfer="{!v.isPendingTransfer}"
+                                                isPendingSpinOff="{!v.isPendingSpinOff}"
+                                                isReadOnly="{!v.isReadOnly}"
+                                                isQA="{!v.isQA}"
+                                                BuyupProductList='{!v.BuyupProductList}'
+                                                >
+                                </c:ProductsList>
+                                <aura:set attribute="else">           
+                                    <c:ProductsList aura:id="eachProductAuraId"
+                                                    productObject="{!productObject}" 
+                                                    fundingTypePicklistVals="{!v.fundingTypePicklistVals}" 
+                                                    dispositionPicklistVals="{!v.dispositionPicklistVals}" 
+                                                    productType="{!productObject.MA_Category}" 
+                                                    isEditRecord="{!v.isEditRecord}" 
+                                                    maType="{!v.maType}"
+                                                    SalesStage="{!v.SalesStage}" 
+                                                    Disposition="{!v.Disposition}" 
+                                                    account="{!v.account}"
+                                                    isPendingTransfer="{!v.isPendingTransfer}"
+                                                    isPendingSpinOff="{!v.isPendingSpinOff}"
+                                                    isReadOnly="{!v.isReadOnly}"
+                                                    isQA="{!v.isQA}"
+                                                    BuyupProductList='{!v.BuyupProductList}'
+                                                    >
+                                    </c:ProductsList>
+                                </aura:set>
+                            </aura:if>  
+                        </aura:set>        
+                    </aura:if>
+                </aura:iteration>    
+            </div>
+        </article>
+        <ui:inputSelect aura:id="focusInputFieldForProducts" class="slds-hide"/>
+        <aura:if isTrue="{!and(v.maType=='NBEA', (or(v.MArecordId==null,v.MArecordId=='undefined', v.MArecordId=='')))}">
+            <aura:set attribute="else">
+               <!--<aura:if isTrue="{!or(v.isPendingTransfer == false, v.isPendingTransferforOther == false)}">-->
+                    <article class="slds-card competitor-section slds-size_1-of-1">
+                        <aura:if isTrue="{!v.isCompetitorsShown}">
+                            <div class="slds-page-header section-header slds-p-vertical_x-small">
+                                <div class="slds-grid">
+                                    <div class="slds-col slds-has-flexi-truncate slds-grid">
+                                        <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                                            <span class="slds-icon_container slds-icon-standard-opportunity">
+                                                <lightning:icon iconName="custom:custom15" size="small" alternativeText="{!$Label.c.Competitors}"/>
+                                            </span>                    	
+                                        </div>
+                                        <div class="slds-media__body subtitle slds-grid slds-grid_vertical-align-center">                        
+                                            <h4 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate" title="" data-aura-rendered-by="25:1312;a">{!$Label.c.Competitors}</h4>
+                                        </div>                    
+                                    </div>
+                                    <aura:if isTrue="{!v.isReadOnly == false}" >
+                                        <div class="slds-col slds-no-flex slds-grid slds-align-top"><ui:button class="slds-button slds-button--neutral" aura:id="addBtn"  press="{!c.addCompetitorsRecords}">{!$Label.c.Add}</ui:button></div>
+                                    </aura:if>
+                                </div>
+                            </div>
+                            <div class="slds-card__body slds-m-bottom_medium">
+                                <aura:iteration items="{!v.CompetitorsListObject}" var="competitorObject" indexVar="index">
+                                    <aura:if isTrue="{!and(competitorObject.productTypesInvolvedInMA == 'Other')}"> 
+                                        <aura:if isTrue="{!v.isMedicalAndOthersTab}">
+                                            <aura:if isTrue="{!v.isPendingTransferforOther == false}">
+                                                <c:Competitors aura:id="eachCompetitorAuraId" 
+                                                               competitorObject="{!competitorObject}" 
+                                                               productType="{!competitorObject.productTypesInvolvedInMA}" 
+                                                               isEditRecord="{!v.isEditRecordForCompetitors}" 
+                                                               maType="{!v.maType}" 
+                                                               SalesStage="{!v.SalesStageOther}" 
+                                                               previousSalesStage="{!v.previousSalesStageOther}"
+                                                               isMedicalAndOthersTab="{!v.isMedicalAndOthersTab}"
+                                                               MARecordId="{!v.MArecordId}"
+                                                               DispositionOther="{!v.DispositionOther}" 
+                                                               opportunityRecord="{!v.opportunityRecord}"
+                                                               isReadOnly="{!v.isReadOnly}"
+                                                               isQA="{!v.isQA}" />
+                                            </aura:if>
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!v.isPendingTransfer == false}">
+                                                    <c:Competitors aura:id="eachCompetitorAuraId" 
+                                                                   competitorObject="{!competitorObject}" 
+                                                                   productType="{!competitorObject.productTypesInvolvedInMA}" 
+                                                                   isEditRecord="{!v.isEditRecordForCompetitors}" 
+                                                                   maType="{!v.maType}" 
+                                                                   SalesStage="{!v.SalesStageOther}" 
+                                                                   previousSalesStage="{!v.previousSalesStageOther}"
+                                                                   isMedicalAndOthersTab="{!v.isMedicalAndOthersTab}"
+                                                                   MARecordId="{!v.MArecordId}"
+                                                                   DispositionOther="{!v.DispositionOther}" 
+                                                                   opportunityRecord="{!v.opportunityRecord}" 
+                                                                   isReadOnly="{!v.isReadOnly}"
+                                                                   isQA="{!v.isQA}" />
+                                                </aura:if>
+                                            </aura:set>
+                                        </aura:if>
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!v.isPendingTransfer == false}">
+                                                <c:Competitors aura:id="eachCompetitorAuraId" 
+                                                               competitorObject="{!competitorObject}" 
+                                                               productType="{!competitorObject.productTypesInvolvedInMA}" 
+                                                               isEditRecord="{!v.isEditRecordForCompetitors}" 
+                                                               maType="{!v.maType}" 
+                                                               SalesStage="{!v.SalesStage}" 
+                                                               previousSalesStage="{!v.previousSalesStage}"
+                                                               isMedicalAndOthersTab="{!v.isMedicalAndOthersTab}"
+                                                               MARecordId="{!v.MArecordId}"
+                                                               Disposition="{!v.Disposition}" 
+                                                               opportunityRecord="{!v.opportunityRecord}"
+                                                               isReadOnly="{!v.isReadOnly}" 
+                                                               isQA="{!v.isQA}" />
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:iteration> 
+                            </div>
+                       </aura:if>
+                    </article>
+                <!--</aura:if>-->
+            </aura:set>
+        </aura:if>
+    </aura:if>
+    
+</aura:component>

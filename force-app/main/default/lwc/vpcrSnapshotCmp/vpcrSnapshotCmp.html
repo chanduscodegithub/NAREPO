@@ -1,0 +1,403 @@
+<template>
+    <span class={cssDisplay}>
+        <div class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                        role="status">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                </div>
+        </div>
+    </span>
+    <div class="slds-text-heading_medium">
+        {reportTitle}
+    </div>
+    <div class="container">
+        <div class="div-left">
+            <div class="inner-container">
+                <div class="inner-left">{salesSeasonLabel}  </div>
+                <div class="inner-right" >
+                    <template if:true={salesSeasonPicklist}>
+                        <lightning-combobox name='salesSeason' value={salesSeason} variant="label-hidden"
+                            options={salesSeasonPicklist} onchange={salesSeasonChangeHandler}>
+                        </lightning-combobox>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="div-right">
+                <lightning-button type="submit" variant="Neutral" label="Print" class="slds-m-left_x-small"
+                onclick={exportHandler} disabled={isButtonDisabled} ></lightning-button>
+        </div>
+    </div>
+    <!-- VPCR REPORT BEGINS -->
+        <lightning-card>
+            <lightning-accordion class="section-header-style" allow-multiple-sections-open active-section-name={activeSections}>
+                <lightning-accordion-section class="section-header" name="A" label={vpcrCurrentCompanyLabel}>
+                    <lightning-card>
+                        <template if:false={isvpcrCurrentCompanyDataEmpty}>
+                            <div class="slds-card__body slds-m-bottom_none">
+                                <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                                    <table class="slds-table slds-table_cell-buffer slds-cell-wrap slds-table_bordered slds-table_col-bordered fixed">
+                                        <colgroup span="2">
+                                            <col  width="21%" />
+                                            <col  width="13%" />
+                                        </colgroup>
+                                        <colgroup span="4" style="background: #f2f2f2;">
+                                            <col  width="10%" />
+                                            <col  width="22%" />
+                                            <!--  <col  width="12%" /> -->
+                                        </colgroup>
+                                        <colgroup>
+                                            <col  width="2%" />
+                                        </colgroup>
+                                        <colgroup span="4" style="background: #f2f2f2;">
+                                            <col  width="10%" />
+                                            <col  width="22%" />
+                                            <!--  <col  width="12%" /> -->
+                                        </colgroup>
+                                    <thead>
+                                            <tr class="slds-cell-wrap">
+                                                <th colspan="2"></th>
+                                                <th class="slds-cell-wrap" colspan="2" style="text-align: center;">Growth</th>
+                                                <th></th>
+                                                <th class="slds-cell-wrap" colspan="2" style="text-align: center;">Confirmed Renewals For Non-Medical Products</th>
+                                            </tr>
+                                            <tr class="slds-cell-wrap ">
+                                            <th scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <a data-record="company" onclick={handleCurrentSortdata}  class="slds-th__action slds-text-link--reset" tabindex="0" >
+                                                    <span class="slds-cell-wrap" title="Company">Company</span>
+                                                    <div class="slds-icon_container sortIconPadding">
+                                                        <template if:true={currentSortDirection}>
+                                                            <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowdown" size="xx-small" alternative-text="Ascending" ></lightning-icon>
+                                                        </template>
+                                                        <template if:false={currentSortDirection}>
+                                                            <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowup" size="xx-small" alternative-text="Descending" ></lightning-icon>
+                                                        </template>
+                                                    </div>
+                                                </a>
+                                            </th>    
+                                            <th scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <a data-record="company" onclick={handleCCCurrentSCESortdata}  class="slds-th__action slds-text-link--reset" tabindex="0" >
+                                                    <span class="slds-cell-wrap" title="Current SCE">Current SCE</span>
+                                                    <div class="slds-icon_container sortIconPadding">
+                                                        <template if:true={ccCurrentSCESortDirection}>
+                                                            <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowdown" size="xx-small" alternative-text="Ascending" ></lightning-icon>
+                                                        </template>
+                                                        <template if:false={ccCurrentSCESortDirection}>
+                                                            <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowup" size="xx-small" alternative-text="Descending" ></lightning-icon>
+                                                        </template>
+                                                    </div>
+                                                </a>
+                                            </th>
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products"># of Products</div>
+                                            </th>
+                                            <!--<th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products Not Yet Sent</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                            </th> -->
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="SCE(s) Receiving Compensation" style="text-transform: none;">SCE(s) Receiving Compensation</div>
+                                            </th>
+                                         <!--   <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="Additional SCE Receiving Compensation">Additional SCE Receiving Compensation</div>
+                                            </th> -->
+                                            <th scope="col" style="padding-left: 2px; padding-right: 2px "></th>
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products"># of Products</div>
+                                            </th>
+                                            <!--<th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products Not Yet Sent</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                            </th>-->
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="SCE(s) Receiving Compensation" style="text-transform: none;">SCE(s) Receiving Compensation</div>
+                                            </th>
+                                         <!--   <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="Additional SCE Receiving Compensation">Additional SCE Receiving Compensation</div>
+                                            </th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody class="FontSize">
+                                        <template for:each={vpcrCurrentCompanyData} for:item="row">
+                                            <c-vpcr-snapshot-child-row-cmp key={row} vpcr-data={row}></c-vpcr-snapshot-child-row-cmp>
+                                        </template>
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:true={isvpcrCurrentCompanyDataEmpty}>
+                                <div class="slds-card__body slds-m-bottom_none">
+                                        <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                                        <table class="slds-table slds-table_cell-buffer slds-cell-wrap slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                                            <colgroup span="2">
+                                                <col  width="21%" />
+                                                <col  width="13%" />
+                                            </colgroup>
+                                            <colgroup span="4" style="background: #f2f2f2;">
+                                                <col  width="10%" />
+                                                <col  width="22%" />
+                                                <!--  <col  width="12%" /> -->
+                                            </colgroup>
+                                            <colgroup>
+                                                <col  width="2%" />
+                                            </colgroup>
+                                            <colgroup span="4" style="background: #f2f2f2;">
+                                                <col  width="10%" />
+                                                <col  width="22%" />
+                                                <!--  <col  width="12%" /> -->
+                                            </colgroup>
+                                    <thead>
+                                        <tr class="slds-cell-wrap">
+                                            <th colspan="2"></th>
+                                            <th class="slds-cell-wrap" colspan="2" style="text-align: center;">Growth</th>
+                                            <th></th>
+                                            <th class="slds-cell-wrap" colspan="2" style="text-align: center;">Confirmed Renewals For Non-Medical Products</th>
+                                        </tr>
+                                        <tr class="slds-cell-wrap ">
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="Company">Company</div>
+                                            </th>    
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="Current SCE">Current SCE</div>
+                                            </th>    
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products"># of Products</div>
+                                            </th>
+                                            <!--<th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products Not Yet Sent</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                            </th>-->
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="SCE(s) Receiving Compensation" style="text-transform: none;">SCE(s) Receiving Compensation</div>
+                                            </th>
+                                          <!--  <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="Additional SCE Receiving Compensation">Additional SCE Receiving Compensation</div>
+                                            </th> -->
+                                            <th scope="col" style="padding-left: 2px; padding-right: 2px "></th>
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products"># of Products</div>
+                                            </th>
+                                            <!--<th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products Not Yet Sent</div>
+                                            </th>
+                                            <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                            </th> -->
+                                            <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="SCE(s) Receiving Compensation" style="text-transform: none;">SCE(s) Receiving Compensation</div>
+                                            </th>
+                                          <!--  <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                                <div class="slds-cell-wrap" title="Additional SCE Receiving Compensation">Additional SCE Receiving Compensation</div>
+                                            </th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th colspan="7">
+                                                <div class="slds-text-align--center">
+                                                        No Records Found
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                    </table>    
+                                </div>
+                            </div>
+                        </template>    
+                    </lightning-card>
+                </lightning-accordion-section>
+    
+                <lightning-accordion-section class="section-header" name="B" label={vpcrPreviousCompanyLabel}>
+                    <lightning-card>
+                        <template if:false ={isvpcrPreviousCompanyDataEmpty}>
+                            <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                                <table class="slds-table slds-table_cell-buffer slds-cell-wrap slds-table_bordered slds-table_col-bordered fixed">
+                                    <colgroup span="2">
+                                        <col  width="21%" />
+                                        <col  width="13%" />
+                                    </colgroup>
+                                    <colgroup span="4" style="background: #f2f2f2;">
+                                        <col  width="10%" />
+                                        <col  width="22%" />
+                                      <!--  <col  width="12%" /> -->
+                                    </colgroup>
+                                    <colgroup>
+                                        <col  width="2%" />
+                                    </colgroup>
+                                    <colgroup span="4" style="background: #f2f2f2;">
+                                        <col  width="10%" />
+                                        <col  width="22%" />
+                                      <!--  <col  width="12%" /> -->
+                                    </colgroup>
+                                <thead>
+                                    <tr class="slds-cell-wrap">
+                                        <th colspan="2"></th>
+                                        <th class="slds-cell-wrap" colspan="2" style="text-align: center;">Growth</th>
+                                        <th></th>
+                                        <th class="slds-cell-wrap" colspan="2" style="text-align: center;">Confirmed Renewals For Non-Medical Products</th>
+                                    </tr>
+                                    <tr class="slds-cell-wrap ">
+                                        <th scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <a data-record="company" onclick={handlePreviousSortdata}  class="slds-th__action slds-text-link--reset" tabindex="0" >
+                                                <span class="slds-cell-wrap" title="Company">Company</span>
+                                                <div class="slds-icon_container sortIconPadding">
+                                                    <template if:true={previousSortDirection}>
+                                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowdown" size="xx-small" alternative-text="Ascending" ></lightning-icon>
+                                                    </template>
+                                                    <template if:false={previousSortDirection}>
+                                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowup" size="xx-small" alternative-text="Descending" ></lightning-icon>
+                                                    </template>
+                                                </div>
+                                            </a>
+                                        </th>
+                                        <th scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <a data-record="company" onclick={handlePCCurrentSCESortdata}  class="slds-th__action slds-text-link--reset" tabindex="0" >
+                                                <span class="slds-cell-wrap" title="Current SCE">Current SCE</span>
+                                                <div class="slds-icon_container sortIconPadding">
+                                                    <template if:true={pcCurrentSCESortDirection}>
+                                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowdown" size="xx-small" alternative-text="Ascending" ></lightning-icon>
+                                                    </template>
+                                                    <template if:false={pcCurrentSCESortDirection}>
+                                                        <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default" icon-name="utility:arrowup" size="xx-small" alternative-text="Descending" ></lightning-icon>
+                                                    </template>
+                                                </div>
+                                            </a>
+                                        </th>   
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products"># of Products</div>
+                                        </th>
+                                        <!--<th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products Not Yet Sent</div>
+                                        </th>
+                                        <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                        </th>-->
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="SCE(s) Receiving Compensation" style="text-transform: none;">SCE(s) Receiving Compensation</div>
+                                        </th>
+                                      <!--  <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="Additional SCE Receiving Compensation">Additional SCE Receiving Compensation</div>
+                                        </th> -->
+                                        <th scope="col" style="padding-left: 2px; padding-right: 2px "></th>
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products"># of Products</div>
+                                        </th>
+                                        <!--<th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products Not Yet Sent</div>
+                                        </th>
+                                        <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                        </th>-->
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="SCE(s) Receiving Compensation" style="text-transform: none;">SCE(s) Receiving Compensation</div>
+                                        </th>
+                                      <!--  <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="Additional SCE Receiving Compensation">Additional SCE Receiving Compensation</div>
+                                        </th> -->
+                                    </tr>
+                                </thead>
+                                <tbody class="FontSize">
+                                    <template for:each={vpcrPreviousCompanyData} for:item="row">
+                                        <c-vpcr-snapshot-child-row-cmp key={row} vpcr-data={row}></c-vpcr-snapshot-child-row-cmp>
+                                    </template>
+                                </tbody>
+                                </table>   
+                            </div>	                            
+                        </template>		                      
+                        <template if:true={isvpcrPreviousCompanyDataEmpty}>
+                            <div class="scrollerSize table-scroll slds-p-bottom_small" style="overflow: hidden; overflow-x: auto;">
+                                <table class="slds-table slds-table_cell-buffer slds-cell-wrap slds-table_bordered slds-table_col-bordered slds-no-row-hover fixed">
+                                    <colgroup span="2">
+                                        <col  width="21%" />
+                                        <col  width="13%" />
+                                    </colgroup>
+                                    <colgroup span="4" style="background: #f2f2f2;">
+                                        <col  width="10%" />
+                                        <col  width="22%" />
+                                        <!--  <col  width="12%" /> -->
+                                    </colgroup>
+                                    <colgroup>
+                                        <col  width="2%" />
+                                    </colgroup>
+                                    <colgroup span="4" style="background: #f2f2f2;">
+                                        <col  width="10%" />
+                                        <col  width="22%" />
+                                        <!--  <col  width="12%" /> -->
+                                    </colgroup>
+                                <thead>
+                                        <tr class="slds-cell-wrap">
+                                            <th colspan="2"></th>
+                                            <th class="slds-cell-wrap" colspan="2" style="text-align: center;">Growth</th>
+                                            <th></th>
+                                            <th class="slds-cell-wrap" colspan="2" style="text-align: center;">Confirmed Renewals For Non-Medical Products</th>
+                                        </tr>
+                                        <tr class="slds-cell-wrap ">
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="Company">Company</div>
+                                        </th>    
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="Current SCE">Current SCE</div>
+                                        </th>    
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products"># of Products</div>
+                                        </th>
+                                        <!--<th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products Not Yet Sent</div>
+                                        </th>
+                                        <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                        </th>-->
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="SCE(s) Receiving Compensation" style="text-transform: none;">SCE(s) Receiving Compensation</div>
+                                        </th>
+                                        <!-- <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="Additional SCE Receiving Compensation">Additional SCE Receiving Compensation</div>
+                                        </th> -->
+                                        <th scope="col" style="padding-left: 2px; padding-right: 2px "></th>
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products"># of Products</div>
+                                        </th>
+                                        <!--<th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Not Yet Sent"># of Products Not Yet Sent</div>
+                                        </th>
+                                        <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="No of Products Sent"># of Products Sent</div>
+                                        </th>-->
+                                        <th scope="col" style="padding-left: 10px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="SCE(s) Receiving Compensation" style="text-transform: none;">SCE(s) Receiving Compensation</div>
+                                        </th>
+                                        <!-- <th class="slds-text-title_caps" scope="col" style="padding-left: 2px; padding-right: 2px ">
+                                            <div class="slds-cell-wrap" title="Additional SCE Receiving Compensation">Additional SCE Receiving Compensation</div>
+                                        </th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <th colspan="7">
+                                                <div class="slds-text-align--center">
+                                                        No Records Found
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>    
+                            </div>
+                        </template>     
+                    </lightning-card>
+                </lightning-accordion-section>
+            </lightning-accordion>
+            <div class="slds-text-body_small">
+                {vpcrInformationText}
+            </div>
+        </lightning-card>
+    <!-- VPCR REPORT ENDS -->        
+</template>

@@ -1,0 +1,847 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" Controller="Membership_QA_Controller">
+    
+    <!--<aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>-->
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:registerEvent name="modalCmpCloseEvent" type="c:Model_Closing_Event"/>
+    <aura:registerEvent name="AccountMA_QAEvent" type="c:AccountMA_QA_Event"/>
+    <!--<aura:handler name="QA_Event" action="{!c.getAccountData}" event="c:QA_Event" />-->
+    
+    <aura:attribute name="Child_Data" type="Object" />
+    <aura:attribute name="isOpp" type="Boolean" default="false" />
+    <aura:attribute name="OpportunityData" type="Opportunity" />
+    <aura:attribute name="NavigationPages" type="Object" />
+    <aura:attribute name="MandatoryFieldsMap" type="String" default="" />
+    <aura:attribute name="MandatoryEmptyFieldsArray" type="Object[]" />
+    <aura:attribute name="PicklistFieldsItags" type="List" />
+    <aura:attribute name="ConditionallyMandatoryFieldsMap" type="String" default="" />
+    <aura:attribute name="kanbanBranchingList" type="List" default="[{'label': 'Step 1', 'value': 'General Information'},
+                                                                    {'label': 'Step 2', 'value': 'Sales Stage and Existing Membership at Risk'},{'label': 'Step 3', 'value': 'Existing Membership Risk Detail'},{'label': 'Step 4', 'value': 'Anticipated/Actual Close Date, Membership Activity Name'},{'label': 'Step 5', 'value': 'Products'},{'label': 'Step 6', 'value': 'Underwriting Engagement for Specialty Benefits Products'},{'label': 'Step 7', 'value': 'Consultant Information'},{'label': 'Step 8', 'value': 'Consultant Detail'},{'label': 'Step 9', 'value': 'Exchange Information'},{'label':'Step 10', 'value':'Exchange Detail'}]" />
+    <aura:attribute name="progressionBarWidth" type="String" default="width: 0%" />
+    <aura:attribute name="underWritingEngagementProductFlag" type="Boolean" default="true" />
+    <aura:attribute name="isRequiredDental" type="Boolean" default="true" />
+    <aura:attribute name="isRequiredVision" type="Boolean" default="true" />
+    <aura:attribute name="isRequiredOther" type="Boolean" default="true" />
+    <aura:attribute name="isRequiredDental1" type="Boolean" default="true" />
+    <aura:attribute name="isRequiredVision1" type="Boolean" default="true" />
+    <aura:attribute name="isRequiredOther1" type="Boolean" default="true" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+    <aura:attribute name="errorPopUpTitle" type="String" default="" />
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="AccountData" type="Account" />
+    <aura:attribute name="SkippedScreensFlag" type="Object" />
+    <aura:attribute name="isRequiredFields" type="Object" />
+    <aura:attribute name="maType" type="String" />
+    <aura:attribute name="isProductsAndCompetitorsScreen" type="Boolean" default="false" />
+    <aura:attribute name="ProductNavigationPages" type="Object" />
+    <aura:attribute name="isMedicalOtherTab" type="Boolean" default="false"/>
+    <aura:attribute name="stepwiseProductsFlag" type="Object" />
+    <aura:attribute name="AllProductsList" type="OpportunityLineItem[]" />
+    <aura:attribute name="isExistingMemAtRiskFlag" type="Boolean" default="false" />
+    <aura:attribute name="TotalPdtsRecordsList" type="OpportunityLineItem[]" />
+    <aura:attribute name="SalesStageList" type="String[]" />
+    <aura:attribute name="PrevSalesStages" type="Object" />
+    <aura:attribute name="AggregatorInvolvedInOppName" type="String" default="" />
+    <aura:attribute name="dualListBoxOptions" type="List" default="[]" />
+    <!--Added By Chandrika - 3873 -->
+    <aura:attribute name="showLeadSourceField" type="Boolean" default="true"/>
+    <aura:attribute name="DirectMarketing" type="Boolean" default="false"/>
+    <!--Ended - 3873-->
+    
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
+    <aura:handler name="QA_Event" action="{!c.getAccountData}" event="c:QA_Event" />
+    
+    {!v.body}    
+    
+    <div class="modal-body modal-ch-body scrollable slds-modal__content">  
+        
+        <div class="slds-spinner_container slds-hide" aura:id="userLoadingspinner">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        
+        <div class="slds-size_12-of-12 slds-m-bottom_medium slds-m-top_large slds-p-horizontal_medium kanban-branch">
+            <div class="slds-progress ">
+                <ol class="slds-progress__list">
+                    <aura:iteration items="{!v.kanbanBranchingList}" var="stepValue">
+                        <li aura:id="kanbanSteps" class="slds-progress__item slds-is-relative" title="{!stepValue.value}">
+                            <button class="slds-button slds-progress__marker">
+                                <span class="slds-assistive-text">{!stepValue.label}</span>
+                            </button>
+                            <label class="progression-label">{!stepValue.label}</label>
+                        </li>
+                    </aura:iteration>
+                </ol>
+                <div class="slds-progress-bar slds-progress-bar_x-small" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" role="progressbar">
+                    <span class="slds-progress-bar__value" style="{!v.progressionBarWidth}">
+                        <span class="slds-assistive-text">Progress: 0%</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div aura:id="errorToastMessage" class="slds-hide slds-size_12-of-12 slds-m-bottom_medium">
+            <div class="general-notification">
+                <span>Review the errors on this page.</span>
+            </div>
+            <div class="error-list slds-p-horizontal_medium slds-has-error">
+                <span class="slds-form-element__help">These required fields must be completed:
+                    <aura:iteration items="{!v.MandatoryEmptyFieldsArray}" var="mandatoryEmptyField">
+                        <span><a href="" class="error-link" data-record="{!mandatoryEmptyField.Itag}" onclick="{!c.focusMandatoryFields}">{!mandatoryEmptyField.Name}</a>, </span>
+                    </aura:iteration></span>
+            </div>
+        </div>
+        
+        <div role="alertdialog" tabindex="-1" aura:id="reminderPopUp" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancelForPrompt}" title="Close">
+                        <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small"/>
+                        <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                    </button>
+                    <h2 id="header43" class="slds-text-heading--medium">{!v.errorPopUpTitle}</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <p><aura:unescapedHtml value="{!v.errorMessage}" /></p>
+                </div>
+                <div class="slds-modal__footer slds-theme--default">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.confirmCancelForPrompt}">{!$Label.c.OK}</button>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="reminderPopUp"></div>
+        
+        <div aura:id="QAPage1" class="slds-grid slds-wrap modal-content">
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium">
+                <h4 class="modal-title">{!$Label.c.GeneralInformation}</h4>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="AccountNameDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.CompanyName}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control slds-is-relative">
+                        <ui:inputText class="slds-input search-input" aura:id="AccountName" value="{!v.OpportunityData.AccountName}" required="true" disabled="true" />
+                    </div>
+                    <div aura:id="AccountNameDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>            
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Product_Type_Involved_in_Opp__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.ProductsInvolvedInTheOpportunityOrRisk}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control checkbox-group">
+                        <!--<lightning:checkboxGroup aura:id="Product_Type_Involved_in_Opp__c" name="checkboxGroup11" options="" value="" onchange="{!c.handleChange}" />-->
+                        <lightning:checkboxGroup aura:id="Product_Type_Involved_in_Opp__c" name="checkboxGroup" options="" value="" onchange="{!c.handleChange}" />
+                    </div>
+                    <div aura:id="Product_Type_Involved_in_Opp__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="EffectiveDate__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.EffectiveDate}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="EffectiveDate__c" value="{!v.OpportunityData.EffectiveDate__c}" displayDatePicker="true" change="{!c.onChangeOfDate}" required="true"/>
+                    </div>
+                    <div aura:id="EffectiveDate__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} - {!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                    <div aura:id="EffectiveDate__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Has_a_Formal_RFP_Been_Issued__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.HasAFormalRFPBeenIssued}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <lightning:radioGroup aura:id="Has_a_Formal_RFP_Been_Issued__c" name="formalRFP" options="" value="" onchange="{!c.handleChangeForRadioButtonGroup}" />
+                    </div>
+                    <div aura:id="Has_a_Formal_RFP_Been_Issued__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Reason_for_the_Opportunity_Risk__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.ReasonForTheOpportunityOrRisk}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Reason_for_the_Opportunity_Risk__c" multiple="false" value="{!v.OpportunityData.Reason_for_the_Opportunity_Risk__c}" />                      
+                    </div>
+                    <div aura:id="Reason_for_the_Opportunity_Risk__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Expected_Date_of_RFP__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.ExpectedDateOfRFP}<aura:if isTrue="{!v.isRequiredFields.ExpectedDateOfRFP}"><span class="slds-required">*</span></aura:if></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="Expected_Date_of_RFP__c" value="{!v.OpportunityData.Expected_Date_of_RFP__c}" displayDatePicker="true" change="{!c.onChangeOfDate}" required="true"/>
+                    </div>
+                    <div aura:id="Expected_Date_of_RFP__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}- {!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                    <div aura:id="Expected_Date_of_RFP__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label">{!$Label.c.ReasonForTheProposal}</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Reason_for_the_Proposal__c" multiple="false" value="{!v.OpportunityData.Reason_for_the_Proposal__c}" />                      
+                    </div>
+                    <!--<div class="slds-form-element__help slds-m-top_xx-small">The Instructional Text to be provided later.</div>-->
+                </div>
+            </div>            
+            <!--  <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.IsThisAUMROpportunityOrRisk}</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Is_this_a_UMR_Opportunity_Risk__c" multiple="false" value="{!v.OpportunityData.Is_this_a_UMR_Opportunity_Risk__c}" />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">Platforms Quoted</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Platforms_Quoted__c" multiple="true" value="{!v.OpportunityData.Platforms_Quoted__c}" />
+                    </div>
+                </div>                        //  <lightning:checkboxGroup aura:id="Platforms_Quoted__c" name="checkboxGroup" options="" value="" onchange="{!c.handleChange}" />
+
+            </div>-->
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Product_Type_Involved_in_Opp__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">Platforms Quoted</label>
+                    <div class="slds-form-element__control checkbox-group">
+                        <lightning:dualListbox name="languages" aura:id="Platforms_Quoted__c"
+                                               options="" value=""
+                                               onchange="{! c.handleChange }"/>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium"></div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.AggregatorInvolvedInTheOpptyOrRisk}</label>
+                    <div class="slds-form-element__control slds-is-relative accName--ronly">
+                        <ui:inputText class="slds-input search-input" aura:id="Aggregator_Involved_in_the_Oppty_Risk__c" value="{!v.AggregatorInvolvedInOppName}" disabled="true" />
+                        <ui:button aura:id="" class="slds-button slds-button-default search-btn"  press="{!c.selectAccount}">   
+                            <span class="search-icon"></span>
+                        </ui:button>
+                    </div>
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+        <div aura:id="QAPage2" class="slds-grid slds-wrap slds-hide modal-content">
+            <div class="slds-size_12-of-12">
+                <h4 class="modal-title">{!$Label.c.RiskAndSalesStage}</h4>
+            </div>
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium  slds-m-bottom_small">
+                <p class="slds-form-element__help slds-m-top_none instruction-text slds-text-color--weak"><b>Note :</b> Select the Sales Stage below. Lead should be chosen if there is the potential for upside.Emerging Risk\No Upside should be chosen if there is no potential for upside.</p>
+            </div>
+            <div aura:id="Medical" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Sales_Stage_Medical__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.SalesStage_Medical}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Sales_Stage_Medical__c" change="{!c.onChangeOfSalesStage}" multiple="false" value="" />                      
+                    </div>
+                    <div aura:id="Sales_Stage_Medical__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div aura:id="Pharmacy" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Sales_Stage_Pharmacy__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.SalesStage_Pharmacy}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Sales_Stage_Pharmacy__c" change="{!c.onChangeOfSalesStage}" multiple="false" value="" />                      
+                    </div>
+                    <div aura:id="Sales_Stage_Pharmacy__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div aura:id="Dental" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Sales_Stage_Dental__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.SalesStage_Dental}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Sales_Stage_Dental__c" change="{!c.onChangeOfSalesStage}" multiple="false" value="" />                      
+                    </div>
+                    <div aura:id="Sales_Stage_Dental__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div aura:id="Vision" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Sales_Stage_Vision__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.SalesStage_Vision}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Sales_Stage_Vision__c" change="{!c.onChangeOfSalesStage}" multiple="false" value="" />                      
+                    </div>
+                    <div aura:id="Sales_Stage_Vision__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div aura:id="Other Buy Up Programs" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Sales_Stage_Other__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.SalesStage_OtherBuyUp}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Sales_Stage_Other__c" change="{!c.onChangeOfSalesStage}" multiple="false" value="" />                      
+                    </div>
+                    <div aura:id="Sales_Stage_Other__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <!-- Added by Chandrika - #3873-->
+                <aura:renderIf isTrue="{!v.showLeadSourceField}">
+                    <div class="slds-size_1-of-1 slds-grid slds-gutters slds-wrap ">
+                    <div class="slds-size_1-of-2"></div> <!-- Empty left -->
+                        <div class="slds-size_1-of-2 slds-p-left_large">
+                            <div aura:id="Lead_Source__cDiv" class="slds-form-element slds-m-bottom_medium">
+                                
+                                <label class="slds-form-element__label">{!$Label.c.LeadSource}</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputSelect class="slds-form-control slds-select" aura:id="Lead_Source__c" multiple="false" value="{!v.OpportunityData.Lead_Source__c}" change="{!c.handleLeadSourceChange}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-grid slds-gutters slds-wrap"> 
+                        <div class=" slds-size_1-of-2 "></div>
+                        <div class="slds-size_1-of-2 slds-p-left_large">
+                        <div aura:id="Direct_Marketing_Initiator__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">
+                                {!$Label.c.DirectMarketingInitiator}
+                                <aura:if isTrue="{!v.DirectMarketing}">
+                                    <span class="slds-required">*</span>
+                                </aura:if>
+                            </label>
+                            <div class="slds-form-element__control">
+                                <ui:inputSelect class="slds-form-control slds-select" aura:id="Direct_Marketing_Initiator__c" multiple="false" value="{!v.OpportunityData.Direct_Marketing_Initiator__c}" />
+                            </div>
+                            <div aura:id="Direct_Marketing_Initiator__cDiv1" class="slds-form-element__help slds-hide">{!$Label.c.CompleteThisField}</div>
+                        </div>
+                    </div>
+                    </div>
+                
+                </aura:renderIf>
+                <!-- Ended- #3873--> 
+            <div class="slds-size_12-of-12">
+                <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                    <div aura:id="Is_There_Existing_Membership_at_Risk__cDiv" class="slds-form-element slds-m-bottom_medium">
+                        <label class="slds-form-element__label">{!$Label.c.IsThereExistingMembershipAtRisk}<span class="slds-required">*</span></label>
+                        <div class="slds-form-element__control form-group">
+                            <lightning:radioGroup aura:id="Is_There_Existing_Membership_at_Risk__c" name="existingMA" options="" value="" onchange="{!c.handleChangeForRadioButtonGroup}" />
+                        </div>
+                        <div class="slds-form-element__help slds-m-top_xx-small">{!$Label.c.Step2_InstructionText}</div>
+                        <div aura:id="Is_There_Existing_Membership_at_Risk__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                    </div>
+                </div>
+            </div>
+        </div>   
+        <div aura:id="QAPage3" class="slds-grid slds-wrap slds-hide modal-content">
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium">
+                <h4 class="modal-title">{!$Label.c.ExistingMembershipRiskInformation}</h4>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Can_the_Membership_Move_Without_a_Bid__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.CanTheMembershipMoveWithoutABid}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <lightning:radioGroup aura:id="Can_the_Membership_Move_Without_a_Bid__c" name="maBid" options="" value="" onchange="{!c.handleChangeForRadioButtonGroup}" />
+                    </div>
+                    <div aura:id="Can_the_Membership_Move_Without_a_Bid__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Estimated_Membership_Impact__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.EstimatedMembershipImpact}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <lightning:radioGroup aura:id="Estimated_Membership_Impact__c" name="estimatedMA" options="" value="" onchange="{!c.handleChangeForRadioButtonGroup}" />
+                    </div>
+                    <div aura:id="Estimated_Membership_Impact__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Primary_Risk_Reason__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.PrimaryRiskReason}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Primary_Risk_Reason__c" multiple="false" value="{!v.OpportunityData.Primary_Risk_Reason__c}" />                      
+                    </div>
+                    <div aura:id="Primary_Risk_Reason__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.SecondaryRiskReason}</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Secondary_Risk_Reason__c" multiple="false" value="{!v.OpportunityData.Secondary_Risk_Reason__c}" />                      
+                    </div>
+                </div>
+            </div>
+            <div aura:id="Medical" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Risk_Probability_Medical__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.RiskProbability_Medical}<aura:if isTrue="{!v.isRequiredFields.Medical}"><span class="slds-required">*</span></aura:if></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Risk_Probability_Medical__c" multiple="false" value="{!v.OpportunityData.Risk_Probability_Medical__c}"/>                      
+                    </div>
+                    <div aura:id="Risk_Probability_Medical__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div aura:id="Pharmacy" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Risk_Probability_Pharmacy__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.RiskProbability_Pharmacy}<aura:if isTrue="{!v.isRequiredFields.Pharmacy}"><span class="slds-required">*</span></aura:if></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Risk_Probability_Pharmacy__c" multiple="false" value="{!v.OpportunityData.Risk_Probability_Pharmacy__c}" />                      
+                    </div>
+                    <div aura:id="Risk_Probability_Pharmacy__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div aura:id="Dental" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Risk_Probability_Dental__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.RiskProbability_Dental}<aura:if isTrue="{!v.isRequiredFields.Dental}"><span class="slds-required">*</span></aura:if></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Risk_Probability_Dental__c" multiple="false" value="{!v.OpportunityData.Risk_Probability_Dental__c}"/>                      
+                    </div>
+                    <div aura:id="Risk_Probability_Dental__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div aura:id="Vision" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Risk_Probability_Vision__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.RiskProbability_Vision}<aura:if isTrue="{!v.isRequiredFields.Vision}"><span class="slds-required">*</span></aura:if></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Risk_Probability_Vision__c" multiple="false" value="{!v.OpportunityData.Risk_Probability_Vision__c}" />                      
+                    </div>
+                    <div aura:id="Risk_Probability_Vision__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div aura:id="Other Buy Up Programs" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Risk_Probability_Other__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.RiskProbability_OtherBuyUp}<aura:if isTrue="{!v.isRequiredFields.Other}"><span class="slds-required">*</span></aura:if></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Risk_Probability_Other__c" multiple="false" value="{!v.OpportunityData.Risk_Probability_Other__c}"/>                      
+                    </div>
+                    <div aura:id="Risk_Probability_Other__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+        </div>
+        <div aura:id="QAPage4" class="slds-grid slds-wrap slds-hide modal-content">
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium">
+                <h4 class="modal-title">{!$Label.c.AnticipatedOrActualCloseDateMembershipActivityName}</h4>
+            </div>
+            <div aura:id="Medical" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Anticipated_Actual_Close_Date_Medical__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.AnticipatedOrActualCloseDate_Medical}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="Anticipated_Actual_Close_Date_Medical__c" value="{!v.OpportunityData.Anticipated_Actual_Close_Date_Medical__c}" displayDatePicker="true" change="{!c.onChangeOfDate}" />
+                    </div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Medical__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} - {!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Medical__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                </div>
+            </div>
+            <div aura:id="Pharmacy" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Anticipated_Actual_Close_Date_Pharmacy__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label" for="input-id-2">{!$Label.c.AnticipatedOrActualCloseDate_Pharmacy}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="Anticipated_Actual_Close_Date_Pharmacy__c" value="{!v.OpportunityData.Anticipated_Actual_Close_Date_Pharmacy__c}" displayDatePicker="true" change="{!c.onChangeOfDate}" />
+                    </div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Pharmacy__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} - {!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Pharmacy__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                </div>
+            </div>
+            <div aura:id="Dental" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Anticipated_Actual_Close_Date_Dental__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label" for="input-id-2">{!$Label.c.AnticipatedOrActualCloseDate_Dental}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="Anticipated_Actual_Close_Date_Dental__c" value="{!v.OpportunityData.Anticipated_Actual_Close_Date_Dental__c}" displayDatePicker="true" change="{!c.onChangeOfDate}" />
+                    </div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Dental__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} - {!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Dental__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                </div>
+            </div>
+            <div aura:id="Vision" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Anticipated_Actual_Close_Date_Vision__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label" for="input-id-2">{!$Label.c.AnticipatedOrActualCloseDate_Vision}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="Anticipated_Actual_Close_Date_Vision__c" value="{!v.OpportunityData.Anticipated_Actual_Close_Date_Vision__c}" displayDatePicker="true" change="{!c.onChangeOfDate}" />
+                    </div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Vision__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} - {!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Vision__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                </div>
+            </div>
+            <div aura:id="Other Buy Up Programs" class="slds-hide slds-size_1-of-1 slds-medium-size_3-of-6 slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Anticipated_Actual_Close_Date_Other__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label" for="input-id-2">{!$Label.c.AnticipatedOrActualCloseDate_Other}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="Anticipated_Actual_Close_Date_Other__c" value="{!v.OpportunityData.Anticipated_Actual_Close_Date_Other__c}" displayDatePicker="true" change="{!c.onChangeOfDate}" />
+                    </div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Other__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} - {!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                    <div aura:id="Anticipated_Actual_Close_Date_Other__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                </div>
+            </div>
+            <div class="slds-size_12-of-12">
+                <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-large-size_6-of-12 slds-p-horizontal_medium">
+                    <div class="slds-form-element slds-m-bottom_medium">
+                        <label class="slds-form-element__label">{!$Label.c.MemberShipActivityName}</label>
+                        <div class="slds-form-element__control">
+                            <ui:inputText aura:id="Name" class="slds-input" required="true" value="{!v.OpportunityData.Name}"/>
+                        </div>
+                        <div class="slds-form-element__help slds-m-top_xx-small">{!$Label.c.Step4_MAName_InstructionText}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div aura:id="QAPage5" class="slds-grid slds-wrap slds-hide modal-content slds-p-horizontal_medium">
+            <!--<div class="slds-size_12-of-12 slds-p-horizontal_medium">
+                <h4 class="modal-title">{!$Label.c.Products}</h4>
+            </div>-->
+            <div class="slds-size_1-of-1 slds-p-bottom_medium slds-p-horizontal_medium">
+                <nav role="navigation" aria-label="Breadcrumbs" class="breadcrumb">
+                    <ol class="slds-breadcrumb slds-list_horizontal slds-wrap">
+                        <aura:if isTrue="{!v.isMedicalOtherTab}">
+                            <li aura:id="MedicalOtherBreadCrumb" class="slds-breadcrumb__item slds-hide"><a href="javascript:void(0);">Medical and Other Buy Up Programs</a></li>
+                            <aura:set attribute="else">
+                                <li aura:id="MedicalBreadCrumb" class="slds-breadcrumb__item slds-hide"><a href="javascript:void(0);">Medical</a></li>
+                            </aura:set>
+                        </aura:if>
+                        <li aura:id="PharmacyBreadCrumb" class="slds-breadcrumb__item slds-hide"><a href="javascript:void(0);">Pharmacy</a></li>
+                        <li aura:id="DentalBreadCrumb" class="slds-breadcrumb__item slds-hide"><a href="javascript:void(0);">Dental</a></li>
+                        <li aura:id="VisionBreadCrumb" class="slds-breadcrumb__item slds-hide"><a href="javascript:void(0);">Vision</a></li>
+                        <aura:if isTrue="{!v.isMedicalOtherTab == false}">
+                            <li aura:id="OtherBreadCrumb" class="slds-breadcrumb__item slds-hide"><a href="javascript:void(0);">Other Buy Up Programs</a></li>
+                        </aura:if>                      
+                    </ol>
+                </nav>
+            </div>
+            <aura:if isTrue="{!v.isProductsAndCompetitorsScreen}">
+                
+                <aura:if isTrue="{!v.isMedicalOtherTab}">
+                    <div aura:id="MedicalOtherProducts" class="slds-hide slds-m-bottom_medium slds-size_1-of-1 slds-grid">
+                        <c:ProductsAndCompetitors aura:id="productsAndCompetitorsAuraId" 
+                                                  productTypesValues="Medical_And_Other_Buy_Up"  
+                                                  isEditRecord="true"
+                                                  accountId="{!v.Child_Data.accountId}"
+                                                  maType="{!v.maType}" 
+                                                  SalesStageOther="{!v.OpportunityData.Sales_Stage_Other__c}"
+                                                  SalesStage="{!v.OpportunityData.Sales_Stage_Medical__c}"
+                                                  previousSalesStage="{!v.PrevSalesStages.Sales_Stage_Medical__c}"
+                                                  previousSalesStageOther="{!v.PrevSalesStages.Sales_Stage_Other__c}"
+                                                  isMedicalAndOthersTab="true"
+                                                  opportunityRecord="{!v.OpportunityData}"
+                                                  RiskProbability="{!v.OpportunityData.Risk_Probability_Medical__c}"
+                                                  RiskProbabilityOther="{!v.OpportunityData.Risk_Probability_Other__c}"   
+                                                  isReadOnly="false"                                                  
+                                                  isQA="true" />
+                    </div>
+                    <aura:set attribute="else">
+                        <div aura:id="MedicalProducts" class="slds-hide slds-m-bottom_medium slds-size_1-of-1 slds-grid">
+                            <c:ProductsAndCompetitors aura:id="productsAndCompetitorsAuraId" 
+                                                      productTypesValues="Medical"  
+                                                      isEditRecord="true"
+                                                      accountId="{!v.Child_Data.accountId}"
+                                                      maType="{!v.maType}"
+                                                      SalesStage="{!v.OpportunityData.Sales_Stage_Medical__c}"
+                                                      previousSalesStage="{!v.PrevSalesStages.Sales_Stage_Medical__c}"
+                                                      opportunityRecord="{!v.OpportunityData}"
+                                                      RiskProbability="{!v.OpportunityData.Risk_Probability_Medical__c}" 
+                                                      isReadOnly="false"                                                      
+                                                      isQA="true" />
+                        </div>
+                    </aura:set>
+                </aura:if>
+                
+                <div aura:id="PharmacyProducts" class="slds-hide slds-m-bottom_medium slds-size_1-of-1 slds-grid">
+                    <c:ProductsAndCompetitors aura:id="productsAndCompetitorsAuraId" 
+                                              productTypesValues="Pharmacy"  
+                                              isEditRecord="true"
+                                              accountId="{!v.Child_Data.accountId}"
+                                              maType="{!v.maType}"
+                                              SalesStage="{!v.OpportunityData.Sales_Stage_Pharmacy__c}"
+                                              previousSalesStage="{!v.PrevSalesStages.Sales_Stage_Pharmacy__c}"
+                                              opportunityRecord="{!v.OpportunityData}"
+                                              RiskProbability="{!v.OpportunityData.Risk_Probability_Pharmacy__c}" 
+                                              isReadOnly="false"                                              
+                                              isQA="true" />
+                </div>
+                <div aura:id="DentalProducts" class="slds-hide slds-m-bottom_medium slds-size_1-of-1 slds-grid">
+                    <c:ProductsAndCompetitors aura:id="productsAndCompetitorsAuraId" 
+                                              productTypesValues="Dental"  
+                                              isEditRecord="true"
+                                              accountId="{!v.Child_Data.accountId}"
+                                              maType="{!v.maType}"
+                                              SalesStage="{!v.OpportunityData.Sales_Stage_Dental__c}"
+                                              previousSalesStage="{!v.PrevSalesStages.Sales_Stage_Dental__c}"
+                                              opportunityRecord="{!v.OpportunityData}"
+                                              RiskProbability="{!v.OpportunityData.Risk_Probability_Dental__c}"  
+                                              isReadOnly="false"
+                                              isQA="true" />
+                </div>
+                <div aura:id="VisionProducts" class="slds-hide slds-m-bottom_medium slds-size_1-of-1 slds-grid">
+                    <c:ProductsAndCompetitors aura:id="productsAndCompetitorsAuraId" 
+                                              productTypesValues="Vision"  
+                                              isEditRecord="true"
+                                              accountId="{!v.Child_Data.accountId}"
+                                              maType="{!v.maType}"
+                                              SalesStage="{!v.OpportunityData.Sales_Stage_Vision__c}"
+                                              previousSalesStage="{!v.PrevSalesStages.Sales_Stage_Vision__c}"
+                                              opportunityRecord="{!v.OpportunityData}"
+                                              RiskProbability="{!v.OpportunityData.Risk_Probability_Vision__c}"
+                                              isReadOnly="false"
+                                              isQA="true" />
+                </div>
+                <aura:if isTrue="{!v.isMedicalOtherTab == false}">
+                    <div aura:id="OtherProducts" class="slds-hide slds-m-bottom_medium slds-size_1-of-1 slds-grid">
+                        <c:ProductsAndCompetitors aura:id="productsAndCompetitorsAuraId" 
+                                                  productTypesValues="Other_Buy_Up_Programs"  
+                                                  isEditRecord="true"
+                                                  accountId="{!v.Child_Data.accountId}"
+                                                  maType="{!v.maType}"
+                                                  SalesStage="{!v.OpportunityData.Sales_Stage_Other__c}"
+                                                  previousSalesStage="{!v.PrevSalesStages.Sales_Stage_Other__c}"
+                                                  opportunityRecord="{!v.OpportunityData}"
+                                                  RiskProbability="{!v.OpportunityData.Risk_Probability_Other__c}" 
+                                                  isReadOnly="false"
+                                                  isQA="true" />
+                    </div>
+                </aura:if>
+            </aura:if>
+        </div>
+        <div aura:id="QAPage6" class="slds-grid slds-wrap slds-hide modal-content">
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium">
+                <h4 class="modal-title">{!$Label.c.UnderwritingEngagementForSpecialtyBenefitsProducts}</h4>
+            </div>
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium  slds-m-bottom_small">
+                <p class="slds-form-element__help slds-m-top_none instruction-text"><b>Note :</b> {!$Label.c.Step6_InstructionText}</p>
+            </div>
+            <div aura:id="Dental_UW" class="slds-hide slds-size_12-of-12 slds-grid slds-wrap slds-m-bottom_small">
+                <div class="slds-size_1-of-1 slds-p-horizontal_medium">
+                    <h3 class="sub-title">{!$Label.c.Dental}</h3>
+                </div>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.U_WEngagementNotYetNeeded_Dental}</label>
+                            <div class="slds-form-element__control slds-m-top_x-small">
+                                <ui:inputCheckbox aura:id="U_W_Engagement_not_yet_Needed_Dental__c" value="{!v.OpportunityData.U_W_Engagement_not_yet_Needed_Dental__c}" change="{!c.onChangeUWEngageVal}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div aura:id="Employees_in_the_Proposal_Dental__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.EmployeesInThe_Proposal_Dental}<aura:if isTrue="{!v.isRequiredDental1}"><span class="slds-required">*</span></aura:if></label>
+                            <div class="slds-form-element__control">
+                                <ui:inputNumber class="slds-input" aura:id="Employees_in_the_Proposal_Dental__c" value="{!v.OpportunityData.Employees_in_the_Proposal_Dental__c}" change="{!c.onChangeOfEmpOrRetInProposalValues}" />
+                            </div>
+                            <div aura:id="Employees_in_the_Proposal_Dental__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} OR check the U/W Engagement not yet Needed box</div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div aura:id="Date_the_Dental_Quote_is_Needed_from_UW__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.DateTheDentalQuoteIsNeededFromUW}<aura:if isTrue="{!v.isRequiredDental}"><span class="slds-required">*</span></aura:if></label>
+                            <div class="slds-form-element__control">
+                                <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="Date_the_Dental_Quote_is_Needed_from_UW__c" value="{!v.OpportunityData.Date_the_Dental_Quote_is_Needed_from_UW__c}" displayDatePicker="true" change="{!c.onChangeOfUWDateTheQuoteNeededVal}" />
+                            </div>
+                            <div aura:id="Date_the_Dental_Quote_is_Needed_from_UW__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} - {!$Label.c.MandatoryErrorMsg_Date_Field} OR check the U/W Engagement not yet Needed box</div>
+                            <div aura:id="Date_the_Dental_Quote_is_Needed_from_UW__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div aura:id="Retirees_in_the_Proposal_Dental__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.RetireesInTheProposal_Dental}<aura:if isTrue="{!v.isRequiredDental1}"><span class="slds-required">*</span></aura:if></label>
+                            <div class="slds-form-element__control">
+                                <ui:inputNumber class="slds-input" aura:id="Retirees_in_the_Proposal_Dental__c" value="{!v.OpportunityData.Retirees_in_the_Proposal_Dental__c}" change="{!c.onChangeOfEmpOrRetInProposalValues}" />
+                            </div>
+                            <div aura:id="Retirees_in_the_Proposal_Dental__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} OR check the U/W Engagement not yet Needed box</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div aura:id="Vision_UW" class="slds-hide slds-size_12-of-12 slds-grid slds-wrap slds-m-bottom_small">
+                <div class="slds-size_1-of-1 slds-p-horizontal_medium">
+                    <h3 class="sub-title">{!$Label.c.Vision}</h3>
+                </div>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.U_WEngagementNotYetNeeded_Vision}</label>
+                            <div class="slds-form-element__control slds-m-top_x-small">
+                                <ui:inputCheckbox aura:id="U_W_Engagement_not_yet_Needed_Vision__c" value="{!v.OpportunityData.U_W_Engagement_not_yet_Needed_Vision__c}" change="{!c.onChangeUWEngageVal}"/>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div aura:id="Employees_in_the_Proposal_Vision__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.EmployeesInTheProposal_Vision}<aura:if isTrue="{!v.isRequiredVision1}"><span class="slds-required">*</span></aura:if></label>
+                            <div class="slds-form-element__control">
+                                <ui:inputNumber class="slds-input" aura:id="Employees_in_the_Proposal_Vision__c" value="{!v.OpportunityData.Employees_in_the_Proposal_Vision__c}" change="{!c.onChangeOfEmpOrRetInProposalValues}" />
+                            </div>
+                            <div aura:id="Employees_in_the_Proposal_Vision__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} OR check the U/W Engagement not yet Needed box</div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div aura:id="Date_the_Vision_Quote_is_Needed_from_UW__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.DateTheVisionQuoteIsNeededFromUW}<aura:if isTrue="{!v.isRequiredVision}"><span class="slds-required">*</span></aura:if></label>
+                            <div class="slds-form-element__control">
+                                <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="Date_the_Vision_Quote_is_Needed_from_UW__c" value="{!v.OpportunityData.Date_the_Vision_Quote_is_Needed_from_UW__c}" displayDatePicker="true" change="{!c.onChangeOfUWDateTheQuoteNeededVal}" />
+                            </div>
+                            <div aura:id="Date_the_Vision_Quote_is_Needed_from_UW__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} - {!$Label.c.MandatoryErrorMsg_Date_Field} OR check the U/W Engagement not yet Needed box</div>
+                            <div aura:id="Date_the_Vision_Quote_is_Needed_from_UW__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div aura:id="Retirees_in_the_Proposal_Vision__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.RetireesInTheProposal_Vision}<aura:if isTrue="{!v.isRequiredVision1}"><span class="slds-required">*</span></aura:if></label>
+                            <div class="slds-form-element__control">
+                                <ui:inputNumber class="slds-input" aura:id="Retirees_in_the_Proposal_Vision__c" value="{!v.OpportunityData.Retirees_in_the_Proposal_Vision__c}" change="{!c.onChangeOfEmpOrRetInProposalValues}" />
+                            </div>
+                            <div aura:id="Retirees_in_the_Proposal_Vision__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} OR check the U/W Engagement not yet Needed box</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div aura:id="Other Buy Up Programs_UW" class="slds-hide slds-size_12-of-12 slds-grid slds-wrap">
+                <div class="slds-size_1-of-1 slds-p-horizontal_medium">
+                    <h3 class="sub-title1">{!$Label.c.U_W_Engagement_Products_Other_Label}</h3>
+                    <!--<h3 class="sub-title2">{!$Label.c.U_W_Engagement_Products_Other_Label1}</h3>-->
+                </div>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.U_WEngagementNotYetNeeded_CI_APP_HIPP}</label>
+                            <div class="slds-form-element__control slds-m-top_x-small">
+                                <ui:inputCheckbox aura:id="U_W_Engagement_not_yet_Needed_CI_APP_HI__c" value="{!v.OpportunityData.U_W_Engagement_not_yet_Needed_CI_APP_HI__c}" change="{!c.onChangeUWEngageVal}" />                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div aura:id="Employees_in_the_Proposal_CI_AP_HI__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.EmployeesInTheProposal_CI_AP_HI}<aura:if isTrue="{!v.isRequiredOther1}"><span class="slds-required">*</span></aura:if></label>
+                            <div class="slds-form-element__control">
+                                <ui:inputNumber class="slds-input" aura:id="Employees_in_the_Proposal_CI_AP_HI__c" value="{!v.OpportunityData.Employees_in_the_Proposal_CI_AP_HI__c}" change="{!c.onChangeOfEmpOrRetInProposalValues}" />
+                            </div>
+                            <div aura:id="Employees_in_the_Proposal_CI_AP_HI__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} OR check the U/W Engagement not yet Needed (SB-Other) box</div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div aura:id="Date_the_CI_APP_HIPP_Quote_is_Needed__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.DateTheCI_APP_HIPPQuoteIsNeeded}<aura:if isTrue="{!v.isRequiredOther}"><span class="slds-required">*</span></aura:if></label>
+                            <div class="slds-form-element__control">
+                                <ui:inputDate class="slds-input" format="M/d/yyyy" aura:id="Date_the_CI_APP_HIPP_Quote_is_Needed__c" value="{!v.OpportunityData.Date_the_CI_APP_HIPP_Quote_is_Needed__c}" displayDatePicker="true" change="{!c.onChangeOfUWDateTheQuoteNeededVal}" />
+                            </div>
+                            <div aura:id="Date_the_CI_APP_HIPP_Quote_is_Needed__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} - {!$Label.c.MandatoryErrorMsg_Date_Field} OR check the U/W Engagement not yet Needed (SB-Other) box</div>
+                            <div aura:id="Date_the_CI_APP_HIPP_Quote_is_Needed__cDiv2" class="slds-hide slds-form-element__help">{!$Label.c.MandatoryErrorMsg_Date_Field}</div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                        <div aura:id="Retirees_in_the_Proposal_CI_AP_HI__cDiv" class="slds-form-element slds-m-bottom_medium">
+                            <label class="slds-form-element__label">{!$Label.c.RetireesInTheProposal_CI_AP_HI}<aura:if isTrue="{!v.isRequiredOther1}"><span class="slds-required">*</span></aura:if></label>
+                            <div class="slds-form-element__control">
+                                <ui:inputNumber class="slds-input" aura:id="Retirees_in_the_Proposal_CI_AP_HI__c" value="{!v.OpportunityData.Retirees_in_the_Proposal_CI_AP_HI__c}" change="{!c.onChangeOfEmpOrRetInProposalValues}" />
+                            </div>
+                            <div aura:id="Retirees_in_the_Proposal_CI_AP_HI__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField} OR check the U/W Engagement not yet Needed (SB-Other) box</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div aura:id="QAPage7" class="slds-grid slds-wrap slds-hide modal-content">
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium">
+                <h4 class="modal-title">{!$Label.c.Consultants_Information}</h4>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Does_this_Oppty_Risk_Involve_Consultant__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.Does_this_Oppty_Risk_Involve_Consultant}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <lightning:radioGroup aura:id="Does_this_Oppty_Risk_Involve_Consultant__c" name="companyExchanges1" options="" value="" onchange="{!c.handleChangeForOppRiskConsultant}" />
+                    </div>
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!$Label.c.Step7_InstructionText}</div>
+                    <div aura:id="Does_this_Oppty_Risk_Involve_Consultant__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+        </div>    
+        <div aura:id="QAPage8" class="slds-grid slds-wrap slds-hide modal-content">
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium">
+                <h4 class="modal-title">{!$Label.c.ConsultantDetail}</h4>
+            </div>
+            <div class="slds-m-bottom_medium slds-p-horizontal_medium">
+                <c:MA_Consultants aura:id="maConsultantsAuraId" isMAConsultantListEmpty="true" isFromQA="true" accountId="{!v.Child_Data.accountId}" OpportunityDataChildComp="{!v.OpportunityData}" />
+            </div>
+        </div>
+        <div aura:id="QAPage9" class="slds-grid slds-wrap slds-hide modal-content">
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium">
+                <h4 class="modal-title">{!$Label.c.ExchangeInformation}</h4>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Does_this_Oppty_Risk_Involve_Exchanges__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.Does_this_Oppty_Risk_Involve_Exchanges}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <lightning:radioGroup aura:id="Does_this_Oppty_Risk_Involve_Exchanges__c" name="companyExchanges" options="" value="" onchange="{!c.handleChangeForOppRiskExchanges}" />
+                    </div>
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!$Label.c.Step9_InstructionText}</div>
+                    <div aura:id="Does_this_Oppty_Risk_Involve_Exchanges__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+        </div>
+        <div aura:id="QAPage10" class="slds-grid slds-wrap slds-hide modal-content">
+            <div class="slds-size_12-of-12 slds-p-horizontal_medium">
+                <h4 class="modal-title">{!$Label.c.ExchangeDetail}</h4>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Exchanges_the_Company_is_Looking_At__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.ExchangesTheCompanyIsLookingAt}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <!--<ui:inputSelect class="slds-form-control slds-select multiSelectScrollHeight" aura:id="Exchanges_the_Company_is_Looking_At__c" multiple="true" value="{!v.OpportunityData.Exchanges_the_Company_is_Looking_At__c}" />-->
+                        <lightning:dualListbox name="dualListBox" sourceLabel="Available" selectedLabel="Selected" options="{!v.dualListBoxOptions}" aura:id="Exchanges_the_Company_is_Looking_At__c" value="{!v.OpportunityData.Exchanges_the_Company_is_Looking_At__c}" />
+                    </div>
+                    <!--<div class="slds-form-element__help slds-m-top_xx-small">{!$Label.c.Step8_InstructionText}</div>-->
+                    <div aura:id="Exchanges_the_Company_is_Looking_At__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Is_the_PEX_Team_Creating_this_Oppty_Risk__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.IsThePEXTeamManagingThisOpptyOrRisk}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <lightning:radioGroup aura:id="Is_the_PEX_Team_Creating_this_Oppty_Risk__c" name="pexteam" options="" value="" onchange="{!c.handleChangeForRadioButtonGroup}" />
+                    </div>
+                    <div aura:id="Is_the_PEX_Team_Creating_this_Oppty_Risk__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <!--<div class="slds-size_12-of-12 slds-p-horizontal_medium slds-m-bottom_small">
+                <p class="slds-form-element__help slds-m-top_none instruction-text"><b>Note :</b> The Instructional Text to be provided later.</p>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div aura:id="Membership_Activity_Type__cDiv" class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.MembershipActivityType}<span class="slds-required">*</span></label>
+                    <div class="slds-form-element__control">
+                        <lightning:radioGroup aura:id="Membership_Activity_Type__c" name="maActivityType" options="" value="" onchange="{!c.handleChangeForRadioButtonGroup}" />
+                    </div>
+                    <div aura:id="Membership_Activity_Type__cDiv1" class="slds-hide slds-form-element__help">{!$Label.c.CompleteThisField}</div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.CompanysProgressWithTheExchange}</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Company_s_Progress_with_the_Health_Care__c" multiple="false" value="{!v.OpportunityData.Company_s_Progress_with_the_Health_Care__c}"/>                      
+                    </div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.Wave}</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Wave__c" multiple="false" value="{!v.OpportunityData.Wave__c}" />                      
+                    </div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1 slds-medium-size_3-of-6 slds-grid slds-large-size_6-of-12 slds-p-horizontal_medium">
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <label class="slds-form-element__label">{!$Label.c.PrimarySitusState}</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputSelect class="slds-form-control slds-select" aura:id="Primary_Situs_State__c" multiple="false" value="{!v.OpportunityData.Primary_Situs_State__c}" />                      
+                    </div>
+                </div>
+            </div>-->
+        </div>
+        
+    </div>
+    
+    <div class="modal-footer modal-ch-footer slds-modal__footer footer-body">                
+        <aura:if isTrue="{!v.NavigationPages.Page > 1}">
+            <ui:button aura:id="prevBtn" class="slds-button slds-button--brand"  press="{!c.previousPage}">Previous</ui:button>
+        </aura:if>
+        <aura:if isTrue="{!v.NavigationPages.LastPage > v.NavigationPages.Page}">
+            <ui:button aura:id="nextBtn" class="slds-button slds-button--brand"  press="{!c.nextPage}">Next</ui:button>
+        </aura:if>
+        <aura:if isTrue="{!v.NavigationPages.Page == v.NavigationPages.LastPage}">
+            <div class="save-btn">
+                <ui:button aura:id="prevBtn" class="slds-button slds-button_success" press="{!c.saveRecord}">Save</ui:button>
+            </div>
+        </aura:if>
+    </div>
+    
+</aura:component>

@@ -1,0 +1,119 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 03-14-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <template if:true={isEdit}>
+
+        <template if:false={enableStrategyWriteIn}>
+            <td data-label="Strategy" class="addVerticalLineStyle">
+                <lightning-combobox name='strategyName' value={strategySelected} placeholder={strategySelected}
+                    variant="label-hidden" options={strategyPicklistValue} onchange={strategyChangeHandler}
+                    class='strategyName'>
+                </lightning-combobox><br />
+                <template if:true={enableOtherSpecifyStrategyWriteIn}>
+                    <lightning-textarea name='StrategyWriteInName' variant="label-hidden"
+                        value={strategyRec.Strategy_Write_In__c} onfocusout={otherSpecifyStrategyChangeHandler}
+                        placeholder="Please write in your strategy in this field or select one of the pre-determined strategies from the drop down box above"
+                        onkeyup={otherSpecifyStrategyChangeHandler} class='StrategyWriteInName'>
+                    </lightning-textarea>
+
+                </template>
+            </td>
+        </template>
+        <template if:true={enableStrategyWriteIn}>
+            <td data-label="Strategy" class="addVerticalLineStyle">
+                <lightning-textarea name='OtherGoalStrategyWriteIn' variant="label-hidden"
+                    value={strategyRec.Strategy__c} onfocusout={strategyChangeHandler}
+                    placeholder="Please write in your strategy in this field" onkeyup={strategyChangeHandler} class='OtherGoalStrategyWriteIn'>
+                </lightning-textarea>
+            </td>
+        </template>
+        <td data-label="Action Steps Planned/Taken" class="addVerticalLineStyle">
+
+            <lightning-textarea name='Name' variant="label-hidden" value={strategyRec.Action_Steps_PlannedTaken__c}
+                onfocusout={actionPlanChangeHandler}>
+            </lightning-textarea>
+
+        </td>
+        <td data-label="Applicable for?" class="addVerticalLineStyle">
+
+            <lightning-combobox name='Name' variant="label-hidden" value={strategyRec.Applicable_for__c} placeholder={strategyRec.Applicable_for__c}
+                options={applicableOptions} onchange={applicableChangeHandler} style="padding-bottom: 20px;">
+            </lightning-combobox>
+
+        </td>
+
+        <!-- <td>
+                <lightning-icon icon-name="utility:delete" alternative-text="Delete" slot="actions"
+                    onclick={deleteStrategy} size="xx-small">
+                </lightning-icon>
+            </td> -->
+        <template if:true={hasEditAccess}>
+            <td class="positionVerticalAlign">
+                <lightning-icon icon-name="utility:delete" alternative-text="Delete" slot="actions"
+                    onclick={deleteStrategyRec} size="xx-small">
+                </lightning-icon>
+            </td>
+        </template>
+
+    </template>
+    <template if:false={isEdit}>
+        <!-- <template if:false={enableOtherSpecifyStrategyWriteIn}> -->
+        <td class="slds-size_2-of-6 height" data-label="Strategy">
+            <template if:false={enableOtherPleaseSpecify}>
+                <template if:true={enableStrategyWriteIn}>
+                    <lightning-textarea name='Name' variant="label-hidden" value={strategyRec.Strategy__c}
+                        readonly>
+                    </lightning-textarea>
+                </template>
+                <template if:false={enableStrategyWriteIn}>
+                    <span class="slds-cell-wrap slds-is-absolute">{strategyRec.Strategy__c}</span>
+                </template>
+            </template>
+            <template if:true={enableOtherPleaseSpecify}>
+                <lightning-textarea name='Name' variant="label-hidden" value={strategyRec.Strategy__c}
+                    readonly>
+                </lightning-textarea>
+            </template>
+            <template if:true={enableOtherSpecifyStrategyWriteIn}>
+                <br />
+                <!--<span class="slds-cell-wrap">{strategyRec.Strategy_Write_In__c}</span>-->
+                <lightning-textarea name='Name' variant="label-hidden"
+                    value={strategyRec.Strategy_Write_In__c} readonly>
+                </lightning-textarea>
+            </template>
+        </td>
+        <!-- </template> 
+    <template if:true={enableOtherSpecifyStrategyWriteIn}>
+        <td class="slds-size_2-of-6 height addWordBreak" data-label="Strategy">
+            <span>{strategyRec.Strategy__c}</span><br/>
+            <span>{strategyRec.Strategy_Write_In__c}</span>
+            
+        </td>
+    </template>-->
+
+        <td data-label="Action Steps Planned/Taken" class="slds-cell-shrink addVerticalLineStyle">
+            <!--<span class="slds-cell-wrap">{strategyRec.Action_Steps_PlannedTaken__c}</span>-->
+            <lightning-textarea name='Name' variant="label-hidden"
+                value={strategyRec.Action_Steps_PlannedTaken__c} readonly focus=false>
+            </lightning-textarea>
+        </td>
+        <td data-label="Applicable for?" class="slds-size_2-of-6 height">
+            <!-- <lightning-textarea name='Name' variant="label-hidden"
+                value={strategyRec.Applicable_for__c} readonly focus=false>
+            </lightning-textarea> -->
+            <span class="slds-cell-wrap slds-is-absolute">{strategyRec.Applicable_for__c}</span>
+        </td>
+        <template if:true={hasEditAccess}>
+            <td class="positionVerticalAlign">
+                <lightning-icon icon-name="utility:delete" alternative-text="Delete" slot="actions"
+                    onclick={deleteStrategyRec} size="xx-small">
+                </lightning-icon>
+            </td>
+        </template>
+    </template>
+</template>

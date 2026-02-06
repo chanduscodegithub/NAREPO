@@ -1,0 +1,48 @@
+<aura:component >
+    <aura:attribute name="consultingSearchArray" type="String[]"/>
+    <aura:attribute name="showSelect" type="boolean"/>
+    <aura:registerEvent name="accountSearchConsultantFindTableEvent" type="c:Account_Consultant_Find_TableBody_Event"/>
+    <tr class="slds-hint-parent">
+        <!--<aura:if isTrue="{!v.showSelect}">-->
+        <th scope="row" data-label="" width="70">
+            <div class="slds-truncate" title="">
+                <a data-record="{!v.consultingSearchArray.Id}" onclick="{!c.Select}">Select</a>
+            </div>
+        </th>
+        <!--</aura:if>-->
+        <th scope="row" data-label="Last Name">
+            <div class="slds-truncate" title="Last Name">{!v.consultingSearchArray.LastName}</div>
+        </th>
+        <th scope="row" data-label="First Name">
+            <div class="slds-truncate" title="First Name">{!v.consultingSearchArray.FirstName}</div>
+        </th>
+        <th scope="row" data-label="Job Title">
+            <div class="slds-truncate" title="Job Title">{!v.consultingSearchArray.Title}</div>
+        </th>
+        <th scope="row" data-label="Consulting Firm">
+            <div class="slds-truncate" title="Consulting Firm">{!v.consultingSearchArray.Account.Name}</div>
+        </th>
+        <th scope="row" data-label="Office Location">
+            <aura:if isTrue="{!or(v.consultingSearchArray.MailingCity, v.consultingSearchArray.MailingState)}">
+                
+                <aura:if isTrue="{!and(v.consultingSearchArray.MailingCity, v.consultingSearchArray.MailingState)}">
+                    <div class="slds-truncate" title="{!v.consultingSearchArray.MailingState }">{!v.consultingSearchArray.MailingCity}, {!v.consultingSearchArray.MailingState}</div>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.consultingSearchArray.MailingCity}">
+                            <div class="slds-truncate" title="{!v.consultingSearchArray.MailingState }">{!v.consultingSearchArray.MailingCity}</div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.consultingSearchArray.MailingState}">
+                            <div class="slds-truncate" title="{!v.consultingSearchArray.MailingState }">{!v.consultingSearchArray.MailingState}</div>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+                
+                <aura:set attribute="else">
+                    <div class="slds-truncate" title="{!v.consultingSearchArray.MailingState}"></div>
+                </aura:set>
+            </aura:if> 
+            <!--<div class="slds-truncate" title="Office Location">{!v.consultingSearchArray.MailingCountry}</div>-->
+        </th>
+    </tr>
+</aura:component>

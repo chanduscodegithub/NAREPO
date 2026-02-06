@@ -1,0 +1,529 @@
+<aura:component controller="Service_AMT_Class" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="appletHeader" type="String"/>
+    <aura:attribute name="sobjectusedAccount" type="boolean" default="true"/>
+    <aura:attribute name="userRolePLValues" type="String[]"/>
+    <aura:attribute name="contactRolePLValues" type="String[]"/>
+    <aura:attribute name="policyIdlist" type="String[]"/>
+    <aura:attribute name="AMTStartDate" type="Date[]"/>
+    <aura:attribute name="AMTEnddDate" type="Date[]"/>
+    <aura:attribute name="AMTPhone" type="Integer[]"/>
+    <aura:attribute name="isEditable" type="boolean"/>
+    
+    <aura:attribute name="accId" type="String"/>
+    
+    <aura:attribute name="PoliciesList" type="Policy_Information__c[]"/>
+    
+    <aura:handler name="init" action="{!c.doinit2}" value="{!this}"/>
+    <aura:handler name="nationalAccountSalesTeamEvent" action="{!c.doInit}" event="c:NationalAccountSalesTeamChildComponentEvent" />
+    <aura:handler name="nationalAccountSalesTeamUserEvent" action="{!c.selectedUserRecords}" event="c:NationalAccountSalesTeam_UserEvent" />
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
+    <aura:handler name="Sorting_Mobile_Event" event="c:Sorting_Mobile_Event" action="{!c.sortFieldsMobile}"/>
+    <aura:handler name="modalCmpCloseEvent3" event="c:Modal_Closing_RR_Event" action="{!c.modalClose}"/>
+    <aura:handler name="service_amt_Popup_table_event" event="c:Service_AMT_Search_Popup_Table_Event" action="{!c.addToServiceAMT}"/>
+    <aura:attribute name="scrollStyleForDevice" type="String" default="@media screen and (min-width: 320px) and (max-width: 1199px){.panel-content.scrollable{overflow-y: hidden !important;-webkit-overflow-scrolling: auto !important ;}}"/>
+    <aura:attribute name="isGenericEventTriggered" type="Boolean" default="false"/>    
+    <aura:attribute name="ServiceAMTEmptyList" type="Boolean" default="false" />
+    <aura:attribute name="ServiceAMTList" type="Service_AMT__c[]" default="[]"/>
+    <aura:attribute name="CMAccountTeamHistoryUpdatedList" type="CM_Account_Team_History__c[]"/>
+    <aura:attribute name="CMAccountTeamHistoryDataList" type="CM_Account_Team_History__c[]"/>
+    <aura:attribute name="NewAccountTeamHistoryData" type="CM_Account_Team_History__c" />
+    <aura:attribute name="CMAccountTeamHistoryIdsArray" type="String[]"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="cmAccountTeamHistoryIdToBeRemoved" type="String"/>
+    <aura:attribute name="promptMessageText" type="String"/>
+    <aura:attribute name="cmSCEPlayerCoachRowID" type="Id" />
+    <aura:attribute name="isEditSaveDeleteButtonsEnabled" type="Boolean" default="false"/>
+    <aura:attribute name="ErrorMessage" type="String" default=""/>
+    <aura:attribute name="lastSortField" type="String" default=""/>
+    <aura:attribute name="isDeviceIconsToBeEnabled" type="Boolean" default="false" />
+    
+    <aura:attribute name="sortLastNameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortFirstNameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortJobTitleAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortStartDateAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortEndDateAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortUserhierarchy" type="Boolean" default="true"/>
+    
+    <aura:attribute name="isScrollStop" type="Boolean" default="true"/>
+    <aura:attribute name="isStop" type="Integer" default="1"/>
+    <aura:attribute name="lastCount" type="Integer" default="1"/>
+    <aura:attribute name="nextLastCount" type="Integer" default="1"/>
+    
+    <aura:attribute name="recIdToDelete" type="String"/>
+    
+    {!v.body}
+    
+    <div role="alertdialog" tabindex="-1" aura:id="confirmDeleteRecord" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p class="slds-text-align--center">Are you sure to delete this Record?</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmDelete}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="confirmDeleteRecord"></div>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="promptMessageForDateFields" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancelForPrompt}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small"/>
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p class="slds-text-align--center">{!v.promptMessageText}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmCancelForPrompt}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="promptMessageForDateFields"></div>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    
+    <div aura:id="Service_AMT" class="slds-section container forceRelatedListSingleContainer" style="clear:both;">
+        <article aura:id="articleScroll" class="slds-card slds-card_boundary forceRelatedListCardDesktop slds-is-relative" onscroll="{!c.scrollBottom}">
+            <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+            <div class="no-translate slds-grid slds-grid_vertical-align-center slds-grid_align-spread flex-auto">
+                <div class="slds-card__header slds-grid slds-p-vertical--x-small slds-m-bottom--none appletHeader flex-auto" data-record="Service_AMT" id="utilityToggle" onclick="{!c.expandCollapse}">
+                    <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                        <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                            <button class="slds-button slds-text-body--regular action-bar-mobile">
+                                <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                            </button>
+                            <div aura:id="appletIcon">
+                                <span class="slds-icon_container slds-icon-standard-contact" title="Service AMT">
+                                    <lightning:icon class="slds-icon slds-icon--small" iconName="standard:service_crew" size="small" alternativeText="Service AMT" />
+                                </span>
+                            </div>
+                            <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-is-relative">
+                                <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                               
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-grid flex-alignCenter">
+                                <span class="slds-text-heading--small">{!v.appletHeader}</span>
+                                <div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small">
+                                    <c:tooltip helpLink="Help" helpText="This section will list the AMT Members related to the Company. Please Make sure to update the  Policy and  User Hierarchy for the added team member."/>
+                                </div>
+                            </h2>
+                        </div>
+                    </header>
+                </div>
+                
+                <div class="appletAddBtn">
+                    <div class="slds-is-relative flex-alignCenter helptext show-md-down slds-p-horizontal_x-small">
+                        <c:tooltip helpLink="Help" helpText="This section will list the AMT Members related to the Company. Please Make sure to update the  Policy and  User Hierarchy for the added team member."/>
+                    </div>
+                    <div class="action-bar-mobile slds-p-right--medium slds-hide" aura:id="addbtnhide" >
+                        <c:Amt_Template_Download accId="{!v.accId}"/>
+                        <ui:button class="slds-button slds-button--neutral" aura:id="addBtn" disabled="false" press="{!c.addRecords}">{!$Label.c.Add}</ui:button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-is-relative">                 
+                <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                    <div class="slds-card__body slds-m-bottom_none">
+                        <div class="slds-grid slds-p-vertical_small slds-p-horizontal_medium slds-grid_align-spread slds-grid_vertical-align-center desc-sec" aura:id="editbtntabhide">
+                            <div class="slds-col">
+                            </div>
+                            <div class="slds-col">
+                                <header class="slds-media slds-media--center alignButtons action-bar-mobile">
+                                    
+                                    <div class="slds-grid">
+                                        <div class="action-bar-mobile">
+                                            <ui:button class="slds-button slds-button--neutral slds-hide" aura:id="editBtn" disabled="false" press="{!c.editRecords}">{!$Label.c.Edit}</ui:button>
+                                        </div>
+                                        <ui:button class="slds-button slds-button--neutral slds-hide" aura:id="saveBtn" press="{!c.saveRecords}">{!$Label.c.Save}</ui:button>
+                                        <ui:button class="slds-button slds-button--neutral slds-hide" aura:id="cancelBtn" press="{!c.cancel}">{!$Label.c.Cancel}</ui:button>
+                                    </div>
+                                    
+                                </header>
+                            </div>
+                        </div>
+                        
+                        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal data-table" role="grid">
+                            <thead>
+                                <aura:if isTrue="{!v.ServiceAMTEmptyList}">
+                                    <tr></tr>
+                                    <aura:set attribute="else">
+                                        <tr>
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap" scope="col" width="100">
+                                                <a onclick="{!c.sortFields}" data-record="Last_Name__c" class="slds-th__action slds-text-link--reset consultant-tab" tabindex="0">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span title="Last Name">{!$Label.c.Last_Name}</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortLastNameAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span class="slds-resizable__divider"></span>
+                                                    </span>
+                                                </div>
+                                            </th>                                            
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap" width="100" scope="col">
+                                                <a onclick="{!c.sortFields}" data-record="First_Name__c" class="slds-th__action slds-text-link--reset consultant-tab" tabindex="1">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span title="First Name">{!$Label.c.First_Name}</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortFirstNameAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="1" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span class="slds-resizable__divider"></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap" scope="col" width="120">
+                                                <a onclick="{!c.sortFields}" data-record="Case_Management_Start_Date__c" class="slds-th__action slds-text-link--reset consultant-tab" tabindex="2">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span title="AMT Start Date">Start Date</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortStartDateAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="2" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span class="slds-resizable__divider"></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            
+                                            
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap" scope="col" width="120">
+                                                <a onclick="{!c.sortFields}" data-record="Case_Management_End_Date__c" class="slds-th__action slds-text-link--reset consultant-tab" tabindex="3">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span title="AMT End Date">End Date</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortEndDateAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="3" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span class="slds-resizable__divider"></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            
+                                            <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col" aria-label="Name" scope="col" width="150">
+                                                <div class="slds-truncate"  title="Role">Role</div>
+                                            </th>
+                                            <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col" aria-label="Name" scope="col" width="150">
+                                                <div class="slds-truncate" title="Phone Number">Phone</div>
+                                            </th>
+                                            <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col" aria-label="Name" scope="col" width ="140">
+                                                <div class="slds-truncate" title="Email">Email</div>
+                                            </th>
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap" scope="col" width="95">
+                                                <a onclick="{!c.sortFields}" data-record="UserHierarchy__c" class="slds-th__action slds-text-link--reset consultant-tab" tabindex="4">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span title="User Hierarchy">User Hierarchy</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortUserhierarchy}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval" />
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="4" default ="1" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span class="slds-resizable__divider"></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            <aura:if isTrue="{!v.sobjectusedAccount}"> 
+                                                <th aria-sort="none" width="75" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col " aria-label="Name" required="true" scope="col">
+                                                    <div class="slds-truncate" title="Order">Order</div>                                  
+                                                </th>
+                                                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col " aria-label="Name" required="true" scope="col">
+                                                    <div class="slds-truncate" title="Policy">Policy</div>                                  
+                                                </th>
+                                                <th aria-sort="none" width="88" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col " aria-label="Name" required="true" scope="col">
+                                                    <div class="slds-truncate" title="External">External</div>                                  
+                                                </th>
+                                                
+                                                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col slds-cell-shrink" aria-label="Name" scope="col">
+                                                    &nbsp;
+                                                </th>
+                                            </aura:if>
+                                        </tr>
+                                    </aura:set>
+                                </aura:if>
+                            </thead>
+                            <tbody>
+                                <aura:if isTrue="{!v.ServiceAMTEmptyList}">
+                                    <tr>
+                                        <th colspan="9">
+                                            <div class="slds-text-align--center">No CRM Service/ Non-CRM Users associated under Service AMT for this Company.</div>
+                                        </th>
+                                    </tr>
+                                    <aura:set attribute="else">                                        
+                                        <aura:iteration items="{!v.ServiceAMTList}" var="serviceAMTObj">    
+                                            <!--<c:Service_AMT_Table_Test 
+                                                                      serviceAMTObj="{!obj}" 
+                                                                      PoliciesList="{!v.PoliciesList}" 
+                                                                      serviceAMTObjId="{!obj.Id}" 
+                                                                      aura:id="childComponent" 
+                                                                      userRolePLValues="{!v.userRolePLValues}" 
+                                                                      contactRolePLValues="{!v.contactRolePLValues}" 
+                                                                      sobjectusedAccount="{!v.sobjectusedAccount}" >
+                                            </c:Service_AMT_Table_Test>-->
+                                            <tr class="slds-hint-parent">
+                                                <th scope="row" data-label="Last Name">
+                                                    <div class="slds-cell-wrap" title="Last Name">{!serviceAMTObj.Last_Name__c}</div>
+                                                </th>
+                                                <th scope="row" data-label="First Name">
+                                                    <div class="slds-cell-wrap" title="First Name">{!serviceAMTObj.First_Name__c}</div>
+                                                </th>
+                                                <!-- <th scope="row" data-label="Title">
+            <div class="slds-cell-wrap" title="Title">{!v.serviceAMTObj.Job_Title__c}</div>
+        </th>-->
+                                                <th scope="row" data-label="AMT Start Date">
+                                                    <aura:if isTrue="{!v.isEditable}">
+                                                        <ui:inputDate class="alignDateField" aura:id="editableField" displayDatePicker="true" format="M/d/yyyy" value="{!serviceAMTObj.Case_Management_Start_Date__c}" />
+                                                        <aura:set attribute="else">
+                                                            <!--<span>{!v.serviceAMTObj.Case_Management_Start_Date__c}</span>-->
+                                                            <ui:outputDate aura:id="outputfield1" format="M/d/yyyy" value="{!serviceAMTObj.Case_Management_Start_Date__c}"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                    
+                                                </th>
+                                                <th scope="row" data-label="AMT End Date">
+                                                    <aura:if isTrue="{!v.isEditable}">
+                                                        <ui:inputDate class="alignDateField" aura:id="editableField" displayDatePicker="true"  format="M/d/yyyy"  value="{!serviceAMTObj.Case_Management_End_Date__c}"/>
+                                                        <aura:set attribute="else">
+                                                            <!-- <span>{!v.serviceAMTObj.Case_Management_End_Date__c}</span>-->
+                                                            <ui:outputDate aura:id="outputfield2"  format="M/d/yyyy"  value="{!serviceAMTObj.Case_Management_End_Date__c}"/>
+                                                        </aura:set>
+                                                    </aura:if>            
+                                                </th>
+                                                
+                                                <aura:if isTrue="{!v.isEditable}">
+                                                    <th scope="row" data-label="AMT Role">                                 
+                                                        <ui:inputSelect class="slds-form-control" aura:id="Role" multiple="false" change="{!c.onSelectRoleChangeFunction}" required="true">
+                                                            <aura:iteration items="{!v.contactRolePLValues}" var="RolePicklistVar">                                    
+                                                                <aura:if isTrue="{!RolePicklistVar == serviceAMTObj.Contact_Role__c}">
+                                                                    <ui:inputSelectOption class="slds-cell-wrap" text="{!RolePicklistVar}" value="true"/> 
+                                                                    <aura:set attribute="else">
+                                                                        <ui:inputSelectOption text="{!RolePicklistVar}" /> 
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:iteration>
+                                                        </ui:inputSelect>
+                                                        
+                                                        
+                                                    </th>
+                                                    <aura:set attribute="else">
+                                                        <th scope="row" data-label="Role"  class="slds-cell-wrap">
+                                                            <span>{!v.serviceAMTObj.Contact_Role__c}</span>
+                                                        </th>
+                                                    </aura:set>        
+                                                </aura:if>
+                                                <th scope="row" data-label="Phone">
+                                                    <aura:if isTrue="{!v.isEditable}">
+                                                        <ui:inputPhone  class="slds-cell-wrap" value="{!serviceAMTObj.Phone__c}"/>
+                                                        <aura:set attribute="else">
+                                                            <ui:outputPhone  class="slds-cell-wrap" value="{!serviceAMTObj.Phone__c}" />
+                                                        </aura:set>
+                                                    </aura:if>         
+                                                </th>
+                                                <th scope="row" data-label="E-mail">
+                                                    <div class="slds-cell-wrap" title="E-mail">{!serviceAMTObj.Email__c}</div>
+                                                </th>
+                                                <th scope="row" data-label="UserHierarchy">
+                                                    <aura:if isTrue="{!v.isEditable}">
+                                                        <ui:inputNumber value="{!serviceAMTObj.UserHierarchy__c}"/>
+                                                        <aura:set attribute="else">
+                                                            <ui:outputNumber  class="slds-cell-wrap" value="{!serviceAMTObj.UserHierarchy__c}" format=""/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </th>
+                                                <aura:if isTrue="{!v.sobjectusedAccount}">
+                                                    <th scope="row" data-label="Order">
+                                                        <aura:if isTrue="{!v.isEditable}">
+                                                            <ui:inputNumber value="{!serviceAMTObj.Order__c}"/>
+                                                            <aura:set attribute="else">
+                                                                <ui:outputNumber  class="slds-cell-wrap" value="{!serviceAMTObj.Order__c}" format=""/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </th>
+                                                    
+                                                    <th scope="row" data-label="PolicyId"> 
+                                                        <ui:inputSelect class="slds-form-control slds-hide" aura:id="multipleSelect" multiple="true" change="{!c.onSelectPolicyInformation}" />
+                                                        <ui:outputText aura:id="outputText" value="{!serviceAMTObj.Policy_Information_MultiChecKlist__c}" class="slds-cell-wrap "/> 
+                                                    </th>
+                                                    <th scope="row" data-label="External" width="90" class="slds-text-align_center">
+                                                        <aura:if isTrue="{!v.isEditable}">
+                                                            <ui:inputCheckbox class="slds-text-align_center marginExternal" aura:id="checkBox" value="{!serviceAMTObj.External__c }"/>
+                                                            <aura:set attribute="else">
+                                                                <ui:outputCheckbox class="slds-text-align_center marginExternal" value="{!serviceAMTObj.External__c}"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </th>
+                                                    
+                                                    <th scope="row" data-label="">            
+                                                        <div class="" aura:id="deleteIcon" title="Remove">
+                                                            <button class="slds-button slds-button_icon delete-btn" onclick="{!c.confirmDelete}" title="Delete">
+                                                                <lightning:icon iconName="utility:delete" size="xx-small"></lightning:icon>
+                                                                <span class="slds-assistive-text">Delete</span>
+                                                            </button>
+                                                        </div>
+                                                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                                                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                                                <span class="slds-assistive-text">Loading</span>
+                                                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                                                    <div class="slds-spinner__dot-a"></div>
+                                                                    <div class="slds-spinner__dot-b"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                </aura:if>
+                                            </tr>
+                                        </aura:iteration>
+                                    </aura:set>
+                                </aura:if>
+                            </tbody>
+                        </table>                      
+                        
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+    
+    <aura:if isTrue="{!or(v.isEditSaveDeleteButtonsEnabled , v.ServiceAMTEmptyList == true)}">
+        <div class="action-bar-mobile slds-hide" aura:id="action-bar-mobile">
+            <footer class="actionButtons oneActionBar forceActionsContainer sortEdit" aura:id="sortEdit" aria-hidden="false" data-aura-class="oneActionBar forceActionsContainer">
+                <div class="actionButtonsWrapper">
+                    
+                    <aura:if isTrue="{!and(v.isEditSaveDeleteButtonsEnabled, v.ServiceAMTEmptyList == false)}">
+                        <div class="action" id="actionBarItem_Edit">
+                            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                                <button disabled="false" onclick="{!c.editRecords}" class="actionButton slds-button slds-button--icon uiButton" aria-live="off" type="button" data-aura-class="uiButton">                                                            	
+                                    <lightning:icon iconName="action:edit" size="xx-small" alternativeText="Edit"/>
+                                    <p class="slds-truncate actionTitle" aria-hidden="true">{!$Label.c.Edit}</p>
+                                </button>
+                            </div>
+                        </div>
+                    </aura:if>
+                    
+                    <aura:if isTrue="{!v.ServiceAMTEmptyList == false}">
+                        <div class="action" aria-hidden="false" id="actionBarItem_ListSort">
+                            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                                <button onclick="{!c.openSortingPopup}" class="actionButton slds-button slds-button--icon uiButton" aria-live="off" type="button" data-aura-class="uiButton">
+                                    <lightning:icon iconName="action:sort" size="xx-small" alternativeText="Sort"/>
+                                    <p class="slds-truncate actionTitle" aria-hidden="true">Sort</p>
+                                </button>
+                            </div>
+                        </div>
+                    </aura:if>
+                    
+                    <aura:if isTrue="{!v.isEditSaveDeleteButtonsEnabled}">
+                        <div class="action" aria-hidden="false" id="actionBarItem_New">
+                            <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                                <button onclick="{!c.addRecords}" class="actionButton slds-button slds-button--icon uiButton" aria-live="off" type="button" data-aura-class="uiButton">
+                                    <lightning:icon iconName="action:new" size="xx-small" alternativeText="Add"/>
+                                    <p class="slds-truncate actionTitle" aria-hidden="true" data-aura-rendered-by="7985:0">{!$Label.c.Add}</p>
+                                </button>
+                            </div>
+                        </div>
+                    </aura:if> 
+                </div>                     
+            </footer>
+            <div class="actionButtons oneActionBar forceActionsContainer saveCancel hide" aura:id="saveCancel">
+                <div class="actionButtonsWrapper save-cancel-bg">
+                    <div class="action">
+                        <div class="oneActionButtonIcon">
+                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">{!$Label.c.Cancel}</button>
+                        </div>
+                    </div>
+                    <div class="action">
+                        <div class="oneActionButtonIcon"> 
+                            <button type="button" class="slds-button slds-button_brand" onclick="{!c.saveRecords}">{!$Label.c.Save}</button>            
+                        </div>
+                    </div>              			
+                </div>
+            </div>   
+        </div>
+    </aura:if>
+</aura:component>

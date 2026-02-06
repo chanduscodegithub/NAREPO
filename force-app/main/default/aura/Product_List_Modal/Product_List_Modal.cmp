@@ -1,0 +1,269 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="isReadonlyBuyup" type="Boolean" default='false'/>
+    <aura:attribute name="OpportunityLineItemsObj" type="sObject" />
+    <aura:attribute name="isReadOnly" type="Boolean" /> 
+    <aura:attribute name="BuyupProductList" type="List" />
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="isEditRecord" type="Boolean" />
+    <aura:attribute name="productType" type="String" />
+     <aura:attribute name="Buyup_Product_Selection__c" type="String" />
+    <aura:attribute name="maType" type="String"/>
+    <aura:attribute name="fundingTypePicklistVals" type="List" />
+    <aura:attribute name="dispositionPicklistVals" type="List" />
+    <aura:attribute name="isPendingTransfer" type="boolean" />
+    <aura:attribute name="isPendingSpinOff" type="boolean" />
+    <aura:attribute name="SalesStage" type="String" default="Lead"/>
+    <aura:attribute name="isChecked" type="Boolean" default="false"/>
+    <aura:attribute name="isMedicalAndOthersTab" type="Boolean" default="false"/>
+    <aura:attribute name="Disposition" type="String" default=""/>        
+    <aura:method name="updateOthersRecord" action="{!c.updateOthersRecordMethod}"></aura:method>
+    <aura:method name="updateOthersRec" action="{!c.updateOthersRecMethod}"></aura:method>
+    <aura:attribute name="totalRecordObj" type="Object" />	
+    <aura:attribute name="isSpecialityProduct" type="Boolean" default="false"/>
+    <aura:attribute name="isQA" type="Boolean"/>
+    <aura:attribute name="canEditDisposition" type="Boolean" default="false"/>
+    <aura:attribute name="testName" type="String" default=""/>
+    
+    <aura:registerEvent name="ProductsListCompEvent" type="c:ProductsListCompEvent"/>
+    
+    <tr class="slds-hint-parent">         
+        <aura:if isTrue="{!and(v.isMedicalAndOthersTab,v.productType == $Label.c.Other_Buy_Up_Program)}">              
+            <aura:if isTrue="{!v.isEditRecord}">                
+                <th scope="row" data-label="{!$Label.c.Product_Col_Estimated_Additional_New_Members}" style="padding-left: 1rem;">
+                    <ui:inputCheckbox aura:id="checkbox" label="" change="{!c.onCheck}" value="{!v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c }"/>
+                </th>                
+                <aura:set attribute="else">
+                    <th scope="row" data-label="{!$Label.c.Product_Col_Estimated_Additional_New_Members}" style="padding-left: 1rem;">
+                        <ui:outputCheckbox aura:id="checkbox" value="{!v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c }"/>
+                    </th>
+                </aura:set>
+            </aura:if>
+        </aura:if> 
+        
+        <th scope="row" data-label="Products Name">
+            <aura:if isTrue="{!v.OpportunityLineItemsObj.ProductName != null}" >
+                <ui:outputText value="{!v.OpportunityLineItemsObj.ProductName}" class="slds-cell-wrap"/>
+                <aura:set attribute="else">
+                    <ui:outputText value="{!v.OpportunityLineItemsObj.Product2.Name}" class="slds-cell-wrap"/>
+                </aura:set>
+            </aura:if>            
+        </th>
+        <!--aura:if isTrue="{!and(v.isMedicalAndOthersTab,v.productType == $Label.c.Other_Buy_Up_Program)}"-->
+        <aura:if isTrue="{!OR(OR(v.productType == $Label.c.Other_Buy_Up_Program,v.productType == $Label.c.Dental),v.productType == $Label.c.Vision) }">
+            <th scope="row" data-label="Products Name">            
+                 <aura:if isTrue="{!v.isEditRecord}">
+                     <aura:if isTrue="{!v.isReadonlyBuyup}">
+                         <ui:outputText value="{!v.OpportunityLineItemsObj.Buyup_Product_Selection__c}" class="slds-cell-wrap"/>
+                     </aura:if>
+                      <aura:if isTrue="{!not(v.isReadonlyBuyup)}">
+                     <ui:inputSelect class="slds-input " value="{!v.Buyup_Product_Selection__c}"  change='{!c.changeBuyupValue}'>
+                         <aura:iteration items="{!v.options}" var="prdCatVal">
+                             <ui:inputSelectOption  text="{!prdCatVal}" label="{!prdCatVal}" />
+                         </aura:iteration>
+                     </ui:inputSelect>
+                     </aura:if>
+                    <aura:set attribute="else">
+                        <ui:outputText value="{!v.OpportunityLineItemsObj.Buyup_Product_Selection__c}" class="slds-cell-wrap"/>
+                    </aura:set>
+                </aura:if> 
+                
+            </th>
+            
+        </aura:if> 
+        <aura:if isTrue="{!or(v.maType == $Label.c.MA_CD_TYPE,v.isPendingTransfer)}">
+            <aura:if isTrue="{!v.isPendingSpinOff}">
+                <th class="" scope="row" data-label="Members Transferred Spin-Off">               	
+                <aura:if isTrue="{!and(v.isEditRecord,v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true)}">
+                    <ui:inputNumber aura:id="Mbrs_Transferred_From_To_Another_Segment__c" value="{!v.OpportunityLineItemsObj.Mbrs_Transferred_From_To_Another_Segment__c}" change="{!c.caluculateTotalRecord}" format="#,##0" class="slds-text-align--right members-input" />
+                    <aura:set attribute="else">
+                        <ui:outputNumber value="{!v.OpportunityLineItemsObj.Mbrs_Transferred_From_To_Another_Segment__c }" format="#,##0" class="slds-text-align--right members-output" />
+                    </aura:set>
+                </aura:if>                       
+            </th>
+            </aura:if>
+            <aura:if isTrue="{!v.isPendingSpinOff==false}">
+                <th class="" scope="row" data-label="{!$Label.c.Porduct_Col_Member_Transferred_From_or_To_Another_Segment}">               	
+                <aura:if isTrue="{!and(v.isEditRecord,v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true)}">
+                    <ui:inputNumber aura:id="Mbrs_Transferred_From_To_Another_Segment__c" value="{!v.OpportunityLineItemsObj.Mbrs_Transferred_From_To_Another_Segment__c}" change="{!c.caluculateTotalRecord}" format="#,##0" class="slds-text-align--right members-input" />
+                    <aura:set attribute="else">
+                        <ui:outputNumber value="{!v.OpportunityLineItemsObj.Mbrs_Transferred_From_To_Another_Segment__c }" format="#,##0" class="slds-text-align--right members-output" />
+                    </aura:set>
+                </aura:if>                       
+            </th>
+            </aura:if>
+           
+        </aura:if>
+        <aura:if isTrue="{!v.isPendingTransfer}">
+            <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}"> 
+                <th scope="row" data-label="{!$Label.c.Product_Col_Disposition}">
+                    <aura:if isTrue="{!or(and(v.isSpecialityProduct,v.isEditRecord,not(v.isQA)),and(v.isEditRecord,or(v.SalesStage == 'Spin-Off',v.SalesStage == 'Transfer In/Out')))}">
+                        <!--aura:if isTrue="{!and(v.isEditRecord,v.SalesStage == 'Notified',v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true,v.SalesStage == 'Notified')}"-->
+                        <ui:inputSelect aura:id="DispositionAuraId" change="{!c.onDispositionChange}" value="{!v.OpportunityLineItemsObj.Disposition_Other_Buy_Up_Programs__c}">
+                            <aura:iteration items="{!v.dispositionPicklistVals}" var="level">
+                                <aura:if isTrue="{!level == v.OpportunityLineItemsObj.Disposition_Other_Buy_Up_Programs__c}" >          
+                                    <ui:inputSelectOption text="{!level}" label="{!level}" value="true"/>
+                                    <aura:set attribute="else">
+                                        <ui:inputSelectOption text="{!level}" label="{!level}"/>
+                                    </aura:set>
+                                </aura:if>                        
+                            </aura:iteration>                                         
+                        </ui:inputSelect>
+                        <aura:set attribute="else">
+                            <ui:outputText value="{!v.OpportunityLineItemsObj.Disposition_Other_Buy_Up_Programs__c}"/>
+                        </aura:set>
+                    </aura:if>  
+                </th>
+            </aura:if>
+        </aura:if>
+        <aura:if isTrue="{!v.isPendingTransfer == false}">
+            <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Members_Involved_in_Bid}">                         
+                    <aura:if isTrue="{!v.SalesStage == $Label.c.EmergingRiskOrNoUpside}">
+                        <ui:outputNumber value="{!v.OpportunityLineItemsObj.Existing_Members_Involved_in_the_Bid__c}" format="#,##0" class="slds-text-align--right" />
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!and(v.isEditRecord,v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true)}">
+                                <ui:inputNumber aura:id="Existing_Members_Involved_in_the_Bid__c" value="{!v.OpportunityLineItemsObj.Existing_Members_Involved_in_the_Bid__c}" change="{!c.caluculateTotalRecord}" format="#,##0" class="slds-text-align--right" />
+                                <aura:set attribute="else">
+                                    <ui:outputNumber value="{!v.OpportunityLineItemsObj.Existing_Members_Involved_in_the_Bid__c}" format="#,##0" class="slds-text-align--right" />
+                                </aura:set>
+                            </aura:if>
+                        </aura:set>
+                    </aura:if>                                       
+                </th>
+            </aura:if>
+            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Estimated_Additional_New_Members}">                  
+                <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}" >
+                    <aura:if isTrue="{!and(v.SalesStage == $Label.c.EmergingRiskOrNoUpside)}">
+                        <ui:outputNumber value="{!v.OpportunityLineItemsObj.Estimated_Additional_New_Members__c}" format="#,##0" class="slds-text-align--right" />
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!and(v.isEditRecord,v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true)}">
+                                <ui:inputNumber aura:id="Estimated_Additional_New_Members__c" value="{!v.OpportunityLineItemsObj.Estimated_Additional_New_Members__c}" change="{!c.caluculateTotalRecord}" format="#,##0" class="slds-text-align--right" />
+                                <aura:set attribute="else">
+                                    <ui:outputNumber value="{!v.OpportunityLineItemsObj.Estimated_Additional_New_Members__c}" format="#,##0" class="slds-text-align--right" />
+                                </aura:set>
+                            </aura:if>
+                        </aura:set>
+                    </aura:if>  
+                </aura:if>
+                <aura:if isTrue="{!v.maType == $Label.c.MA_CD_TYPE}" >                                   
+                    <aura:if isTrue="{!and(v.isEditRecord,v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true)}">
+                        <ui:inputNumber aura:id="Estimated_Additional_New_Members__c" value="{!v.OpportunityLineItemsObj.Estimated_Additional_New_Members__c}" change="{!c.caluculateTotalRecord}" format="#,##0" class="slds-text-align--right" />
+                        <aura:set attribute="else">
+                            <ui:outputNumber value="{!v.OpportunityLineItemsObj.Estimated_Additional_New_Members__c}" format="#,##0" class="slds-text-align--right" />
+                        </aura:set>
+                    </aura:if>                   
+                </aura:if>
+            </th>
+            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Estimated_Existing_and_New}">
+                <aura:if isTrue="{!and(v.maType == $Label.c.MA_CD_TYPE,v.OpportunityLineItemsObj.Mbrs_Transferred_From_To_Another_Segment__c != undefined,v.OpportunityLineItemsObj.Existing_Members_Involved_in_the_Bid__c != undefined)}">
+                    <ui:outputNumber value="{!v.OpportunityLineItemsObj.Mbrs_Transferred_From_To_Another_Segment__c+v.OpportunityLineItemsObj.Estimated_Additional_New_Members__c}" format="#,##0" class="slds-text-align--right"/>
+                </aura:if>
+                <aura:if isTrue="{!and(v.maType == $Label.c.MA_CM_TYPE,v.OpportunityLineItemsObj.Estimated_Additional_New_Members__c != undefined,v.OpportunityLineItemsObj.Existing_Members_Involved_in_the_Bid__c != undefined)}">
+                    <ui:outputNumber value="{!v.OpportunityLineItemsObj.Estimated_Additional_New_Members__c+v.OpportunityLineItemsObj.Existing_Members_Involved_in_the_Bid__c}" format="#,##0" class="slds-text-align--right"/>
+                </aura:if>            
+            </th>
+             <!--added vignesh-->
+            
+            <aura:if isTrue="{!and(v.productType == $Label.c.Medical,v.maType == $Label.c.MA_CM_TYPE)}">
+             <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Conversion_Product_Col}">
+                 <aura:if isTrue="{!and(v.isEditRecord,v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true)}">
+                        <ui:inputNumber aura:id="Product_Conversion__c" value="{!v.OpportunityLineItemsObj.Product_Conversion__c}" change="{!c.caluculateTotalRecord}" format="#,##0" class="slds-text-align--right" />
+                        <aura:set attribute="else"> 	
+                            <ui:outputNumber value="{!v.OpportunityLineItemsObj.Product_Conversion__c}" format="#,##0" class="slds-text-align--right" />
+                        </aura:set>
+                    </aura:if> 
+             </th>
+            </aura:if>
+            <aura:if isTrue="{!v.maType == $Label.c.MA_CD_TYPE}">
+                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Members_Quoted_In_Proposal}">                
+                    <aura:if isTrue="{!and(v.isEditRecord,v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true)}">
+                        <ui:inputNumber aura:id="Members_Quoted_in_the_Proposal__c" value="{!v.OpportunityLineItemsObj.Members_Quoted_in_the_Proposal__c}" change="{!c.caluculateTotalRecord}" format="#,##0" class="slds-text-align--right" />
+                        <aura:set attribute="else">
+                            <ui:outputNumber value="{!v.OpportunityLineItemsObj.Members_Quoted_in_the_Proposal__c}" format="#,##0" class="slds-text-align--right" />
+                        </aura:set>
+                    </aura:if>                       
+                </th>
+            </aura:if>
+            <aura:if isTrue="{!v.maType == $Label.c.MA_CM_TYPE}">
+                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Membership_at_Risk}">                
+                    <aura:if isTrue="{!and(v.isEditRecord,v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true)}">
+                        <ui:inputNumber aura:id="Existing_Membership_at_Risk__c" value="{!v.OpportunityLineItemsObj.Existing_Membership_at_Risk__c}" change="{!c.caluculateTotalRecord}" format="#,##0" class="slds-text-align--right" />
+                        <aura:set attribute="else">
+                            <ui:outputNumber value="{!v.OpportunityLineItemsObj.Existing_Membership_at_Risk__c}" format="#,##0" class="slds-text-align--right" />
+                        </aura:set>
+                    </aura:if>                       
+                </th>
+            </aura:if>
+            <aura:if isTrue="{!v.productType == $Label.c.Other_Buy_Up_Program}">
+                <th scope="row" data-label="{!$Label.c.Product_Col_Disposition}">
+                    <aura:if isTrue="{!or(and(v.isSpecialityProduct,and(v.isEditRecord,not(v.isQA))),and(v.isEditRecord,v.SalesStage == 'Notified',v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true))}">
+                        <!-- <aura:if isTrue="{!v.canEditDisposition}"> -->
+                        <ui:inputSelect aura:id="DispositionAuraId"  change="{!c.onDispositionChange}" value="{!v.OpportunityLineItemsObj.Disposition_Other_Buy_Up_Programs__c}">
+                            <aura:iteration items="{!v.dispositionPicklistVals}" var="level">
+                                <aura:if isTrue="{!level == v.OpportunityLineItemsObj.Disposition_Other_Buy_Up_Programs__c}" >          
+                                    <ui:inputSelectOption text="{!level}" label="{!level}" value="true"/>
+                                    <aura:set attribute="else">
+                                        <ui:inputSelectOption text="{!level}" label="{!level}" />
+                                    </aura:set>
+                                </aura:if>                        
+                            </aura:iteration>                                         
+                        </ui:inputSelect>
+                        <aura:set attribute="else">
+                            <ui:outputText value="{!v.OpportunityLineItemsObj.Disposition_Other_Buy_Up_Programs__c}"/>
+                        </aura:set>
+                    </aura:if>  
+                </th>
+            </aura:if>
+            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Sold_and_Retained_Members}">            
+                <aura:if isTrue="{!or(and(v.isSpecialityProduct,and(v.isEditRecord,not(v.isQA))),and(v.isEditRecord,v.SalesStage == 'Notified',v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true))}">
+                    <ui:inputNumber aura:id="Sold_Retained_Members__c" value="{!v.OpportunityLineItemsObj.Sold_Retained_Members__c}" change="{!c.caluculateTotalRecord}" format="#,##0" class="slds-text-align--right" />
+                    <aura:set attribute="else">
+                        <ui:outputNumber value="{!v.OpportunityLineItemsObj.Sold_Retained_Members__c}" format="#,##0" class="slds-text-align--right" />
+                    </aura:set>
+                </aura:if>  
+            </th>
+            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Net_Results}">
+                <ui:outputNumber value="{!v.OpportunityLineItemsObj.Net_Results__c}" format="#,##0"/>
+            </th>
+        </aura:if>
+        <aura:if isTrue="{!v.productType == $Label.c.Medical}">
+            <th scope="row" data-label="{!$Label.c.Product_Col_Funding_Type}">
+                <aura:if isTrue="{!and(v.isEditRecord,v.OpportunityLineItemsObj.Copy_the_Membership_from_Medical__c != true)}">
+                    <ui:inputSelect aura:id="FundingType" change="{!c.onFundingTypeChange}">
+                        <aura:iteration items="{!v.fundingTypePicklistVals}" var="level">
+                            <aura:if isTrue="{!level == v.OpportunityLineItemsObj.Funding_Type__c}" >          
+                                <ui:inputSelectOption text="{!level}" label="{!level}" value="true"/>
+                                <aura:set attribute="else">
+                                    <ui:inputSelectOption text="{!level}" label="{!level}" />
+                                </aura:set>
+                            </aura:if>                        
+                        </aura:iteration>                                         
+                    </ui:inputSelect>
+                    <aura:set attribute="else">
+                        <ui:outputText value="{!v.OpportunityLineItemsObj.Funding_Type__c}"/>
+                    </aura:set>
+                </aura:if>  
+            </th>    
+            <aura:set attribute="else">
+                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Product_Col_Annual_Revenue_Or_Premium}">
+                    <aura:if isTrue="{!and(v.isEditRecord)}">
+                        <ui:inputCurrency value="{!v.OpportunityLineItemsObj.Annual_Revenue_Premium__c}" change="{!c.onAnnualRevenue}" format="$#,##0" class="slds-text-align--right" />
+                        <aura:set attribute="else">
+                            <ui:outputCurrency value="{!v.OpportunityLineItemsObj.Annual_Revenue_Premium__c}" format="$#,##0" class="slds-text-align--right" />
+                        </aura:set>
+                    </aura:if>  
+                </th>  
+            </aura:set>
+        </aura:if>       
+        <aura:if isTrue="{!v.isReadOnly == false}" >
+            <th scope="row" data-label="{!$Label.c.Product_Col_Estimated_Additional_New_Members}">            
+                <button class="slds-button slds-text-body--regular" onclick="{!c.removeOpportunityLineItemsObj}">
+                    <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                </button>            
+            </th>
+        </aura:if>
+    </tr>
+</aura:component>

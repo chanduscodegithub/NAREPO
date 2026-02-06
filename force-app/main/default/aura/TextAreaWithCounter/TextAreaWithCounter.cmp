@@ -1,0 +1,13 @@
+<aura:component >
+    <aura:attribute name="count" type="Integer"/>
+    <aura:attribute name="inputKeyWord" type="string" default="" />
+    <!--<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>-->
+    <aura:method name="doCalculation" action="{!c.doCalculation}" description="Sample method with parameters"> 
+    </aura:method>
+    <!--<aura:handler event="c:clearResponsibilityFields" action="{!c.clearFields}"/>-->
+    <aura:registerEvent name="removeCustomLookUpSeniorUHGEevnt" type="c:removeCustomLookUpSeniorUHGEevnt"/>
+    <div class="slds-form-element__control slds-is-relative">        
+        <lightning:textarea maxlength="255" name="textCount" onfocus="{!c.removeCustomLookUp}" onchange="{!c.inputTextCounter}" aura:id="textAreaCounter" class="slds-textarea" messageWhenTooLong="You have reached the 255 character limit" value="{!v.inputKeyWord}" label="text"/>
+        <div class="textCounter">{!v.count}</div>
+    </div>
+</aura:component>

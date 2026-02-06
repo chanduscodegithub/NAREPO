@@ -1,0 +1,260 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller = "SalesIssuesApexClass">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="openCaseList" type="Case[]"/>
+    <aura:attribute name="closedCaseList" type="Case[]"/>
+    <aura:attribute name="isEmtOpenCases" type="Boolean" default="false" />
+    <aura:attribute name="isEmtClosedCases" type="Boolean" default="false"/>
+    <aura:attribute name="isEmtOpenCasesViewAll" type="Boolean" default="true" />
+    <aura:attribute name="isEmtClosedCasesViewAll" type="Boolean" default="true"/>
+    <aura:attribute name="responseObj" type="Object"/>
+    <div aura:id="Service_Plan_Managed_By_CSI" class="slds-section ipadbottom container forceRelatedListSingleContainer">
+        <article class="slds-card forceRelatedListCardDesktop class slds-card_boundary">
+            <div class="slds-card__header slds-grid slds-p-vertical--x-small slds-m-bottom--none appletHeader flex-auto  avoid-clicks" data-record="Service_Plan_Managed_By_CSI" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                        </button>
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Client_Survey_Results_Heading}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:poll" size="small" alternativeText="{!$Label.c.Client_Survey_Results_Heading}" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2>
+                            <!--<a href="javascript:void(0);" class="slds-card__header-link slds-truncate">-->
+                            <span class="slds-text-heading--small">Issues managed by CSI</span>
+                            <!--</a>-->
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-is-relative">
+                <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+                <!--  Error PopUp STARTS --> 
+                <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                                <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                                <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                            </button>
+                            <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <p style="text-align:center;">{!v.ErrorMessage}</p>
+                        </div>
+                        <div class="slds-modal__footer slds-theme--default">
+                            <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="ErrorMessage"></div>
+                <!--  Error PopUp ENDS -->
+                
+                <div class="slds-section__content" style="padding-top:0px;position:relative;">   
+                    <div class="slds-card__body d-inline-block">                    
+                        <table aura:id="clientSurveyTbl" id="clientSurveyTbl" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout clientSurveyTbl">
+                            <thead>
+                                <tr class="slds-hint-parent">
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>                           
+                                <tr class="slds-hint-parent" style="height: 100px;">
+                                    <div class="slds-section__content slds-p-top_none">
+                                        <div class="slds-card slds-m-bottom_none">
+                                            <div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="OpenServicePlan" id="UtilityToggleOpenServicePlan" onclick="{!c.expandCollapseSection}">
+                                                <div class="slds-grid">
+                                                    <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                                        <button class="slds-button slds-button_reset slds-accordion__summary-action accordion-link">
+                                                            <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityToggleOpenServicePlan" iconName="utility:chevronright" size="xx-small" />
+                                                            <span class="slds-truncate txt-bold">Open Issues</span>
+                                                        </button>
+                                                    </header>
+                                                </div>
+                                            </div>
+                                            
+                                            <section class="collapsible-sec slds-hide" aura:id="OpenServicePlan">
+                                                
+                                                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                                    <thead>
+                                                        <tr class="slds-text-title_caps">
+                                                            <th scope="col" class="slds-truncate header">Issue ID</th>
+                                                            <th scope="col" class="slds-truncate header">Category</th>
+                                                            <th scope="col" class="slds-truncate header">Visibility</th>
+                                                            <th scope="col" class="slds-truncate header">Priority</th>
+                                                            <th scope="col" class="slds-truncate header">Assigned To</th>
+                                                            <th scope="col" class="slds-truncate header">Issue Description</th>
+                                                            <th scope="col" class="slds-truncate header">Date/Time Opened</th>
+                                                            <th scope="col" class="slds-truncate header">Target Completion Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <aura:if isTrue="{!v.isEmtOpenCases}">
+                                                            <p></p>
+                                                            <tr>
+                                                                <th colspan="8">
+                                                                    <div class="slds-text-align--center"> No Open Issues Found </div>
+                                                                </th>
+                                                            </tr>                                           
+                                                            <aura:set attribute="else">
+                                                                <aura:iteration items="{!v.openCaseList}" var="caseObj" indexVar="index">
+                                                                    <tr>
+                                                                        <th scope="row" data-label="Issue ID">
+                                                                            
+                                                                            <a data-record="{!caseObj.Id}" onclick="{!c.navigateToIssueDetailPage}" title="CaseNumber">{!caseObj.CaseNumber}</a>
+                                                                            
+                                                                        </th>
+                                                                        <th scope="row" data-label="Category">
+                                                                            <div  title="Category">{!caseObj.Category__c}</div>
+                                                                        </th>
+                                                                        <th scope="row" data-label="Visibility">
+                                                                            <div  title="Visibility">{!caseObj.Visibility__c}</div>
+                                                                        </th>
+                                                                        <th scope="row" data-label="Priority">
+                                                                            <div  title="Priority">{!caseObj.Priority}</div>
+                                                                        </th>
+                                                                        <th scope="row" data-label="Assigned To">
+                                                                            <div  title="Assigned To">{!caseObj.Owner.Name}</div>
+                                                                        </th>
+                                                                        <th scope="row" class="slds-cell-wrap" data-label="Issue Description" >
+                                                                            
+                                                                            
+                                                                            <ui:outputRichText value="{!caseObj.Extended_Description__c}" />
+                                                                            
+                                                                            
+                                                                        </th>                                                                
+                                                                        <th scope="row" data-label="Date/Time Opened">
+                                                                            <ui:outputDate format="M/d/yyyy hh:mm a" value="{!caseObj.CreatedDate}" />
+                                                                        </th>
+                                                                        <th scope="row" data-label="Target Completion Date">
+                                                                            <ui:outputDate format="M/d/yyyy" value="{!caseObj.Target_Completion__c}" />
+                                                                        </th>
+                                                                        
+                                                                    </tr>
+                                                                </aura:iteration>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </tbody>
+                                                    
+                                                </table>
+                                                <aura:if isTrue='{!!v.isEmtOpenCasesViewAll}'>
+                                                    <footer class="slds-card__footer">
+                                                        <a class="slds-card__footer-action" onclick="{!c.ViewAllOpenIssues}">View All
+                                                            <span class="slds-assistive-text">Contacts</span>
+                                                        </a>
+                                                    </footer>
+                                                </aura:if>                                                
+                                            </section>
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                    <div class="slds-section__content slds-p-top_none">
+                                        <div class="slds-card slds-m-bottom_none">
+                                            <div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="ClosedServicePlan" id="UtilityToggleClosedServicePlan" onclick="{!c.expandCollapseSection}">
+                                                <div class="slds-grid">
+                                                    <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                                        <button class="slds-button slds-button_reset slds-accordion__summary-action accordion-link">
+                                                            <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityToggleClosedServicePlan" iconName="utility:chevronright" size="xx-small" />
+                                                            <span class="slds-truncate txt-bold">Closed Issues</span>
+                                                        </button>
+                                                    </header>
+                                                </div>
+                                            </div> 
+                                            
+                                            <section class="collapsible-sec slds-hide" aura:id="ClosedServicePlan">
+                                                
+                                                <table class="slds-table slds-table_bordered slds-table_cell-buffer ">
+                                                    <thead>
+                                                        <tr class="slds-text-title_caps"> 
+                                                            <th scope="col" class="slds-truncate header">Issue ID</th>
+                                                            <th scope="col" class="slds-truncate header">Category</th>
+                                                            <th scope="col" class="slds-truncate header">Visibility</th>
+                                                            <th scope="col" class="slds-truncate header">Priority</th>
+                                                            <th scope="col" class="slds-truncate header">Assigned To</th>
+                                                            <th scope="col" class="slds-truncate header">Issue Description</th>
+                                                            <th scope="col" class="slds-truncate header">Date/Time Opened</th>
+                                                            <th scope="col" class="slds-truncate header">Target Completion Date</th>
+                                                            <th scope="col" class="slds-truncate header">Date/Time Closed</th>
+                                                            
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <aura:if isTrue="{!v.isEmtClosedCases}">
+                                                            <th colspan="9">
+                                                                <div class="slds-text-align--center">No Closed Issues Found</div>
+                                                            </th>                                            
+                                                            <aura:set attribute="else">
+                                                                <aura:iteration items="{!v.closedCaseList}" var="caseObj" indexVar="index"	>
+                                                                    <tr>
+                                                                        <th scope="row" data-label="Issue ID">
+                                                                            
+                                                                            <a data-record="{!caseObj.Id}" onclick="{!c.navigateToIssueDetailPage}" title="CaseNumber">{!caseObj.CaseNumber}</a>
+                                                                            
+                                                                        </th>
+                                                                        
+                                                                        <th scope="row" data-label="Category">
+                                                                            <div  title="Category">{!caseObj.Category__c}</div>
+                                                                        </th>
+                                                                        <th scope="row" data-label="Visibility">
+                                                                            <div  title="Visibility">{!caseObj.Visibility__c}</div>
+                                                                        </th>
+                                                                        <th scope="row" data-label="Priority">
+                                                                            <div  title="Priority">{!caseObj.Priority}</div>
+                                                                        </th>
+                                                                        <th scope="row" data-label="Assigned To">
+                                                                            <div  title="Assigned To">{!caseObj.Owner.Name}</div>
+                                                                        </th>
+                                                                        <th scope="row" class="slds-cell-wrap" data-label="Issue Description" >
+                                                                            <ui:outputRichText value="{!caseObj.Extended_Description__c}" />    
+                                                                        </th>  
+                                                                        <th scope="row" data-label="Date/Time Opened">
+                                                                            <ui:outputDate format="M/d/yyyy hh:mm a" value="{!caseObj.CreatedDate}" />
+                                                                        </th>
+                                                                        <th scope="row" data-label="Target Completion Date">
+                                                                            <ui:outputDate format="M/d/yyyy" value="{!caseObj.Target_Completion__c}" />
+                                                                        </th>
+                                                                        <th scope="row" data-label="Date/Time Closed">
+                                                                            <ui:outputDate format="M/d/yyyy hh:mm a" value="{!caseObj.ClosedDate}" />
+                                                                        </th>
+                                                                    </tr>
+                                                                </aura:iteration>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </tbody>
+                                                </table>
+                                                <aura:if isTrue='{!!v.isEmtClosedCasesViewAll}'>
+                                                    <footer class="slds-card__footer">
+                                                        <a class="slds-card__footer-action" onclick="{!c.ViewAllCloseIssues}">View All
+                                                            <span class="slds-assistive-text">Contacts</span>
+                                                        </a>
+                                                    </footer>
+                                                </aura:if>  
+                                            </section>                                            
+                                        </div>
+                                        
+                                    </div>                                                                        
+                                </tr>                            	                                                               
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="slds-card__footer">
+                </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

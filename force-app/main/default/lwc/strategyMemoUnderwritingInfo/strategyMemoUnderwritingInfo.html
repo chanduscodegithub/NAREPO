@@ -1,0 +1,446 @@
+<template>
+    <table
+        class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+        <tbody>
+            <tr>
+                <td class="custom-td">ACS</td>
+                <td colspan="3" class="value"><template if:true={averageContractSize}>
+                        <span>{averageContractSize}</span>
+                    </template> </td>
+            </tr>
+            <tr>
+                <td class="custom-td">EEs & Retirees in the Proposal (Medical)</td>
+                <td colspan="3" class="value"><template if:true={eligibleEesAndRetirees}>
+                        <span>{eligibleEesAndRetirees}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="custom-td">Employees in the Proposal (Medical)</td>
+                <td colspan="3" class="value"><template if:true={enrolledEmployeesProposal}>
+                        <span>{enrolledEmployeesProposal}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="custom-td">Members in the Proposal (Medical)</td>
+                <td colspan="3" class="value"><template if:true={membersInProposal}>
+                        <span>{membersInProposal}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="custom-td">BiC Data</td>
+                <td colspan="3" class="value">
+                    <div>
+                        <p>Vs Aetna     : <template if:true={vsAetna}><span
+                                    class="custom-colour-bic">{vsAetna}%</span></template></p>
+                        <p>Vs Anthem    : <template if:true={vsAnthem}><span
+                                    class="custom-colour-bic">{vsAnthem}%</span></template></p>
+                        <p>Vs Blues     : <template if:true={vsBlues}> <span
+                                    class="custom-colour-bic">{vsBlues}%</span></template></p>
+                        <p>Vs Blues Alt : <template if:true={vsBluesAlt}> <span
+                                    class="custom-colour-bic">{vsBluesAlt}%</span></template></p>
+                        <p>Vs Cigna  : <template if:true={vsCigna}><span
+                                    class="custom-colour-bic">{vsCigna}%</span></template></p>
+                    </div>
+
+                </td>
+
+            </tr>
+
+
+
+            <tr>
+                <td class="custom-td">New Business Rate Report from Actuarial</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.New_Business_Rate_Report_from_Actuarial__c}
+                            name="New_Business_Rate_Report_from_Actuarial__c" onchange={handleChange} max-length="255" >
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.New_Business_Rate_Report_from_Actuarial__c}>
+                            <span>{strategyMemo.New_Business_Rate_Report_from_Actuarial__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Claim Fiduciary</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Claim_Fiduciary__c} name="Claim_Fiduciary__c" onchange={handleChange} max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Claim_Fiduciary__c}>
+                            <span>{strategyMemo.Claim_Fiduciary__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Banking Arrangement</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Banking_Arrangement__c} name="Banking_Arrangement__c" max-length="255"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Banking_Arrangement__c}>
+                            <span>{strategyMemo.Banking_Arrangement__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td">Contribution Strategy</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Contribution_Strategy__c} name="Contribution_Strategy__c" max-length="255"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Contribution_Strategy__c}>
+                            <span>{strategyMemo.Contribution_Strategy__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td"># Years Fees to Quote</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Years_Fees_to_Quote__c} name="Years_Fees_to_Quote__c" max-length="255"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Years_Fees_to_Quote__c}>
+                            <span>{strategyMemo.Years_Fees_to_Quote__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td">Current Rates/Fees</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Current_Rates_Fees__c} name="Current_Rates_Fees__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Current_Rates_Fees__c}>
+                            <span>{strategyMemo.Current_Rates_Fees__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td">Renewal Rates/Fees</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Renewal_Rates_Fees__c} name="Renewal_Rates_Fees__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Renewal_Rates_Fees__c}>
+                            <span>{strategyMemo.Renewal_Rates_Fees__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td">Pricing by Enrollment Tiers?</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Pricing_by_Enrollment_Tiers__c} name="Pricing_by_Enrollment_Tiers__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Pricing_by_Enrollment_Tiers__c}>
+                            <span>{strategyMemo.Pricing_by_Enrollment_Tiers__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td">Nonstandard Performance Guarantees</td>
+                <td colspan="3" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Nonstandard_Performance_Guarantee__c}
+                            name="Nonstandard_Performance_Guarantee__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Nonstandard_Performance_Guarantee__c}>
+                            <span>{strategyMemo.Nonstandard_Performance_Guarantee__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td">Network Discount Guarantees</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Network_Discount_Guarantees__c} name="Network_Discount_Guarantees__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Network_Discount_Guarantees__c}>
+                            <span>{strategyMemo.Network_Discount_Guarantees__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td">NexusACO Plan Savings PPT</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Nexus_ACO_Plan_Savings_PPT__c} name="Nexus_ACO_Plan_Savings_PPT__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Nexus_ACO_Plan_Savings_PPT__c}>
+                            <span>{strategyMemo.Nexus_ACO_Plan_Savings_PPT__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td">Network Development Guarantees </td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Network_Development_Guarantee__c}
+                            name="Network_Development_Guarantee__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Network_Development_Guarantee__c}>
+                            <span>{strategyMemo.Network_Development_Guarantee__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-td">Claim Target Guarantee </td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Claim_Trend_Guarantee__c} name="Claim_Trend_Guarantee__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Claim_Trend_Guarantee__c}>
+                            <span>{strategyMemo.Claim_Trend_Guarantee__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Trend Guarantee </td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Trend_Guarantee__c} name="Trend_Guarantee__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Trend_Guarantee__c}>
+                            <span>{strategyMemo.Trend_Guarantee__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">OTHER GUARANTEES?</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Other_Guarantees__c} name="Other_Guarantees__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Other_Guarantees__c}>
+                            <span>{strategyMemo.Other_Guarantees__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Platform Stability</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Platform_Stability__c} name="Platform_Stability__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Platform_Stability__c}>
+                            <span>{strategyMemo.Platform_Stability__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Optum CLINICAL PGs</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Optum_CLINICAL_PGs__c} name="Optum_CLINICAL_PGs__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Optum_CLINICAL_PGs__c}>
+                            <span>{strategyMemo.Optum_CLINICAL_PGs__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Clinical Integration (formerly Bridge to
+                    Health)</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Clinical_Integration__c} name="Clinical_Integration__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Clinical_Integration__c}>
+                            <span>{strategyMemo.Clinical_Integration__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Pre-Implementation Audit</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-textarea class="slds-p-around_xxx-small cramp-line" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Pre_Implementation_Audit__c} name="Pre_Implementation_Audit__c"
+                            onchange={handleChange}>
+                        </lightning-textarea>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Pre_Implementation_Audit__c}>
+                            <lightning-formatted-text value={strategyMemo.Pre_Implementation_Audit__c}></lightning-formatted-text>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Transition Credit</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Transition_Credit__c} name="Transition_Credit__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Transition_Credit__c}>
+                            <span>{strategyMemo.Transition_Credit__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Communication Credit</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Communication_Credit__c} name="Communication_Credit__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Communication_Credit__c}>
+                            <span>{strategyMemo.Communication_Credit__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Wellness Credit </td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Wellness_Credit__c} name="Wellness_Credit__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Wellness_Credit__c}>
+                            <span>{strategyMemo.Wellness_Credit__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Specialty Package Credit</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Specialty_Package_Credit__c} name="Specialty_Package_Credit__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Specialty_Package_Credit__c}>
+                            <span>{strategyMemo.Specialty_Package_Credit__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-td">Passport HP Pricing Needed?</td>
+                <td colspan="3" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="Text" class="slds-p-around_xxx-small" variant="label-hidden" max-length="255"
+                            value={strategyMemo.Passport_HP_Pricing_Needed__c} name="Passport_HP_Pricing_Needed__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Passport_HP_Pricing_Needed__c}>
+                            <span>{strategyMemo.Passport_HP_Pricing_Needed__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+</template>

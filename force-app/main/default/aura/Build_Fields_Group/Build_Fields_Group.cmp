@@ -1,0 +1,993 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 04-12-2024
+  @last modified by  : Spoorthy
+-->
+<aura:component >
+    <aura:attribute name="fields" type="Object"/>
+    <aura:attribute name="iTag" type="String"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="MAFeildValue" type="String"/>
+    <aura:attribute name="Intial_Stage_values" type="String[]"/>
+    <aura:attribute name="isEdit" type="Boolean"/>
+    <aura:attribute name="isEditable" type="Boolean" default="true"/>
+    <aura:attribute name="isMedicalExist" type="Boolean" default="true"/>
+    <aura:attribute name="isRequired" type="Boolean" default="false"/>
+    <aura:attribute name="oppCategory" type="String"/>
+    <aura:attribute name="saleStageIntialValueMap" type="Object"/>
+    <aura:attribute name="isEditMode" type="Boolean" default="false"/>
+    <aura:attribute name="isReset" type="Boolean" default="true"/>
+    <aura:registerEvent name="makeFieldsEditable" type="c:Edit_Read_Event"/>
+    <aura:registerEvent name="resetEvent" type="c:reset_SalesStage_Event"/>
+    <aura:attribute name="MedOthSelcSalesStgNme" type="String"/>
+    <aura:attribute name="Selected_Stage_Name" type="String"/>    
+    <aura:attribute name="resetVal" type="Boolean" default="false"/>
+    <aura:attribute name="isMedOth" type="Boolean"/>
+    <aura:attribute name="isComments" type="Boolean" default="false"/>
+    <aura:attribute name="SalesStage" type="String"/>
+    <aura:attribute name="SalesStageItag" type="String"/>
+    <aura:attribute name="SalesStageOtherItag" type="String"/>
+    <aura:attribute name="SalesStageOther" type="String"/>
+    <aura:attribute name="errorMsg" type="String"/>
+    <aura:attribute name="selectedCategoryMap" type="Object"/>
+    <aura:attribute name="count" type="Integer"/>
+    <aura:attribute name="accessObj" type="Object"/>
+    <aura:attribute name="SelectedMemInPropsal" type="Integer"/>
+    <aura:attribute name="isFinalistDateDetail" type="Boolean" default="false"/>
+    <aura:attribute name="is_255" type="Boolean" default="false"/>
+    <aura:attribute name="is_750" type="Boolean" default="false"/>
+    <aura:attribute name="is_1500" type="Boolean" default="false"/>
+    <aura:attribute name="is_2500" type="Boolean" default="false"/>
+    <aura:attribute name="is_500" type="Boolean" default="false"/>
+    <aura:attribute name="is_1600" type="Boolean" default="false"/>
+    <aura:attribute name="is_25000" type="Boolean" default="false"/>
+    <aura:attribute name="is_4095" type="Boolean" default="false"/>
+    <aura:attribute name="multiSelectValues" type="List" default="[]"/>
+    <aura:attribute name="accountRecord" type="Object"/>
+    <aura:attribute name="fieldsA" type="String[]" default="['Name']" />
+    
+    <!--File Upload CR-->
+    <aura:attribute name="oppRecordId" type="String"/>
+    <aura:attribute name="isFileUploaded" type="Boolean" default="false"/>
+    
+    <aura:handler name="change" value="{!v.isEdit}" action="{!c.onChildAttributeChange}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:method name="buildFeildsMethod" action="{!c.buildFldMethod}">    	  
+        <aura:attribute name="isFocus" type="Boolean" default="false"/>
+        <aura:attribute name="readOnly" type="Boolean" default="false"/>
+        <aura:attribute name="isEditModeOn" type="Boolean" default="false"/> 
+        <aura:attribute name="required" type="Boolean" default="false"/>
+        <aura:attribute name="errMsg" type="String"/>
+    </aura:method>
+    <aura:method name="clearFeildError" action="{!c.clearField}">    	  
+        <aura:attribute name="clear" type="Boolean" default="false"/>        
+    </aura:method>
+    <aura:method name="copyData" action="{!c.copyDataToFields}">    
+        <aura:attribute name="fieldItag" type="String"/>
+    </aura:method>
+    <aura:method name="copyDataonSave" action="{!c.copyDataonSaveMtd}">    
+        <aura:attribute name="MAData" type="String"/>
+    </aura:method>
+    <aura:method name="clearFields" action="{!c.clearFieldsFun}">    
+        <aura:attribute name="value" type="String"/>
+    </aura:method>
+    
+    <aura:handler name="oSelectedAccountEvent" event="c:selectedAccountEvent" action="{!c.handleComponentEvent}"/>
+    
+    <aura:if isTrue="{!v.fields.type == 'REFERENCE'}">
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                    <div class="test-id__field-label-container">
+                        <span class="test-id__field-label slds-form-element__label">
+                            <aura:if isTrue="{!v.isRequired}">
+                                <span class="slds-required">*</span>
+                            </aura:if>
+                            {!v.fields.label}
+                        </span>
+                        <aura:if isTrue="{!v.fields.help}">
+                            <c:ToolTipMA iTag="{!v.fields.fieldPath}" helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                        </aura:if>
+                    </div>
+                    <c:customLookupAccount accountId ="{!v.MAFeildValue}"></c:customLookupAccount>                    
+                </div>               
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;">
+                    <lightning:formattedRichText value="{!v.errorMsg}" />
+                    </span>
+                </div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA iTag="{!v.fields.fieldPath}" helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow customCss">
+                                <lightning:recordForm recordId="{!v.MAFeildValue}" 
+                                                      objectApiName="Account"
+                                                      mode="readonly"
+                                                      fields="{!v.fieldsA}" />
+                            </span>
+                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                </button>
+                            </aura:if>
+                        </div>                        
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fields.type == 'PICKLIST'}">
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                    <div class="test-id__field-label-container">
+                        <span class="test-id__field-label slds-form-element__label">
+                            <aura:if isTrue="{!v.isRequired}">
+                                <span class="slds-required">*</span>
+                            </aura:if>
+                            {!v.fields.label}
+                        </span>
+                        <aura:if isTrue="{!v.fields.help}">
+                            <c:ToolTipMA iTag="{!v.fields.fieldPath}" helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                        </aura:if>
+                    </div>
+                    <ui:inputSelect aura:id="feildSetId" change="{!c.onSelectChange}">                      
+                        <aura:iteration items="{!v.fields.picklistoptions}" var="level"> 
+                            <aura:if isTrue="{!level == v.MAFeildValue}" >          
+                                <ui:inputSelectOption class="generalPadding" text="{!level}" label="{!level}" value="true"/>
+                                <aura:set attribute="else">
+                                    <ui:inputSelectOption class="generalPadding" text="{!level}" label="{!level}" />
+                                </aura:set>
+                            </aura:if>       
+                        </aura:iteration>
+                        
+                    </ui:inputSelect>
+                </div>               
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;">
+                    <lightning:formattedRichText value="{!v.errorMsg}" />
+                    </span>
+                </div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA iTag="{!v.fields.fieldPath}" helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                <span>{!v.MAFeildValue}</span>
+                            </span>
+                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                </button>
+                            </aura:if>
+                        </div>                        
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fields.type == 'MULTIPICKLIST'}">
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                    <div class="test-id__field-label-container">
+                        <span class="test-id__field-label slds-form-element__label">
+                            <aura:if isTrue="{!v.isRequired}">
+                                <span class="slds-required">*</span>
+                            </aura:if>
+                            {!v.fields.label}
+                        </span>
+                        <aura:if isTrue="{!v.fields.help}">
+                            <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                        </aura:if>
+                    </div>
+                    <!--<ui:inputSelect multiple="true" aura:id="feildSetId" change="{!c.onSelectChange}">
+                        <aura:iteration items="{!v.fields.picklistoptions}" var="level">
+                            <ui:inputSelectOption text="{!level}" label="{!level}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>-->
+                    <lightning:dualListbox name="Multipick"
+                                           sourceLabel="Available" 
+                                           selectedLabel="Selected"
+                                           aura:id="feildSetId" 
+                                           options="{!v.fields.multipicklistoptions}"
+                                           value="{!v.multiSelectValues}"                
+                                           onchange="{! c.handleChange }"/>
+                </div>               
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;">
+                    <lightning:formattedRichText value="{!v.errorMsg}" />
+                    </span>
+                </div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                <span>{!v.MAFeildValue}</span>
+                            </span>
+                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                </button>
+                            </aura:if>
+                        </div>                       
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fields.type == 'DATE'}">
+        
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                    <div class="test-id__field-label-container">
+                        <span class="test-id__field-label slds-form-element__label">
+                            <aura:if isTrue="{!v.isRequired}">
+                                <span class="slds-required">*</span>
+                            </aura:if>
+                            {!v.fields.label}</span>
+                        <aura:if isTrue="{!v.fields.help}">
+                            <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                        </aura:if>
+                    </div>
+                    <ui:inputDate aura:id="feildSetId" format="M/d/yyyy" value="{!v.MAFeildValue}" blur="{!c.setDateValues}" displayDatePicker="true"/>
+                </div>               
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;">
+                    <lightning:formattedRichText value="{!v.errorMsg}" />
+                    </span></div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow">                               
+                                <ui:outputDate format="M/d/yyyy" class="form-control" value="{!v.MAFeildValue}"/>                                
+                            </span>
+                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                </button>
+                            </aura:if>
+                        </div>                        
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fields.type == 'DATETIME'}">
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                    <div class="test-id__field-label-container">
+                        <span class="test-id__field-label slds-form-element__label">
+                            <aura:if isTrue="{!v.isRequired}">
+                                <span class="slds-required">*</span>
+                            </aura:if>
+                            {!v.fields.label}
+                        </span>
+                        <aura:if isTrue="{!v.fields.help}">
+                            <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                        </aura:if>
+                    </div>                    
+                    <ui:inputDateTime format="M/d/yyyy hh:mm a" aura:id="feildSetId" value="{!v.MAFeildValue}" class="form-control" blur="{!c.setDateValues}" displayDatePicker="true" />
+                </div>               
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" />
+                    </span></div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                <ui:outputDateTime format="M/d/yyyy hh:mm a" value="{!v.MAFeildValue}" class="form-control" timezone="{!$Locale.timezone}"/>
+                            </span>
+                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                </button>
+                            </aura:if>
+                        </div>                        
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if> 
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fields.type == 'TEXTAREA'}">
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <aura:if isTrue="{!v.isComments}">
+                <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                    <aura:if isTrue="{!v.fields.inst}">
+                        <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                    </aura:if>
+                    <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">
+                                <aura:if isTrue="{!v.isRequired}">
+                                    <span class="slds-required">*</span>
+                                </aura:if>                                
+                                <aura:if isTrue="{!v.fields.fieldPath == 'Comments__c'}">
+                                    Comments
+                                    <aura:set attribute="else">
+                                        {!v.fields.label}
+                                    </aura:set>
+                                </aura:if>                                   
+                            </span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>                        
+                        <aura:if isTrue="{!v.is_255}">
+                            <lightning:textarea maxlength="255" onblur="{!c.setValues}" value="{!v.MAFeildValue}" aura:id="feildSetId" name="textCount" onchange="{!c.inputTextCounter}" class="slds-textarea textarea-Counter" messageWhenTooLong="You have reached the 255 character limit"/>
+                            <div class="textCounter">{!v.count}</div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.is_500}">
+                            <lightning:textarea maxlength="500" onblur="{!c.setValues}" value="{!v.MAFeildValue}" aura:id="feildSetId" name="textCount" onchange="{!c.inputTextCounter}" class="slds-textarea textarea-Counter" messageWhenTooLong="You have reached the 500 character limit"/>
+                            <div class="textCounter">{!v.count}</div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.is_750}">
+                            <lightning:textarea maxlength="750" onblur="{!c.setValues}" value="{!v.MAFeildValue}" aura:id="feildSetId" name="textCount" onchange="{!c.inputTextCounter}" class="slds-textarea textarea-Counter" messageWhenTooLong="You have reached the 750 character limit"/>
+                            <div class="textCounter">{!v.count}</div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.is_1500}">
+                            <lightning:textarea maxlength="1500" onblur="{!c.setValues}" value="{!v.MAFeildValue}" aura:id="feildSetId" name="textCount" onchange="{!c.inputTextCounter}" class="slds-textarea textarea-Counter" messageWhenTooLong="You have reached the 1500 character limit"/>
+                            <div class="textCounter">{!v.count}</div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.is_2500}">
+                            <lightning:textarea maxlength="2500" onblur="{!c.setValues}" value="{!v.MAFeildValue}" aura:id="feildSetId" name="textCount" onchange="{!c.inputTextCounter}" class="slds-textarea textarea-Counter" messageWhenTooLong="You have reached the 2500 character limit"/>
+                            <div class="textCounter">{!v.count}</div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.is_4095}">
+                            <lightning:textarea maxlength="4095" onblur="{!c.setValues}" value="{!v.MAFeildValue}" aura:id="feildSetId" name="textCount" onchange="{!c.inputTextCounter}" class="slds-textarea textarea-Counter" messageWhenTooLong="You have reached the 4095 character limit"/>
+                            <div class="textCounter">{!v.count}</div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.is_25000}">
+                            <lightning:textarea maxlength="25000" onblur="{!c.setValues}" value="{!v.MAFeildValue}" aura:id="feildSetId" name="textCount" onchange="{!c.inputTextCounter}" class="slds-textarea textarea-Counter" messageWhenTooLong="You have reached the 25000 character limit"/>
+                            <div class="textCounter">{!v.count}</div>
+                        </aura:if> 
+                        <aura:if isTrue="{!v.is_1600}">
+                            <lightning:textarea maxlength="16000" onblur="{!c.setValues}" value="{!v.MAFeildValue}" aura:id="feildSetId" name="textCount" onchange="{!c.inputTextCounter}" class="slds-textarea textarea-Counter" messageWhenTooLong="You have reached the 16000 character limit"/>
+                            <div class="textCounter">{!v.count}</div>
+                        </aura:if>                
+                    </div>                   
+                    <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+                </div>
+                <aura:set attribute="else">
+                    <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                            <div class="test-id__field-label-container">
+                                <span class="test-id__field-label slds-form-element__label">
+                                    <aura:if isTrue="{!v.isRequired}">
+                                        <span class="slds-required">*</span>
+                                    </aura:if>
+                                    {!v.fields.label}
+                                </span>
+                                <aura:if isTrue="{!v.fields.help}">
+                                    <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                                </aura:if>
+                            </div>                    
+                            <ui:inputTextArea blur="{!c.setValues}" value="{!v.MAFeildValue}" aura:id="feildSetId" rows="3"/>                  
+                        </div>                       
+                        <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+                    </div>
+                </aura:set>
+            </aura:if>    
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">
+                                <aura:if isTrue="{!and(v.fields.fieldPath == 'Comments__c',v.isComments == true)}">
+                                    Comments
+                                    <aura:set attribute="else">
+                                        {!v.fields.label}
+                                    </aura:set>
+                                </aura:if>                            
+                            </span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                <ui:inputTextArea class="TextAreaDisabled" value="{!v.MAFeildValue}" disabled="true" rows="3"/>
+                            </span>
+                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                </button>
+                            </aura:if>
+                        </div>                       
+                    </div>
+                </div>              
+            </aura:set>
+        </aura:if>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!and(v.fields.type == 'STRING',v.fields.fieldPath == 'OpportunityDashboard__c')}">                
+        <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+            <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="test-id__field-label-container">
+                    <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                    <aura:if isTrue="{!v.fields.help}">
+                        <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                    </aura:if>
+                </div>
+                <div class="slds-form-element__control slds-grid itemBody">                                               
+                    <aura:unescapedHtml value="{!v.MAFeildValue}"/>                                                      
+                </div>                        
+            </div>
+        </div>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!and(v.fields.type == 'STRING',v.fields.fieldPath == 'Proactive_Renewal_Underwriter__c')}">               
+                <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+                    <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                            <div class="test-id__field-label-container">
+                                <span class="test-id__field-label slds-form-element__label">
+                                    <aura:if isTrue="{!v.isRequired}">
+                                        <span class="slds-required">*</span>
+                                    </aura:if>
+                                    {!v.fields.label}
+                                </span>
+                                <aura:if isTrue="{!v.fields.help}">
+                                    <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                                </aura:if>
+                            </div>
+                            <!--<ui:inputText value="{!v.MAFeildValue}" blur="{!c.setValues}" aura:id="feildSetId" required="true"/>-->
+                            <!--<ui:inputText value="underwriter" blur="{!c.setValues}" aura:id="feildSetId"/>-->
+                            <!--<c:underwriterLookup onwriterselect="{!c.selectWriter}"/>-->
+                            <!--<c:customLookupUnderwriter iconname="standard:account" objectName="Account" searchfield="Name"/>-->
+                            <c:lwcCustomLookup onblur="{!c.hideList}" aura:id="feildSetId" selectRecordName="{!v.MAFeildValue}" onselected="{!c.selectWriter}"/>
+                        </div>               
+                        <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                            <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                                <aura:if isTrue="{!v.fields.inst}">
+                                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                                </aura:if>
+                                <div class="test-id__field-label-container">
+                                    <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                                    <aura:if isTrue="{!v.fields.help}">
+                                        <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-form-element__control slds-grid itemBody">
+                                    <span class="test-id__field-value slds-form-element__static slds-grow">
+                                        <span>{!v.MAFeildValue}</span>
+                                    </span>
+                                    <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                        <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                            <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                        </button>
+                                    </aura:if>
+                                </div>                        
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if> 
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!or(v.fields.type == 'STRING',v.fields.type == 'ID')}">
+                        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+                            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                                <aura:if isTrue="{!v.fields.inst}">
+                                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                                </aura:if>
+                                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                                    <div class="test-id__field-label-container">
+                                        <span class="test-id__field-label slds-form-element__label">
+                                            <aura:if isTrue="{!v.isRequired}">
+                                                <span class="slds-required">*</span>
+                                            </aura:if>
+                                            {!v.fields.label}
+                                        </span>
+                                        <aura:if isTrue="{!v.fields.help}">
+                                            <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                                        </aura:if>
+                                    </div>
+                                    <ui:inputText value="{!v.MAFeildValue}" blur="{!c.setValues}" aura:id="feildSetId" required="true"/>                    
+                                </div>               
+                                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                                        <aura:if isTrue="{!v.fields.inst}">
+                                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                                        </aura:if>
+                                        <div class="test-id__field-label-container">
+                                            <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                                            <aura:if isTrue="{!v.fields.help}">
+                                                <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                                            </aura:if>
+                                        </div>
+                                        <div class="slds-form-element__control slds-grid itemBody">
+                                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                                <span>{!v.MAFeildValue}</span>
+                                            </span>
+                                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                                </button>
+                                            </aura:if>
+                                        </div>                        
+                                    </div>
+                                </div>
+                            </aura:set>
+                        </aura:if>                 
+                    </aura:if>
+                </aura:set>
+            </aura:if>            
+        </aura:set>
+    </aura:if>        
+    
+    <aura:if isTrue="{!or(v.fields.type == 'INTEGER',v.fields.type == 'DOUBLE')}">
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                    <div class="test-id__field-label-container">
+                        <span class="test-id__field-label slds-form-element__label">
+                            <aura:if isTrue="{!v.isRequired}">
+                                <span class="slds-required">*</span>
+                            </aura:if>
+                            {!v.fields.label}
+                        </span>
+                        <aura:if isTrue="{!v.fields.help}">
+                            <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                        </aura:if>
+                    </div>
+                    <aura:if isTrue="{!v.fields.fieldPath == 'Opportunity_Average_Contract_Size_ACS__c'}">
+                        <ui:inputNumber blur="{!c.setValues}" aura:id="feildSetId" format="#0.0################" value="{!v.MAFeildValue}"/>
+                        <aura:set attribute="else">
+                            <ui:inputNumber blur="{!c.setValues}" aura:id="feildSetId"  value="{!v.MAFeildValue}" format="#,##0"/>
+                        </aura:set>
+                    </aura:if>
+                </div>               
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                <aura:if isTrue="{!v.fields.fieldPath == 'Opportunity_Average_Contract_Size_ACS__c'}">
+                                    <ui:outputNumber value="{!v.MAFeildValue}" format="#0.0################"/>
+                                    <aura:set attribute="else">
+                                        <ui:outputNumber value="{!v.MAFeildValue}" format="#,##0"/>
+                                    </aura:set>
+                                </aura:if>
+                            </span>
+                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                </button>
+                            </aura:if>
+                        </div>                        
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fields.type == 'CURRENCY'}">
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                    <div class="test-id__field-label-container">
+                        <span class="test-id__field-label slds-form-element__label">
+                            <aura:if isTrue="{!v.isRequired}">
+                                <span class="slds-required">*</span>
+                            </aura:if>
+                            {!v.fields.label}
+                        </span>
+                        <aura:if isTrue="{!v.fields.help}">
+                            <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                        </aura:if>
+                    </div>
+                    <ui:inputCurrency aura:id="feildSetId" blur="{!c.setValues}" class="field slds-hide" value="{!v.MAFeildValue}"/>
+                </div>                
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                <ui:outputCurrency value="{!v.MAFeildValue}"/>
+                            </span>
+                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                </button>
+                            </aura:if>
+                        </div>                       
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if> 
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fields.type == 'PERCENT'}"> 
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                    <div class="test-id__field-label-container">
+                        <span class="test-id__field-label slds-form-element__label">
+                            <aura:if isTrue="{!v.isRequired}">
+                                <span class="slds-required">*</span>
+                            </aura:if>
+                            {!v.fields.label}
+                        </span>
+                        <aura:if isTrue="{!v.fields.help}">
+                            <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                        </aura:if>
+                    </div>
+                    <ui:inputNumber blur="{!c.setValues}" aura:id="feildSetId"  format="#,##0.##%" value="{!v.MAFeildValue}"/>
+                </div>                              
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="test-id__field-label-container">
+                            <span class="test-id__field-label slds-form-element__label">{!v.fields.label}</span>
+                            <aura:if isTrue="{!v.fields.help}">
+                                <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                            </aura:if>
+                        </div>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                <ui:outputNumber value="{!v.MAFeildValue}" format="#,##0.##%"/>
+                            </span>
+                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                </button>
+                            </aura:if>
+                        </div>                       
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fields.type == 'BOOLEAN'}">
+        <aura:if isTrue="{!v.fields.label == 'copycheckbox'}">
+            <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                <div class="slds-form-element slds-p-vertical_xx-small">
+                    <aura:if isTrue="{!v.fields.inst}">
+                        <label class="slds-form-element__label">{!v.fields.helpOrInstText}</label>
+                    </aura:if>
+                    <aura:if isTrue="{!v.isMedicalExist}">
+                        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+                            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">                                      
+                                    <ui:inputCheckbox click="{!c.prePopulateValues}" value="{!v.MAFeildValue}" aura:id="feildSetId"/>
+                                </div>
+                                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                                        <div class="slds-form-element__control slds-grid itemBody">
+                                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                                <span><ui:outputCheckbox value="{!v.MAFeildValue}"/></span>
+                                            </span>                                
+                                            <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                                <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                                    <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                                </button>
+                                            </aura:if>
+                                        </div>                           
+                                    </div>
+                                </div>
+                            </aura:set>
+                        </aura:if> 
+                        <aura:set attribute="else">
+                            <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                                    <div class="slds-form-element__control slds-grid itemBody">
+                                        <span class="test-id__field-value slds-form-element__static slds-grow">
+                                            <span><ui:outputCheckbox value="{!v.MAFeildValue}"/></span>
+                                        </span>                                
+                                        <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                            <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                                <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                            </button>
+                                        </aura:if>
+                                    </div>                           
+                                </div>
+                            </div>
+                        </aura:set>
+                    </aura:if>                    
+                </div>
+            </div>                
+            <aura:set attribute="else">
+                <aura:if isTrue="{!v.fields.label == 'Reset Starting Sales Stage'}">
+                    <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                        <div class="slds-form-element slds-p-vertical_xx-small">
+                            <aura:if isTrue="{!v.fields.inst}">
+                                <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                            </aura:if>
+                            <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+                                <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                                    <div class="slds-grid slds-grid_vertical-align-center">
+                                        <aura:if isTrue="{!v.isMedOth}">
+                                            <aura:if isTrue="{!v.fields.fieldPath == 'Reset_Sales_Stage_MO_Other__c'}">
+                                                <aura:if isTrue="{!or(v.MedOthSelcSalesStgNme == 'Lead',v.MedOthSelcSalesStgNme == 'Emerging Risk\\No Upside')}">
+                                                    <label class="slds-form-element_label slds-p-right_xx-small">{!v.fields.label}</label>
+                                                    <button onclick="{!c.resetSalesStage}" data-record="{!v.fields.name}" class="slds-button btn-link" type="button">Reset</button>
+                                                    <aura:set attribute="else">
+                                                        <label class="slds-form-element_label slds-p-right_xx-small">{!v.fields.label}</label>
+                                                        <button onclick="{!c.resetSalesStage}" data-record="{!v.fields.name}" disabled="true" class="slds-button btn-disabled" type="button">Reset</button>                                                              
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.fields.fieldPath == 'Reset_Sales_Stage_MO_Medical__c'}">
+                                                <aura:if isTrue="{!or(v.Selected_Stage_Name == 'Lead',v.Selected_Stage_Name == 'Emerging Risk\\No Upside')}">
+                                                    <label class="slds-form-element_label slds-p-right_xx-small">{!v.fields.label}</label>
+                                                    <button onclick="{!c.resetSalesStage}" data-record="{!v.fields.name}" class="slds-button btn-link" type="button">Reset</button>
+                                                    <aura:set attribute="else">
+                                                        <label class="slds-form-element_label slds-p-right_xx-small">{!v.fields.label}</label>
+                                                        <button onclick="{!c.resetSalesStage}" data-record="{!v.fields.name}" disabled="true" class="slds-button btn-disabled" type="button">Reset</button>                                                              
+                                                    </aura:set>
+                                                </aura:if>                                                                                         
+                                            </aura:if>
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!or(v.Selected_Stage_Name == 'Lead',v.Selected_Stage_Name == 'Emerging Risk\\No Upside')}">
+                                                    <label class="slds-form-element_label slds-p-right_xx-small">{!v.fields.label}</label>
+                                                    <button onclick="{!c.resetSalesStage}" data-record="{!v.fields.name}" class="slds-button btn-link" type="button">Reset</button>
+                                                    <aura:set attribute="else">
+                                                        <label class="slds-form-element_label slds-p-right_xx-small">{!v.fields.label}</label>
+                                                        <button onclick="{!c.resetSalesStage}" data-record="{!v.fields.name}" disabled="true" class="slds-button btn-disabled" type="button">Reset</button>                                                              
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:set>
+                                        </aura:if>										                                                                 
+                                    </div>
+                                    <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+                                </div>
+                                <aura:set attribute="else">
+                                    <div class="slds-has-flexi-truncate slds-m-bottom_small">
+                                        <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">                 
+                                            <div class="slds-grid slds-grid_vertical-align-center">
+                                                <label class="slds-form-element_label slds-p-right_xx-small">{!v.fields.label}</label>
+                                                <button onclick="{!c.resetSalesStage}" data-record="{!v.fields.name}" disabled="true" class="slds-button btn-disabled" type="button">Reset</button>                                                              
+                                                <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                                    <button onclick="{!c.makeEditable}" class="slds-button slds-button_icon slds-button_icon-small slds-shrink-none slds-button--icon-container slds-m-left_auto" type="button" title="Edit Sub Type">
+                                                        <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                                    </button>
+                                                </aura:if>
+                                            </div>                           
+                                        </div>
+                                    </div>
+                                </aura:set>
+                            </aura:if>  
+                        </div>
+                    </div> 
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.fields.fieldPath == 'Proactive_Renewal_Documents_Attached__c'}">
+                            <!--<aura:if isTrue="{!v.isEdit}">
+                                <div style="padding:6px 25px 19px;">
+                                    <c:fileUploadCustom recordId="{!v.oppRecordId}" isFileAttached="{!v.isFileUploaded}"/>
+                                </div>                                
+                                <aura:set attribute="else">
+                                    <div style="padding:6px 8px 19px">
+                                        <c:fileUploadCustom recordId="{!v.oppRecordId}" isFileAttached="{!v.isFileUploaded}"/>
+                                    </div>
+                                </aura:set>
+                            </aura:if>-->
+                            <c:fileUploadCustom isEdit="{!v.isEdit}" recordId="{!v.oppRecordId}" isFileAttached="{!v.isFileUploaded}"/>                            
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!v.fields.help}">
+                                    <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+                                </aura:if>
+                                <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+                                    <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                                        <aura:if isTrue="{!v.fields.inst}">
+                                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                                        </aura:if>
+                                        <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">
+                                            <div class="test-id__field-label-container">
+                                                <span class="test-id__field-label">
+                                                    <aura:if isTrue="{!v.isRequired}">
+                                                        <span class="slds-required">*</span>
+                                                    </aura:if>
+                                                    {!v.fields.label}
+                                                </span>
+                                            </div>                    
+                                            <ui:inputCheckbox blur="{!c.setValues}" change="{!c.onCheck}" value="{!v.MAFeildValue}" aura:id="feildSetId"/>
+                                        </div>                               
+                                        <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                                            <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">
+                                                <aura:if isTrue="{!v.fields.inst}">
+                                                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                                                </aura:if>
+                                                <div class="test-id__field-label-container slds-form-element__label">
+                                                    <span class="test-id__field-label">{!v.fields.label}</span>
+                                                </div>
+                                                <div class="slds-form-element__control slds-grid itemBody">
+                                                    <span class="test-id__field-value slds-form-element__static slds-grow">
+                                                        <span><ui:outputCheckbox value="{!v.MAFeildValue}"/></span>
+                                                    </span>
+                                                    
+                                                    <aura:if isTrue="{!and(v.isEditMode == false,v.accessObj.readOnly != true)}">
+                                                        <button onclick="{!c.makeEditable}" class="slds-button test-id__inline-edit-trigger slds-button_icon slds-button_icon-small slds-shrink-none inline-edit-trigger slds-button--icon-container" type="button" title="Edit Sub Type">
+                                                            <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="Indicates edit"/>
+                                                        </button>
+                                                    </aura:if>
+                                                </div>                                       
+                                            </div>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>  
+                            </aura:set>                            
+                        </aura:if>                            
+                    </aura:set>
+                </aura:if>               
+            </aura:set>
+        </aura:if>
+        
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.fields.type == 'URL'}">
+        <aura:if isTrue="{!v.fields.help}">
+            <c:ToolTipMA helpText="{!v.fields.helpOrInstText}"></c:ToolTipMA>
+        </aura:if>
+        <aura:if isTrue="{!and(v.isEdit,v.isEditable)}">
+            <div aura:id="editDiv" class="slds-has-flexi-truncate slds-p-horizontal_medium form-edit slds-m-bottom_small">
+                <aura:if isTrue="{!v.fields.inst}">
+                    <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                </aura:if>
+                <div class="slds-form-element slds-form-element_edit slds-hint-parent slds-p-vertical_xx-small">                    
+                    <a href="{!v.fields.FormulaValue}" class="uiOutputURL">{!v.fields.label}</a>
+                </div>                
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;"><lightning:formattedRichText value="{!v.errorMsg}" /></span></div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-has-flexi-truncate slds-p-horizontal_x-small slds-m-bottom_small">
+                    <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent slds-p-vertical_xx-small override--slds-form-element form-group">                
+                        <aura:if isTrue="{!v.fields.inst}">
+                            <div class="slds-form-element__help slds-m-top_xx-small">{!v.fields.helpOrInstText}</div>
+                        </aura:if>
+                        <div class="slds-form-element__control slds-grid itemBody">
+                            <span class="test-id__field-value slds-form-element__static slds-grow">
+                                <ui:outputURL value="{!v.fields.FormulaValue}" label="{!v.fields.label}"/>
+                            </span>                                                       
+                        </div>                       
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>       
+    </aura:if> 
+</aura:component>

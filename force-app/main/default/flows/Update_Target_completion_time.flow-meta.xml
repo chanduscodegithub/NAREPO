@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <decisions>
+        <name>Target_Completion_Date_Changed</name>
+        <label>Target Completion Date Changed?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not Changed</defaultConnectorLabel>
+        <rules>
+            <name>Outcome_1_of_Decision_1</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Target_Completion__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.CASESAFEID__c</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Target_Completion_With_Timestamp</targetReference>
+            </connector>
+            <label>Changed</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>TargetCompletionWithCurrentTimestamp</name>
+        <dataType>DateTime</dataType>
+        <expression>DATETIMEVALUE(
+    TEXT({!$Record.Target_Completion__c}) &amp; &quot; &quot; &amp;
+    TEXT(TIMEVALUE(NOW()))
+)</expression>
+    </formulas>
+    <interviewLabel>Update Target completion time {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update Target completion time</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Target_Completion_With_Timestamp</name>
+        <label>Update Target Completion With Timestamp</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Target_Completion_With_Timestamp__c</field>
+            <value>
+                <elementReference>TargetCompletionWithCurrentTimestamp</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Target_Completion_Date_Changed</targetReference>
+        </connector>
+        <object>Case</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

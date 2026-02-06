@@ -1,0 +1,240 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="ExecutiveSummaryReports" access="global">	
+    <aura:attribute name="headerLabels" type="String[]"/>
+    <aura:attribute name="summaryData" type="Object[]"/>
+    <aura:attribute name="headerCompetitors" type="String[]"/>
+    <aura:attribute name="competitorsData" type="Object[]"/>
+    <aura:attribute name="InitialOpportunityData" type="Object"/>
+    <aura:attribute name="MA_Data" type="Object"/>  
+    <aura:attribute name="header" type="String"/>
+    <aura:attribute name="footer" type="String" default=''/>    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <!-- <aura:dependency resource="markup://force:recordSave" type="EVENT" />
+    <aura:handler event="force:refreshView" action="{!c.handleRecordUpdated}" /> -->
+    <aura:handler event="c:MA_SAVE_SUCCESS" action="{!c.handleRecordUpdated}"/>
+    
+    <lightning:spinner aura:id="mySpinner" class="zIndexClass"/>
+    
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="oppRecord" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+    
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      layoutType="FULL"
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.oppRecord}"
+                      targetError="{!v.recordError}"
+                      fields="['EffectiveDate__c',
+                              'BusinessType__c',
+                              'Product_Type_Involved_in_Opp__c',
+                              'Sales_Stage_Medical__c',
+                              'Sales_Stage_Pharmacy__c',
+                              'Sales_Stage_Dental__c',
+                              'Sales_Stage_Vision__c',
+                              'Sales_Stage_Other__c',
+                              'Disposition_Medical__c',
+                              'Disposition_Pharmacy__c',
+                              'Disposition_Dental__c',
+                              'Disposition_Vision__c',
+                              'Disposition_Other__c',
+                              'Anticipated_Actual_Close_Date_Medical__c',
+                              'Anticipated_Actual_Close_Date_Pharmacy__c',
+                              'Anticipated_Actual_Close_Date_Dental__c',
+                              'Anticipated_Actual_Close_Date_Vision__c',
+                              'Anticipated_Actual_Close_Date_Other__c',
+                              'Existing_Members_Retained__c',
+                              'Risk_Probability_Dental__c',
+                              'Risk_Probability_Medical__c',
+                              'Risk_Probability_Pharmacy__c',
+                              'Risk_Probability_Vision__c',
+                              'Risk_Probability_Other__c',
+                              'PrimaryConsultant__r.Name',
+                              'Primary_Consulting_Firm__r.Name'
+                              ]"
+                      recordUpdated="{!c.handleRecordUpdated}"
+                      />
+    
+    <article class="excutive-cmp-wrapper">        
+        <div class="slds-grid slds-wrap">             
+            <div class="slds-size--1-of-1">                
+                <h2 class="slds-p-horizontal_medium slds-p-bottom_medium section-title slds-text-align--center">{!v.MA_Data.Account.Name} --- <ui:outputDate format="M/d/yyyy" value="{!v.MA_Data.EffectiveDate__c}"/> --- {!v.MA_Data.Name}</h2>
+                <div class="tab-responsive">
+                    <table class="slds-table slds-table_bordered slds-table_col-bordered slds-max-medium-table_stacked-horizontal data-table">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerLabels[0]}">{!v.headerLabels[0]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerLabels[1]}">{!v.headerLabels[1]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerLabels[2]}">{!v.headerLabels[2]}</div>
+                                </th>
+                                <th scope="col" class="border-wi-4">
+                                    <div class="slds-truncate" title="{!v.headerLabels[3]}">{!v.headerLabels[3]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerLabels[4]}">{!v.headerLabels[4]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerLabels[5]}">{!v.headerLabels[5]}</div>
+                                </th>
+                                <th scope="col" class="border-wi-4">
+                                    <div class="slds-truncate" title="{!v.headerLabels[6]}">{!v.headerLabels[6]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerLabels[7]}">{!v.headerLabels[7]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerLabels[8]}">{!v.headerLabels[8]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerLabels[9]}">{!v.headerLabels[9]}</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody> 
+                            <aura:iteration items="{!v.summaryData}" var="summaryObj" indexVar="index">               
+                                <tr class="slds-hint-parent">
+                                    <th scope="row" data-label="Product Type">
+                                        <aura:if isTrue="{!or(or(or(or(summaryObj[0] == 'Medical',summaryObj[0] == 'Pharmacy'),summaryObj[0] == 'Dental'),summaryObj[0] == 'Vision'),summaryObj[0] == 'Other Buy Up Programs')}">
+                                            <aura:if isTrue="{!summaryObj[0] == 'Pharmacy'}">
+                                            	<div class="slds-truncate bold-child" title="Core Pharmacy">Core Pharmacy</div>
+                                                <aura:set attribute="else">
+                                                    <div class="slds-truncate bold-child" title="{!summaryObj[0]}">{!summaryObj[0]}</div>
+                                                </aura:set>
+                                            </aura:if>                                            
+                                            <aura:set attribute="else">
+                                                <div class="slds-truncate" title="{!summaryObj[0]}">{!summaryObj[0]}</div>
+                                            </aura:set>
+                                        </aura:if>                                
+                                    </th>
+                                    <td data-label="Sales Stage / Disposition">
+                                        <div class="slds-truncate" title="{!summaryObj[1]}">{!summaryObj[1]}</div>
+                                    </td>
+                                    <td data-label="Anticipated Close / Actual Decision Date">
+                                        <div class="slds-truncate slds-text-align--center" title="{!summaryObj[2]}"><ui:outputDate format="M/d/yyyy" value="{!summaryObj[2]}"/></div>
+                                    </td>
+                                    <td data-label="Estimated New Mbrs" class="border-wi-4">
+                                        <div class="slds-truncate slds-text-align--right" title="{!summaryObj[3]}"><ui:outputNumber value="{!summaryObj[3]}"/></div>
+                                    </td>
+                                    <td data-label="Estimated Mbrs at Risk">
+                                        <div class="slds-truncate slds-text-align--right" title="{!summaryObj[4]}"><ui:outputNumber value="{!summaryObj[4]}"/></div>
+                                    </td>
+                                    <td data-label="Sold New Mbrs">
+                                        <div class="slds-truncate slds-text-align--left" title="{!summaryObj[5]}">{!summaryObj[5]}</div>
+                                    </td>
+                                    <td data-label="Termed Mbrs" class="border-wi-4">
+                                        <div class="slds-truncate slds-text-align--right" title="{!summaryObj[6]}"><ui:outputNumber value="{!summaryObj[6]}"/></div>
+                                    </td>
+                                    <td data-label="Net Results">
+                                        <div class="slds-truncate slds-text-align--right" title="{!summaryObj[7]}"><ui:outputNumber value="{!summaryObj[7]}"/></div>
+                                    </td>
+                                    <td data-label="Net Results">
+                                        <div class="slds-truncate slds-text-align--right" title="{!summaryObj[8]}">&nbsp;<ui:outputNumber value="{!summaryObj[8]}"/></div>
+                                    </td>
+                                    <td data-label="Net Results">
+                                        <div class="slds-truncate slds-text-align--right" title="{!summaryObj[9]}">&nbsp;<ui:outputNumber value="{!summaryObj[9]}"/></div>
+                                    </td> 
+                                </tr>           
+                            </aura:iteration>                                              
+                            <tr class="slds-hint-parent">
+                                <td scope="row" data-label="" colspan="10">
+                                    <div class="slds-truncate" title="*terms">
+                                        <aura:if isTrue="{!v.footer != ''}">
+                                            *Includes <ui:outputNumber value="{!v.footer}"/> existing KA\UMR\URS members not reflected above.
+                                            <aura:set attribute="else">
+                                                &nbsp;
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                </td>                            
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>   
+            <div class="slds-size--1-of-1">
+                <h2 class="slds-p-horizontal_medium slds-p-vertical_medium section-title">Competitor Highlights</h2>
+                <div class="tab-responsive">
+                    <table class="slds-table slds-table_bordered slds-table_col-bordered slds-max-medium-table_stacked-horizontal data-table comp-data-table">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerCompetitors[0]}">{!v.headerCompetitors[0]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerCompetitors[1]}">{!v.headerCompetitors[1]}</div>
+                                </th>
+                                <th scope="col" class="border-wi-4">
+                                    <div class="slds-truncate" title="{!v.headerCompetitors[2]}">{!v.headerCompetitors[2]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerCompetitors[3]}">{!v.headerCompetitors[3]}</div>
+                                </th>
+                                <th scope="col" class="border-wi-4">
+                                    <div class="slds-truncate" title="{!v.headerCompetitors[4]}">{!v.headerCompetitors[4]}</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="{!v.headerCompetitors[5]}">{!v.headerCompetitors[5]}</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>						               
+                            <aura:iteration items="{!v.competitorsData}" var="competitorObj" indexVar="index">                            
+                                <tr class="slds-hint-parent">                                
+                                    <th scope="row" data-label="Product Type">
+                                        <div class="slds-truncate" title="{!competitorObj[0]}">{!competitorObj[0]}</div>
+                                    </th>
+                                    <td data-label="Carrier">
+                                        <div class="slds-truncate" title="{!competitorObj[1]}">{!competitorObj[1]}</div>
+                                    </td>
+                                    <td data-label="Number of Mbrs Held" class="border-wi-4">
+                                        <div class="slds-truncate slds-text-align--right" title="{!competitorObj[2]}"><ui:outputNumber value="{!competitorObj[2]}"/></div>
+                                    </td>
+                                    <td data-label="% of Mbrs Held">
+                                        <div class="slds-truncate slds-text-align--right" title="{!competitorObj[3]}">{!competitorObj[3]}</div>
+                                    </td>
+                                    <td data-label="Number of Mbrs Awarded" class="border-wi-4">
+                                        <div class="slds-truncate slds-text-align--right" title="{!competitorObj[4]}"><ui:outputNumber value="{!competitorObj[4]}"/></div>
+                                    </td>
+                                    <td data-label="% of Mbrs Awarded">
+                                        <div class="slds-truncate slds-text-align--right" title="{!competitorObj[5]}">{!competitorObj[5]}</div>
+                                    </td>
+                                </tr> 
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-size--1-of-1 slds-large-size_6-of-12">
+            	<h2 class="slds-p-horizontal_medium slds-p-vertical_medium section-title">Primary Consultant</h2>	
+            	<div class="tab-responsive">
+                    <table class="slds-table slds-table_bordered slds-table_col-bordered slds-max-medium-table_stacked-horizontal data-table comp-data-table">
+                    	<thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Consultant">Consultant</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate" title="Consulting Firm">Consulting Firm</div>
+                                </th>
+                            </tr>
+                        </thead>
+                         <tbody>						                                                                      
+                             <tr class="slds-hint-parent">                                
+                                 <td data-label="Product Type">
+                                     <div class="slds-truncate">{!v.oppRecord.PrimaryConsultant__r.Name}&nbsp;</div>
+                                 </td>
+                                 <td data-label="Carrier" class="slds-border_right">
+                                     <div class="slds-truncate">{!v.oppRecord.Primary_Consulting_Firm__r.Name}&nbsp;</div>
+                                 </td>
+                             </tr>                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </article> 
+</aura:component>

@@ -1,0 +1,909 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="CompetitiveLandscape_OthersClass">
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="competitiveLandscapeEvent" action="{!c.changeInCompetitorsData}" event="c:CompetitiveLandscape_Event" />
+    <aura:handler name="getNewAccountData" event="c:addCompetitorAccountEvent" action="{!c.displayCompetitorsRecords}"/>
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
+    <aura:handler event="c:GeneralInfoAccountApplicationEvent" action="{!c.setGeneralValues}"/>
+    
+    <aura:attribute name="scrollStyleForDevice" type="String" default="@media screen and (min-width: 320px) and (max-width: 1199px){.panel-content.scrollable{overflow-y: hidden !important;-webkit-overflow-scrolling: auto !important ;}}"/>
+    <aura:attribute name="isGenericEventTriggered" type="Boolean" default="false"/>
+    <aura:attribute name="accountTypeAttributes" type="Object"/>
+    <aura:attribute name="competitorsAttributes" type="Object"/>
+    <aura:attribute name="otherProductsUpdatedData" type="String" />
+    <aura:attribute name="PharmacyCompetitorsList" type="Competitor__c[]"/>
+    <aura:attribute name="DentalCompetitorsList" type="Competitor__c[]"/>
+    <aura:attribute name="VisionCompetitorsList" type="Competitor__c[]"/>
+    <aura:attribute name="OtherProductsCompetitorsList" type="Competitor__c[]"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="competitorData" type="Competitor__c"/>
+    <aura:attribute name="competitorIdArray" type="String[]" />
+    <aura:attribute name="incumbentButtonsUnChecked" type="Boolean" default="false" />
+    <aura:attribute name="ErrorMessage" type="String" />
+    <aura:attribute name="isEditSaveDeleteButtonsEnabled" type="Boolean" default="false"/>
+    <aura:attribute name="isPharmacyCompetitorsCDEmptyList" type="Boolean" default="false"/>
+    <aura:attribute name="isDentalCompetitorsCDEmptyList" type="Boolean" default="false"/>
+    <aura:attribute name="isVisionCompetitorsCDEmptyList" type="Boolean" default="false"/>
+    <aura:attribute name="isOthersCompetitorsCDEmptyList" type="Boolean" default="false"/>
+    <aura:attribute name="isDeviceIconsToBeEnabled" type="Boolean" default="false"/>
+    <aura:attribute name="isDesktop" type="Boolean" default="false"/>
+    <aura:attribute name="isScrollStop" type="Boolean" default="true"/>
+    <aura:attribute name="isStop" type="Integer" default="1"/>
+    <aura:attribute name="lastCount" type="Integer" default="1"/>
+    <aura:attribute name="nextLastCount" type="Integer" default="1"/>
+    <aura:attribute name="isExpand" type="Boolean" default="false"/>
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="accountData" type="Account" />
+    <aura:attribute name="competitorsDataInEditToBeRemoved" type="Competitor__c[]" />
+    <aura:attribute name="cmptrsListNamesJSONObj" type="String" />
+    <aura:attribute name="indexToBeRemoved" type="Integer" default="-1" />      
+    <aura:attribute name="associatedMedicalCarrierPicklistValues" type="List" />
+    
+    <!-- Attribute (OtherProductsCompetitorsListBackup) created to check if the Other competitor record already exists or need to be Created -->
+    <aura:attribute name="OtherProductsCompetitorsListBackup" Type="List[]" />
+    <aura:attribute name="pharmacyCoalitionPicklistValuesList" Type="List" /><!-- Coalition Values for Pharmacy Tab -->
+    
+    <!-- Added new attribute for Print Option-->
+    <aura:attribute name="disablePrintButton" type="boolean" default=""/>
+   
+    {!v.body}
+    
+    <style>
+        {!v.scrollStyleForDevice}
+        {!v.secondaryFieldsVisible}
+        @media (max-width: 1199px){
+        .cuf-scroller-inside{
+        padding: 0 !important;
+        }
+        }
+    </style>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="confirmDelForCompetitorRecord" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p class="slds-text-align--center">{!$Label.c.RemoveCompetitorConfirmationAlertMsg}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral" onclick="{!c.removeRecord}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="confirmDelForCompetitorRecord"></div>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="reminderPopUp" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancelForPrompt}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small"/>
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Prompt}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p class="slds-text-align--center">{!$Label.c.PromptMessageForReminderPopUp}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmCancelForPrompt}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="reminderPopUp"></div>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div aura:id="competitiveLandscape_CM" class="slds-section">
+        <article aura:id="articleScroll" class="slds-card slds-card_boundary slds-is-relative component-card" onscroll="{!c.scrollBottom}">
+            <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div> 
+            <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread flex-auto">
+                <div class="slds-card__header slds-grid avoid-clicks" data-record="competitiveLandscape_CM" id="utilityToggle" onclick="{!c.expandCollapse}">
+                    <header class="slds-media slds-media--center slds-has-flexi-truncate component-header">
+                        <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                            <button class="slds-button slds-text-body--regular action-bar-mobile">
+                                <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" />
+                            </button>
+                            <div aura:id="appletIcon">
+                                <span class="slds-icon_container slds-icon-standard-contact" title="{!v.accountTypeAttributes.AppletName}">
+                                    <lightning:icon class="slds-icon slds-icon--small" iconName="custom:custom86" size="small" alternativeText="{!v.accountTypeAttributes.AppletName}"/>
+                                </span>
+                            </div>
+                            <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-is-relative">
+                                <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-media__body">
+                           <h2 class="slds-grid flex-alignCenter">
+                               
+                                    <span class="slds-text-heading--small">{!v.accountTypeAttributes.AppletName}</span>
+                                    <div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small ">
+                                        <aura:if isTrue="{!(v.accountTypeAttributes.AccountType != null)}">
+                                            <aura:if isTrue="{!v.accountTypeAttributes.AccountType == $Label.c.Client_Management}">
+                                                	<c:tooltip helpLink="Help" helpText="{!$Label.c.CompetitiveLandscape_CM_InstructionText}"/>
+                                                <aura:set attribute="else">
+                                                    <c:tooltip helpLink="Help" helpText="{!$Label.c.CompetitiveLandscape_CD_InstructionText}"/>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:if>
+                                    </div>
+                               
+                            </h2>
+                    </div>
+                    </header>
+                </div>
+                <aura:if isTrue="{!v.isDesktop}">
+                    <div class="slds-p-right--medium appletAddBtn">
+                        <c:competitiveLandscapeNonMedicalPrintCmp accountType="{!v.accountTypeAttributes.AccountType}" disablePrintButton="{!v.disablePrintButton}"
+                                                                  accountId="{!v.recordId}">
+                        </c:competitiveLandscapeNonMedicalPrintCmp>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <aura:if isTrue="{!v.isEditSaveDeleteButtonsEnabled}">
+                            <ui:button class="slds-button slds-button--neutral" aura:id="addBtn" disabled="false" press="{!c.addRecord}">{!$Label.c.Add}</ui:button>
+                        </aura:if>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-p-right--medium appletAddBtn action-bar-mobile">
+                            <aura:if isTrue="{!v.isEditSaveDeleteButtonsEnabled}">
+                                <ui:button class="slds-button slds-button--neutral" aura:id="addBtn" disabled="false" press="{!c.addRecord}">{!$Label.c.Add}</ui:button>
+                            </aura:if>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </div>
+            
+            <div class="slds-section__content slds-p-top--none action-bar-mobile">
+                <div class="slds-card__body slds-m-bottom--none">                    
+                    <div class="slds-page-header subHeaderHeight slds-p-vertical--x-small">
+                        <div class="slds-grid slds-mobile--header slds-grid_align-end">
+                            <header class="slds-media slds-media--center ml-auto">
+                                <div class="slds-grid">
+                                    <aura:if isTrue="{!v.isEditSaveDeleteButtonsEnabled}">
+                                        <div class="slds-grid d-inline-flex ui-m-btn ui-m-btn-group">
+                                            <ui:button class="slds-button slds-button--neutral" aura:id="editBtn" disabled="false" press="{!c.editRecord}">{!$Label.c.Edit}</ui:button>
+                                            <ui:button class="slds-button slds-button--neutral slds-hide" aura:id="saveBtn" press="{!c.saveRecord}">{!$Label.c.Save}</ui:button>
+                                            <ui:button class="slds-button slds-button--neutral slds-hide" aura:id="cancelBtn" press="{!c.cancelRecord}">{!$Label.c.Cancel}</ui:button>    
+                                        </div>
+                                    </aura:if>
+                                </div>
+                            </header>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="clear:both;"></div>            
+            <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                
+            <!-- CM Competitive Landscape - Pharmacy/Specialty/OtherProducts Applet -->
+                
+          <!--      <div class="slds-grid slds-wrap slds-p-vertical_small form-group slds-border_top">
+                    <div class="slds-size_1-of-1 slds-medium-size_4-of-12 slds-p-horizontal_medium slds-m-sm-bottom_medium">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label txt-bold txt-size">Pharmacy {!$Label.c.Business_Model}</label>
+                            <div class="slds-form-element__control">
+                                <ui:inputSelect class="slds-form-control" aura:id="SearchDropDownForBusinessModel" multiple="false" disabled="true" value="{!v.accountData.PharmacyBusinessModel__c}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-2 slds-medium-size_4-of-12 slds-p-horizontal_medium">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label txt-bold txt-size">Dental {!$Label.c.Funding_Type}</label>
+                            <div class="slds-form-element__control">
+                                <ui:inputSelect class="slds-form-control" aura:id="SearchDropDownForFundingTypeDental" multiple="false" disabled="true" value="{!v.accountData.DentalFundingType__c}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-size_1-of-2 slds-medium-size_4-of-12 slds-p-horizontal_medium">
+                        <div class="slds-form-element">                                      
+                            <label class="slds-form-element__label txt-bold txt-size">Vision {!$Label.c.Funding_Type}</label>
+                            <div class="slds-form-element__control">
+                                <ui:inputSelect class="slds-form-control" aura:id="SearchDropDownForFundingTypeVision" multiple="false" disabled="true" value="{!v.accountData.VisionFundingType__c}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
+                <aura:if isTrue="{!and(v.accountTypeAttributes.AccountType != null, v.accountTypeAttributes.AccountType == $Label.c.Client_Management)}">
+                    
+                    <!-- Pharmacy Section -->
+                    <div class="slds-section__content slds-p-top--none">
+                        <div class="slds-card__body slds-m-bottom_none">                            
+                            <!--Pharmacy Start-->
+                            <div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="PharmacyCM" id="UtilityTogglePharmacyCM" onclick="{!c.expandCollapseSection}">
+                                <div class="slds-grid">
+                                    <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                        <button class="slds-button slds-button_reset slds-accordion__summary-action">
+                                            <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityTogglePharmacyCM" iconName="utility:chevronright" size="xx-small" />
+                                            <span class="slds-truncate txt-bold">{!$Label.c.Pharmacy}</span>
+                                        </button>
+                                    </header>
+                                </div>
+                            </div>                            
+                            <section class="collapsible-sec slds-hide" aura:id="PharmacyCM">                            
+                                <table class="slds-table slds-table_bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout data-table">
+                                    <thead>
+                                        <tr class="">
+                                            <th class="slds-cell-wrap txt-bold slds-text-title--caps" scope="col" width="350">
+                                                <div class="" title="{!$Label.c.Pharmacy_Carrier}">{!$Label.c.Pharmacy_Carrier}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap " scope="col" width="210" style="white-space: normal;">
+                                                <div class="txt-bold" title="COALITION">COALITION
+                                                    <span style="font-weight: 400!important;font-size: 98%;">{!$Label.c.if_applicable}</span>
+                                                </div>
+                                                <!--<div style="font-weight: 400!important;font-size: 70%;"> {!$Label.c.if_applicable}</div>-->
+                                            </th>
+                                            <th class="slds-cell-wrap slds-text-align_right txt-bold slds-text-title--caps" scope="col" width="210">
+                                                <div class="" title="{!$Label.c.Number_of_Members_held}">{!$Label.c.Number_of_Members_held}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap slds-text-align_right txt-bold slds-text-title--caps" scope="col" width="165">
+                                                <div class="" title="{!$Label.c.of_Members_held}">{!$Label.c.of_Members_held}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap txt-bold slds-text-title--caps" scope="col">
+                                                <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                            </th>
+                                            <th class="slds-cell-shrink slds-text-title--caps" scope="col">&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.PharmacyCompetitorsList}" var="pharmacyObjData" indexVar="index" >
+                                            <c:CompetitiveLandscape_Pharmacy indexVal="{!index}" isEditSaveDeleteButtonsEnabled="{!v.isEditSaveDeleteButtonsEnabled}" accountType="{!v.accountTypeAttributes.AccountType}" pharmacyData="{!pharmacyObjData}" competitorsAttributes="{!v.competitorsAttributes}" pharmacyCoalitionPicklistValuesList="{!v.pharmacyCoalitionPicklistValuesList}" aura:id="childComponent1"/>
+                                        </aura:iteration>                                        
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="row" class="slds-theme_shade">
+                                                <div class="slds-truncate txt-bold">Total</div>
+                                            </th>
+                                            <th scope="row" class="slds-theme_shade">
+                                                <div class="slds-truncate txt-bold"></div>
+                                            </th>
+                                            <th scope="row" class="slds-text-align--right slds-theme_shade" data-label="Number of Members Held">
+                                                <aura:if isTrue="{!v.isEdit}">
+                                                    <ui:outputNumber class="total-data" value="{!v.competitorsAttributes.PharmacyTotalCompetitorList.NumberOfMembersHeld__c}"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputNumber value="{!v.competitorsAttributes.PharmacyTotalCompetitorList.NumberOfMembersHeld__c}"/>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </th>
+                                            <th scope="row" data-label="% of Members Held" class="slds-theme_shade">
+                                                <div class="slds-text-align--right text-sm-left">{!v.competitorsAttributes.PharmacyTotalCompetitorList.ofMembersHeld__c}%</div>
+                                            </th>
+                                            <th scope="row" colspan="2" class="hide-rows slds-theme_shade">&nbsp;</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>                            
+                            </section>                            
+                        </div>
+                    </div>
+                    
+                    <!-- Dental Section -->
+                    <div class="slds-section__content slds-p-top--none">
+                        <div class="slds-card__body slds-border_top slds-m-bottom_none">
+                            <div class="slds-p-vertical_small slds-p-horizontal_medium  avoid-clicks" data-record="DentalCM" id="UtilityToggleDentalCM" onclick="{!c.expandCollapseSection}">
+                                <div class="slds-grid">
+                                    <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                        <button class="slds-button slds-button_reset slds-accordion__summary-action">
+                                            <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityToggleDentalCM" iconName="utility:chevronright" size="xx-small" />
+                                            <span class="slds-truncate txt-bold">{!$Label.c.Dental}</span>
+                                        </button>
+                                    </header>
+                                </div>
+                            </div>
+                            <section class="collapsible-sec slds-hide" aura:id="DentalCM">
+                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout data-table">
+                                    <thead>
+                                        <tr class="slds-text-title--caps">
+                                            <th class="slds-cell-wrap txt-bold" scope="col" width="350">
+                                                <div class="" title="{!$Label.c.Dental_Carrier}">{!$Label.c.Dental_Carrier}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap slds-text-align_right txt-bold"  scope="col" width="210">
+                                                <div class="" title="{!$Label.c.Number_of_Members_held}">{!$Label.c.Number_of_Members_held}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap slds-text-align_right txt-bold" scope="col" width="165">
+                                                <div class="" title="{!$Label.c.of_Members_held}">{!$Label.c.of_Members_held}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap txt-bold" scope="col">
+                                                <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                            </th>
+                                            <th class="slds-cell-shrink" scope="col">&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.DentalCompetitorsList}" var="dentalObjData" indexVar="index">
+                                            <c:CompetitiveLandscape_Dental indexVal="{!index}" isEditSaveDeleteButtonsEnabled="{!v.isEditSaveDeleteButtonsEnabled}" accountType="{!v.accountTypeAttributes.AccountType}" dentalData="{!dentalObjData}" competitorsAttributes="{!v.competitorsAttributes}" aura:id="childComponent2" />
+                                        </aura:iteration>                                    
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="row" class="slds-theme_shade">
+                                                <div class="slds-truncate txt-bold">Total</div>
+                                            </th>
+                                            <th scope="row" class="slds-text-align--right text-sm-left slds-theme_shade" data-label="Number of Members Held">
+                                                <aura:if isTrue="{!v.isEdit}">
+                                                    <ui:outputNumber class="total-data" value="{!v.competitorsAttributes.DentalTotalCompetitorList.NumberOfMembersHeld__c}"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputNumber value="{!v.competitorsAttributes.DentalTotalCompetitorList.NumberOfMembersHeld__c}"/>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </th>
+                                            <th scope="row" class="slds-text-align_right slds-theme_shade" data-label="% of Members held">
+                                                <div class="">{!v.competitorsAttributes.DentalTotalCompetitorList.ofMembersHeld__c}%</div>
+                                            </th>
+                                            <th scope="row" colspan="2" class="hide-rows slds-theme_shade"></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </section>
+                        </div>
+                    </div>
+                    
+                    <!-- Vision Section -->
+                    <div class="slds-section__content slds-p-top--none">
+                        <div class="slds-card__body slds-border_top slds-m-bottom_none">
+                            <div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="VisionCM" id="UtilityToggleVisionCM" onclick="{!c.expandCollapseSection}">
+                                <div class="slds-grid">
+                                    <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                        <button class="slds-button slds-button_reset slds-accordion__summary-action">
+                                            <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityToggleVisionCM" iconName="utility:chevronright" size="xx-small" />
+                                            <span class="slds-truncate txt-bold">{!$Label.c.Vision}</span>
+                                        </button>
+                                    </header>
+                                </div>
+                            </div>
+                            
+                            <section class="collapsible-sec slds-hide" aura:id="VisionCM">
+                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout data-table">
+                                    <thead>
+                                        <tr class="slds-text-title--caps">
+                                            <th class="slds-cell-wrap txt-bold" scope="col" width="350">
+                                                <div class="" title="{!$Label.c.Vision_Carrier}">{!$Label.c.Vision_Carrier}</div>
+                                            </th>
+                                            <th class="slds-text-align_right slds-cell-wrap txt-bold" scope="col" width="210">
+                                                <div class="" title="{!$Label.c.Number_of_Members_held}">{!$Label.c.Number_of_Members_held}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap slds-text-align_right txt-bold" scope="col" width="165">
+                                                <div class="" title="{!$Label.c.of_Members_held}">{!$Label.c.of_Members_held}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap txt-bold" scope="col">
+                                                <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                            </th>
+                                            <th class="slds-cell-shrink" scope="col">&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.VisionCompetitorsList}" var="visionObjData" indexVar="index">
+                                            <c:CompetitiveLandscape_Vision indexVal="{!index}" isEditSaveDeleteButtonsEnabled="{!v.isEditSaveDeleteButtonsEnabled}" accountType="{!v.accountTypeAttributes.AccountType}" competitorsAttributes="{!v.competitorsAttributes}" visionData="{!visionObjData}" aura:id="childComponent3"/>
+                                        </aura:iteration>                                    
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="row" class="slds-theme_shade">
+                                                <div class="slds-truncate txt-bold">Total</div>
+                                            </th>
+                                            <th scope="row" class="slds-text-align--right slds-theme_shade" data-label="Number of Members Held">
+                                                <aura:if isTrue="{!v.isEdit}">
+                                                    <ui:outputNumber class="total-data" value="{!v.competitorsAttributes.VisionTotalCompetitorList.NumberOfMembersHeld__c}"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputNumber value="{!v.competitorsAttributes.VisionTotalCompetitorList.NumberOfMembersHeld__c}"/>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </th>
+                                            <th scope="row" class="slds-text-align--right text-sm-left slds-theme_shade" data-label="% of Members held">
+                                                <div class="slds-truncate">{!v.competitorsAttributes.VisionTotalCompetitorList.ofMembersHeld__c}%</div>
+                                            </th>
+                                            <th scope="row" colspan="2" class="hide-rows slds-theme_shade"></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </section>
+                        </div>
+                    </div>
+                    
+                    <!-- Other Produsts/Services Section --><!--Commented as per 3495 Competitve landscape-->
+					<!--slds-p-top-none, slds-table-bordered, slds-max-medium-table-stacked-horizontal, slds-table-fixed-layout, slds-text-title-caps-->
+					
+                    <!--div class="slds-section__content slds-p-top-none">
+                        <div class="slds-card__body slds-border_top slds-m-bottom_none">
+                            <div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="OthersCM" id="UtilityToggleOthersCM" onclick="{!c.expandCollapseSection}">
+                                <div class="slds-grid">
+                                    <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                        <button class="slds-button slds-button_reset slds-accordion__summary-action">
+                                            <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityToggleOthersCM" iconName="utility:chevronright" size="xx-small" />
+                                            <span class="slds-truncate txt-bold">{!$Label.c.Other_Products_Services}</span>
+                                        </button>
+                                    </header>
+                                </div>
+                            </div>                            
+                            
+                            <section class="collapsible-sec slds-hide" aura:id="OthersCM">
+                                <table class="slds-table slds-table-bordered slds-max-medium-table-stacked-horizontal slds-table-fixed-layout data-table">
+                                    <thead>
+                                        <tr class="slds-text-title-caps">
+                                            <th class="slds-cell-wrap txt-bold" scope="col" width="350">
+                                                <div class="" title="{!$Label.c.Other_Products_Services_Carrier}">{!$Label.c.Other_Products_Services_Carrier}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap txt-bold" scope="col" width="590">
+                                                <div class="slds-grid slds-grid_vertical-align-center slds-wrap" title="{!$Label.c.Type_of_Other_Products_Services_Provided}">{!$Label.c.Type_of_Other_Products_Services_Provided}</div>
+                                            </th>
+                                            <th class="slds-cell-wrap txt-bold" scope="col">
+                                                <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                            </th>
+                                            <th class="slds-cell-shrink" scope="col">&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.OtherProductsCompetitorsList}" var="otherProductsObj" indexVar="index">
+                                            <c:CompetitiveLandscape_OtherProductsOrServices indexVal="{!index}" isEditSaveDeleteButtonsEnabled="{!v.isEditSaveDeleteButtonsEnabled}" accountType="{!v.accountTypeAttributes.AccountType}" competitorsAttributes="{!v.competitorsAttributes}" otherProductsData="{!otherProductsObj}" aura:id="childComponent4" />
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </section>
+                        </div>
+                    </div-->
+                    
+                    <aura:set attribute="else">
+                        
+                        <!-- CD Competitive Landscape - Pharmacy/Specialty/OtherProducts Applet -->
+                        
+                        <aura:if isTrue="{!and(v.accountTypeAttributes.AccountType != null)}">
+                            <aura:if isTrue="{!or(v.accountTypeAttributes.AccountType == $Label.c.Client_Development, v.accountTypeAttributes.AccountType == $Label.c.Aggregator)}">
+                                
+                                <!-- Pharmacy Section -->
+                                <div class="slds-section__content slds-p-top_none">
+                                    <div class="slds-card__body slds-m-bottom_none">
+                                        <div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="PharmacyCD" id="UtilityTogglePharmacyCD" onclick="{!c.expandCollapseSection}">
+                                            <div class="slds-grid">
+                                                <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                                    <button class="slds-button slds-button_reset slds-accordion__summary-action">
+                                                        <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityTogglePharmacyCD" iconName="utility:chevronright" size="xx-small" />
+                                                        <span class="slds-truncate txt-bold">{!$Label.c.Pharmacy}</span>
+                                                    </button>
+                                                </header>
+                                            </div>
+                                        </div>
+                                        
+                                        <section class="collapsible-sec slds-hide" aura:id="PharmacyCD">
+                                            <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout data-table">
+                                                <thead>
+                                                    <aura:if isTrue="{!v.isPharmacyCompetitorsCDEmptyList}">
+                                                        <tr class="slds-text-title--caps">
+                                                            <th class="slds-cell-wrap txt-bold" width="300" scope="col">
+                                                                <div class="" title="{!$Label.c.Pharmacy_Carrier}">{!$Label.c.Pharmacy_Carrier}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap " scope="col" width="130">
+                                                                <div class="txt-bold" title="COALITION">COALITION
+                                                                    <div style="font-weight: 400!important;font-size: 98%;">{!$Label.c.if_applicable}</div>
+                                                                </div>
+                                                                <!--<div style="font-weight: 400!important;font-size: 70%;"> {!$Label.c.if_applicable}</div>-->
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="100" scope="col">
+                                                                <div class="" title="{!$Label.c.Incumbent_Primary}">{!$Label.c.Incumbent_Primary}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="100" scope="col">
+                                                                <div class="" title="{!$Label.c.Incumbent_Secondary}">{!$Label.c.Incumbent_Secondary}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="130" scope="col">
+                                                                <div class="" title="{!$Label.c.Number_of_Members_held}">{!$Label.c.Number_of_Members_held}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="220px" scope="col">
+                                                                <div class="" title="{!$Label.c.Associated_Medical_Carrier}">{!$Label.c.Associated_Medical_Carrier}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" scope="col">
+                                                                <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                                            </th>
+                                                        </tr>
+                                                        <aura:set attribute="else">
+                                                            <tr class="">
+                                                                <th  class="slds-cell-wrap txt-bold slds-text-title--caps" width="300" scope="col">
+                                                                    <div class="" title="{!$Label.c.Pharmacy_Carrier}">{!$Label.c.Pharmacy_Carrier}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap " scope="col" width="130">
+                                                                    <div class="txt-bold" title="COALITION">COALITION
+                                                                        <div style="font-weight: 400!important;font-size: 98%;">{!$Label.c.if_applicable}</div>
+                                                                    </div>
+                                                                    <!--<div style="font-weight: 400!important;font-size: 70%;"> {!$Label.c.if_applicable}</div>-->
+                                                                </th>
+                                                                <th  class=" slds-cell-wrap txt-bold slds-text-title--caps" width="100" scope="col">
+                                                                    <div class="" title="{!$Label.c.Incumbent_Primary}">{!$Label.c.Incumbent_Primary}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold slds-text-title--caps" width="100" scope="col">
+                                                                    <div class="" title="{!$Label.c.Incumbent_Secondary}">{!$Label.c.Incumbent_Secondary}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold slds-text-title--caps" width="130" scope="col">
+                                                                    <div class="" title="{!$Label.c.Number_of_Members_held}">{!$Label.c.Number_of_Members_held}</div>
+                                                                    
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold slds-text-title--caps" width="220px" scope="col">
+                                                                    <div class="slds-grid slds-grid_vertical-align-center slds-wrap" title="{!$Label.c.Associated_Medical_Carrier}">{!$Label.c.Associated_Medical_Carrier}
+                                                                        <!--<aura:if isTrue="{!v.isEdit}">
+                                                                            <div class="slds-is-relative slds-m-bottom_xxx-small slds-p-left_xx-small">
+                                                                                <c:tooltip helpLink="Help" helpText="{!$Label.c.MultiSelect_Picklist_Fields_CD_HelpText}"/>
+                                                                            </div>
+                                                                        </aura:if>-->
+                                                                    </div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold slds-text-title--caps" scope="col">
+                                                                    <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                                                </th>
+                                                                <th scope="col" class="slds-cell-shrink">&nbsp;</th>
+                                                            </tr>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </thead>
+                                                <aura:if isTrue="{!v.isPharmacyCompetitorsCDEmptyList}">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th colspan="7">
+                                                                <div class="slds-text-align--center">No Competitors have been added. Click the Add button to add a Competitor.</div>
+                                                            </th>
+                                                        </tr>
+                                                    </tbody>
+                                                    <aura:set attribute="else">
+                                                        <tbody>
+                                                            <aura:iteration items="{!v.PharmacyCompetitorsList}" var="pharmacyObjData" indexVar="index">
+                                                                <c:CompetitiveLandscape_Pharmacy isEditSaveDeleteButtonsEnabled="{!v.isEditSaveDeleteButtonsEnabled}" accountType="{!v.accountTypeAttributes.AccountType}" indexVal="{!index}" pharmacyData="{!pharmacyObjData}" competitorsAttributes="{!v.competitorsAttributes}" pharmacyCoalitionPicklistValuesList="{!v.pharmacyCoalitionPicklistValuesList}" associatedMedicalCarrierPicklistValues="{!v.associatedMedicalCarrierPicklistValues}" aura:id="childComponent1"/>
+                                                            </aura:iteration>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr class="slds-hint-parent">
+                                                                <th scope="row" class="slds-theme_shade" colspan="3">
+                                                                    <div class="slds-truncate txt-bold">Total</div>
+                                                                </th>
+                                                                <th scope="row" class="slds-theme_shade">
+                                                                    <div class="slds-truncate txt-bold"></div>
+                                                                </th>
+                                                                <th scope="row" class="slds-text-align--right txt-bold slds-theme_shade" data-label="Number of Members Held">
+                                                                    <ui:outputNumber class="total-data" value="{!v.competitorsAttributes.PharmacyTotalCompetitorList.NumberOfMembersHeld__c}"/>
+                                                                </th>
+                                                                <th colspan="3" class="hide-rows slds-theme_shade">&nbsp;</th>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </table>
+                                        </section>
+                                    </div>
+                                </div>
+                                
+                                <!-- Dental Section -->
+                                <div class="slds-section__content slds-p-top_none">
+                                    <div class="slds-card__body slds-border_top slds-m-bottom_none">
+                                        <div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="DentalCD" id="UtilityToggleDentalCD" onclick="{!c.expandCollapseSection}">
+                                            <div class="slds-grid">
+                                                <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                                    <button class="slds-button slds-button_reset slds-accordion__summary-action">
+                                                        <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityToggleDentalCD" iconName="utility:chevronright" size="xx-small" />
+                                                        <span class="slds-truncate txt-bold">{!$Label.c.Dental}</span>
+                                                    </button>
+                                                </header>
+                                            </div>
+                                        </div>
+                                        <section class="collapsible-sec slds-hide" aura:id="DentalCD">
+                                            <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout data-table">
+                                                <thead>
+                                                    <aura:if isTrue="{!v.isDentalCompetitorsCDEmptyList}">
+                                                        <tr class="slds-text-title--caps">
+                                                            <th class="slds-cell-wrap txt-bold" width="300" scope="col">
+                                                                <div class="" title="{!$Label.c.Dental_Carrier}">{!$Label.c.Dental_Carrier}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold"  width="100" scope="col">
+                                                                <div class="" title="{!$Label.c.Incumbent_Primary}">{!$Label.c.Incumbent_Primary}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="100" scope="col">
+                                                                <div class="" title="{!$Label.c.Incumbent_Secondary}">{!$Label.c.Incumbent_Secondary}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="130" scope="col">
+                                                                <div class="" title="{!$Label.c.Number_of_Members_held}">{!$Label.c.Number_of_Members_held}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="260px" scope="col">
+                                                                <div class="" title="{!$Label.c.Associated_Medical_Carrier}">{!$Label.c.Associated_Medical_Carrier}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" scope="col">
+                                                                <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                                            </th>
+                                                        </tr>
+                                                        <aura:set attribute="else">
+                                                            <tr class="slds-text-title--caps">
+                                                                <th class="slds-cell-wrap txt-bold" width="300" scope="col">
+                                                                    <div class="" title="{!$Label.c.Dental_Carrier}">{!$Label.c.Dental_Carrier}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold" width="100" scope="col">
+                                                                    <div class="" title="{!$Label.c.Incumbent_Primary}">{!$Label.c.Incumbent_Primary}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold" width="100" scope="col">
+                                                                    <div class="" title="{!$Label.c.Incumbent_Secondary}">{!$Label.c.Incumbent_Secondary}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold" width="130" scope="col">
+                                                                    <div class="" title="{!$Label.c.Number_of_Members_held}">{!$Label.c.Number_of_Members_held}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold" width="260px" scope="col">
+                                                                    <div class="slds-grid slds-grid_vertical-align-center slds-wrap" title="{!$Label.c.Associated_Medical_Carrier}">{!$Label.c.Associated_Medical_Carrier}
+                                                                        <!--<aura:if isTrue="{!v.isEdit}">
+                                                                            <div class="slds-is-relative slds-m-bottom_xxx-small slds-p-left_xx-small table-tooltip">
+                                                                                <c:tooltip helpLink="Help" helpText="{!$Label.c.MultiSelect_Picklist_Fields_CD_HelpText}"/>
+                                                                            </div>
+                                                                        </aura:if>-->
+                                                                    </div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold" scope="col">
+                                                                    <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                                                </th>
+                                                                <th class="slds-cell-shrink" scope="col">&nbsp;</th>
+                                                            </tr>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </thead>
+                                                <aura:if isTrue="{!v.isDentalCompetitorsCDEmptyList}">	
+                                                    <tbody>								
+                                                        <tr>
+                                                            <th colspan="6">
+                                                                <div class="slds-text-align--center">No Competitors have been added. Click the Add button to add a Competitor.</div>
+                                                            </th>
+                                                        </tr>
+                                                    </tbody>
+                                                    <aura:set attribute="else">
+                                                        <tbody>
+                                                            <aura:iteration items="{!v.DentalCompetitorsList}" var="dentalObjData" indexVar="index">
+                                                                <c:CompetitiveLandscape_Dental isEditSaveDeleteButtonsEnabled="{!v.isEditSaveDeleteButtonsEnabled}" accountType="{!v.accountTypeAttributes.AccountType}" indexVal="{!index}" dentalData="{!dentalObjData}" competitorsAttributes="{!v.competitorsAttributes}" associatedMedicalCarrierPicklistValues="{!v.associatedMedicalCarrierPicklistValues}" aura:id="childComponent2" />
+                                                            </aura:iteration>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr class="slds-hint-parent">
+                                                                <th scope="row" class="slds-theme_shade" colspan="3">
+                                                                    <div class="slds-truncate txt-bold">Total</div>
+                                                                </th>
+                                                                <th scope="row" class="slds-text-align--right txt-bold slds-theme_shade" data-label="Number of Members Held">
+                                                                    <ui:outputNumber class="total-data" value="{!v.competitorsAttributes.DentalTotalCompetitorList.NumberOfMembersHeld__c}"/>
+                                                                </th>
+                                                                <th colspan="3" class="hide-rows slds-theme_shade">&nbsp;</th>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </aura:set>
+                                                </aura:if>			
+                                            </table>
+                                        </section>
+                                    </div>
+                                </div>
+                                
+                                <!-- Vision Section -->
+                                <div class="slds-section__content slds-p-top_none">
+                                    <div class="slds-card__body slds-border_top slds-m-bottom_none">
+                                        <div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="VisionCD" id="UtilityToggleVisionCD" onclick="{!c.expandCollapseSection}">
+                                            <div class="slds-grid">
+                                                <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                                    <button class="slds-button slds-button_reset slds-accordion__summary-action">
+                                                        <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityToggleVisionCD" iconName="utility:chevronright" size="xx-small" />
+                                                        <span class="slds-truncate txt-bold">{!$Label.c.Vision}</span>
+                                                    </button>
+                                                </header>
+                                            </div>
+                                        </div>     
+                                        <section class="collapsible-sec slds-hide" aura:id="VisionCD">
+                                            <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout data-table">
+                                                <thead>
+                                                    <aura:if isTrue="{!v.isVisionCompetitorsCDEmptyList}">
+                                                        <tr class="slds-text-title--caps">
+                                                            <th class="slds-cell-wrap txt-bold" width="300" scope="col">
+                                                                <div class="" title="{!$Label.c.Vision_Carrier}">{!$Label.c.Vision_Carrier}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="100" scope="col">
+                                                                <div class="" title="{!$Label.c.Incumbent_Primary}">{!$Label.c.Incumbent_Primary}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="100" scope="col">
+                                                                <div class="" title="{!$Label.c.Incumbent_Secondary}">{!$Label.c.Incumbent_Secondary}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="130" scope="col">
+                                                                <div class="" title="{!$Label.c.Number_of_Members_held}">{!$Label.c.Number_of_Members_held}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="260px" scope="col">
+                                                                <div class="" title="{!$Label.c.Associated_Medical_Carrier}">{!$Label.c.Associated_Medical_Carrier}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" scope="col">
+                                                                <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                                            </th>
+                                                        </tr>
+                                                        <aura:set attribute="else">
+                                                            <tr class="slds-text-title--caps">
+                                                                <th class="slds-cell-wrap txt-bold" width="300" scope="col">
+                                                                    <div class="" title="{!$Label.c.Vision_Carrier}">{!$Label.c.Vision_Carrier}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold" width="100" scope="col">
+                                                                    <div class="" title="{!$Label.c.Incumbent_Primary}">{!$Label.c.Incumbent_Primary}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold" width="100" scope="col">
+                                                                    <div class="" title="{!$Label.c.Incumbent_Secondary}">{!$Label.c.Incumbent_Secondary}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold" width="130" scope="col">
+                                                                    <div class="" title="{!$Label.c.Number_of_Members_held}">{!$Label.c.Number_of_Members_held}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold"  width="260px" scope="col">
+                                                                    <div class="slds-grid slds-grid_vertical-align-center slds-wrap" title="{!$Label.c.Associated_Medical_Carrier}">{!$Label.c.Associated_Medical_Carrier}
+                                                                        <!--<aura:if isTrue="{!v.isEdit}">
+                                                                            <div class="slds-is-relative slds-m-bottom_xxx-small slds-p-left_xx-small">
+                                                                                <c:tooltip helpLink="Help" helpText="{!$Label.c.MultiSelect_Picklist_Fields_CD_HelpText}"/>
+                                                                            </div>
+                                                                        </aura:if>-->
+                                                                    </div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold"  scope="col">
+                                                                    <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                                                </th>
+                                                                <th class="slds-cell-shrink" scope="col">&nbsp;</th>
+                                                            </tr>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </thead>
+                                                <aura:if isTrue="{!v.isVisionCompetitorsCDEmptyList}">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th colspan="6">
+                                                                <div class="slds-text-align--center">No Competitors have been added. Click the Add button to add a Competitor.</div>
+                                                            </th>
+                                                        </tr>
+                                                    </tbody>
+                                                    <aura:set attribute="else">
+                                                        <tbody>
+                                                            <aura:iteration items="{!v.VisionCompetitorsList}" var="visionObjData" indexVar="index">
+                                                                <c:CompetitiveLandscape_Vision isEditSaveDeleteButtonsEnabled="{!v.isEditSaveDeleteButtonsEnabled}" accountType="{!v.accountTypeAttributes.AccountType}" indexVal="{!index}" competitorsAttributes="{!v.competitorsAttributes}" visionData="{!visionObjData}" associatedMedicalCarrierPicklistValues="{!v.associatedMedicalCarrierPicklistValues}" aura:id="childComponent3"/>
+                                                            </aura:iteration>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr class="slds-hint-parent">
+                                                                <th scope="row" class="slds-theme_shade" colspan="3">
+                                                                    <div class="slds-truncate txt-bold">Total</div>
+                                                                </th>
+                                                                <th scope="row" class="slds-text-align--right txt-bold slds-theme_shade" data-label="Number of Members Held">
+                                                                    <ui:outputNumber class="total-data" value="{!v.competitorsAttributes.VisionTotalCompetitorList.NumberOfMembersHeld__c}"/>
+                                                                </th>
+                                                                <th colspan="3" class="hide-rows slds-theme_shade">&nbsp;</th>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </table>
+                                        </section>
+                                    </div>
+                                </div>
+                                
+                                <!-- Other Produsts/Services Section --><!--Commented as per Tracker #3495 Competitve landscape changes-->
+                                <!--slds-table-bordered, slds-max-medium-table-stacked-horizontal, slds-table-fixed-layout, slds-text-title-caps, slds-text-title-caps, slds-text-align-center-->
+                                <!--div class="slds-section__content slds-p-top_none">
+                                    <div class="slds-card__body slds-border_top slds-m-bottom_none">
+                                        <div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="OthersCD" id="UtilityToggleOthersCD" onclick="{!c.expandCollapseSection}">
+                                            <div class="slds-grid">
+                                                <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                                    <button class="slds-button slds-button_reset slds-accordion__summary-action">
+                                                        <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityToggleOthersCD" iconName="utility:chevronright" size="xx-small" />
+                                                        <span class="slds-truncate txt-bold">{!$Label.c.Other_Products_Services}</span>
+                                                    </button>
+                                                </header>
+                                            </div>
+                                        </div>
+                                        <section class="collapsible-sec slds-hide" aura:id="OthersCD">
+                                            <table class="slds-table slds-table-bordered slds-max-medium-table-stacked-horizontal slds-table-fixed-layout data-table">
+                                                <thead>
+                                                    <aura:if isTrue="{!v.isOthersCompetitorsCDEmptyList}">
+                                                        <tr class="slds-text-title-caps">
+                                                            <th class="slds-cell-wrap txt-bold" width="300" scope="col">
+                                                                <div class="" title="{!$Label.c.Other_Products_Services_Carrier}">{!$Label.c.Other_Products_Services_Carrier}</div>
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" width="590" scope="col">
+                                                                <div class="" title="{!$Label.c.Type_of_Other_Products_Services_Provided}">{!$Label.c.Type_of_Other_Products_Services_Provided}</div>
+                                                                
+                                                            </th>
+                                                            <th class="slds-cell-wrap txt-bold" scope="col">
+                                                                <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                                            </th>
+                                                        </tr>
+                                                        <aura:set attribute="else">
+                                                            <tr class="slds-text-title-caps">
+                                                                <th class="slds-cell-wrap txt-bold" width="300" scope="col">
+                                                                    <div class="" title="{!$Label.c.Other_Products_Services_Carrier}">{!$Label.c.Other_Products_Services_Carrier}</div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold" width="590" scope="col">
+                                                                    <div class="slds-grid slds-grid_vertical-align-center slds-wrap" title="{!$Label.c.Type_of_Other_Products_Services_Provided}">{!$Label.c.Type_of_Other_Products_Services_Provided}
+                                                                    </div>
+                                                                </th>
+                                                                <th class="slds-cell-wrap txt-bold"  scope="col">
+                                                                    <div class="" title="{!$Label.c.Comments}">{!$Label.c.Comments}</div>
+                                                                </th>
+                                                                <th class="slds-cell-shrink" scope="col"></th>
+                                                            </tr>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </thead>
+                                                <aura:if isTrue="{!v.isOthersCompetitorsCDEmptyList}">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th colspan="3">
+                                                                <div class="slds-text-align-center">No Competitors have been added. Click the Add button to add a Competitor.</div>
+                                                            </th>
+                                                        </tr>
+                                                    </tbody>
+                                                    <aura:set attribute="else">
+                                                        <tbody>
+                                                            <aura:iteration items="{!v.OtherProductsCompetitorsList}" var="otherProductsObj" indexVar="index">
+                                                                <c:CompetitiveLandscape_OtherProductsOrServices indexVal="{!index}" isEditSaveDeleteButtonsEnabled="{!v.isEditSaveDeleteButtonsEnabled}" accountType="{!v.accountTypeAttributes.AccountType}" competitorsAttributes="{!v.competitorsAttributes}" otherProductsData="{!otherProductsObj}" aura:id="childComponent4" />
+                                                            </aura:iteration>
+                                                        </tbody>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </table>
+                                        </section>
+                                    </div>
+                                </div-->
+                            </aura:if>                   
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </article>
+    </div>
+    
+    <aura:if isTrue="{!v.isEditSaveDeleteButtonsEnabled}">
+        <div class="action-bar-mobile slds-hide" aura:id="action-bar-mobile">
+            <footer class="actionButtons oneActionBar forceActionsContainer sortEdit" aura:id="sortEdit" aria-hidden="false" data-aura-class="oneActionBar forceActionsContainer">
+                <div class="actionButtonsWrapper">
+                    <div class="action" id="actionBarItem_Edit">
+                        <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                            <button disabled="false" onclick="{!c.editRecord}" class="actionButton slds-button slds-button--icon  uiButton" aria-live="off" type="button" data-aura-class="uiButton">                                                            	
+                                <lightning:icon iconName="action:edit" size="xx-small" alternativeText="Edit"/>
+                                <p class="slds-truncate actionTitle" aria-hidden="true">{!$Label.c.Edit}</p>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="action" aria-hidden="false" id="actionBarItem_New">
+                        <div class="oneActionButtonIcon" data-aura-class="oneActionButtonIcon">
+                            <button onclick="{!c.addRecord}" class="actionButton slds-button slds-button--icon uiButton" aria-live="off" type="button" data-aura-class="uiButton">
+                                <lightning:icon iconName="action:new" size="xx-small" alternativeText="Add"/>
+                                <p class="slds-truncate actionTitle" aria-hidden="true" data-aura-rendered-by="7985:0">{!$Label.c.Add}</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>                     
+            </footer>
+            <div class="actionButtons oneActionBar forceActionsContainer saveCancel hide" aura:id="saveCancel">
+                <div class="actionButtonsWrapper save-cancel-bg">
+                    <div class="action">
+                        <div class="oneActionButtonIcon">
+                            <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancelRecord}">{!$Label.c.Cancel}</button>
+                        </div>
+                    </div>
+                    <div class="action">
+                        <div class="oneActionButtonIcon"> 
+                            <button type="button" class="slds-button slds-button_brand" onclick="{!c.saveRecord}">{!$Label.c.Save}</button>            
+                        </div>
+                    </div>              			
+                </div>
+            </div>   
+        </div>
+    </aura:if>
+</aura:component>

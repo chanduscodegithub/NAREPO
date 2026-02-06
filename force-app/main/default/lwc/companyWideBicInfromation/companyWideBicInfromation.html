@@ -1,0 +1,215 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 08-29-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <div class="slds-border_top contentSection bicTable">
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="12" class="slds-theme_shade slds-theme--shade slds-p-around_x-small">
+                <div class="slds-text-heading_medium mainHeading">
+                    BiC Information&nbsp;
+                    <lightning-helptext icon-name="utility:info"
+                        content={helpText}></lightning-helptext>&nbsp;-&nbsp;
+                    <span class="links-and-texts header-instruction">Data loaded from the <a
+                            href="https://app.powerbi.com/reportEmbed?reportId=19965f03-f10c-4966-b120-a45a38bd32ee&appId=2129daff-eee2-4551-91b5-3f2917986905&autoAuth=true&ctid=db05faca-c82a-4b9d-b9c5-0f64b6755421"><u>Opportunity
+                                Dashboard</u></a></span>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+        <template if:true={wiredObjectInfo.data}>
+        <template if:false={noRecords}>
+            <table
+                class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.Year__c.label}>Year</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.Type__c.label}>Type</div>
+                        </th>
+                        <!-- <th class="" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.Overall_BiC__c.label}>Overall BiC</div>
+                        </th> -->
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.vs_Aetna__c.label}>vs Aetna
+                            </div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.vs_Anthem__c.label}>vs Anthem
+                            </div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.vs_Blues__c.label}>vs Blues
+                            </div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.vs_Blues_Alt__c.label}>vs
+                                Blues Alt</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.vs_Cigna__c.label}>vs Cigna
+                            </div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.BiC_Source__c.label}>BiC
+                                Source</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate " title={wiredObjectInfo.data.fields.BiC_Source_Date__c.label}>BiC
+                                Source Date</div>
+                        </th>
+                        <th class="cstmWidth" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.BiC_Source_Records__c.label}>
+                                BiC Source # Records</div>
+                        </th>
+                        <th class="cstmWidth" scope="col">
+                            <div class="slds-truncate" title={wiredObjectInfo.data.fields.Date_Updated__c.label}>Date
+                                Updated</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={sortedRecords} for:item="bic">
+                        <tr class="slds-hint-parent" key={bic.Id}>
+                            <td data-label={bic.Year__c} scope="row">
+                                <div class="slds-truncate slds-text-align_center" title={bic.Year__c}>{bic.Year__c}
+                                </div>
+                            </td>
+                            <td data-label={bic.Type__c}>
+                                <div class="slds-truncate slds-text-align_center" title={bic.Type__c}>{bic.Type__c}
+                                </div>
+                            </td>
+                            <!-- <td data-label={bic.Overall_BiC__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-input variant="label-hidden" step="any" type="number" value={bic.Overall_BiC__c} data-id={bic.Id} name="Overall_BiC__c" onkeyup={assignValueToRecord}></lightning-input>	
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-truncate slds-text-align_right" title={bic.Text_Overall_BiC__c}>{bic.Text_Overall_BiC__c}</div>
+                                </template>
+                            </td> -->
+                            <td data-label={bic.vs_Aetna__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-input variant="label-hidden" step="any" type="number"
+                                        value={bic.vs_Aetna__c} data-id={bic.Id} name="vs_Aetna__c"
+                                        onkeyup={assignValueToRecord}></lightning-input>
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-truncate slds-text-align_right" title={bic.Text_vs_Aetna__c}>
+                                        {bic.Text_vs_Aetna__c}</div>
+                                </template>
+                            </td>
+                            <td data-label={bic.vs_Anthem__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-input variant="label-hidden" step="any" type="number"
+                                        value={bic.vs_Anthem__c} data-id={bic.Id} name="vs_Anthem__c"
+                                        onkeyup={assignValueToRecord}></lightning-input>
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-truncate slds-text-align_right" title={bic.Text_vs_Anthem__c}>
+                                        {bic.Text_vs_Anthem__c}</div>
+                                </template>
+
+                            </td>
+                            <td data-label={bic.vs_Blues__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-input variant="label-hidden" step="any" type="number"
+                                        value={bic.vs_Blues__c} data-id={bic.Id} name="vs_Blues__c"
+                                        onkeyup={assignValueToRecord}></lightning-input>
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-truncate slds-text-align_right" title={bic.Text_vs_Blues__c}>
+                                        {bic.Text_vs_Blues__c}</div>
+                                </template>
+                            </td>
+                            <td data-label={bic.vs_Blues_Alt__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-input variant="label-hidden" step="any" type="number"
+                                        value={bic.vs_Blues_Alt__c} data-id={bic.Id} name="vs_Blues_Alt__c"
+                                        onkeyup={assignValueToRecord}></lightning-input>
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-truncate slds-text-align_right" title={bic.Text_vs_Blues_Alt__c}>
+                                        {bic.Text_vs_Blues_Alt__c}</div>
+                                </template>
+
+                            </td>
+                            <td data-label={bic.vs_Cigna__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-input variant="label-hidden" step="any" type="number"
+                                        value={bic.vs_Cigna__c} data-id={bic.Id} name="vs_Cigna__c"
+                                        onkeyup={assignValueToRecord}></lightning-input>
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-truncate slds-text-align_right" title={bic.Text_vs_Cigna__c}>
+                                        {bic.Text_vs_Cigna__c}</div>
+                                </template>
+                            </td>
+                            <td data-label={bic.BiC_Source__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-combobox dropdown-alignment="auto" variant="label-hidden"
+                                        name="BiC_Source__c" data-id={bic.Id} value={bic.BiC_Source__c}
+                                        placeholder="-Select-" options={bicSourcePicklistValues.data.values}
+                                        onchange={assignValueToRecord}>
+                                    </lightning-combobox>
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-truncate slds-text-align_center" title={bic.BiC_Source__c}>
+                                        {bic.BiC_Source__c}</div>
+                                </template>
+                            </td>
+                            <td data-label={bic.BiC_Source_Date__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-combobox dropdown-alignment="auto" variant="label-hidden"
+                                        name="BiC_Source_Date__c" data-id={bic.Id} value={bic.BiC_Source_Date__c}
+                                        placeholder="-Select-" options={bicSourceDatePicklistValues.data.values}
+                                        onchange={assignValueToRecord}>
+                                    </lightning-combobox>
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-cell-wrap slds-text-align_center" title={bic.BiC_Source_Date__c}>
+                                        {bic.BiC_Source_Date__c}</div>
+                                </template>
+                            </td>
+                            <td data-label={bic.BiC_Source_Records__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-input variant="label-hidden" type="number" data-id={bic.Id}
+                                        name="BiC_Source_Records__c" value={bic.BiC_Source_Records__c}
+                                        onchange={assignValueToRecord}></lightning-input>
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-truncate slds-text-align_center" title={bic.BiC_Source_Records__c}>
+                                        <lightning-formatted-number
+                                            value={bic.BiC_Source_Records__c}></lightning-formatted-number>
+                                    </div>
+                                </template>
+                            </td>
+                            <td data-label={bic.Date_Updated__c}>
+                                <template if:true={bic.IsEditable}>
+                                    <lightning-input variant="label-hidden" type="date" name="Date_Updated__c" value={bic.Date_Updated__c} data-id={bic.Id}
+                                        date-style="short" onchange={assignValueToRecord}></lightning-input>
+                                </template>
+                                <template if:false={bic.IsEditable}>
+                                    <div class="slds-truncate slds-text-align_center" title={bic.BiC_Source_Records__c}>
+                                        <lightning-formatted-date-time value={bic.Date_Updated__c} year="numeric"
+                                            day="numeric" month="numeric" time-zone="UTC">
+                                        </lightning-formatted-date-time>
+                                    </div>
+                                </template>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </template>
+        </template>
+        <template if:true={noRecords}>
+            <div class="norecrodSec"> No data exists</div>
+        </template>
+    </div>
+
+
+</template>

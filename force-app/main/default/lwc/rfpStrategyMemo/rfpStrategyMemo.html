@@ -1,0 +1,1599 @@
+<template>
+    <table
+        class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+
+        <tbody>
+            <tr>
+                <td colspan="30" class="slds-text-align_left custom-td">RFP INFO/DATA PROVIDED:</td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Company Overview
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Company_Overview__c}
+                            name="Company_Overview__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Company_Overview__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left  custom-td" colspan="7">Large Claims Data
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Large_Claims_Data__c}
+                            name="Large_Claims_Data__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Large_Claims_Data__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+            </tr>
+
+
+
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left  custom-td" colspan="7">Business Strategy
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Business_Strategy__c}
+                            name="Business_Strategy__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Business_Strategy__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left  custom-td" colspan="7">Current Plan Design(s)
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Current_Plan_Design_s__c}
+                            name="Current_Plan_Design_s__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Current_Plan_Design_s__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+            </tr>
+
+            <!-- <tr>
+                 <td class ="custom-background-colour" colspan ="1">
+                </td>
+                <td class ="slds-text-align_left custom-td " colspan ="7">Census Data
+                </td>
+                <td colspan ="7"><lightning-input class="my-cb" type="checkbox" label="PHI/PII Removed?"></lightning-input>
+                </td>
+                <td class ="custom-background-colour" colspan ="1">
+                </td>
+                <td class ="slds-text-align_left custom-td" colspan ="14">Proposed Plan Design(s)
+                </td>
+                
+            </tr>
+            <tr>
+    <td class="custom-background-colour" colspan="1"></td>
+    <td class="slds-text-align_left custom-td custom-p" colspan="14">
+        Census Data <span style="display: inline-block; "><lightning-input type="checkbox" class="slds-p-left_large slds-p-left_small my-checkbox" label="PHI/PII Removed?"></lightning-input></span>
+        
+    </td>
+    <td class="custom-background-colour" colspan="1"></td>
+    <td class="slds-text-align_left custom-td" colspan="14">Proposed Plan Design(s)</td>
+</tr>-->
+            <tr>
+                <td class="custom-background-colour custom-colour" colspan="1"></td>
+
+                <td class="slds-text-align_left custom-td custom-p" colspan="7">
+                    Census Data</td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Census_Data__c} name="Census_Data__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Census_Data__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+                <!--<span style="display: inline-block; margin-left: 20px;"> 
+        <div class="checkbox-wrapper">
+            <lightning-input type="checkbox" class="slds-p-left_large slds-p-left_small slds-text" label="PHI/PII Removed?"></lightning-input>
+            <input type="checkbox" id="phi" class="slds-checkbox slds-p-left_large" />
+            <span class="slds-checkbox__text">PHI/PII Removed?</span>
+        </div>
+    </span>
+</td>-->
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="7">Proposed Plan Design(s)</td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Proposed_Plan_Design_s__c}
+                            name="Proposed_Plan_Design_s__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Proposed_Plan_Design_s__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Eligibility Criteria
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Eligibility_Criteria__c}
+                            name="Eligibility_Criteria__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Eligibility_Criteria__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Current Rates/Fees
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.RFP_Current_Rates_Fees__c}
+                            name="RFP_Current_Rates_Fees__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.RFP_Current_Rates_Fees__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Enrollment History
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Enrollment_History__c}
+                            name="Enrollment_History__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Enrollment_History__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Renewal Rates/Fees
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.RFP_Renewal_Rates_Fees__c}
+                            name="RFP_Renewal_Rates_Fees__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.RFP_Renewal_Rates_Fees__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Current Contract/ASA
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Current_Contract_ASA__c}
+                            name="Current_Contract_ASA__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Current_Contract_ASA__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">PHI/PII Removed?
+                </td>
+                <td colspan="7">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.PHI_PII_Removed__c}
+                            name="PHI_PII_Removed__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.PHI_PII_Removed__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="5">
+                    <!--<template if:true={isEditMode}>
+                        <lightning-input type="checkbox"  name="Repricing_File__c"
+                            checked={strategyMemo.Repricing_File__c} onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input label="Repricing File" type="checkbox" checked={strategyMemo.Repricing_File__c}
+                            disabled>
+                        </lightning-input>
+                    </template>-->
+                    <template if:true={isEditMode}>
+                        <div class="checkbox-inline">
+                            <label class="checkbox-label custom-td" style="color:#00008b;">Repricing File</label>
+                            <lightning-input type="checkbox" name="Repricing_File__c"
+                                checked={strategyMemo.Repricing_File__c} onchange={handleChange} variant="label-hidden">
+                            </lightning-input>
+                        </div>
+                    </template>
+
+                    <template if:false={isEditMode}>
+                        <div class="checkbox-inline">
+                            <label class="checkbox-label custom-td" style="color:#00008b;">Repricing File</label>
+                            <lightning-input type="checkbox" checked={strategyMemo.Repricing_File__c} disabled
+                                variant="label-hidden">
+                            </lightning-input>
+                        </div>
+                    </template>
+
+
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="5">Data Included
+                </td>
+                <td colspan="5">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            max-length="255" value={strategyMemo.Repricing_File_Data_Included__c}
+                            name="Repricing_File_Data_Included__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Repricing_File_Data_Included__c}>
+                            <span>{strategyMemo.Repricing_File_Data_Included__c}</span>
+                        </template>
+                    </template>
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="5">Data to Follow
+                </td>
+                <td colspan="9">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            max-length="255" value={strategyMemo.Repricing_File_Data_to_Follow__c}
+                            name="Repricing_File_Data_to_Follow__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Repricing_File_Data_to_Follow__c}>
+                            <span>{strategyMemo.Repricing_File_Data_to_Follow__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <!--<td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="5"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" label="Disruption File" name="Disruption_File__c"
+                            checked={strategyMemo.Disruption_File__c} onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input label="Disruption File" type="checkbox"
+                            checked={strategyMemo.Disruption_File__c} disabled>
+                        </lightning-input>
+                    </template>-->
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="5">
+                    <template if:true={isEditMode}>
+                        <div class="checkbox-inline">
+                            <label class="checkbox-label custom-td" style="color:#00008b;">Disruption File</label>
+                            <lightning-input type="checkbox" name="Disruption_File__c"
+                                checked={strategyMemo.Disruption_File__c} onchange={handleChange}
+                                variant="label-hidden">
+                            </lightning-input>
+                        </div>
+                    </template>
+
+                    <template if:false={isEditMode}>
+                        <div class="checkbox-inline">
+                            <label class="checkbox-label custom-td" style="color:#00008b;">Disruption File</label>
+                            <lightning-input type="checkbox" checked={strategyMemo.Disruption_File__c} disabled
+                                variant="label-hidden">
+                            </lightning-input>
+                        </div>
+                    </template>
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="5">Data Included
+                </td>
+                <td colspan="5">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Disruption_File_Data_Included__c} max-length="255"
+                            name="Disruption_File_Data_Included__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Disruption_File_Data_Included__c}>
+                            <span>{strategyMemo.Disruption_File_Data_Included__c}</span>
+                        </template>
+                    </template>
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="5">Data to Follow
+                </td>
+                <td colspan="9">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Disruption_File_Data_to_Follow__c} max-length="255"
+                            name="Disruption_File_Data_to_Follow__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Disruption_File_Data_to_Follow__c}>
+                            <span>{strategyMemo.Disruption_File_Data_to_Follow__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td" colspan="30">SPECIAL CONSIDERATIONS:CD Directors – Confirm
+                    that the MINIMUM data fields necessary to perform an analysis are present. Work with consultant if
+                    critical fields are missing. </td>
+            </tr>
+
+            <tr>
+                <td class="slds-text-align_left custom-td" colspan="30">REQUIRED RESPONSES / REQUESTS:</td>
+            </tr>
+
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Questionnaire
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Questionnaire__c} name="Questionnaire__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Questionnaire__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Total Cost of Care Analysis
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Total_Cost_of_Care_Analysis__c}
+                            name="Total_Cost_of_Care_Analysis__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Total_Cost_of_Care_Analysis__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">References
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.References__c} name="References__c"
+                            onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.References__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Customer Service Model
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Customer_Service_Model__c}
+                            name="Customer_Service_Model__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Customer_Service_Model__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Client-Specific Bid Forms
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Client_Specific_Bid_Forms__c}
+                            name="Client_Specific_Bid_Forms__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Client_Specific_Bid_Forms__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">HAI Analysis (If data available)
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.HAI_Analysis_If_data_available__c}
+                            name="HAI_Analysis_If_data_available__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.HAI_Analysis_If_data_available__c}
+                            disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Contract/Legal Review (Red-lined review?)
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" name="Contract_Legal_Review_Red_lined_review__c"
+                            checked={strategyMemo.Contract_Legal_Review_Red_lined_review__c} onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox"
+                            checked={strategyMemo.Contract_Legal_Review_Red_lined_review__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Implementation Timeline
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Implementation_Timeline__c}
+                            name="Implementation_Timeline__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Implementation_Timeline__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Actuarial (DRGs/ETGs/Claim Repricing)
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Actuarial_DRGs_ETGs_Claim_Repricing__c}
+                            name="Actuarial_DRGs_ETGs_Claim_Repricing__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Actuarial_DRGs_ETGs_Claim_Repricing__c}
+                            disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Current Plan Design(s)
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Response_Current_Plan_Design_s__c}
+                            name="Response_Current_Plan_Design_s__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Response_Current_Plan_Design_s__c}
+                            disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Plan Design Compatibility Review
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Plan_Design_Compatibility_Review__c}
+                            name="Plan_Design_Compatibility_Review__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Plan_Design_Compatibility_Review__c}
+                            disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <td class="slds-text-align_left custom-td" colspan="7">Other
+                </td>
+                <td colspan="7"><template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Required_Response_Other__c}
+                            name="Required_Response_Other__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Required_Response_Other__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1">
+                </td>
+                <!--checkboxes-->
+                <td class="slds-text-align_left  colour-blue" colspan="29">
+                    <div class="custom-td">
+                        <p>AMT Names Requested</p>
+                    </div>
+
+                    <template if:true={isEditMode}>
+
+                        <lightning-checkbox-group name="amtNames" options={options} value={selectedCheckboxesArray}
+                            onchange={handleCheckboxChange}>
+                        </lightning-checkbox-group>
+
+
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-checkbox-group name="amtNames" options={options} value={selectedCheckboxesArray}
+                            disabled>
+                        </lightning-checkbox-group>
+                    </template>
+
+
+                </td>
+
+                <!--end-->
+                <!--<td class="custom-background-colour" colspan="1"> </td>
+                <td class="slds-text-align_left custom-td" colspan="14"> </td>-->
+            </tr>
+
+            <tr>
+                <td class="slds-text-align_left custom-td" colspan="30"> Call and Claim location requests:
+                </td>
+            </tr><!--
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="9">
+                    <div style="display: flex;"><span class="slds-p-right_x-small">Atlanta</span>
+
+                        <input type="checkbox" id="atlantcall" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Call</span>
+    </label>
+
+
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="12">
+                    <div style="display: flex;">
+                        <span class="slds-p-right_x-small">Green Bay/Duluth/Minnetonka</span>
+
+                        <input type="checkbox" id="greencall" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Call</span>
+    </label>
+                        <input type="checkbox" id="greenclaim" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Claim</span>
+    </label>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td underline" colspan="6">Clinical:</td>
+            </tr>-->
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left " colspan="9">
+                    <div style="display: flex; align-items: center;">
+                        <span class="slds-p-right_small custom-td" style="padding-right: 90px;">Atlanta</span>
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" name="Atlanta"
+                                checked={callRegionsMap.Atlanta} data-type="call"
+                                onchange={handleCheckboxChange}></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" name="Atlanta"
+                                checked={claimRegionsMap.Atlanta} data-type="claim" onchange={handleCheckboxChange}
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" checked={callRegionsMap.Atlanta}
+                                disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" checked={claimRegionsMap.Atlanta} disabled
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                    </div>
+
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left " colspan="12">
+                    <div style="display: flex; align-items: center;">
+                        <span class="slds-p-right_small custom-td" style="padding-right: 15px;">Green
+                            Bay/Duluth/Minnetonka</span>
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" name="GreenBayDuluthMinnetonka"
+                                checked={callRegionsMap.GreenBayDuluthMinnetonka} data-type="call"
+                                onchange={handleCheckboxChange}></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" name="GreenBayDuluthMinnetonka"
+                                checked={claimRegionsMap.GreenBayDuluthMinnetonka} data-type="claim"
+                                onchange={handleCheckboxChange} class="slds-m-left_medium"></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" label="Call"
+                                checked={callRegionsMap.GreenBayDuluthMinnetonka} disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Claim"
+                                checked={claimRegionsMap.GreenBayDuluthMinnetonka} disabled
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left" colspan="6">
+                    <div style="display: flex; ">
+                        <template if:true={isEditMode}>
+                            <span class="slds-p-right_xxx-small slds-p-top_x-small custom-td">Clinical:</span>
+                            <lightning-input type="text" variant="label-hidden" class="slds-p-around_xxx-small"
+                                value={strategyMemo.Clinical__c} name="Clinical__c" onchange={handleChange}>
+                            </lightning-input>
+                        </template>
+
+                        <template if:false={isEditMode}>
+                            <span class="slds-p-right_xxx-small custom-td">Clinical:</span>
+                            <template if:true={strategyMemo.Clinical__c}>
+                                <span>{strategyMemo.Clinical__c}</span>
+                            </template>
+                        </template>
+                    </div>
+                </td>
+            </tr>
+            <!--2nd row-->
+
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left " colspan="9">
+                    <div style="display: flex; align-items: center;">
+                        <span class="slds-p-right_small custom-td" style="padding-right: 90px;">Buffalo </span>
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" name="Buffalo"
+                                checked={callRegionsMap.Buffalo} data-type="call"
+                                onchange={handleCheckboxChange}></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" name="Buffalo"
+                                checked={claimRegionsMap.Buffalo} data-type="claim" onchange={handleCheckboxChange}
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" checked={callRegionsMap.Buffalo}
+                                disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" checked={claimRegionsMap.Buffalo} disabled
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left " colspan="12">
+                    <div style="display: flex; align-items: center;">
+                        <span class="slds-p-right_small custom-td" style="padding-right: 150px;">Kingston</span>
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" name="Kingston"
+                                checked={callRegionsMap.Kingston} data-type="call"
+                                onchange={handleCheckboxChange}></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" name="Kingston"
+                                checked={claimRegionsMap.Kingston} data-type="claim" onchange={handleCheckboxChange}
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" checked={callRegionsMap.Kingston}
+                                disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" checked={claimRegionsMap.Kingston} disabled
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left " colspan="6">
+                    <div style="display: flex; align-items: center;">
+                        <span class="slds-p-right_small custom-td">Other</span>
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" name="Other" checked={callRegionsMap.Other}
+                                data-type="call" onchange={handleCheckboxChange}></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" name="Other" checked={claimRegionsMap.Other}
+                                data-type="claim" onchange={handleCheckboxChange}
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" checked={callRegionsMap.Other}
+                                disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" checked={claimRegionsMap.Other} disabled
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left " colspan="9">
+                    <div style="display: flex; align-items: center;">
+                        <span class="slds-p-right_small custom-td" style="padding-right: 100px;">Chico</span>
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" name="Chico" checked={callRegionsMap.Chico}
+                                data-type="call" onchange={handleCheckboxChange}></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" name="Chico" checked={claimRegionsMap.Chico}
+                                data-type="claim" onchange={handleCheckboxChange}
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" checked={callRegionsMap.Chico}
+                                disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" checked={claimRegionsMap.Chico} disabled
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left " colspan="12">
+                    <div style="display: flex; align-items: center;">
+                        <span class="slds-p-right_small custom-td" style="padding-right: 137px;">Richardson</span>
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" name="Richardson"
+                                checked={callRegionsMap.Richardson} data-type="call"
+                                onchange={handleCheckboxChange}></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" name="Richardson"
+                                checked={claimRegionsMap.Richardson} data-type="claim" onchange={handleCheckboxChange}
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" checked={callRegionsMap.Richardson}
+                                disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" checked={claimRegionsMap.Richardson} disabled
+                                class="slds-m-left_medium"></lightning-input>
+                        </template>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="6"></td>
+
+            </tr>
+
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left" colspan="9">
+                    <div style="display: flex; align-items: center;">
+                        <span class="slds-p-right_small custom-td">Greensboro/Raleigh</span>
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" name="GreensboroRaleigh"
+                                checked={callRegionsMap.GreensboroRaleigh} data-type="call"
+                                onchange={handleCheckboxChange}></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" name="GreensboroRaleigh"
+                                checked={claimRegionsMap.GreensboroRaleigh} data-type="claim"
+                                onchange={handleCheckboxChange} class="slds-m-left_medium"></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" checked={callRegionsMap.GreensboroRaleigh}
+                                disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" checked={claimRegionsMap.GreensboroRaleigh}
+                                disabled class="slds-m-left_medium"></lightning-input>
+                        </template>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left" colspan="12">
+                    <div style="display: flex; align-items: center;">
+                        <span class="slds-p-right_small custom-td" style="padding-right: 55px;">San Antonio/Sugar
+                            Land</span>
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" name="SanAntonioSugarLand"
+                                checked={callRegionsMap.SanAntonioSugarLand} data-type="call"
+                                onchange={handleCheckboxChange}></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" name="SanAntonioSugarLand"
+                                checked={claimRegionsMap.SanAntonioSugarLand} data-type="claim"
+                                onchange={handleCheckboxChange} class="slds-m-left_medium"></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" label="Call" checked={callRegionsMap.SanAntonioSugarLand}
+                                disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Claim" checked={claimRegionsMap.SanAntonioSugarLand}
+                                disabled class="slds-m-left_medium"></lightning-input>
+                        </template>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="6"></td>
+
+            </tr>
+            <!--End of check rows-->
+            <!--<tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="9">
+                    <div style="display: flex;">
+                        <span class="slds-p-right_x-small">  Buffalo </span>
+
+                        <input type="checkbox" id="buffcall" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Call</span>
+    </label>
+                        <input type="checkbox" id="buffclaim" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Claim</span>
+    </label>
+                    </div>
+
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="12">
+                    <div style="display: flex;">
+                        <span class="slds-p-right_small"> KingSton </span>
+
+                        <input type="checkbox" id="KingStoncall" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Call</span>
+    </label>
+                        <input type="checkbox" id="KingStonclaim" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Claim</span>
+    </label>
+                    </div>
+
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="6">
+                    <div style="display: flex;">
+                        <span class="slds-p-right_x-small"> Other</span>
+
+                        <input type="checkbox" id="othercall" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Call</span>
+    </label>
+                        <input type="checkbox" id="otherclaim" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Claim</span>
+    </label>
+                    </div>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="9">
+                    <div style="display: flex;">
+                        <span class="slds-p-right_small"> Chico</span>
+
+                        <input type="checkbox" id="chicocall" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Call</span>
+    </label>
+                        <input type="checkbox" id="chicoclaim" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Claim</span>
+    </label>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="12">
+                    <div style="display: flex;">
+                        <span class="slds-p-right_x-small">Richardson</span>
+
+                        <input type="checkbox" id="richcall" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Call</span>
+    </label>
+                        <input type="checkbox" id="richclaim" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Claim</span>
+    </label>
+                    </div>
+
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="6"></td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="9">
+                    <div style="display: flex;">
+                        <span class="slds-p-right_x-small">Greensboro/Raleigh</span>
+
+
+                        <input type="checkbox" id="greecall" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Call</span>
+    </label>
+                        <input type="checkbox" id="greeclaim" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Claim</span>
+    </label>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="12">
+                    <div style="display: flex;">
+                        <span class="slds-p-right_x-small"> San Antonio/Sugar Land</span>
+
+                        <input type="checkbox" id="sancall" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Call</span>
+    </label>
+                        <input type="checkbox" id="sanclaim" class="slds-checkbox" />
+                        <label class="slds-checkbox__label" for="myCheckbox">
+        <span class="slds-checkbox_faux"></span>
+        <span class="slds-checkbox__text"> Claim</span>
+    </label>
+                    </div>
+                </td>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="6"></td>
+            </tr>-->
+
+
+            <tr>
+                <td class="slds-text-align_left " colspan="30"><span class="custom-td">PRODUCTS:</span>
+                    <template if:true={medicalProductsInfo}>
+                        <template if:true={medicalProductsInfo.length}>
+                            <h3 class="slds-p-around_medium custom-td">Medical</h3>
+                            <table>
+                                <thead>
+                                    <th class="custom-th" style="height: 30px;">Medical Products</th>
+                                    <th class="custom-th" style="height: 30px;">Members Transferred from or To Another Segment</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Additional New Members</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Members (Existing + New)</th>
+                                    <th class="custom-th" style="height: 30px;">Members Quoted in the Proposal</th>
+                                    <th class="custom-th" style="height: 30px;">Sold / Retained Members</th>
+                                    <th class="custom-th" style="height: 30px;">Net Results</th>
+                                    <th class="custom-th" style="height: 30px;">Funding Type</th>
+                                </thead>
+                                <tbody>
+                                    <template for:each={medicalProductsInfo} for:item="product">
+                                        <tr key={product.id}>
+                                            <td class="value">{product.Product2.Name}</td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {product.Mbrs_Transferred_From_To_Another_Segment__c}> </lightning-formatted-number>
+                                            </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {product.Estimated_Additional_New_Members__c}> </lightning-formatted-number>
+                                             </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value =  {product.Estimated_Members_Existing_New__c}> </lightning-formatted-number>
+                                                </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {product.Members_Quoted_in_the_Proposal__c}> </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {product.Sold_Retained_Members__c}> </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {product.Net_Results__c}> </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value">{product.Funding_Type__c} </td>
+                                        </tr>
+
+                                    </template>
+                                </tbody>
+                            </table>
+
+                        </template>
+                    </template>
+                    <template if:true={pharmacyProducts}>
+                        <template if:true={pharmacyProducts.length}>
+                            <h3 class="slds-p-around_medium custom-td">Pharmacy</h3>
+                            <table>
+                                <thead>
+                                    <th class="custom-th" style="height: 30px;">Pharmacy Products</th>
+                                    <th class="custom-th" style="height: 30px;">Members Transferred from or To Another Segment</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Additional New Members</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Members (Existing + New)</th>
+
+                                    <th class="custom-th" style="height: 30px;">Members Quoted in the Proposal</th>
+                                    <th class="custom-th" style="height: 30px;">Sold / Retained Members</th>
+                                    <th class="custom-th" style="height: 30px;">Net Results</th>
+                                    <th class="custom-th" style="height: 30px;">Annual Revenue/ Premium</th>
+                                </thead>
+                                <tbody>
+                                    <template for:each={pharmacyProducts} for:item="pharmacy">
+                                        <tr key={pharmacy.id}>
+                                            <td class="value">{pharmacy.Product2.Name} </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {pharmacy.Mbrs_Transferred_From_To_Another_Segment__c}> </lightning-formatted-number>
+                                            </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {pharmacy.Estimated_Additional_New_Members__c}> </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {pharmacy.Estimated_Members_Existing_New__c}> </lightning-formatted-number>
+                                                </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {pharmacy.Members_Quoted_in_the_Proposal__c}> </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {pharmacy.Sold_Retained_Members__c}> </lightning-formatted-number>
+                                                </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {pharmacy.Net_Results__c}> </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value">${pharmacy.Annual_Revenue_Premium__c}</td>
+                                        </tr>
+
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </template>
+                    <template if:true={dentalProducts}>
+                        <template if:true={dentalProducts.length}>
+
+                            <h3 class="slds-p-around_medium custom-td">Dental</h3>
+                            <table>
+                                <thead>
+                                    <th class="custom-th" style="height: 30px;">Dental Products</th>
+                                    <th class="custom-th" style="height: 30px;">Product Selection </th>
+                                    <th class="custom-th" style="height: 30px;">Members Transferred From Or To Another Segment</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Additional New Members</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Members (Existing + New)</th>
+
+                                    <th class="custom-th" style="height: 30px;">Members Quoted in the proposal</th>
+                                    <th class="custom-th" style="height: 30px;">Sold / Retained Members</th>
+                                    <th class="custom-th" style="height: 30px;">Net Results</th>
+                                    <th class="custom-th" style="height: 30px;">Annual Revenue/ Premium</th>
+                                </thead>
+                                <tbody>
+                                    <template for:each={dentalProducts} for:item="dental">
+                                        <tr key={dental.id}>
+                                            <td class="value">{dental.Product2.Name} </td>
+                                            <td class="value">{dental.Buyup_Product_Selection__c}</td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {dental.Mbrs_Transferred_From_To_Another_Segment__c}> </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {dental.Estimated_Additional_New_Members__c}> </lightning-formatted-number>
+                                                </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {dental.Estimated_Members_Existing_New__c}> </lightning-formatted-number>
+                                                </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value ={dental.Members_Quoted_in_the_Proposal__c}> </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {dental.Sold_Retained_Members__c}> </lightning-formatted-number>
+                                                </td>
+                                            <td class="value">
+                                                <lightning-formatted-number value = {dental.Net_Results__c}> </lightning-formatted-number>
+                                                </td>
+                                            <td class="value">${dental.Annual_Revenue_Premium__c}</td>
+                                        </tr>
+
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </template>
+                    <template if:true={visionProducts}>
+                        <template if:true={visionProducts.length}>
+                            <h3 class="slds-p-around_medium custom-td">Vision</h3>
+                            <table>
+                                <thead>
+                                    <th class="custom-th" style="height: 30px;">Vision Products</th>
+                                    <th class="custom-th" style="height: 30px;">Product Selection </th>
+                                    <th class="custom-th" style="height: 30px;">Members Transferred from or To Another Segment</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Additional New Members</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Members (Existing + New)</th>
+
+                                    <th class="custom-th" style="height: 30px;">Members Quoted in the Proposal</th>
+                                    <th class="custom-th" style="height: 30px;">Sold / Retained Members</th>
+                                    <th class="custom-th" style="height: 30px;">Net Results</th>
+                                    <th class="custom-th" style="height: 30px;">Annual Revenue/ Premium</th>
+                                </thead>
+                                <tbody>
+                                    <template for:each={visionProducts} for:item="vision">
+                                        <tr key={vision.id}>
+                                            <td class="value">{vision.Product2.Name} </td>
+                                            <td class="value">{vision.Buyup_Product_Selection__c}</td>
+                                            <td class="value">
+                                                 <lightning-formatted-number value = {vision.Mbrs_Transferred_From_To_Another_Segment__c}> </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value"> 
+                                                <lightning-formatted-number value = {vision.Estimated_Additional_New_Members__c}> </lightning-formatted-number>
+                                            </td>
+                                            <td class="value">
+                                                 <lightning-formatted-number value = {vision.Estimated_Members_Existing_New__c}> </lightning-formatted-number>
+                                             </td>
+                                            <td class="value"> 
+                                                <lightning-formatted-number value = {vision.Members_Quoted_in_the_Proposal__c}> </lightning-formatted-number>
+                                            </td>
+                                            <td class="value"> 
+                                                <lightning-formatted-number value = {vision.Sold_Retained_Members__c}> </lightning-formatted-number>
+                                             </td>
+                                            <td class="value"> 
+                                                <lightning-formatted-number value = {vision.Net_Results__c}> </lightning-formatted-number>
+                                             </td>
+                                            <td class="value">${vision.Annual_Revenue_Premium__c} </td>
+                                        </tr>
+
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </template>
+                    <template if:true={otherProductsInfo}>
+                        <template if:true={otherProductsInfo.length}>
+                            <h3 class="slds-p-around_medium custom-td">OtherBuyUp Programs</h3>
+                            <table>
+                                <thead>
+                                    <th class="custom-th" style="height: 30px;">Other Buy Up Programs</th>
+                                    <th class="custom-th" style="height: 30px;">Product Selection</th>
+                                    <th class="custom-th" style="height: 30px;">Members Transferred from or To Another Segment</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Additional New Members</th>
+                                    <th class="custom-th" style="height: 30px;">Estimated Members (Existing + New)</th>
+                                    <th class="custom-th" style="height: 30px;">Members Quoted in the Proposal</th>
+                                    <th class="custom-th" style="height: 30px;">Disposition</th>
+                                    <th class="custom-th" style="height: 30px;">Sold / Retained Members</th>
+                                    <th class="custom-th" style="height: 30px;">Net Results</th>
+                                    <th class="custom-th" style="height: 30px;">Annual Revenue \ Premium</th>
+                                </thead>
+                                <tbody>
+                                    <template for:each={otherProductsInfo} for:item="other">
+                                        <tr key={other.id}>
+                                            <td class="value">{other.Product2.Name} </td>
+                                            <td class="value">{other.Buyup_Product_Selection__c}</td>
+                                            <td class="value">
+                                                 <lightning-formatted-number value = {other.Mbrs_Transferred_From_To_Another_Segment__c}> </lightning-formatted-number>
+                                                  </td>
+                                            <td class="value"> <lightning-formatted-number value = {other.Estimated_Additional_New_Members__c} > </lightning-formatted-number>
+                                            </td>
+                                            <td class="value">
+                                                 <lightning-formatted-number value = {other.Estimated_Members_Existing_New__c}> </lightning-formatted-number>
+                                                  </td>
+
+                                            <td class="value">
+                                                 <lightning-formatted-number value = {other.Members_Quoted_in_the_Proposal__c}> </lightning-formatted-number>
+                                                  </td>
+                                            <td class="value"> 
+                                                <lightning-formatted-number value = {other.Disposition_Other_Buy_Up_Programs__c}> </lightning-formatted-number>
+                                             </td>
+                                            <td class="value">
+                                                 <lightning-formatted-number value = {other.Sold_Retained_Members__c}> </lightning-formatted-number>
+                                                  </td>
+                                            <td class="value">
+                                                 <lightning-formatted-number value = {other.Net_Results__c} > </lightning-formatted-number>
+                                                 </td>
+                                            <td class="value">${other.Annual_Revenue_Premium__c}</td>
+                                        </tr>
+                                    </template>
+
+                                </tbody>
+                            </table>
+
+                        </template>
+                    </template>
+
+
+
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td"
+                    style="color:#00008b;  font-weight: bold; font-size: 0.700rem;" colspan="5">BID STRATEGY </td>
+
+                <td colspan="25" class="value"><template if:true={bidStrategy}>{bidStrategy}</template></td>
+
+            </tr>
+
+            <tr>
+                <td class="slds-text-align_left custom-td" colspan="15">Advocacy</td>
+                <td colspan="15" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.Advocacy__c} name="Advocacy__c" onchange={handleChange}
+                            max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Advocacy__c}>
+                            <span>{strategyMemo.Advocacy__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td" colspan="15">PHS Tier</td>
+                <td colspan="15" class="value"><template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small" variant="label-hidden"
+                            value={strategyMemo.PHS_Tier__c} name="PHS_Tier__c" onchange={handleChange}
+                            max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.PHS_Tier__c}>
+                            <span>{strategyMemo.PHS_Tier__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td" colspan="15">C3/SNI</td>
+                <td colspan="15">
+                    <div class="checkbox-container" style="margin-left: 10px; display: flex; gap: 10px;">
+                        <template if:true={isEditMode}>
+                            <lightning-input type="checkbox" checked={strategyMemo.C3_SNI__c} name="C3_SNI__c"
+                                onchange={handleChange}></lightning-input>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <lightning-input type="checkbox" checked={strategyMemo.C3_SNI__c} disabled>
+                            </lightning-input>
+                        </template>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td" colspan="15">NETWORK ANALYSIS – File Passwords Here</td>
+                <td colspan="15">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="password" class="slds-p-around_xxx-small cramp-line"
+                            variant="label-hidden" max-length="175"
+                            value={strategyMemo.NETWORK_ANALYSIS_File_Passwords_Here__c}
+                            name="NETWORK_ANALYSIS_File_Passwords_Here__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.NETWORK_ANALYSIS_File_Passwords_Here__c}>
+                            <lightning-formatted-text
+                                value={strategyMemo.NETWORK_ANALYSIS_File_Passwords_Here__c}></lightning-formatted-text>
+                            <!-- <span>{strategyMemo.File_Passwords_If_so_please_provide__c}</span>-->
+                        </template>
+                    </template>
+
+                    <!-- <template if:true={isEditMode}>
+                                <lightning-textarea value={strategyMemo.} onchange={handleChange}>
+                            </lightning-textarea>
+                            </template>
+                            <template if:false={isEditMode}>
+                                <template if:true={strategyMemo.}>
+                                  <span>{strategyMemo.}</span>
+                            </template>
+                               
+                            </template>-->
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td" colspan="15">Network Analysis Requirements</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Network_Analysis_Requirements__c} max-length="255"
+                            name="Network_Analysis_Requirements__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Network_Analysis_Requirements__c}>
+                            <span>{strategyMemo.Network_Analysis_Requirements__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">COMP QD</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.COMP_QD__c} name="COMP_QD__c" onchange={handleChange} max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.COMP_QD__c}>
+                            <span>{strategyMemo.COMP_QD__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">GeoAccess Reports (crow flies vs. driving?)</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.GeoAccess_Reports__c} name="GeoAccess_Reports__c" max-length="255"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.GeoAccess_Reports__c}>
+                            <span>{strategyMemo.GeoAccess_Reports__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">GEO TEMPLATES: Customer Specific or UHC?</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            max-length="255" value={strategyMemo.GEO_TEMPLATES__c} name="GEO_TEMPLATES__c"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.GEO_TEMPLATES__c}>
+                            <span>{strategyMemo.GEO_TEMPLATES__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">GEOs for Specific Products? Specify</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.GEOs_for_Specific_Products__c} name="GEOs_for_Specific_Products__c"
+                            onchange={handleChange} max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.GEOs_for_Specific_Products__c}>
+                            <span>{strategyMemo.GEOs_for_Specific_Products__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+              <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Provider Counts </td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Provider_Count__c} name="Provider_Count__c" onchange={handleChange}
+                            max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Provider_Count__c}>
+                            <span>{strategyMemo.Provider_Count__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Provider Counts (Include Passport Y/N?)</td>
+                <td colspan="15">
+                    <!--<div class="checkbox-container" style="margin-left: 10px; display: flex; gap: 10px;">
+        <lightning-input type="checkbox" label="Yes"></lightning-input>
+        <lightning-input type="checkbox" label="No"></lightning-input>
+    </div>-->
+                    <template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Provider_Counts__c}
+                            name="Provider_Counts__c" onchange={handleChange}></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Provider_Counts__c} disabled>
+                        </lightning-input>
+                    </template>
+                </td>
+            </tr>
+             <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Disruption Analysis </td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Disruption_Analysis_text__c} name="Disruption_Analysis_text__c" onchange={handleChange}
+                            max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Disruption_Analysis_text__c}>
+                            <span>{strategyMemo.Disruption_Analysis_text__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Disruption Analysis (Passport Y/N?) and Approach
+                    Any CSPs to be included in the analysis? (For
+                    example, Geisinger claims to be designated as PAR
+                    or Non-Par)
+                    Confirm whether Nexus ACO is to be considered.</td>
+                <td colspan="15" class="value">
+                    <!--<div class="checkbox-container" style="margin-left: 10px; display: flex; gap: 10px;">
+        <lightning-input type="checkbox" label="Yes"></lightning-input>
+        <lightning-input type="checkbox" label="No"></lightning-input>
+    </div>-->
+                    <!--<template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden" value={strategyMemo.Disruption_Analysis__c}
+                            name="Disruption_Analysis__c" onchange={handleChange} max-length="255"></lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Disruption_Analysis__c}>
+                            <span>{strategyMemo.Disruption_Analysis__c}</span>
+                        </template>
+                    </template>-->
+                    <template if:true={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Disruption_Analysis__c}
+                            name="Disruption_Analysis__c" onchange={handleChange}> </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <lightning-input type="checkbox" checked={strategyMemo.Disruption_Analysis__c} disabled>
+                        </lightning-input>
+                    </template>
+
+
+                </td>
+            </tr>
+            <template if:true={checkedDisruption}>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Approach</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Approach__c} name="Approach__c" onchange={handleChange}
+                            max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Approach__c}>
+                            <span>{strategyMemo.Approach__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            </template>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Nexus ACO</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Nexus_ACO__c} name="Nexus_ACO__c" onchange={handleChange}
+                            max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Nexus_ACO__c}>
+                            <span>{strategyMemo.Nexus_ACO__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Freestanding Facility Report</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Freestanding_Facility_Report__c} name="Freestanding_Facility_Report__c"
+                            onchange={handleChange} max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Freestanding_Facility_Report__c}>
+                            <span>{strategyMemo.Freestanding_Facility_Report__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Network Market Placemats Needed?</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Network_Market_Placemats_Needed__c} max-length="255"
+                            name="Network_Market_Placemats_Needed__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Network_Market_Placemats_Needed__c}>
+                            <span>{strategyMemo.Network_Market_Placemats_Needed__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Other Network Resources</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Other_Network_Resources__c} name="Other_Network_Resources__c"
+                            max-length="255" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Other_Network_Resources__c}>
+                            <span>{strategyMemo.Other_Network_Resources__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Network 360 Reports</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Network_360_Reports__c} name="Network_360_Reports__c" max-length="255"
+                            onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Network_360_Reports__c}>
+                            <span>{strategyMemo.Network_360_Reports__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Generational Analysis</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Generational_Analysis__c} name="Generational_Analysis__c"
+                            onchange={handleChange} max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Generational_Analysis__c}>
+                            <span>{strategyMemo.Generational_Analysis__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="custom-background-colour" colspan="1"></td>
+                <td class="slds-text-align_left custom-td" colspan="14">Service Area Report</td>
+                <td colspan="15" class="value"> <template if:true={isEditMode}>
+                        <lightning-input type="text" class="slds-p-around_xxx-small cramp-line" variant="label-hidden"
+                            value={strategyMemo.Service_Area_Report__c} name="Service_Area_Report__c"
+                            onchange={handleChange} max-length="255">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Service_Area_Report__c}>
+                            <span>{strategyMemo.Service_Area_Report__c}</span>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</template>

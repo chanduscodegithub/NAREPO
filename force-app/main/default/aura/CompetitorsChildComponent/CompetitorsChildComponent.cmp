@@ -1,0 +1,65 @@
+<aura:component access="global" implements="force:hasRecordId">
+    
+    <aura:registerEvent name="competitorsEvent" type="c:CompetitorsEvent"/>
+    <aura:attribute name="isReadOnly" type="Boolean" />        
+    <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="isEditRecord" type="Boolean" default="true"/>
+    <aura:attribute name="MACompetitorData" type="sObject" />
+    <aura:attribute name="isQA" type="Boolean" />
+
+    <tr class="slds-hint-parent">
+        <th scope="row" data-label="{!$Label.c.Competitor}" width="210">
+            <div class="slds-cell-wrap" title="">{!v.MACompetitorData.Competitor_Account__r.Name}</div>
+            <!--<a onclick="{!c.navigateToCompetitorDetailPage}" class="slds-cell-wrap">{!v.MACompetitorData.Competitor_Account__r.Name}</a>-->
+        </th>
+        <aura:if isTrue="{!or(v.isQA == null, v.isQA == false)}">
+            <aura:if isTrue="{!and(v.isEditRecord, or(v.MACompetitorData.Competitor_Account__r.Name != 'National Accounts', v.MACompetitorData.Competitor_Classification__c =='Other'))}"> 
+                <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Number_of_Members_held}">
+                    <ui:inputNumber class="slds-text-align--right total-data" format="#,###,##0" change="{!c.onChangeOfNoOfMembersHeld}" aura:id="" value="{!v.MACompetitorData.Number_of_Members_Held__c}" maxlength="13"/>
+                </th>                
+                <aura:set attribute="else">
+                    <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.Number_of_Members_held}">
+                        <ui:outputNumber class="total-data" format="#,###,##0" value="{!v.MACompetitorData.Number_of_Members_Held__c}" />
+                    </th>
+                </aura:set>
+            </aura:if>
+            
+            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.of_Members_held}">
+                <div class="total-data" title="">{!v.MACompetitorData.of_Members_Held__c}%</div>
+            </th>
+            <aura:if isTrue="{!and(v.isEditRecord, or(v.MACompetitorData.Competitor_Account__r.Name != 'National Accounts', v.MACompetitorData.Competitor_Classification__c =='Other'))}"> 
+                <th scope="row" class="slds-text-align--right" data-label="{!$Label.c.Number_of_Members_Awarded}">
+                    <ui:inputNumber class="slds-text-align--right total-data" format="#,###,##0" change="{!c.onChangeOfNoOfMembersAwarded}" aura:id="" value="{!v.MACompetitorData.Number_of_Members_Awarded__c}" maxlength="13"/>
+                </th>
+                <aura:set attribute="else">
+                    <th scope="row" class="slds-text-align--right" data-label="{!$Label.c.Number_of_Members_held}">
+                        <ui:outputNumber class="total-data" format="#,###,##0" value="{!v.MACompetitorData.Number_of_Members_Awarded__c}" />
+                    </th>
+                </aura:set>
+            </aura:if>
+            <th class="slds-text-align--right" scope="row" data-label="{!$Label.c.of_Member_Awarded}">
+                <div class="total-data" title="">{!v.MACompetitorData.of_Members_Awarded__c}%</div>
+            </th>
+            <aura:if isTrue="{!v.isEditRecord}">
+                <th scope="row" data-label="{!$Label.c.Comments}" width="300">
+                    <ui:inputTextArea aura:id="" value="{!v.MACompetitorData.Comments__c}" rows="2" maxlength="255"/>
+                </th>
+                <aura:set attribute="else">
+                    <th scope="row" data-label="{!$Label.c.Comments}" width="300">
+                        <ui:outputTextArea value="{!v.MACompetitorData.Comments__c}" />
+                    </th>
+                </aura:set>
+            </aura:if>
+        </aura:if>
+        <aura:if isTrue="{!v.isReadOnly == false}" >
+            <td class="slds-cell-shrink" data-label="Select Row">
+                <aura:if isTrue="{!and(v.MACompetitorData.Competitor_Account__r.Name != null, v.MACompetitorData.Competitor_Account__r.Name != 'National Accounts')}">
+                    <button class="slds-button slds-button_icon" title="{!$Label.c.Delete}" onclick="{!c.removeRecord}">
+                        <lightning:icon iconName="utility:delete" size="xx-small" alternativeText="{!$Label.c.Delete}"/>
+                        <span class="slds-assistive-text">{!$Label.c.Delete}</span>
+                    </button>
+                </aura:if>
+            </td>
+        </aura:if>
+    </tr>
+</aura:component>

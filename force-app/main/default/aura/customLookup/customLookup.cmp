@@ -1,0 +1,84 @@
+<aura:component controller="SeniorUHGExecutivesClass">
+    <!---Use Salesforce Lightning Design System CSS From Static resources-->      
+    <!--declare attributes--> 
+    <aura:attribute name="selectedRecord" type="Account" default="{}" description="Use,for store SELECTED sObject Record"/>
+    <aura:attribute name="listOfSearchRecords" type="Account[]" description="Use,for store the list of search records which returns from apex class"/>
+    <aura:attribute name="SearchKeyWord" type="string" default="" />
+    <aura:attribute name="designation" type="String"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    
+    <aura:method name="removeCustomLookUpMethod" action="{!c.removeCustomLookUp}" description="Sample method with parameters"> 
+    </aura:method>
+    
+    <aura:method name="clearField" action="{!c.clear}" description="Sample method with parameters">
+        
+    </aura:method>
+    
+    <aura:method name="closeSearchList" action="{!c.closeDropDown}" description="Sample method with parameters">
+        
+    </aura:method> 
+    
+    <aura:attribute name="dataAvailable" type="boolean" default="false" />
+    
+    <aura:attribute name="Message" type="String" default="Search Result.."/>
+    
+    <!--declare events hendlers-->
+    
+    <aura:handler name="oSelectedAccountEvent" event="c:selectedAccountEvent" action="{!c.handleComponentEvent}"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <!-- https://www.lightningdesignsystem.com/components/lookups/ --> 
+    <div aura:id="searchRes" class="slds-form-element slds-lookup slds-is-close" data-select="single">
+        <!--This part is for display search bar for lookup-->  
+        <div class="slds-form-element__control">
+            <div class="slds-input-has-icon slds-input-has-icon--right">                              
+                <!-- This markup is for when an record is selected -->
+                <div aura:id="lookup-pill" class="slds-pill-container slds-hide">
+                    <span class="slds-pill slds-grid">
+                        <span class="slds-pill__label">
+                            {!v.selectedRecord.Name}  
+                        </span>
+                        <button class="slds-button slds-button--icon slds-pill__remove" onclick="{!c.clear}">                        
+                            <lightning:icon class="slds-button__icon"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                            <span class="slds-assistive-text">Remove</span>
+                        </button>
+                    </span>
+                </div>
+                <div aura:id="lookupField" class="slds-show">
+                    <ui:inputText aura:id="nameValue" updateOn="keyup" maxlength="40"  keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input -ms-clear" value="{!v.SearchKeyWord}" placeholder="search.."/>
+                </div>   
+            </div>
+        </div>
+        <!--This part is for Display typehead lookup result List-->  
+        <div class="slds-lookup__menu slds" aura:id="searchDropDown" id="lookup-348">
+            <div class="slds-lookup__item--label slds-text-body--small">{!v.Message}</div>
+            <center> <ui:spinner aura:id="spinner"/> </center>
+            <ul class="slds-lookup__list" role="listbox">
+                <aura:iteration items="{!v.listOfSearchRecords}" var="singleRec">
+                    <c:customLookupResult_SeniorUHG oAccount="{!singleRec}"/>
+                </aura:iteration>
+            </ul>
+        </div>
+    </div>
+</aura:component>

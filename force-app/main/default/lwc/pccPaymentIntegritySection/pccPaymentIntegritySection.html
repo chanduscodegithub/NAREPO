@@ -1,0 +1,1013 @@
+<template>
+    <template lwc:if={isEdit}>
+        <div class="container">
+            <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+                <p>
+                    <strong>Payment Integrity - Traditional </strong>
+                </p>
+            </div>
+            <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+                style="background-color:#F7F8E0; margin-bottom: 1rem;">
+                {label.PCC_Payment_Integrity_Text}
+            </p>
+            <div class="slds-float_right slds-m-right_large slds-m-top_x-small slds-m-bottom_x-small">
+                <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleCancel}
+                    icon-name="action:remove">
+                </lightning-button>
+                <lightning-button variant="brand" label="Save" class="slds-m-left_x-small" onclick={handleSave}
+                    icon-name="utility:save">
+                </lightning-button>
+            </div>
+            <br>
+            <div class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small">
+                <table class="payment-integrity-styles">
+                    <colgroup>
+                        <col style="width: 60%;">
+                        <col style="width: 40%;">
+                    </colgroup>
+                    <tr class="border-bottom">
+                        <td colspan="col"><b>Payment Integrity Bundles</b></td>
+                        <td colspan="col">
+                            <lightning-combobox value={renewalChecklistData.Payment_Integrity_Bundles__c}
+                                placeholder="---None---" options={paymentIntegBundlesOptions} variant="label-hidden"
+                                onchange={handleChange} data-api="Payment_Integrity_Bundles__c">
+                            </lightning-combobox>
+                        </td>
+                    </tr>
+                </table>
+
+                <template lwc:if={isSimplified}>
+                    <table class="payment-integrity-styles">
+                        <colgroup>
+                            <col style="width: 60%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th colspan="col">PI Service</th>
+                                <th colspan="col">Rate</th>
+                                <th colspan="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-bottom">
+                                <td colspan="col">Pre-Pay</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" onchange={handleChange}
+                                            data-api="Pre_Pay_Rate__c" variant="label-hidden" step=".01"
+                                            value='{renewalChecklistData.Pre_Pay_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Pre_Pay_Status__c}
+                                            placeholder="---None---" options={prePayOptions} variant="label-hidden"
+                                            onchange={handleChange} data-api="Pre_Pay_Status__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" onchange={handleChange}
+                                            data-api="Pre_Pay_Rate__c" variant="label-hidden" step=".01"
+                                            value='{renewalChecklistData.Pre_Pay_Rate__c}' disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Pre_Pay_Status__c}
+                                            placeholder="---None---" options={prePayOptions} variant="label-hidden"
+                                            onchange={handleChange} data-api="Pre_Pay_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Post-Pay</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" onchange={handleChange}
+                                            data-api="Post_Pay_Rate__c" variant="label-hidden" step=".01"
+                                            value='{renewalChecklistData.Post_Pay_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Post_Pay_Status__c}
+                                            placeholder="---None---" options={postPayOptions} variant="label-hidden"
+                                            onchange={handleChange} data-api="Post_Pay_Status__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" onchange={handleChange}
+                                            data-api="Post_Pay_Rate__c" variant="label-hidden" step=".01"
+                                            value='{renewalChecklistData.Post_Pay_Rate__c}' disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Post_Pay_Status__c}
+                                            placeholder="---None---" options={postPayOptions} variant="label-hidden"
+                                            onchange={handleChange} data-api="Post_Pay_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Subrogation</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" onchange={handleChange}
+                                            data-api="Subrogation_Rate__c" variant="label-hidden" step=".01"
+                                            value='{renewalChecklistData.Subrogation_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Subrogation_Status__c}
+                                            placeholder="---None---" options={SubrogationOptions} variant="label-hidden"
+                                            onchange={handleChange} data-api="Subrogation_Status__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" onchange={handleChange}
+                                            data-api="Subrogation_Rate__c" variant="label-hidden" step=".01"
+                                            value='{renewalChecklistData.Subrogation_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Subrogation_Status__c}
+                                            placeholder="---None---" options={SubrogationOptions} variant="label-hidden"
+                                            onchange={handleChange} data-api="Subrogation_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Coordination of Benefits</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" step=".01"
+                                            data-api="Coordination_of_Benefits_Rate__c" variant="label-hidden"
+                                            onchange={handleChange}
+                                            value='{renewalChecklistData.Coordination_of_Benefits_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Coordination_of_Benefits_Status__c}
+                                            placeholder="---None---" options={benifitOptions} onchange={handleChange}
+                                            variant="label-hidden" data-api="Coordination_of_Benefits_Status__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" step=".01"
+                                            data-api="Coordination_of_Benefits_Rate__c" variant="label-hidden"
+                                            onchange={handleChange}
+                                            value='{renewalChecklistData.Coordination_of_Benefits_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Coordination_of_Benefits_Status__c}
+                                            placeholder="---None---" options={benifitOptions} onchange={handleChange}
+                                            variant="label-hidden" data-api="Coordination_of_Benefits_Status__c"
+                                            read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <template lwc:if={isSimplified1}>
+                                    <td colspan="col">Claims Tracking and Validation (CTV) Audit </td>
+                                    <!-- <td colspan="col" data-api="Claims_Tracking_and_Validation_CTV_Rt__c">
+                                        $<lightning-formatted-number
+                                            value={renewalChecklistData.Claims_Tracking_and_Validation_CTV_Rt__c}
+                                            minimum-fraction-digits="2">
+                                        </lightning-formatted-number>
+                                    </td>
+                                    <td colspan="col" data-api="Claims_Tracking_and_Validation_CTV_St__c">
+                                        {renewalChecklistData.Claims_Tracking_and_Validation_CTV_St__c}
+                                    </td> -->
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Claims_Tracking_and_Validation_CTV_Rt__c"
+                                            value='{renewalChecklistData.Claims_Tracking_and_Validation_CTV_Rt__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Claims_Tracking_and_Validation_CTV_St__c}
+                                            placeholder="---None---" options={claimsTrackingOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Claims_Tracking_and_Validation_CTV_St__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:elseif={nonStandardOptions}>
+                                    <td colspan="col">Claims Tracking and Validation (CTV) Audit </td>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Claims_Tracking_and_Validation_CTV_Rt__c"
+                                            value='{renewalChecklistData.Claims_Tracking_and_Validation_CTV_Rt__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Claims_Tracking_and_Validation_CTV_St__c}
+                                            placeholder="---None---" options={claimsTrackingOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Claims_Tracking_and_Validation_CTV_St__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                        </tbody>
+                    </table>
+                </template>
+                <template lwc:if={isLegecy}>
+                    <table class="payment-integrity-styles">
+                        <colgroup>
+                            <col style="width: 60%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th colspan="col">PI Service</th>
+                                <th colspan="col">Rate</th>
+                                <th colspan="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-bottom">
+                                <td colspan="col">Payment Policy</td>
+                                <td colspan="col">
+                                    <lightning-input type="number" name="input1" step=".01"
+                                        data-api="Payment_Policy_Rate__c" variant="label-hidden" onchange={handleChange}
+                                        value='{renewalChecklistData.Payment_Policy_Rate__c}'
+                                        disabled></lightning-input>
+                                </td>
+                                <td colspan="col">
+                                    <lightning-combobox value={renewalChecklistData.Payment_Policy_Status__c}
+                                        placeholder="---None---" options={paymentPolicyOptions} onchange={handleChange}
+                                        variant="label-hidden" data-api="Payment_Policy_Status__c" read-only>
+                                    </lightning-combobox>
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Coordination of Benefits</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Coordination_of_Benefits_Rate__c"
+                                            value='{renewalChecklistData.Coordination_of_Benefits_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Coordination_of_Benefits_Status__c}
+                                            placeholder="---None---" options={benifitOptions} onchange={handleChange}
+                                            variant="label-hidden" data-api="Coordination_of_Benefits_Status__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Coordination_of_Benefits_Rate__c"
+                                            value='{renewalChecklistData.Coordination_of_Benefits_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Coordination_of_Benefits_Status__c}
+                                            placeholder="---None---" options={benifitOptions} onchange={handleChange}
+                                            variant="label-hidden" data-api="Coordination_of_Benefits_Status__c"
+                                            read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Prospective Fraud & Abuse</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Prospective_Fraud_Abuse_Rate__c"
+                                            value='{renewalChecklistData.Prospective_Fraud_Abuse_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Prospective_Fraud_Abuse_Status__c}
+                                            placeholder="---None---" options={prospectivefraudOptions} onchange={handleChange}
+                                            variant="label-hidden" data-api="Prospective_Fraud_Abuse_Status__c"
+                                            read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Prospective_Fraud_Abuse_Rate__c"
+                                            value='{renewalChecklistData.Prospective_Fraud_Abuse_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Prospective_Fraud_Abuse_Status__c}
+                                            placeholder="---None---" options={prospectivefraudOptions} onchange={handleChange}
+                                            variant="label-hidden" data-api="Prospective_Fraud_Abuse_Status__c"
+                                            read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Retrospective Fraud & Abuse</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Retrospective_Fraud_Abuse_Rate__c"
+                                            value='{renewalChecklistData.Retrospective_Fraud_Abuse_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Retrospective_Fraud_Abuse_Status__c}
+                                            placeholder="---None---" options={retroFraudOptions} onchange={handleChange}
+                                            variant="label-hidden" data-api="Retrospective_Fraud_Abuse_Status__c"
+                                            read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Retrospective_Fraud_Abuse_Rate__c"
+                                            value='{renewalChecklistData.Retrospective_Fraud_Abuse_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Retrospective_Fraud_Abuse_Status__c}
+                                            placeholder="---None---" options={retroFraudOptions} onchange={handleChange}
+                                            variant="label-hidden" data-api="Retrospective_Fraud_Abuse_Status__c"
+                                            read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Enhanced Fraud & Abuse/CCD</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Enhanced_Fraud_Abuse_CCD_Rate__c"
+                                            value='{renewalChecklistData.Enhanced_Fraud_Abuse_CCD_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Enhanced_Fraud_Abuse_CCD_Status__c}
+                                            placeholder="---None---" options={enhancedFraudOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Enhanced_Fraud_Abuse_CCD_Status__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Enhanced_Fraud_Abuse_CCD_Rate__c"
+                                            value='{renewalChecklistData.Enhanced_Fraud_Abuse_CCD_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Enhanced_Fraud_Abuse_CCD_Status__c}
+                                            placeholder="---None---" options={enhancedFraudOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Enhanced_Fraud_Abuse_CCD_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">EDC Analyzer</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01" data-api="EDC_Analyzer_Rate__c"
+                                            value='{renewalChecklistData.EDC_Analyzer_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.EDC_Analyzer_Status__c}
+                                            placeholder="---None---" options={edcOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="EDC_Analyzer_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01" data-api="EDC_Analyzer_Rate__c"
+                                            value='{renewalChecklistData.EDC_Analyzer_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.EDC_Analyzer_Status__c}
+                                            placeholder="---None---" options={edcOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="EDC_Analyzer_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Itemized Bill Review</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01" data-api="Itemized_Bill_Review_Rate__c"
+                                            value='{renewalChecklistData.Itemized_Bill_Review_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Itemized_Bill_Review_Status__c}
+                                            placeholder="---None---" options={itemizedBillOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Itemized_Bill_Review_Status__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01" data-api="Itemized_Bill_Review_Rate__c"
+                                            value='{renewalChecklistData.Itemized_Bill_Review_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Itemized_Bill_Review_Status__c}
+                                            placeholder="---None---" options={itemizedBillOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Itemized_Bill_Review_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Focused Claim Review</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01" data-api="Focused_Claim_Review_Rate__c"
+                                            value='{renewalChecklistData.Focused_Claim_Review_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Focused_Claim_Review_Status__c}
+                                            placeholder="---None---" options={focusedClaimOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Focused_Claim_Review_Status__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01" data-api="Focused_Claim_Review_Rate__c"
+                                            value='{renewalChecklistData.Focused_Claim_Review_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Focused_Claim_Review_Status__c}
+                                            placeholder="---None---" options={focusedClaimOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Focused_Claim_Review_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Hospital Bill Audit</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01" data-api="Hospital_Bill_Audit_Rate__c"
+                                            value='{renewalChecklistData.Hospital_Bill_Audit_Rate__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Hospital_Bill_Audit_Status__c}
+                                            placeholder="---None---" options={focusedClaimOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Hospital_Bill_Audit_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01" data-api="Hospital_Bill_Audit_Rate__c"
+                                            value='{renewalChecklistData.Hospital_Bill_Audit_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox value={renewalChecklistData.Hospital_Bill_Audit_Status__c}
+                                            placeholder="---None---" options={focusedClaimOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Hospital_Bill_Audit_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Credit Balance Recovery Services</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Credit_Balance_Recovery_Services_Rate__c"
+                                            value='{renewalChecklistData.Credit_Balance_Recovery_Services_Rate__c}'></lightning-input>
+                                    </td>
+                                    <!-- <template lwc:if={isCreditBalance}>
+                                        <td colspan="col">
+                                            <lightning-combobox
+                                                value={renewalChecklistData.Credit_Balance_Recovery_Services_Status__c}
+                                                placeholder="---None---" options={creditBalanceOptions}
+                                                onchange={handleChange} variant="label-hidden"
+                                                data-api="Credit_Balance_Recovery_Services_Status__c">
+                                            </lightning-combobox>
+                                        </td>
+                                    </template>
+                                    <template lwc:else>
+                                        <td colspan="col">
+                                            {renewalChecklistData.Credit_Balance_Recovery_Services_Status__c}
+                                        </td>
+                                    </template> -->
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Credit_Balance_Recovery_Services_Status__c}
+                                            placeholder="---None---" options={creditBalanceOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Credit_Balance_Recovery_Services_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Credit_Balance_Recovery_Services_Rate__c"
+                                            value='{renewalChecklistData.Credit_Balance_Recovery_Services_Rate__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Credit_Balance_Recovery_Services_Status__c}
+                                            placeholder="---None---" options={creditBalanceOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Credit_Balance_Recovery_Services_Status__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Third Party Liability Recovery (Subro)</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Third_Party_Liability_Recovery_Subro_R__c"
+                                            value='{renewalChecklistData.Third_Party_Liability_Recovery_Subro_R__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Third_Party_Liability_Recovery_Subro_S__c}
+                                            placeholder="---None---" options={tplRecoveryOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Third_Party_Liability_Recovery_Subro_S__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Third_Party_Liability_Recovery_Subro_R__c"
+                                            value='{renewalChecklistData.Third_Party_Liability_Recovery_Subro_R__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Third_Party_Liability_Recovery_Subro_S__c}
+                                            placeholder="---None---" options={tplRecoveryOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Third_Party_Liability_Recovery_Subro_S__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Third Party Liability Recovery (ICC)</td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Third_Party_Liability_Recovery_ICC_Rat__c"
+                                            value='{renewalChecklistData.Third_Party_Liability_Recovery_ICC_Rat__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Third_Party_Liability_Recovery_ICC_Sta__c}
+                                            placeholder="---None---" options={tplRecoveryIccOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Third_Party_Liability_Recovery_ICC_Sta__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Third_Party_Liability_Recovery_ICC_Rat__c"
+                                            value='{renewalChecklistData.Third_Party_Liability_Recovery_ICC_Rat__c}'
+                                            disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Third_Party_Liability_Recovery_ICC_Sta__c}
+                                            placeholder="---None---" options={tplRecoveryIccOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Third_Party_Liability_Recovery_ICC_Sta__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Advanced Analytic and Recovery Services (AARS)
+                                </td>
+                                <template lwc:if={nonStandardOptions}>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Advanced_Analytic_and_Recovery_Service_R__c"
+                                            value='{renewalChecklistData.Advanced_Analytic_and_Recovery_Service_R__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Advanced_Analytic_and_Recovery_Service_S__c}
+                                            placeholder="---None---" options={advancedAnalyticsOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Advanced_Analytic_and_Recovery_Service_S__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Advanced_Analytic_and_Recovery_Service_R__c"
+                                            value='{renewalChecklistData.Advanced_Analytic_and_Recovery_Service_R__c}' disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Advanced_Analytic_and_Recovery_Service_S__c}
+                                            placeholder="---None---" options={advancedAnalyticsOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Advanced_Analytic_and_Recovery_Service_S__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr class="border-bottom">
+                                <template lwc:if={isClaimsTracking}>
+                                    <td colspan="col">Claims Tracking and Validation (CTV) Audit </td>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Claims_Tracking_and_Validation_CTV_Rt__c"
+                                            value='{renewalChecklistData.Claims_Tracking_and_Validation_CTV_Rt__c}'></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Claims_Tracking_and_Validation_CTV_St__c}
+                                            placeholder="---None---" options={claimsTrackingOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Claims_Tracking_and_Validation_CTV_St__c">
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                                <template lwc:else>
+                                    <td colspan="col">Claims Tracking and Validation (CTV) Audit</td>
+                                    <td colspan="col">
+                                        <lightning-input type="number" name="input1" variant="label-hidden"
+                                            onchange={handleChange} step=".01"
+                                            data-api="Claims_Tracking_and_Validation_CTV_Rt__c"
+                                            value='{renewalChecklistData.Claims_Tracking_and_Validation_CTV_Rt__c}' disabled></lightning-input>
+                                    </td>
+                                    <td colspan="col">
+                                        <lightning-combobox
+                                            value={renewalChecklistData.Claims_Tracking_and_Validation_CTV_St__c}
+                                            placeholder="---None---" options={claimsTrackingOptions}
+                                            onchange={handleChange} variant="label-hidden"
+                                            data-api="Claims_Tracking_and_Validation_CTV_St__c" read-only>
+                                        </lightning-combobox>
+                                    </td>
+                                </template>
+                            </tr>
+                        </tbody>
+                    </table>
+                </template>
+            </div>
+        </div>
+    </template>
+    <template lwc:else>
+        <div class="container">
+            <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+                <p>
+                    <strong>Payment Integrity - Traditional </strong>
+                </p>
+            </div>
+            <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+                style="background-color:#F7F8E0; margin-bottom: 1rem;">
+                {label.PCC_Payment_Integrity_Text}
+            </p>
+            <template if:true={hideEdit}>
+            <div class="slds-float_right slds-m-top_x-small">
+                <lightning-button variant="brand" label="Edit" class="slds-m-left_x-small"
+                    onclick={handlePaymentIntegrity} icon-name="action:edit">
+                </lightning-button>
+            </div>
+        </template>
+            <br>
+            <div class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small">
+
+                <table class="payment-integrity-styles">
+                    <colgroup>
+                        <col style="width: 60%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                    </colgroup>
+                    <tr class="border-bottom">
+                        <td colspan="col"><b>Payment Integrity Bundles</b></td>
+                        <td colspan="col"></td>
+                        <td colspan="col">{renewalChecklistData.Payment_Integrity_Bundles__c}</td>
+                    </tr>
+                </table>
+
+                <template lwc:if={isSimplified}>
+                    <table class="payment-integrity-styles">
+                        <colgroup>
+                            <col style="width: 60%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th colspan="col">PI Service</th>
+                                <th colspan="col">Rate</th>
+                                <th colspan="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-bottom">
+                                <td colspan="col">Pre-Pay</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number value={renewalChecklistData.Pre_Pay_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">{renewalChecklistData.Pre_Pay_Status__c}</td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Post-Pay</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number value={renewalChecklistData.Post_Pay_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">{renewalChecklistData.Post_Pay_Status__c}</td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Subrogation</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number value={renewalChecklistData.Subrogation_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">{renewalChecklistData.Subrogation_Status__c}</td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Coordination of Benefits</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Coordination_of_Benefits_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Coordination_of_Benefits_Status__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <template lwc:if={isSimplifiedReadonly}>
+                                    <td colspan="col">Claims Tracking and Validation (CTV) Audit</td>
+                                    <td>
+                                        $<lightning-formatted-number
+                                            value={renewalChecklistData.Claims_Tracking_and_Validation_CTV_Rt__c}
+                                            minimum-fraction-digits="2">
+                                        </lightning-formatted-number>
+                                    </td>
+                                    <td colspan="col">
+                                        {renewalChecklistData.Claims_Tracking_and_Validation_CTV_St__c}
+                                    </td>
+                                </template>
+                            </tr>
+                        </tbody>
+                    </table>
+                </template>
+                <template lwc:if={isLegecy}>
+                    <table class="payment-integrity-styles">
+                        <colgroup>
+                            <col style="width: 60%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th colspan="col">PI Service</th>
+                                <th colspan="col">Rate</th>
+                                <th colspan="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-bottom">
+                                <td colspan="col">Payment Policy</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number value={renewalChecklistData.Payment_Policy_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">{renewalChecklistData.Payment_Policy_Status__c}</td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Coordination of Benefits</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Coordination_of_Benefits_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Coordination_of_Benefits_Status__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Prospective Fraud & Abuse</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Prospective_Fraud_Abuse_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Prospective_Fraud_Abuse_Status__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Retrospective Fraud & Abuse</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Retrospective_Fraud_Abuse_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Retrospective_Fraud_Abuse_Status__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Enhanced Fraud & Abuse/CCD</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Enhanced_Fraud_Abuse_CCD_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Enhanced_Fraud_Abuse_CCD_Status__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">EDC Analyzer</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number value={renewalChecklistData.EDC_Analyzer_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">{renewalChecklistData.EDC_Analyzer_Status__c}</td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Itemized Bill Review</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Itemized_Bill_Review_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">{renewalChecklistData.Itemized_Bill_Review_Status__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Focused Claim Review</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Focused_Claim_Review_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">{renewalChecklistData.Focused_Claim_Review_Status__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Hospital Bill Audit</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number value={renewalChecklistData.Hospital_Bill_Audit_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Hospital_Bill_Audit_Status__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Credit Balance Recovery Services</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Credit_Balance_Recovery_Services_Rate__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Credit_Balance_Recovery_Services_Status__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Third Party Liability Recovery (Subro)</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Third_Party_Liability_Recovery_Subro_R__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Third_Party_Liability_Recovery_Subro_S__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Third Party Liability Recovery (ICC)</td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Third_Party_Liability_Recovery_ICC_Rat__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Third_Party_Liability_Recovery_ICC_Sta__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Advanced Analytic and Recovery Services (AARS)
+                                </td>
+                                <td colspan="col">
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Advanced_Analytic_and_Recovery_Service_R__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>%
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Advanced_Analytic_and_Recovery_Service_S__c}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td colspan="col">Claims Tracking and Validation (CTV) Audit </td>
+                                <td colspan="col">$
+                                    <lightning-formatted-number
+                                        value={renewalChecklistData.Claims_Tracking_and_Validation_CTV_Rt__c}
+                                        minimum-fraction-digits="2">
+                                    </lightning-formatted-number>
+                                </td>
+                                <td colspan="col">
+                                    {renewalChecklistData.Claims_Tracking_and_Validation_CTV_St__c}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </template>
+            </div>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,105 @@
+<!--
+  @description       : 
+  @author            : Thanushree
+  @group             : 
+  @last modified on  : 02-09-2024
+  @last modified by  : Thanushree
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="MedicalTrendsCtrl" access="global" >
+    <aura:attribute name="medicalData" type="String[]"/>
+    <aura:attribute name="yearsData" type="String[]"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <div aura:id="client_Survey_Results" class="slds-section ipadbottom">
+        <article class="slds-card slds-card_boundary">
+             <div class="slds-card__header slds-grid avoid-clicks" data-record="client_Survey_Results" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" style="padding-right: 4px;"/>
+                        </button>
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Client_Survey_Results_Heading}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:poll" size="small" alternativeText="{!$Label.c.Client_Survey_Results_Heading}" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-grid flex-alignCenter">
+                            <!--<a href="javascript:void(0);" class="slds-card__header-link slds-truncate">-->
+                            <span class="slds-text-heading--small"></span>
+                            <span class="slds-text-heading--small" > Policy Level Medical Trend - Traditional</span>
+                            <!--</a>-->
+                             <div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small">
+                                <!--<c:RiskProfileToolTip helpLink="Help" helpText="Risks Tracked by the SCE" RiskHelptTextSet="{!v.RiskHelptTextSet}"/>-->
+                                <c:tooltip helpLink="Help" helpText="{!$Label.c.MedicalTrend_AccountDetailTab_HelpTxt}"/>
+                            </div>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+           <div class="slds-section__content slds-p-top_none">   
+                    <div class="slds-card__body">  
+                <table style='border-left: none;
+    border-right: 0px' class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                    <thead>
+                        <tr class="slds-hint-parent thBorderLeft divider header-color" style=' font-size: 13px;   background: #fafaf9;'>
+                            <th class="slds-border_right" >
+                                <div class="slds-truncate">
+                                    <span ><b>&nbsp;</b></span>
+                                </div>
+                            </th>
+                            <aura:iteration items="{!v.yearsData}" var="year" indexVar="index">
+                                <aura:if isTrue="{!index != 3}">
+                                <th  class="slds-border_right">
+                                    <div class="slds-truncate" >
+                                        <span ><b>{!year}</b></span>
+                                    </div>
+                                </th>
+                                </aura:if>
+                                  <aura:if isTrue="{!index == 3}">
+                                <th  class="slds-border_right" style='border-right:none'>
+                                    <div class="slds-truncate" >
+                                        <span ><b>{!year}</b></span>
+                                    </div>
+                                </th>
+                                </aura:if>
+                            </aura:iteration>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        <tr style='font-size: 13px;'>
+                            <td class="slds-border_right" style='line-height:2'>
+                                <span ><strong>Policy Level Medical Trend</strong></span>    
+                            </td>
+                            <aura:iteration items="{!v.medicalData}" var="med" indexVar="index">
+                                <aura:if isTrue="{!index != 3}">
+                                           
+                                <td class="slds-border_right">
+                                    <span >{!med}</span>    
+                                </td>
+                                     </aura:if>
+                                <aura:if isTrue="{!index == 3}">
+                                    
+                                    <td class="slds-border_right" style='border-right:none'>
+                                        <span >{!med}</span>    
+                                    </td>
+                                </aura:if>
+                            </aura:iteration>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

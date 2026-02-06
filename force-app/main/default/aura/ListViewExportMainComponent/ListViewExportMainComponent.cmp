@@ -1,0 +1,79 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global"
+                controller="ListViewDataController">
+    <aura:attribute name="sObjectType" type="String[]"/>
+    <aura:attribute name="sObjectTypeMap" type="Object"/>
+    <aura:attribute name="listViewDataIdMap" type="Object"/>
+    <aura:attribute name="sObjectListView" type="String[]"/> 
+    
+    <aura:attribute name="sObjectTypeName" type="String"/>
+    <aura:attribute name="sObjectListViewName" type="String"/>
+    <aura:attribute name="isProcessing" type="boolean" default="false"/>
+    
+    <aura:attribute name="alertMessage" type="String"/>
+    <aura:attribute name="hasError" type="boolean" default="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.getListViewData}"/>  
+    <article class="slds-card">
+        <aura:if isTrue = "{!v.hasError}" >
+            <ui:message title="Error" severity="error">
+                {!v.alertMessage}
+            </ui:message>        
+        </aura:if>
+        
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-contact" title="description of icon when needed">
+                        <lightning:icon iconName="standard:product_item_transaction" size="small"></lightning:icon>
+                        <aura:if isTrue = "{!v.isProcessing}" >
+                            <lightning:spinner variant="brand" size="large"/>
+                        </aura:if>                         
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2>
+                        
+                        <span class="slds-text-heading_small">List View Export</span>
+                        
+                    </h2>
+                </div>
+            </header>    
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-grid_vertical-align-end">
+                <div class="slds-size_3-of-12 slds-p-right_medium">
+                    <div class="slds-form-element">
+                        <ui:inputSelect aura:id="sObjectTypeAuraId" label="Select Object" change="{!c.onSelectsObjectType}">
+                            <ui:inputSelectOption text="None" label="None"/>
+                            <aura:iteration items="{!v.sObjectType}" var="eachsObjectType">
+                                <aura:if isTrue = "{!eachsObjectType == 'Account'}">
+                                    <ui:inputSelectOption text="{!eachsObjectType}" label="Companies"/>
+                                </aura:if> 
+                                <aura:if isTrue = "{!eachsObjectType == 'Contact'}">
+                                    <ui:inputSelectOption text="{!eachsObjectType}" label="Contacts/Consultants"/>
+                                </aura:if> 
+                                <aura:if isTrue = "{!eachsObjectType == 'Opportunity'}">
+                                    <ui:inputSelectOption text="{!eachsObjectType}" label="Membership Activities"/>
+                                </aura:if> 
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div> 
+                </div>
+                <div class="slds-size_3-of-12 slds-p-right_medium">
+                    <div class="slds-form-element">
+                        <ui:inputSelect aura:id="sObjectListViewAuraId" label="Select List View Name" change="{!c.onSelectSObjectListView}">                            
+                            <aura:iteration items="{!v.sObjectListView}" var="eachSObjectListView">
+                                <ui:inputSelectOption text="{!eachSObjectListView}" label="{!eachSObjectListView}"/>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                </div>
+                <div class="slds-col">
+                    <div class="slds-form-element">
+                        <button class="slds-button slds-button--brand" onclick="{!c.generateCSV}">Generate</button>                
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </article>
+</aura:component>

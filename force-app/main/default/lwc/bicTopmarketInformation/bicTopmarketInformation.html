@@ -1,0 +1,56 @@
+<template>
+    <div class="cssContainer" lwc:dom="manual"></div>
+    <template if:true={showSpinner}>
+        <lightning-spinner style="position:fixed;" alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    <article  class="slds-card forceRelatedListCardDesktop slds-is-relative slds-card_boundary bicTopMarket">
+        <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread flex-auto appletHeader"  >
+            <div class="slds-grid slds-m-bottom--none flex-auto" id="utilityToggle" data-record="Company_Wide_Market" >
+                <header class="slds-media slds-media--center slds-has-flexi-truncate headrCss" onclick={toggleSection}>
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center" >
+                        <template if:true={expandSection}>
+                            <button class="slds-button slds-text-body--regular action-bar-mobile">
+                                <lightning-icon icon-name="utility:chevrondown" title="Bic Top Market Information" size="x-small" alternative-text="Product"></lightning-icon>
+                            </button>
+                        </template>
+                        <template if:false={expandSection}>
+                            <button class="slds-button slds-text-body--regular action-bar-mobile">
+                                <lightning-icon icon-name="utility:chevronright" title="Bic Top Market Information" size="x-small" alternative-text="Product"></lightning-icon>
+                            </button>
+                        </template>
+                        <div >
+                            <span class="slds-icon_container slds-icon-standard-contact" title="Competitive Landscape - Medical">
+                                <lightning-icon icon-name="custom:custom86" size="small" alternative-text="test" ></lightning-icon>
+                            </span>
+                        </div>
+                        
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-grid flex-alignCenter">
+                            <span class="slds-text-heading--small">Company-Wide Top Market and BiC Information</span> 
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="appletAddBtn" data-record="addInfo2" >
+                <template if:false={isReadonly}>
+                    <template if:true={expandSection}>
+                        <template if:true={showEditBtn}>
+                            <lightning-button label="Edit" title="Edit" onclick={enableEdit}></lightning-button>
+                        </template>
+                        <template if:false={showEditBtn}>
+                            <lightning-button variant="brand" label="Save" onclick={initiateSubmit}></lightning-button> &nbsp;&nbsp;
+                            <lightning-button label="Cancel" title="Cancel" onclick={disableEdit}></lightning-button>
+                        </template>
+                    </template>
+                </template>
+            </div>
+        </div>
+        <template if:true={expandSection}>
+            
+            <c-top-market-information onrecordupdateinfo={checkRecordUpdateInfo} record-id={recordId}></c-top-market-information>
+            <c-company-wide-biC-infromation is-admin-profile={isAdminProfile} is-readonly={isReadonly} record-id={recordId} onrecordupdateinfo={checkRecordUpdateInfo}></c-company-wide-biC-infromation>
+        </template>
+    </article> 
+   
+</template>

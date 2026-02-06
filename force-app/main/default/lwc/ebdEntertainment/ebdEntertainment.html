@@ -1,0 +1,158 @@
+<template>
+    <div>
+        <div class="section-header">
+            <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+                <span><b>Entertainment</b></span>
+            </div>
+        </div>
+    </div>
+    <div class="slds-p-top_small  slds-text-align_right slds-text-heading_small">
+        <template lwc:if={isEditMode}>
+
+            <lightning-button label="Clear Data" variant="Neutral" alternative-text="Clear entire table" size="xx-small"
+                title="Clear entire table" class="clear-data-btn" onclick={deleteAllRows}>
+            </lightning-button>
+            
+            <template if:true={showConfirmModalForEntertainment}>
+                <section role="dialog" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header" style="background-color: #ba0517; color: white;">
+                            <h2 class="slds-text-heading_medium">Confirmation</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <p class="slds-text-heading_small slds-text-align_center slds-p-horizontal_large">
+                                This action will clear all data in the table. Are you sure you want to proceed?
+                            </p>
+                            <!-- This action will clear all data in the table. Are you sure you want to proceed? -->
+                            <div style="text-align: center;" class="slds-p-top_large">
+                            <lightning-button label="Continue" onclick={handleConfirmDelete}>
+                            </lightning-button>
+
+                            <lightning-button label="Cancel" onclick={handleCancelDelete} class="slds-m-left_x-small">
+                            </lightning-button>
+                        </div>
+                        </div>
+                        
+                        <!--<footer class="slds-modal__footer">
+                            <lightning-button label="Delete" variant="neutral" onclick={handleConfirmDelete}
+                                class="slds-m-left_small"></lightning-button>
+                            <lightning-button label="Cancel" onclick={handleCancelDelete}></lightning-button>
+
+                        </footer>-->
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </template>
+        <template lwc:else>
+            <lightning-button label="Clear Data" variant="Neutral" class="clear-data-btn" disabled alternative-text="Clear entire table"
+                size="xx-small" title="Clear entire table" onclick={deleteAllRows}>
+            </lightning-button>
+        </template>
+    </div>
+    <div class="slds-p-top_small slds-p-bottom_large">
+        <table class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <thead class="header-color">
+                <tr>
+                    <td class="slds-border_right" colspan="3"> <b>Client Representative(s)</b></td>
+                    <td class="slds-border_right" colspan="3"><b> Event </b></td>
+                    <td class="slds-border_right" colspan="3"><b> Timing </b></td>
+                    <td  colspan="3"> <b>UHG Representative(s) </b></td>
+                    <td colspan="1">
+                        <div class="slds-text-align_right">
+                            <template lwc:if={isEditMode}>
+                                <lightning-icon icon-name="action:new" data-index={index} alternative-text="Add new row"
+                                     title="Add new row" onclick={addEntertainmentRow} size="xx-small">
+                                </lightning-icon>
+                            </template>
+                            <template lwc:else>
+                                <lightning-icon icon-name="action:new" alternative-text="Add new row" size="xx-small"
+                                    title="Add new row" class="disabled-icon">
+                                </lightning-icon>
+                            </template>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <template lwc:if={entertainmentsData}>
+                <template lwc:if={entertainmentsData.length}>
+                <template for:each={entertainmentsData} for:item="rec" for:index="index">
+                    <tr key={rec.id}>
+                        <td colspan="3" class="slds-border_right" >
+                            <template lwc:if={isEditMode}>
+                                <lightning-textarea  type="text" name="Client_Representative_s__c" data-index={index}
+                                    onchange={handleChange} value={rec.Client_Representative_s__c} max-length="255"></lightning-textarea>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-text
+                                    value={rec.Client_Representative_s__c} style="word-wrap: break-word; white-space: normal;"></lightning-formatted-text>
+                            </template>
+                        </td>
+                        <td colspan="3" class="slds-border_right" >
+                            <template lwc:if={isEditMode}>
+                                <lightning-textarea type="text" name="Event__c" data-index={index}
+                                    onchange={handleChange} value={rec.Event__c} max-length="255">
+                                </lightning-textarea>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-text style="word-wrap: break-word; white-space: normal;"
+                                    value={rec.Event__c}></lightning-formatted-text>
+                                <!--<span>{}</span>-->
+                            </template>
+                        </td>
+                        <td class="slds-border_right" colspan="3">
+                            <template lwc:if={isEditMode}>
+                                <lightning-textarea type="text" name="Timing__c" data-index={index}
+                                    value={rec.Timing__c} onchange={handleChange} max-length="255">
+                                </lightning-textarea>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-text style="word-wrap: break-word; white-space: normal;"
+                                    value={rec.Timing__c}></lightning-formatted-text>
+                                <!--<span>{rec.Timing__c}</span>-->
+                            </template>
+                        </td>
+                        <td  colspan="3">
+                            <template lwc:if={isEditMode}>
+                                <lightning-textarea type="text" name="UHG_Representative_s__c"
+                                    value={rec.UHG_Representative_s__c} data-index={index} onchange={handleChange} max-length="255">
+                                </lightning-textarea>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-text style="word-wrap: break-word; white-space: normal;"
+                                    value={rec.UHG_Representative_s__c}></lightning-formatted-text>
+                                <!--<span>{rec.UHG_Representative_s__c}</span>-->
+                            </template>
+                        </td>
+                        <td colspan="1" class="slds-border_right">
+                            <div class="slds-text-align_right">
+                                <template lwc:if={isEditMode}>
+                                    <lightning-icon icon-name="action:delete" data-index={index}
+                                        alternative-text="Delete this row" size="xx-small" title="Delete this row"
+                                        onclick={removeEntertainmentRow}>
+                                    </lightning-icon>
+                                </template>
+                                <template lwc:else>
+                                    <lightning-icon icon-name="action:delete" alternative-text="Delete this row" size="xx-small"
+                                        title="Delete this row" class="disabled-icon">
+                                    </lightning-icon>
+                                </template>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                </template>
+                <!--<template lwc:else>
+                    <tr>
+                        <td colspan="5" class="slds-text-align_center"> No records to display</td>
+                    </tr>
+                </template>-->
+                </template>
+                <!--<template lwc:else>
+                    <td colspan="5" class="slds-text-align_center"> No records to display</td>
+                </template>-->
+            </tbody>
+        </table>
+    </div>
+</template>

@@ -1,0 +1,393 @@
+<template>
+  <template lwc:if={isEdit}>
+    <div class="container">
+      <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+        <p>
+          <strong>Payment Integrity - Surest </strong>
+        </p>
+      </div>
+      <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+        style="background-color:#F7F8E0; margin-bottom: 1rem;">
+        {label.PCC_Payment_Integrity_Text}
+      </p>
+      <div class="slds-float_right slds-m-right_large slds-m-top_x-small slds-m-bottom_x-small">
+        <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleCancel} icon-name="action:remove">
+        </lightning-button>
+        <lightning-button variant="brand" label="Save" class="slds-m-left_x-small" onclick={handleSave}
+          icon-name="utility:save">
+        </lightning-button>
+      </div>
+      <br>
+      <div class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small">
+        <table class="payment-integrity-styles">
+          <colgroup>
+            <col style="width: 60%;">
+            <col style="width: 40%;">
+          </colgroup>
+          <tr class="border-bottom">
+            <td colspan="col"><b>Payment Integrity Bundles</b></td>
+            <td colspan="col">
+              <lightning-combobox value={renewalChecklistData.Payment_Integrity_Bundles_Surest__c}
+                placeholder="---None---" options={paymentIntegBundlesOptions} variant="label-hidden"
+                onchange={handleChange} data-api="Payment_Integrity_Bundles_Surest__c">
+              </lightning-combobox>
+            </td>
+          </tr>
+        </table>
+
+        <template lwc:if={isSimplified}>
+          <table class="payment-integrity-styles">
+            <colgroup>
+              <col style="width: 60%;">
+              <col style="width: 20%;">
+              <col style="width: 20%;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th colspan="col">PI Service</th>
+                <th colspan="col">Rate</th>
+                <th colspan="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-bottom">
+                <td colspan="col">Pre-Pay</td>
+                <template lwc:if={nonStandardOptions}>
+                  <td colspan="col">
+                    <lightning-input type="number" name="input1" onchange={handleChange}
+                      data-api="Surest_Pre_Pay_Rate__c" variant="label-hidden" step=".01"
+                      value='{renewalChecklistData.Surest_Pre_Pay_Rate__c}'></lightning-input>
+                  </td>
+                  <td colspan="col">
+                    <lightning-combobox value={renewalChecklistData.Surest_Pre_Pay_Status__c} placeholder="---None---"
+                      options={prePayOptions} variant="label-hidden" onchange={handleChange}
+                      data-api="Surest_Pre_Pay_Status__c">
+                    </lightning-combobox>
+                  </td>
+                </template>
+                <template lwc:else>
+                  <td colspan="col">
+                    <lightning-input type="number" name="input1" onchange={handleChange}
+                      data-api="Surest_Pre_Pay_Rate__c" variant="label-hidden" step=".01"
+                      value='{renewalChecklistData.Surest_Pre_Pay_Rate__c}' disabled></lightning-input>
+                  </td>
+                  <td colspan="col">
+                    <lightning-combobox value={renewalChecklistData.Surest_Pre_Pay_Status__c} placeholder="---None---"
+                      options={prePayOptions} variant="label-hidden" onchange={handleChange}
+                      data-api="Surest_Pre_Pay_Status__c" read-only>
+                    </lightning-combobox>
+                  </td>
+                </template>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Post-Pay</td>
+                <template lwc:if={nonStandardOptions}>
+                  <td colspan="col">
+                    <lightning-input type="number" name="input1" onchange={handleChange}
+                      data-api="Surest_Post_Pay_Rate__c" variant="label-hidden" step=".01"
+                      value='{renewalChecklistData.Surest_Post_Pay_Rate__c}'></lightning-input>
+                  </td>
+                  <td colspan="col">
+                    <lightning-combobox value={renewalChecklistData.Surest_Post_Pay_Status__c} placeholder="---None---"
+                      options={postPayOptions} variant="label-hidden" onchange={handleChange}
+                      data-api="Surest_Post_Pay_Status__c">
+                    </lightning-combobox>
+                  </td>
+                </template>
+                <template lwc:else>
+                  <td colspan="col">
+                    <lightning-input type="number" name="input1" onchange={handleChange}
+                      data-api="Surest_Post_Pay_Rate__c" variant="label-hidden" step=".01"
+                      value='{renewalChecklistData.Surest_Post_Pay_Rate__c}' disabled></lightning-input>
+                  </td>
+                  <td colspan="col">
+                    <lightning-combobox value={renewalChecklistData.Surest_Post_Pay_Status__c} placeholder="---None---"
+                      options={postPayOptions} variant="label-hidden" onchange={handleChange}
+                      data-api="Surest_Post_Pay_Status__c" read-only>
+                    </lightning-combobox>
+                  </td>
+                </template>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Subrogation</td>
+                <template lwc:if={nonStandardOptions}>
+                  <td colspan="col">
+                    <lightning-input type="number" name="input1" onchange={handleChange}
+                      data-api="Surest_Subrogation_Rate__c" variant="label-hidden" step=".01"
+                      value='{renewalChecklistData.Surest_Subrogation_Rate__c}'></lightning-input>
+                  </td>
+                  <td colspan="col">
+                    <lightning-combobox value={renewalChecklistData.Surest_Subrogation_Status__c}
+                      placeholder="---None---" options={subrogationOptions} variant="label-hidden"
+                      onchange={handleChange} data-api="Surest_Subrogation_Status__c">
+                    </lightning-combobox>
+                  </td>
+                </template>
+                <template lwc:else>
+                  <td colspan="col">
+                    <lightning-input type="number" name="input1" onchange={handleChange}
+                      data-api="Surest_Subrogation_Rate__c" variant="label-hidden" step=".01"
+                      value='{renewalChecklistData.Surest_Subrogation_Rate__c}' disabled></lightning-input>
+                  </td>
+                  <td colspan="col">
+                    <lightning-combobox value={renewalChecklistData.Surest_Subrogation_Status__c}
+                      placeholder="---None---" options={subrogationOptions} variant="label-hidden"
+                      onchange={handleChange} data-api="Surest_Subrogation_Status__c" read-only>
+                    </lightning-combobox>
+                  </td>
+                </template>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Coordination of Benefits</td>
+                <template lwc:if={nonStandardOptions}>
+                  <td colspan="col">
+                    <lightning-input type="number" name="input1" step=".01"
+                      data-api="Surest_Coordination_of_Benefits_Rate__c" variant="label-hidden" onchange={handleChange}
+                      value='{renewalChecklistData.Surest_Coordination_of_Benefits_Rate__c}'></lightning-input>
+                  </td>
+                  <td colspan="col">
+                    <lightning-combobox value={renewalChecklistData.Surest_Coordination_of_Benefits_Status__c}
+                      placeholder="---None---" options={coOrdinationOfBenifitsOptions} onchange={handleChange}
+                      variant="label-hidden" data-api="Surest_Coordination_of_Benefits_Status__c">
+                    </lightning-combobox>
+                  </td>
+                </template>
+                <template lwc:else>
+                  <td colspan="col">
+                    <lightning-input type="number" name="input1" step=".01"
+                      data-api="Surest_Coordination_of_Benefits_Rate__c" variant="label-hidden" onchange={handleChange}
+                      value='{renewalChecklistData.Surest_Coordination_of_Benefits_Rate__c}' disabled></lightning-input>
+                  </td>
+                  <td colspan="col">
+                    <lightning-combobox value={renewalChecklistData.Surest_Coordination_of_Benefits_Status__c}
+                      placeholder="---None---" options={coOrdinationOfBenifitsOptions} onchange={handleChange}
+                      variant="label-hidden" data-api="Surest_Coordination_of_Benefits_Status__c" read-only>
+                    </lightning-combobox>
+                  </td>
+                </template>
+              </tr>
+              <tr class="border-bottom">
+                <template lwc:if={nonStandardOptions}>
+                  <td colspan="col">Claims Tracking and Validation (CTV) Audit </td>
+                  <td colspan="col">
+                    <lightning-input type="number" name="input1" variant="label-hidden" onchange={handleChange}
+                      step=".01" data-api="Surest_CTV_Audit_Rate__c"
+                      value='{renewalChecklistData.Surest_CTV_Audit_Rate__c}'></lightning-input>
+                  </td>
+                  <td colspan="col">
+                    <lightning-combobox value={renewalChecklistData.Surest_CTV_Audit_Status__c} placeholder="---None---"
+                      options={ctvAuditOptions} onchange={handleChange} variant="label-hidden"
+                      data-api="Surest_CTV_Audit_Status__c">
+                    </lightning-combobox>
+                  </td>
+                </template>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+        <template lwc:if={isLegecy}>
+          <table class="payment-integrity-styles">
+            <colgroup>
+              <col style="width: 80%;">
+              <col style="width: 20%;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th colspan="col">PI Service</th>
+                <th colspan="col">Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-bottom">
+                <td colspan="col">Fraud Waste and Abuse Management Program</td>
+                <td colspan="col">
+                  <lightning-input type="number" name="input1" onchange={handleChange}
+                    data-api="Surest_Fraud_Waste_and_Abuse_Mgmt_Prgrm__c" variant="label-hidden" step=".01"
+                    value='{renewalChecklistData.Surest_Fraud_Waste_and_Abuse_Mgmt_Prgrm__c}'></lightning-input>
+                </td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Credit Balance Recovery Program</td>
+                <td colspan="col">
+                  <lightning-input type="number" name="input1" onchange={handleChange}
+                    data-api="Surest_Credit_Balance_Recovery_Prgm_Rate__c" variant="label-hidden" step=".01"
+                    value='{renewalChecklistData.Surest_Credit_Balance_Recovery_Prgm_Rate__c}'></lightning-input>
+                </td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Coordination of Benefits</td>
+                <td colspan="col">
+                  <lightning-input type="number" name="input1" onchange={handleChange}
+                    data-api="Surest_Coordination_of_Benefits_Rate__c" variant="label-hidden" step=".01"
+                    value='{renewalChecklistData.Surest_Coordination_of_Benefits_Rate__c}'></lightning-input>
+                </td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Subrogation Services</td>
+                <td colspan="col">
+                  <lightning-input type="number" name="input1" onchange={handleChange}
+                    data-api="Surest_Subrogation_Services_Rate__c" variant="label-hidden" step=".01"
+                    value='{renewalChecklistData.Surest_Subrogation_Services_Rate__c}'></lightning-input>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </div>
+    </div>
+  </template>
+  <template lwc:else>
+    <div class="container">
+      <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
+        <p>
+          <strong>Payment Integrity - Surest </strong>
+        </p>
+      </div>
+      <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
+        style="background-color:#F7F8E0; margin-bottom: 1rem;">
+        {label.PCC_Payment_Integrity_Text}
+      </p>
+      <template if:true={hideEdit}>
+      <div class="slds-float_right slds-m-top_x-small">
+        <lightning-button variant="brand" label="Edit" class="slds-m-left_x-small" onclick={handlePaymentIntegrity}
+          icon-name="action:edit">
+        </lightning-button>
+      </div>
+      </template>
+      <br>
+      <div class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small">
+
+        <table class="payment-integrity-styles">
+          <colgroup>
+            <col style="width: 60%;">
+            <col style="width: 20%;">
+            <col style="width: 20%;">
+          </colgroup>
+          <tr class="border-bottom">
+            <td colspan="col"><b>Payment Integrity Bundles</b></td>
+            <td colspan="col"></td>
+            <td colspan="col">{renewalChecklistData.Payment_Integrity_Bundles_Surest__c}</td>
+          </tr>
+        </table>
+
+        <template lwc:if={isSimplified}>
+          <table class="payment-integrity-styles">
+            <colgroup>
+              <col style="width: 60%;">
+              <col style="width: 20%;">
+              <col style="width: 20%;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th colspan="col">PI Service</th>
+                <th colspan="col">Rate</th>
+                <th colspan="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-bottom">
+                <td colspan="col">Pre-Pay</td>
+                <td colspan="col">
+                  <lightning-formatted-number value={renewalChecklistData.Surest_Pre_Pay_Rate__c}
+                    minimum-fraction-digits="2">
+                  </lightning-formatted-number>%
+                </td>
+                <td colspan="col">{renewalChecklistData.Surest_Pre_Pay_Status__c}</td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Post-Pay</td>
+                <td colspan="col">
+                  <lightning-formatted-number value={renewalChecklistData.Surest_Post_Pay_Rate__c}
+                    minimum-fraction-digits="2">
+                  </lightning-formatted-number>%
+                </td>
+                <td colspan="col">{renewalChecklistData.Surest_Post_Pay_Status__c}</td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Subrogation</td>
+                <td colspan="col">
+                  <lightning-formatted-number value={renewalChecklistData.Surest_Subrogation_Rate__c}
+                    minimum-fraction-digits="2">
+                  </lightning-formatted-number>%
+                </td>
+                <td colspan="col">{renewalChecklistData.Surest_Subrogation_Status__c}</td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Coordination of Benefits</td>
+                <td colspan="col">
+                  <lightning-formatted-number value={renewalChecklistData.Surest_Coordination_of_Benefits_Rate__c}
+                    minimum-fraction-digits="2">
+                  </lightning-formatted-number>%
+                </td>
+                <td colspan="col">
+                  {renewalChecklistData.Surest_Coordination_of_Benefits_Status__c}
+                </td>
+              </tr>
+              <tr class="border-bottom">
+                <template lwc:if={nonStandardOptions}>
+                  <td colspan="col">Claims Tracking and Validation (CTV) Audit</td>
+                  <td>
+                    <lightning-formatted-number value={renewalChecklistData.Surest_CTV_Audit_Rate__c}
+                      minimum-fraction-digits="2">
+                    </lightning-formatted-number>%
+                  </td>
+                  <td colspan="col">
+                    {renewalChecklistData.Surest_CTV_Audit_Status__c}
+                  </td>
+                </template>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+        <template lwc:if={isLegecy}>
+          <table class="payment-integrity-styles">
+            <colgroup>
+              <col style="width: 80%;">
+              <col style="width: 20%;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th colspan="col">PI Service</th>
+                <th colspan="col">Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-bottom">
+                <td colspan="col">Fraud Waste and Abuse Management Program</td>
+                <td colspan="col">
+                  <lightning-formatted-number value={renewalChecklistData.Surest_Fraud_Waste_and_Abuse_Mgmt_Prgrm__c}
+                    minimum-fraction-digits="2">
+                  </lightning-formatted-number>%
+                </td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Credit Balance Recovery Program</td>
+                <td colspan="col">
+                  <lightning-formatted-number value={renewalChecklistData.Surest_Credit_Balance_Recovery_Prgm_Rate__c}
+                    minimum-fraction-digits="2">
+                  </lightning-formatted-number>%
+                </td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Coordination of Benefits</td>
+                <td colspan="col">
+                  <lightning-formatted-number value={renewalChecklistData.Surest_Coordination_of_Benefits_Rate__c}
+                    minimum-fraction-digits="2">
+                  </lightning-formatted-number>%
+                </td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="col">Subrogation Services</td>
+                <td colspan="col">
+                  <lightning-formatted-number value={renewalChecklistData.Surest_Subrogation_Services_Rate__c}
+                    minimum-fraction-digits="2">
+                  </lightning-formatted-number>%
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </div>
+    </div>
+  </template>
+</template>

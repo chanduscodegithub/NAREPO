@@ -1,0 +1,109 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="CurrentProductApex">
+    
+    <aura:attribute name="CurrentProductsData" type="ProductMix__c[]" />
+    <aura:attribute name="CPData" type="ProductMix__c" />
+    <aura:attribute name="currentProductLength" type="String" />
+    <aura:attribute name="currentProductAccountFirmId" type="Id" />
+    <aura:attribute name="isShow" type="boolean" default="false" />
+    <aura:attribute name="ShowComponent" type="boolean" default="false" />    
+    <aura:attribute name="isEmpty" type="boolean" default="false" />
+    <aura:attribute name="isAdmin" type="boolean" default="false" />
+    <aura:attribute name="concat" type="boolean" default="false" />
+    <!-- <aura:attribute name="CompanyName" type="String" /> -->
+    <aura:attribute name="delrecordId" type="Id" />
+    <aura:attribute name="paginationrequired" type="boolean" default="false" />
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:handler event="force:showToast" action="{!c.refreshAll}" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:handler name="CurrentProductEvent" event="c:CurrentProductEvent" action="{!c.handleMyCurrentproductEvent}"/>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    
+    <div aura:id="Current_Product" class="slds-section" style="clear:both;">
+        <article class="slds-card slds-card_boundary slds-is-relative" style="-webkit-overflow-scrolling: touch">
+            <div class="slds-card__header slds-grid" data-record="Current_product" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button type="button" class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="" />
+                        </button>
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="Membership Activities">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:article" size="small" alternativeText="Account Opportunities" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-is-relative">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                               
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-grid flex-alignCenter"> 
+                            <span class="slds-card__header-title slds-truncate slds-m-right--xx-small bold">
+                                <a onclick="{!c.openRelatedList}" style="text-decorations:none; color:inherit;" title="Currrent Products" >Currrent Products <!--({!v.currentProductLength})--></a>
+                            </span> 
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-hide slds-card__body" aura:id="TableBody">
+                
+                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                    <thead data-aura-rendered-by="3401:0">
+                        <tr class="slds-hint-parent"></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="slds-hint-parent" style="height: 100px;">
+                            <td class="slds-text-align_center" style="font-size: 12pt;opacity: 1.4;">This section is being revised.  Please contact the Merit Help Desk with any questions.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </div>    
+    <!-- <aura:if isTrue="{!v.isShow}">
+        <aura:iteration items="{!v.CurrentProductsData}" var="item">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-popover">
+                    <header class="slds-media slds-media_center slds-m-bottom_small">
+                        <span class="slds-icon_container slds-icon-standard-account slds-media__figure">
+                            <lightning:icon iconName="standard:article" size="Small"/>
+                        </span>
+                        <div class="slds-media__body">
+                            <h2 class="slds-text-heading_medium slds-hyphenate" id="panel-heading-id"><a href="javascript:void(0);">{!item.AccountFirm__r.Name}  - Current Product</a></h2>
+                        </div>
+                    </header>
+                </div>
+            </section>
+        </aura:iteration>
+    </aura:if> -->
+    
+    <!--<aura:if isTrue="{!v.ShowComponent}">
+        <c:DeleteCurrentProduct delrecordId="{!v.delrecordId}" aura:id="CurrentProductChild"> </c:DeleteCurrentProduct>
+    </aura:if>-->
+</aura:component>

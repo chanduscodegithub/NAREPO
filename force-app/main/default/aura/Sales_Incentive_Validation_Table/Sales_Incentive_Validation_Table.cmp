@@ -1,0 +1,444 @@
+<aura:component controller="SalesIncentiveValidationController">
+    <aura:attribute name="renewalStatus" type="Object"/>                  
+    <aura:attribute name="isEdit" type="Boolean" default="false" />
+    <aura:attribute name="picklistFieldsMapData" type="Map"/>
+    <aura:attribute name="productConfirmedpicklistMapData" type="Map"/>
+    <aura:attribute name="productConfirmedPicklist" type="List" default="[]"/>
+
+    
+    <aura:attribute name="renewalConfirmedPicklist" type="List" default="[]"/>
+    <aura:attribute name="accountId" type="String"/>
+    
+    <aura:attribute name="productConfirmedSelectedPicklist" type="List" default="[]"/>
+    
+    <aura:attribute name="renewalStatusRecordsTobeUpdatedMap" type="Map"/>
+    
+    <aura:attribute name="productsConfirmedPicklistValueMap" type="Map"/>
+    <aura:attribute name="renewalConfirmedPicklistValueMap" type="Map"/>
+    
+    
+    <aura:attribute name="eachYearRenewalStatusRecordsTobeUpdatedMap" type="Map"/>
+    
+    <aura:attribute name="isRenewalConfirmedValueContainsYes" type="Boolean" default="false"/>
+    <aura:attribute name="isPrdctTypeEnabledForPrdctDtl" type="Boolean" default="false"/>
+    
+    <aura:attribute name="width" type="String" default="158px;" />
+    <aura:attribute name="dropdownLength" type="Integer" />
+    <aura:attribute name="dropdownOver" type="Boolean" default="false" />
+    <aura:attribute name="options_" type="List" />
+    <aura:attribute name="infoText" type="String" default="Select an option..." />
+    <aura:attribute name="label" type="String" default="" />
+    <aura:attribute name="variant" type="String" default="" description="to hide label, add 'label-hidden' as a variant" />
+    
+    <aura:attribute name="selectedRecord" type="sObject" default="{}" />
+    <!--<aura:attribute name="selectedRecord2" type="sObject" default="{}"/>-->
+    <aura:attribute name="listOfSearchRecords" type="List" />
+    <aura:attribute name="listOfSearchRecords2" type="List"/>
+    <aura:attribute name="SearchKeyWord" type="string"/>
+    <aura:attribute name="SearchKeyWord2" type="string"/>
+    <aura:attribute name="IconName" type="string" default=""/>
+    <aura:attribute name="IconName2" type="string" default=""/>
+    <aura:attribute name="Message" type="String" default=""/>
+    <aura:attribute name="selectedRecord1" type="sObject" default="{}" />
+    <aura:attribute name="LookupVal1" type="string"/>
+    <aura:attribute name="LookupVal2" type="string"/>
+    <aura:attribute name="LookupVal" type="string"/>
+    
+    <aura:attribute name="loggedInUserTimeZone" type="String"/>
+    
+    <aura:attribute name="selectedRecordName" type="String" default="" />
+    <aura:attribute name="selectedRecord2Name" type="String" default="" />
+    
+    <aura:registerEvent name="salesIncentivesValidationTableEvnt" type="c:Sales_Incentives_Validation_Table_Event"/>
+    <aura:handler name="onSelectedRecordEvent" event="c:selectedsObjectRecordEvnt" action="{!c.handleComponentEvent}"/>
+    
+    <aura:method name="editFields" action="{!c.editSalesIncentiveRecords}" access="PUBLIC" />
+    <aura:attribute name="firstRecordFromWhichDataFlows" type="Object"/>
+    <aura:attribute name="selectAllCheckBoxValue" type="boolean"/>
+    <aura:attribute name="selectAllReadyToSendRecordsMap" type="Map"/>
+    <aura:attribute name="existingReadyToSendCheckedRecordsMap" type="Map"/>
+    
+    <aura:attribute name="loggedInUserName" type="String"/>
+    
+    <aura:attribute name="loggedInUserInfoObj" type="Object"/>
+    <aura:handler name="render" value="{!this}" action="{!c.onRender}"/>
+    
+    
+    <tr aura:id="renewalStatusEachRow">
+        <aura:if isTrue="{!v.isEdit}">
+            <td scope="row" style="padding:0.2rem;">
+                <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Name}</div>            
+            </td>
+            <!-- <td scope="row">
+                <ui:inputCheckbox aura:id="isRenStatusRec" value="{!v.renewalStatus.isRenewalStatusRecord__c}" change="{!c.renewalStatusRecordChangeHandler}"/>
+            </td> -->
+            <td scope="row">
+                <aura:if isTrue="{!and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined)}">
+                    <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Renewal_Confirmed_Members_Sale__c}</div>  
+                    <aura:set attribute="else">
+                        <div class="slds-cell-wrap sp2" title="">
+                            <lightning:select aura:id="Renewal_Confirmed_Members_Sale__c" name="Renewal_Confirmed_Members_Sale" label="" 
+                                              value="{!v.renewalStatus.Renewal_Confirmed_Members_Sale__c}"
+                                              onchange="{! c.renewalConfirmedChangeHandler }">
+                                <!--<aura:iteration items="{!v.picklistFieldsMapData.Renewal_Confirmed_Members_Sale__c}" var="option">-->
+                                <aura:iteration items="{!v.renewalConfirmedPicklist}" var="option">
+                                    <option text="{!option}" value="{!option}" selected="{!option==v.renewalStatus.Renewal_Confirmed_Members_Sale__c}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </aura:set>
+                </aura:if> 
+            </td>
+            <td scope="row">
+               <!-- <aura:if isTrue="{!and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),or(or(v.renewalStatus.Product_Line__c == 'Financial Protection',v.renewalStatus.Product_Line__c == 'Financial Accounts'),v.renewalStatus.Product_Line__c == 'Group Retiree (URS)'))}"> -->
+                <aura:if isTrue="{!and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.isPrdctTypeEnabledForPrdctDtl==true)}">
+                    <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Product_Confirmed__c}</div>  
+                    <aura:set attribute="else">
+                        <div class="slds-cell-wrap sp2" title="">
+                           <!-- <aura:if isTrue="{!or(or(v.renewalStatus.Product_Line__c == 'Financial Protection',v.renewalStatus.Product_Line__c == 'Financial Accounts'),v.renewalStatus.Product_Line__c == 'Group Retiree (URS)')}"> -->
+                            	<aura:if isTrue="{!v.isPrdctTypeEnabledForPrdctDtl}">
+                                <!-- <lightning:select aura:id="Product_Confirmed__c" name="Product_Confirmed" label="" value="{!v.renewalStatus.Product_Confirmed__c}"
+                                                  onchange="{!c.productsConfirmedChangeHandler}">
+
+                                   <aura:iteration items="{!v.productConfirmedPicklist}" var="option">
+                                        <option text="{!option}" value="{!option}" selected="{!option==v.renewalStatus.Product_Confirmed__c}"/>
+                                    </aura:iteration>
+                                </lightning:select> -->
+                                <!--  <ui:inputSelect multiple="true" class="multiple" aura:id="Product_Confirmed__c" value="{!v.renewalStatus.Product_Confirmed__c}" change="{!c.productsConfirmedChangeHandler}">
+                                 <aura:iteration items="{!v.productConfirmedPicklist}" var="option">
+                                        <ui:inputSelectOption text="{!option}" value="{!v.renewalStatus.Product_Confirmed__c}"/>
+
+                                    </aura:iteration>
+                                </ui:inputSelect> -->
+                                
+                                <div class="slds-form-element" style="{!'width:' + v.width }">
+                                    <label class="{!if (v.variant == 'label-hidden' , 'slds-hide' , 'slds-form-element__label')}" for="combobox-id-1">{!v.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-combobox_container">
+                                            <div aura:id="main-div" class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                                    <input type="text" class="slds-input slds-combobox__input" id="combobox-id-1" aria-controls="listbox-id-1" autoComplete="off" role="textbox" placeholder="{!v.infoText}" readonly="" onclick="{!c.handleClick}" onmouseleave="{!c.handleMouseOutButton}" />
+                                                    <span class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right">
+                                                        <lightning:icon iconName="utility:down" size="x-small" class="slds-icon slds-icon slds-icon_x-small slds-icon-text-default" />
+                                                    </span>
+                                                </div>
+                                                
+                                                <!--<div class="{!'slds-dropdown  slds-dropdown_fluid' + v.dropdownLength}" onmouseenter="{!c.handleMouseEnter}" onmouseleave="{!c.handleMouseLeave}" role="listbox">
+                                                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">-->
+                                                <div class="slds-dropdown slds-dropdown_fluid" onmouseenter="{!c.handleMouseEnter}" onmouseleave="{!c.handleMouseLeave}">
+                                                    <ul class="{!'slds-dropdown__list slds-dropdown--length-' + v.dropdownLength}" role="menu">
+                                                        <aura:iteration items="{!v.options_}" var="option">
+                                                            <li class="slds-listbox__item" role="presentation" onclick="{!c.handleSelection}" data-value="{!option.value}" data-selected="{!option.selected}">
+                                                                <div class="{!' slds-media  slds-listbox__option_plain slds-media_small slds-listbox__option ' + (option.selected == true ? ' slds-is-selected' : '')}" role="option">
+                                                                    <span class="slds-media__figure">
+                                                                        <lightning:icon iconName="utility:check" size="x-small" class="slds-icon-utility-check slds-current-color slds-listbox__icon-selected slds-icon_container" />
+                                                                    </span>
+                                                                    
+                                                                    <span class="slds-media__body">
+                                                                        <span class="slds-truncate" title="{!option.label}">&nbsp;{!option.label}</span>
+                                                                    </span>
+                                                                </div>
+                                                                
+                                                            </li>
+                                                        </aura:iteration>
+                                                    </ul>
+                                                </div>
+                                                
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </aura:if>
+                        </div> 
+                    </aura:set>
+                </aura:if>
+            </td>
+            <td scope="row">
+                <!-- <aura:if isTrue="{!and(and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Product_Line__c != 'Medical'),v.renewalStatus.Product_Line__c != 'Financial Protection')}"> -->
+                <aura:if isTrue="{!and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes')}">
+                    <ui:outputCheckbox value="{!v.renewalStatus.Submit_For_Sales_Incentives__c}"/>
+                    <aura:set attribute="else">
+                        <!--<aura:if isTrue="{!and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection')}"> -->
+                        <!-- <aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection'),v.isRenewalConfirmedValueContainsYes == true)}"> -->
+                        <aura:if isTrue="{!and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true)}">
+                            <ui:inputCheckbox aura:id="submitForSalesIncentives" value="{!v.renewalStatus.Submit_For_Sales_Incentives__c}" change="{!c.submitForSalesIncentivesChangeHandler}"/>
+                        </aura:if>
+                        <!-- <aura:if isTrue="{!and(or(v.renewalStatus.Product_Line__c == 'Medical',v.renewalStatus.Product_Line__c == 'Financial Protection'),or(v.isRenewalConfirmedValueContainsYes == true,
+                                         v.renewalStatus.Renewal_Confirmed_Members_Sale__c=='No–Full Cancel'))}">-->
+                        <aura:if isTrue="{!and(v.renewalStatus.Eligible_for_Sales_Incentives__c!='Yes',v.isRenewalConfirmedValueContainsYes == true)}">
+                            NA
+                        </aura:if>
+                        <aura:if isTrue="{!v.renewalStatus.Renewal_Confirmed_Members_Sale__c=='No-Full Cancel'}">
+                            NA
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </td>
+            <td scope="row">
+                <!-- <aura:if isTrue="{!and(and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Product_Line__c != 'Medical'),v.renewalStatus.Product_Line__c != 'Financial Protection')}"> -->
+                <aura:if isTrue="{!and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes')}">
+                    <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Will_sales_incentives_be_split__c}</div>  
+                    <aura:set attribute="else">
+                        <div class="slds-cell-wrap sp2" title="">
+                            <!--  <aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection'),or(v.isRenewalConfirmedValueContainsYes == true,v.renewalStatus.Submit_For_Sales_Incentives__c==true))}"> -->
+                            <!--  <aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection'),v.renewalStatus.Submit_For_Sales_Incentives__c==true)}">  -->
+                            <!--  <aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection'),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.isRenewalConfirmedValueContainsYes == true))}"> -->
+                            <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),v.renewalStatus.Submit_For_Sales_Incentives__c==true)}">
+                                <lightning:select aura:id="Will_sales_incentives_be_split__c" name="Will_sales_incentives_be_split" label="" value="{!v.renewalStatus.Will_sales_incentives_be_split__c}"
+                                                  onchange="{! c.salesIncentivesBeSplitChangeHandler }">
+                                    <aura:iteration items="{!v.picklistFieldsMapData.Will_sales_incentives_be_split__c}" var="option">
+                                        <option text="{!option}" value="{!option}" selected="{!option==v.renewalStatus.Will_sales_incentives_be_split__c}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </aura:if>
+                        </div> 
+                    </aura:set>
+                </aura:if>
+            </td>
+            <td scope="row">
+                <!--<aura:if isTrue="{!and(and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Product_Line__c != 'Medical'),v.renewalStatus.Product_Line__c != 'Financial Protection')}">-->
+                <aura:if isTrue="{!and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes')}">
+                    <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Sales_person_1__r.Name}</div>  
+                    <aura:set attribute="else">
+                        <!-- <aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection'),or(v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes',v.renewalStatus.Will_sales_incentives_be_split__c == 'No'))}"> -->
+                        <!-- <aura:if isTrue="{!and(and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection'),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.isRenewalConfirmedValueContainsYes == true)),or(v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes',v.renewalStatus.Will_sales_incentives_be_split__c == 'No'))}"> -->
+                        <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),
+                                         and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,or(v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes',
+                                         v.renewalStatus.Will_sales_incentives_be_split__c == 'No')))}">
+                            <div class="slds-cell-wrap sp2 slds-form-element__control" title="" aura:id="Sales_Person_1_User__c">
+                                <div onmouseleave="{!c.onblur}" aura:id="searchRes" class="slds-form-element slds-lookup slds-is-close" data-select="single">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-input-has-icon slds-input-has-icon--right">
+                                            <lightning:icon class="slds-input__icon slds-hide" aura:id="removeSearch" iconName="utility:search" size="x-small" alternativeText="search"/>
+                                            <div aura:id="lookup-pill" class="slds-pill-container slds-hide">
+                                                <lightning:pill class="pillSize" label="{!v.selectedRecordName}" name="{!v.selectedRecordName}" onremove="{! c.clear }"/>
+                                            </div>
+                                            <div aura:id="userLookUpField1" class="slds-show">
+                                                <ui:inputText click="{!c.onfocus}" updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord}" placeholder="search.."/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul style="min-height:40px;margin-top:0px !important" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+                                        <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+                                        <center> {!v.Message}</center>
+                                        <aura:iteration items="{!v.listOfSearchRecords}" var="singleRec">
+                                            <c:customLookupCmp recordName="{!singleRec}" IconName="{!v.IconName}" LookupVal="SalesPerson1"/>
+                                        </aura:iteration>
+                                    </ul>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </td>
+            <td scope="row">
+                <!-- <aura:if isTrue="{!and(and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Product_Line__c != 'Medical'),v.renewalStatus.Product_Line__c != 'Financial Protection')}"> -->
+                <aura:if isTrue="{!and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes')}">
+                    <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Sales_Person_1_split_percentage__c}</div>  
+                    <aura:set attribute="else">
+                        <div class="slds-cell-wrap sp2" title="">
+                            <!-- <aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'),v.renewalStatus.Product_Line__c != 'Financial Protection')}">  -->
+                            <!-- <aura:if isTrue="{!and(and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'),v.renewalStatus.Product_Line__c != 'Financial Protection'),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.isRenewalConfirmedValueContainsYes == true))}"> -->
+                            <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'))}">  
+                                <!--  <lightning:select aura:id="Sales_Person_1_split_percentage__c" name="Sales_Person_1_split_percentage" label="" value="{!v.renewalStatus.Sales_Person_1_split_percentage__c}"
+                                                  onchange="{!c.splitPercentChangeHandler}">
+                                    <aura:iteration items="{!v.picklistFieldsMapData.Sales_Person_1_split_percentage__c}" var="option">
+                                        <option text="{!option}" value="{!option}" selected="{!option==v.renewalStatus.Sales_Person_1_split_percentage__c}"/>
+                                    </aura:iteration>
+                                </lightning:select> -->
+                                <lightning:input autocomplete="off" aura:id="Sales_Person_1_split_percentage__c" name="Sales_Person_1_split_percentage" label="" value="{!v.renewalStatus.Sales_Person_1_split_percentage__c}" onchange="{!c.splitPercentChangeHandler}"/>
+                                <aura:set attribute="else">
+                                    <!--<aura:if isTrue="{!and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.isRenewalConfirmedValueContainsYes == true)}">-->
+                                    <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.renewalStatus.Will_sales_incentives_be_split__c == 'No'))}">
+                                        <div class="slds-truncate slds-cell-wrap sp2" title="">{!v.renewalStatus.Sales_Person_1_split_percentage__c}</div>
+                                    </aura:if>                                                     
+                                </aura:set>
+                            </aura:if>
+                        </div> 
+                    </aura:set>
+                </aura:if>
+            </td>
+            <td scope="row">
+                <!-- <aura:if isTrue="{!and(and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Product_Line__c != 'Medical'),v.renewalStatus.Product_Line__c != 'Financial Protection')}"> -->
+                <aura:if isTrue="{!and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes')}">
+                    <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Sales_Person_2__r.Name}</div>  
+                    <aura:set attribute="else">
+                        <!-- <aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'),v.renewalStatus.Product_Line__c != 'Financial Protection')}"> -->
+                        <!-- <aura:if isTrue="{!and(and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'),v.renewalStatus.Product_Line__c != 'Financial Protection'),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.isRenewalConfirmedValueContainsYes == true))}"> -->
+                        <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'))}">
+                            <div class="slds-cell-wrap sp2 slds-form-element__control" title="" aura:id="Sales_Person_2__c">
+                                <div onmouseleave="{!c.onblur2}" aura:id="searchRes2" class="slds-form-element slds-lookup slds-is-close" data-select="single">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-input-has-icon slds-input-has-icon--right">
+                                            <span aura:id="removeSearchIcn"><lightning:icon class="slds-input__icon slds-show" aura:id="removeSearch2" iconName="utility:search" size="x-small" alternativeText="search"/></span>
+                                            <div aura:id="lookup-pill2" class="slds-pill-container slds-hide">
+                                                <lightning:pill class="pillSize" label="{!v.selectedRecord2Name}" name="{!v.selectedRecord2Name}" onremove="{! c.clear2 }"/>
+                                            </div>
+                                            <div aura:id="userLookUpField2" class="slds-show">
+                                                <ui:inputText click="{!c.onfocus2}" updateOn="keyup" keyup="{!c.keyPressController2}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord2}" placeholder="search.."/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul style="min-height:40px;margin-top:0px !important" class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds" role="listbox">
+                                        <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner"/>
+                                        <center> {!v.Message}</center>
+                                        <aura:iteration items="{!v.listOfSearchRecords2}" var="singleRec2">
+                                            <c:customLookupCmp recordName="{!singleRec2}" IconName="{!v.IconName2}" LookupVal="SalesPerson2"/>
+                                        </aura:iteration>
+                                    </ul>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </td>
+            <td scope="row">
+                <!--<aura:if isTrue="{!and(and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Product_Line__c != 'Medical'),v.renewalStatus.Product_Line__c != 'Financial Protection')}">-->
+                <aura:if isTrue="{!and(and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined),v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes')}">
+                    <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Sales_Person_2_Split_percentage__c}</div>  
+                    <aura:set attribute="else">
+                        <div class="slds-cell-wrap sp2" title="">
+                            <!-- <aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'),v.renewalStatus.Product_Line__c != 'Financial Protection')}"> -->
+                            <!-- <aura:if isTrue="{!and(and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'),v.renewalStatus.Product_Line__c != 'Financial Protection'),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.isRenewalConfirmedValueContainsYes == true))}"> -->
+                            <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'))}"> 
+                                <!-- <lightning:select aura:id="Sales_Person_2_Split_percentage__c" name="Sales_Person_2_Split_percentage" label="" value="{!v.renewalStatus.Sales_Person_2_Split_percentage__c}"
+                                                  onchange="{!c.}">
+                                    <aura:iteration items="{!v.picklistFieldsMapData.Sales_Person_2_Split_percentage__c}" var="option">
+                                        <option text="{!option}" value="{!option}" selected="{!option==v.renewalStatus.Sales_Person_2_Split_percentage__c}"/>
+                                    </aura:iteration>
+                                </lightning:select> -->
+                                <lightning:input autocomplete="off" aura:id="Sales_Person_2_Split_percentage__c" name="Sales_Person_2_Split_percentage" label="" value="{!v.renewalStatus.Sales_Person_2_Split_percentage__c}" onchange="{!c.splitPercentChangeHandler2}"/>
+                            </aura:if>
+                        </div> 
+                    </aura:set>
+                </aura:if>
+            </td>
+            <!-- <td scope="row">
+                <div class="slds-truncate slds-cell-wrap" title="">{!v.renewalStatus.Confirmed_By__c}</div>
+            </td>
+            <td scope="row">
+                <div class="slds-truncate slds-cell-wrap" title="">{!v.renewalStatus.Confirmed_Date__c}</div>
+            </td>-->
+            <!--<td scope="row">
+      <div class="slds-truncate slds-cell-wrap" title=""><ui:outputDate format="MM/dd/yy" value="{!v.renewalStatus.Date_Submitted_For_Incentives__c}"/></div>
+                <div class="slds-truncate slds-cell-wrap" title=""><ui:outputDateTime format="MM/dd/yy hh:mm a" value="{!v.renewalStatus.Date_Submitted_For_Incentives__c}" class="form-control" timezone="{!$Locale.timezone}"/></div>
+    <div class="slds-truncate slds-cell-wrap" title=""><ui:outputDateTime format="M/d/yyyy hh:mm a" value="{!v.renewalStatus.Date_Submitted_For_Incentives__c}" class="form-control" timezone="{!v.loggedInUserTimeZone}"/></div>
+
+            </td>-->
+            <td scope="row">
+                <div class="slds-truncate slds-cell-wrap sp2" title=""><ui:outputDateTime format="M/d/yyyy h:mm a" value="{!v.renewalStatus.Date_sent_to_ISI_Site__c}" class="form-control" timezone="{!v.loggedInUserInfoObj.loggedInUserTimeZone}"/></div>
+                
+            </td>  
+            <!-- <td scope="row">
+                <aura:if isTrue="{!and(v.renewalStatus.Submit_For_Sales_Incentives__c == true,v.renewalStatus.Date_sent_to_ISI_Site__c != undefined)}">
+                    <div class="slds-truncate slds-cell-wrap sp2" title=""><ui:outputDate format="M/d/yyyy" value="{!v.renewalStatus.Current_Deal_Next_Renewal_Date__c}"/></div>
+                    <aura:set attribute="else">
+                        <ui:inputDate aura:id="Current_Deal_Next_Renewal_Date__c" value="{!v.renewalStatus.Current_Deal_Next_Renewal_Date__c}" displayDatePicker="true" format="M/d/yyyy" change="{!c.crntDlNxtRnwlDtChangeHandler}"/>-->
+            <!--  <lightning:input type="date" aura:id="Current_Deal_Next_Renewal_Date__c" label="" name="date" value="{!v.renewalStatus.Current_Deal_Next_Renewal_Date__c}" onchange="{!c.crntDlNxtRnwlDtChangeHandler}"/> -->
+            
+            <!-- </aura:set>
+                </aura:if>
+            </td> -->
+            <!--  <td scope="row">
+                <aura:if isTrue="{!and(v.renewalStatus.Renewal_Confirmed_Members_Sale__c == 'Yes',v.renewalStatus.Date_sent_to_ISI_Site__c != undefined)}">
+                    <ui:outputCheckbox value="{!v.renewalStatus.isRenewalStatusRecord__c}"/>
+                    <aura:set attribute="else">
+                        <ui:inputCheckbox aura:id="isRenStatusRec" value="{!v.renewalStatus.isRenewalStatusRecord__c}" change="{!c.renewalStatusRecordChangeHandler}"/>
+                    </aura:set>
+                </aura:if>
+            </td> -->
+            
+            
+            <aura:set attribute="else"> 
+                
+                <td scope="row" style="padding:0.2rem;">
+                    <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Name}</div>            
+                </td>
+                <!--  <td scope="row">
+                    <ui:outputCheckbox value="{!v.renewalStatus.isRenewalStatusRecord__c}"/>
+                </td> -->
+                <td scope="row">
+                    <div class="slds-cell-wrap sp2" title="">{!v.renewalStatus.Renewal_Confirmed_Members_Sale__c}</div>
+                </td>
+                <td scope="row">
+                    <aura:if isTrue="{!v.isPrdctTypeEnabledForPrdctDtl}">
+                        <div class="slds-truncate slds-cell-wrap sp2" title="">{!v.renewalStatus.Product_Confirmed__c}</div>
+                    </aura:if>
+                </td>
+                <td scope="row">
+                    <!--<aura:if isTrue="{!and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection')}">-->
+                    <!--<aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection'),v.renewalStatus.Submit_For_Sales_Incentives__c == true)}">-->
+                    <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),v.renewalStatus.Submit_For_Sales_Incentives__c == true)}">
+                        
+                        <ui:outputCheckbox value="{!v.renewalStatus.Submit_For_Sales_Incentives__c}"/>
+                    </aura:if>
+                    <!--<aura:if isTrue="{!and(or(v.renewalStatus.Product_Line__c == 'Medical',v.renewalStatus.Product_Line__c == 'Financial Protection'),or(or(v.renewalStatus.Renewal_Confirmed_Members_Sale__c == 'Confirmed; All Members Safe',v.renewalStatus.Renewal_Confirmed_Members_Sale__c == 'Confirmed; Partial Cancel'),
+           v.renewalStatus.Renewal_Confirmed_Members_Sale__c=='No–Full Cancel'))}">-->
+                    <aura:if isTrue="{!and(v.renewalStatus.Eligible_for_Sales_Incentives__c!='Yes',v.isRenewalConfirmedValueContainsYes == true)}">
+                        NA
+                    </aura:if>
+                    <!--<aura:if isTrue="{!and(and(v.renewalStatus.Product_Line__c != 'Medical',v.renewalStatus.Product_Line__c != 'Financial Protection'),v.renewalStatus.Renewal_Confirmed_Members_Sale__c=='No–Full Cancel')}">-->
+                    <aura:if isTrue="{!v.renewalStatus.Renewal_Confirmed_Members_Sale__c=='No-Full Cancel'}">
+                        
+                        NA
+                    </aura:if>
+                </td> 
+                <td scope="row">
+                    <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),v.renewalStatus.Submit_For_Sales_Incentives__c==true)}">
+                        <div class="slds-truncate slds-cell-wrap sp2" title="">{!v.renewalStatus.Will_sales_incentives_be_split__c}</div>
+                    </aura:if>
+                </td>
+                <td scope="row">
+                    <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),
+                                     and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,or(v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes',v.renewalStatus.Will_sales_incentives_be_split__c == 'No')))}">
+                        <div class="slds-truncate slds-cell-wrap sp2" title="">{!v.renewalStatus.Sales_person_1__r.Name}</div>
+                    </aura:if>
+                </td>
+                <td scope="row">
+                    <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),
+                                     and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,or(v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes',v.renewalStatus.Will_sales_incentives_be_split__c == 'No')))}">
+                        <div class="slds-truncate slds-cell-wrap sp2" title="">{!v.renewalStatus.Sales_Person_1_split_percentage__c}</div>
+                    </aura:if>
+                </td>
+                <td scope="row">
+                    <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',
+                                     v.isRenewalConfirmedValueContainsYes == true),and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'))}">
+                        <div class="slds-truncate slds-cell-wrap sp2" title="">{!v.renewalStatus.Sales_Person_2__r.Name}</div>
+                    </aura:if>
+                </td>
+                <td scope="row">
+                    <aura:if isTrue="{!and(and(v.renewalStatus.Eligible_for_Sales_Incentives__c=='Yes',v.isRenewalConfirmedValueContainsYes == true),
+                                     and(v.renewalStatus.Submit_For_Sales_Incentives__c==true,v.renewalStatus.Will_sales_incentives_be_split__c == 'Yes'))}">
+                        <div class="slds-truncate slds-cell-wrap sp2" title="">{!v.renewalStatus.Sales_Person_2_Split_percentage__c}</div>
+                    </aura:if>
+                </td>
+                <!-- <td scope="row">
+                    <div class="slds-truncate slds-cell-wrap" title="">{!v.renewalStatus.Confirmed_By__c}</div>
+                </td>
+                <td scope="row">
+                    <div class="slds-truncate slds-cell-wrap" title="">{!v.renewalStatus.Confirmed_Date__c}</div>
+                </td> 
+                <td scope="row">
+                   <div class="slds-truncate slds-cell-wrap" title=""><ui:outputDate format="MM/dd/yy" value="{!v.renewalStatus.Date_Submitted_For_Incentives__c}"/></div>
+                    <div class="slds-truncate slds-cell-wrap" title=""><ui:outputDateTime format="MM/dd/yy hh:mm a" value="{!v.renewalStatus.Date_Submitted_For_Incentives__c}" class="form-control" timezone="{!$Locale.timezone}"/></div>
+                    <div class="slds-truncate slds-cell-wrap" title=""><ui:outputDateTime format="M/d/yyyy hh:mm a" value="{!v.renewalStatus.Date_Submitted_For_Incentives__c}" class="form-control" timezone="{!v.loggedInUserTimeZone}"/></div>
+                    
+                </td>-->
+                <td scope="row">
+                    <div class="slds-truncate slds-cell-wrap" title=""><ui:outputDateTime format="M/d/yyyy h:mm a" value="{!v.renewalStatus.Date_sent_to_ISI_Site__c}" class="form-control" timezone="{!v.loggedInUserInfoObj.loggedInUserTimeZone}"/></div>
+                </td>
+                <!-- <td scope="row">
+                    <div class="slds-truncate slds-cell-wrap sp2" title=""><ui:outputDate format="M/d/yyyy" value="{!v.renewalStatus.Current_Deal_Next_Renewal_Date__c}"/></div>
+                </td>
+                <td scope="row">
+                    <ui:outputCheckbox value="{!v.renewalStatus.isRenewalStatusRecord__c}"/>
+                </td> -->
+            </aura:set>
+            
+            
+        </aura:if>
+        
+    </tr>
+</aura:component>

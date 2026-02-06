@@ -1,0 +1,131 @@
+<!--***************************************************************************************************** 
+Name: winBackStrategy  
+====================================================== 
+======================================================
+Purpose:  CM Prior Client Win Back Activity which represents a user interface and sections for displaying and editing relevant information.
+====================================================== 
+======================================================  
+History 
+VERSION     AUTHOR                DATE                 DETAIL                       
+1.0 -       Vignesh             05/02/2024          INITIAL DEVELOPMENT           
+******************************************************************************************************-->
+
+<template>
+	<article class="slds-card slds-card_boundary slds-is-relative component-card ">
+		<template if:true={isShowSpinner}>
+			<lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+		</template>
+		<ul class="slds-accordion">
+			<li class="slds-accordion__list-item">
+				<section class="slds-accordion__section">
+					<div class="slds-accordion__summary">
+						<h2 class="slds-accordion__summary-heading">
+							<template if:true={onLoadSpinner}>
+								<lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+							</template>
+							<button class="slds-button slds-button_reset slds-accordion__summary-action"
+                          aria-controls="referenceId-21" aria-expanded="false" title=""
+                          onclick={ExpandCollapse}>
+                          <div class="chevron" >
+                            <template if:true={ExpandDetails}>
+                              <lightning-icon icon-name="utility:chevrondown" alternative-text="Utility chevrondown"
+                                title="" size="x-small"></lightning-icon>
+                            </template>
+                            <template if:false={ExpandDetails}>
+                              <lightning-icon icon-name="utility:chevronright" alternative-text="Utility chevronright"
+                                title="" size="x-small"></lightning-icon>
+                            </template>
+                          </div>
+                          <div class="custom-icon">
+                            <lightning-icon class="slds-icon slds-icon--small" icon-name="standard:poll" size="small"></lightning-icon>
+                          </div>
+
+                          <span class="slds-accordion__summary-content slds-p-left_small ">Outreach / Activity table</span>
+        
+                        </button>
+						</h2>
+					</div>
+				</section>
+			</li>
+		</ul>
+		
+
+		<template if:true={showTable}>
+			
+			
+			<p></p>
+			<table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+				<!-- <colgroup>
+					<col style="width: 16%;">
+					<col style="width: 16%;">
+					<col style="width: 17%;">
+					<col style="width: 17%;">
+					<col style="width: 17%;">
+					<col style="width: 17%;">
+				</colgroup> -->
+
+				<thead>
+					<tr>
+						<th scope="col" style="line-height: 30px;width:11%">Date of Outreach</th>
+						<th scope="col" style="line-height: 30px;width:11%">Owner of Outreach</th>
+						<th scope="col" style="line-height: 30px;width:11%">Type of Activity</th>
+						<th scope="col" style="line-height: 30px;width:15%">Action Taken</th>
+						<th scope="col" style="line-height: 30px;width:25%">Client Contact</th>
+						<th scope="col" style="line-height: 30px;width:25%">Results / Next Steps</th>
+					</tr>
+				</thead>
+				<template if:false={isData}>
+					<tbody>
+						<td colspan="6" style="text-align: center;">
+							<p>No Data Found.</p>
+						</td>
+					</tbody>
+			
+		       </template>
+		<template if:true={isData}>
+				<tbody>
+					
+					<template for:each={taskEventData} for:item="itevt" for:index="index">
+						<tr key={itevt.Id}>
+							<th scope="col">
+								<div class="cell-width">
+									<!-- <lightning-formatted-date-time value={itevt.ActivityDate} year="numeric"
+										month="numeric" day="numeric"></lightning-formatted-date-time> -->
+										{itevt.ActivityDate}
+								</div>
+							</th>
+
+
+							<th scope="col">
+								<div class="cell-width">{itevt.createdName}</div>
+							</th>
+
+							<th scope="col">
+								<div class="cell-width"><template if:true={itevt.Type}>{itevt.Type}</template>
+									<template if:false={itevt.Type}>Email</template> </div>
+							</th>
+							<th scope="col">
+								<div class="cell-width " style="white-space: normal;">
+									<a href={eventUrl} onclick={handleUrl} data-id={itevt.Id}
+										target='_blank'>{itevt.Subject}</a>
+								</div>
+							</th>
+							<th scope="col">
+								<div class="cell-width slds-wrap conLen">
+									<span>{itevt.RelationName} </span>
+								</div>
+							</th>
+							<th scope="col">
+								<div class="cell-width slds-wrap" style="white-space: normal; word-wrap: break-word; word-break: break-word; overflow: hidden;" >{itevt.Action_Items__c}</div>
+							</th>
+
+						</tr>
+					</template>				
+				</tbody>
+					</template>
+			</table>
+		
+		</template>
+	</article>
+
+</template>

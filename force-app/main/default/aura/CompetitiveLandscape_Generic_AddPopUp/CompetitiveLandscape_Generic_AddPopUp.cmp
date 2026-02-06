@@ -1,0 +1,303 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="CompetitiveLandscapeAddPopUpClass">
+    
+    <aura:registerEvent name="getNewAccountData" type="c:addCompetitorAccountEvent"/>
+    
+    <aura:attribute name="itemList" type="String[]" default="Top Competitors,The Blues and their Affiliates,Exchange Competitors,All Other Competitors"/>
+    <aura:attribute name="isMedical" type="Boolean" default="true"/>
+    <aura:attribute name="competitorsAccountEmptyList" type="Boolean" default="false"/>
+    
+    <aura:attribute name="Child_Data" type="Object"/>
+    <aura:attribute name="tableRecords" type="String[]" />
+    <aura:attribute name="optionHeader" type="String" default="Top Competitors"/>
+    <aura:attribute name="selectedOption" type="String" default="Top Competitors"/>
+    
+    <!--Attributes for the cards records-->
+    <aura:attribute name="allPharmacyCards" type="String[]" />
+    <aura:attribute name="allDentalCards" type="String[]" />
+    <aura:attribute name="allVisionCards" type="String[]" />
+    <aura:attribute name="allOtherCards" type="String[]" />
+    <aura:attribute name="allMedicalCards" type="String[]" />
+    <aura:attribute name="allCompetitorRecords" type="Competitor__c[]" />
+    <!--<aura:attribute name="competitorObj" type="Competitor__c" />-->
+    
+    <aura:attribute name="totalCompetitor" type="Integer" Default="0"/>
+    
+    <aura:attribute name="saveDisable" type="Boolean" Default="true"/>
+    <aura:attribute name="clearDisable" type="Boolean" Default="true"/>
+    <aura:attribute name="goDisable" type="Boolean" Default="true"/>
+    
+    <aura:attribute name="isSearchPage" type="Boolean" Default="false"/>
+    
+    <aura:attribute name="competitorsRecords" type="Account[]" />
+    
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    
+    <aura:attribute name="competitorsAccountMedicalData" type="String[]" />
+    
+    <aura:attribute name="inputSearchKey" type="String" default=""/>
+    
+    <aura:attribute name="stopIndex" type="Integer" default="0"/>
+    
+    <aura:attribute name="selCompetitorsClassificationArray" type="String[]" />
+    
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:handler name="getUpdatedCards" event="c:getUpdatedCards" action="{!c.showCards}"/>
+    <aura:handler name="modalCmpCloseEvent1" event="c:Modal_Closing_RR_Event" action="{!c.modelCloseEmailEvent}"/>
+    
+    {!v.body}
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div class="slds-spinner_container slds-hide" aura:id="spinner">
+        <div class="slds-spinner--brand slds-spinner slds-spinner--medium" role="status">
+            <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>   
+    
+    <article class="slds-is-relative modal-content" aura:id="competitive_Addpopup">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-size_1-of-1 slds-theme_shade slds-grid slds-p-vertical_small slds-border_bottom"> 
+                <div class="slds-col slds-p-horizontal_medium slds-grid slds-wrap">  
+                    <div class="slds-grid slds-grid_vertical-align-end slds-size_1-of-1 slds-p-bottom_x-small search-section">
+                        <div class="slds-col slds-p-right_small search-input--container">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label slds-assistive-text" for="text-input-id-1">{!$Label.c.Search_by_Competitor_Name} </label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-hide">
+                                        <ui:inputText class="slds-form-control" placeholder="{!$Label.c.Search_by_Competitor_Name}"></ui:inputText>
+                                    </div> 
+                                    <ui:inputText aura:id="searchKeywordForCompetitor" updateOn="keyup" keyup="{!c.checkInputSearchKey}" maxlength="255" value="{!v.inputSearchKey}" placeholder="{!$Label.c.Search_by_Competitor_Name}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col search-action--btn">
+                            <button class="slds-button slds-button--brand slds-m-right_xx-small" disabled="{!v.goDisable}" onclick="{!c.searchCompetitors}">{!$Label.c.Go}</button>
+                            <button class="slds-button slds-button_neutral" disabled="{!v.clearDisable}" onclick="{!c.doInit}">{!$Label.c.Clear}</button>
+                        </div> 
+                        <div class="slds-col slds-text-align--right send-email">
+                            <span><a onclick="{!c.openMailPopupForm}">{!$Label.c.CompetitveLandscape_Send_Email_Link}</a></span>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{!v.isMedical}">
+                        <p class="slds-text-color_weak slds-size_1-of-1">{!$Label.c.Competitive_Landscape_Medical_PopUp_InstructionalText}</p>
+                        <aura:set attribute="else">
+                            <p class="slds-text-color_weak slds-size_1-of-1">{!$Label.c.Competitive_Landscape_PharmacySpecialtyOthers_PopUp_InstructionalText}</p>
+                        </aura:set>
+                    </aura:if>
+                </div>                
+            </div>
+            <div class="slds-size_1-of-1 tab-list">
+                <div class="slds-p-left_none slds-tabs_default">
+                    <nav class="" role="navigation">
+                        <ul class="slds-grid slds-tabs_default__nav competitorTab">
+                            <aura:iteration items="{!v.itemList}" var="item" indexVar="index">
+                                <aura:if isTrue="{!index == 0}">                                    
+                                    <li aura:id="categories" class="slds-tabs_default__item slds-is-active" data-record="{!item}" role="banner" onclick="{!c.showOptions}" data-id="{!item}" data-name="{!item}">
+                                        <a href="" class="slds-context-bar__label-action slds-tabs_default__link" title="" style="text-decoration:none;">
+                                            <span class="slds-assistive-text">{!item}</span>
+                                            <span class="slds-truncate" title="{!item}">{!item}</span>
+                                        </a>
+                                    </li>                                    
+                                    <aura:set attribute="else">
+                                        <li aura:id="categories" class="slds-tabs_default__item" data-record="{!item}" role="banner" onclick="{!c.showOptions}" data-id="{!item}" data-name="{!item}">
+                                            <a href="" class="slds-context-bar__label-action slds-tabs_default__link" title="" style="text-decoration:none;">
+                                                <span class="slds-assistive-text">{!item}</span>
+                                                <span class="slds-truncate" title="{!item}">{!item}</span>
+                                            </a>
+                                        </li>    
+                                    </aura:set>
+                                </aura:if>   
+                            </aura:iteration>                        	                           
+                        </ul>
+                    </nav>
+                </div>
+            </div>            
+            <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-theme_shade slds-grid slds-wrap slds-p-vertical_x-small">
+                <div class="slds-size_1-of-1 slds-p-bottom_xx-small">
+                	<aura:if isTrue="{!v.isMedical}">                        
+                    <aura:iteration items="{!v.allMedicalCards}" var="medicalCards" indexVar="index">                              
+                        <span class="slds-pill slds-pill_link">
+                            <span class="slds-pill__icon_container">
+                                <span class="slds-icon_container" title="Account">
+                                    <lightning:icon iconName="standard:product" size="xxx-small" alternativeText=""/>
+                                    <span class="slds-assistive-text">Medical</span>
+                                </span>
+                            </span>
+                            <a href="javascript:void(0);" class="slds-pill__action" title="Full pill label verbiage mirrored here">
+                                <span class="slds-pill__label">{!$Label.c.Medical}:{!medicalCards.truncatedName}</span>
+                            </a>
+                            <button onclick="{!c.removeDataRecCard}" data-record="{!medicalCards.Name}" data-category="{!medicalCards.category}" name="Medical" id="{!medicalCards.Id}" class="slds-button slds-button_icon slds-button_icon slds-pill__remove" title="Remove">
+                                <lightning:icon iconName="utility:close" size="xxx-small" alternativeText=""/>
+                                <span class="slds-assistive-text">Remove</span>
+                            </button>
+                        </span>                             
+                    </aura:iteration>
+                    <aura:set attribute="else">
+                        <aura:iteration items="{!v.allPharmacyCards}" var="pharmacyCards">                                  
+                            <span class="slds-pill slds-pill_link">
+                                <span class="slds-pill__icon_container">
+                                    <span class="slds-icon_container" title="Account">
+                                        <lightning:icon iconName="standard:product" size="xxx-small" alternativeText=""/>
+                                        <span class="slds-assistive-text">Pharmacy</span>
+                                    </span>
+                                </span>
+                                <a href="javascript:void(0);" class="slds-pill__action" title="Full pill label verbiage mirrored here">
+                                    <span class="slds-pill__label">{!$Label.c.Pharmacy}:{!pharmacyCards.truncatedName}</span>
+                                </a>
+                                <button onclick="{!c.removeDataRecCard}" data-record="{!pharmacyCards.Name}" data-category="{!pharmacyCards.category}" name="Pharmacy" id="{!pharmacyCards.Id}" class="slds-button slds-button_icon slds-button_icon slds-pill__remove" title="Remove">
+                                    <lightning:icon iconName="utility:close" size="xxx-small" alternativeText=""/>
+                                    <span class="slds-assistive-text">Remove</span>
+                                </button>
+                            </span>
+                        </aura:iteration>                            
+                        <aura:iteration items="{!v.allDentalCards}" var="dentalCards">                                  
+                            <span class="slds-pill slds-pill_link">
+                                <span class="slds-pill__icon_container">
+                                    <span class="slds-icon_container" title="Account">
+                                        <lightning:icon iconName="standard:product" size="xxx-small" alternativeText=""/>
+                                        <span class="slds-assistive-text">Dental</span>
+                                    </span>
+                                </span>
+                                <a href="javascript:void(0);" class="slds-pill__action" title="Full pill label verbiage mirrored here">
+                                    <span class="slds-pill__label">{!$Label.c.Dental}:{!dentalCards.truncatedName}</span>
+                                </a>
+                                <button onclick="{!c.removeDataRecCard}" data-record="{!dentalCards.Name}" data-category="{!dentalCards.category}" name="Dental" id="{!dentalCards.Id}" class="slds-button slds-button_icon slds-button_icon slds-pill__remove" title="Remove">
+                                    <lightning:icon iconName="utility:close" size="xxx-small" alternativeText=""/>
+                                    <span class="slds-assistive-text">Remove</span>
+                                </button>
+                            </span>
+                        </aura:iteration>                           
+                        <aura:iteration items="{!v.allVisionCards}" var="visionCards">                                  
+                            <span class="slds-pill slds-pill_link">
+                                <span class="slds-pill__icon_container">
+                                    <span class="slds-icon_container" title="Vision">
+                                        <lightning:icon iconName="standard:product" size="xxx-small" alternativeText=""/>
+                                        <span class="slds-assistive-text">Vision</span>
+                                    </span>
+                                </span>
+                                <a href="javascript:void(0);" class="slds-pill__action" title="Full pill label verbiage mirrored here">
+                                    <span class="slds-pill__label">{!$Label.c.Vision}:{!visionCards.truncatedName}</span>
+                                </a>
+                                <button onclick="{!c.removeDataRecCard}" data-record="{!visionCards.Name}" data-category="{!visionCards.category}" name="Vision" id="{!visionCards.Id}" class="slds-button slds-button_icon slds-button_icon slds-pill__remove" title="Remove">
+                                    <lightning:icon iconName="utility:close" size="xxx-small" alternativeText=""/>
+                                    <span class="slds-assistive-text">Remove</span>
+                                </button>
+                            </span>
+                        </aura:iteration>   
+                        <!--Commented as per Tracker #3495 Competitve landscape changes-->
+                        <!--aura:iteration items="{!v.allOtherCards}" var="otherCards">                                  
+                            <span class="slds-pill slds-pill_link">
+                                <span class="slds-pill__icon_container">
+                                    <span class="slds-icon_container" title="Others">
+                                        <lightning:icon iconName="standard:product" size="xxx-small" alternativeText=""/>
+                                        <span class="slds-assistive-text">Others</span>
+                                    </span>
+                                </span>
+                                <a href="javascript:void(0);" class="slds-pill__action" title="Full pill label verbiage mirrored here">
+                                    <span class="slds-pill__label">{!$Label.c.Others}:{!otherCards.truncatedName}</span>
+                                </a>
+                                <button onclick="{!c.removeDataRecCard}" data-record="{!otherCards.Name}" data-category="{!otherCards.category}" name="Others" id="{!otherCards.Id}" class="slds-button slds-button_icon slds-button_icon slds-pill__remove" title="Remove">
+                                    <lightning:icon iconName="utility:close" size="xxx-small" alternativeText=""/>
+                                    <span class="slds-assistive-text">Remove</span>
+                                </button>
+                            </span>
+                        </aura:iteration-->                            
+                    </aura:set>
+                </aura:if>
+                </div>
+                <div class="slds-size_1-of-1 slds-grid slds-wrap slds-grid_vertical-align-center">
+                	<div class="slds-size_1-of-2"><span class="number">{!v.totalCompetitor}</span> Item(s) selected</div>
+                    <div class="slds-size_1-of-2 slds-grid slds-grid_align-end">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.cancelPopup}">{!$Label.c.Cancel}</button>
+                        <button class="slds-button slds-button--brand" disabled="{!v.saveDisable}" onclick="{!c.saveRecords}">{!$Label.c.Save}</button>                        
+                    </div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1">
+                <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_fixed-layout data-table">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col"><div class="slds-truncate txt-bold" title="{!$Label.c.Competitor_Name}">{!$Label.c.Competitor_Name}</div></th>
+                            <aura:if isTrue="{!v.isMedical}">
+                                <th scope="col" class="slds-text-align_center txt-bold"><div class="slds-truncate" title="{!$Label.c.Medical_Competitor}">{!$Label.c.Medical_Competitor}</div></th>
+                                <aura:set attribute="else">
+                                    <th scope="col"><div class="slds-truncate txt-bold slds-text-align_center" title="{!$Label.c.Pharmacy_Competitor}">{!$Label.c.Pharmacy_Competitor}</div></th>
+                                    <th scope="col"><div class="slds-truncate txt-bold slds-text-align_center" title="{!$Label.c.Dental_Competitor}">{!$Label.c.Dental_Competitor}</div></th>
+                                    <th scope="col"><div class="slds-truncate txt-bold slds-text-align_center" title="{!$Label.c.Vision_Competitor}">{!$Label.c.Vision_Competitor}</div></th>
+                                    <!--th scope="col"><div class="slds-truncate txt-bold slds-text-align_center" title="{!$Label.c.Others_Competitor}">{!$Label.c.Others_Competitor}</div></th-->
+                                </aura:set>
+                            </aura:if>
+                        </tr>
+                    </thead>                    
+                    <aura:if isTrue="{!v.competitorsAccountEmptyList}">
+                        <aura:if isTrue="{!v.isMedical}">
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="slds-text-align_center slds-vertical_small">{!$Label.c.No_records_found}</div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                            <aura:set attribute="else">
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="slds-text-align_center slds-vertical_small">{!$Label.c.No_records_found}</div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </aura:set>
+                        </aura:if>
+                        <aura:set attribute="else">
+                            <tbody>
+                                <aura:iteration items="{!v.tableRecords}" var="tableRecord">                                  
+                                    <aura:if isTrue="{!v.isMedical}">
+                                        <aura:if isTrue="{!tableRecord.disabled == false}">
+                                            <c:CompetitiveLandscape_Generic_AddPopUp_Table isMedical="{!v.isMedical}" competitorsArray="{!tableRecord}"/>
+                                        </aura:if>
+                                        <aura:set attribute="else">
+                                            <c:CompetitiveLandscape_Generic_AddPopUp_Table isMedical="{!v.isMedical}" competitorsArray="{!tableRecord}"/>
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:iteration>
+                            </tbody>
+                        </aura:set>
+                    </aura:if>                     
+                </table>
+            </div>
+            <div class="slds-size_1-of-1 slds-theme_shade slds-p-horizontal_medium">
+                <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+            </div>
+        </div>
+        
+    </article>
+    <ui:inputSelect aura:id="focusInputField" class="slds-hide"/> 
+    
+    
+    <!-- Current Selections -->           
+</aura:component>

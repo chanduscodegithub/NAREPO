@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Reporting_Range__c</fullName>
+    <description>Backend field to take the range based on raw data entered.</description>
+    <externalId>false</externalId>
+    <formula>IF(AND( Reporting__c &gt;= $CustomMetadata.Reporting__mdt.Range_0.Start_Range__c,
+Reporting__c&lt;= $CustomMetadata.Reporting__mdt.Range_0.End_Range__c),
+$CustomMetadata.Reporting__mdt.Range_0.Weightage__c,
+			
+IF(AND(Reporting__c &gt;= $CustomMetadata.Reporting__mdt.Range_1_15.Start_Range__c ,
+Reporting__c&lt;=	 $CustomMetadata.Reporting__mdt.Range_1_15.End_Range__c ),
+$CustomMetadata.Reporting__mdt.Range_1_15.Weightage__c,
+ 
+IF(AND(Reporting__c &gt;= $CustomMetadata.Reporting__mdt.Range_16_30.Start_Range__c ,
+Reporting__c&lt;=	 $CustomMetadata.Reporting__mdt.Range_16_30.End_Range__c ),
+$CustomMetadata.Reporting__mdt.Range_16_30.Weightage__c,
+ 
+IF(AND(Reporting__c &gt;= $CustomMetadata.Reporting__mdt.Range_31_50.Start_Range__c ,
+Reporting__c&lt;=	 $CustomMetadata.Reporting__mdt.Range_31_50.End_Range__c ),
+$CustomMetadata.Reporting__mdt.Range_31_50.Weightage__c,
+
+IF(AND(Reporting__c &gt;= $CustomMetadata.Reporting__mdt.Range_31_50.Start_Range__c ,
+Reporting__c&lt;=	 $CustomMetadata.Reporting__mdt.Range_31_50.End_Range__c ),
+$CustomMetadata.Reporting__mdt.Range_31_50.Weightage__c,
+$CustomMetadata.Reporting__mdt.Range_51_more.Weightage__c)))))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Reporting Range(Backend)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

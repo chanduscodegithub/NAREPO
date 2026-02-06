@@ -1,0 +1,195 @@
+<template>
+    <div class="slds-col slds-size_3-of-3 slds-text-heading_large aligntext">
+        {reportTitle}
+    </div>
+    <br />
+    <div class="container is-relative">
+        <template if:true={isLoad}>
+            <lightning-spinner alternative-text="Loading" variant="brand" size="medium">
+            </lightning-spinner>
+        </template>
+
+        <div class="div-left">
+            <div class="inner-container">
+                <div class="inner-left" style="padding-top: 6px;">Choose Sales Cycle </div>
+                <div class="inner-right">
+                    <lightning-combobox name="region" value={salesCycle} placeholder="Select Sales Cycle"
+                        options={regionPicklist} variant="label-hidden" onchange={filterBasedOnPicklistValue}>
+                    </lightning-combobox>
+                </div>
+            </div>
+        </div>
+
+        <div class="div-right">
+            <lightning-button type="submit" variant="Neutral" label="Print" class="slds-m-left_x-small"
+                onclick={exportRecords} disabled={disablePrintButton}></lightning-button>
+        </div>
+
+    </div>
+
+    <table class="slds-table slds-table_bordered slds-table_col-bordered slds-no-row-hover tableLayout blue-border">
+        <!--slds-table_cell-buffer-->
+
+        <colgroup>
+            <col style="width:15%;" />
+            <col style="width:9%;" />
+            <col style="width:10%;" />
+            <col style="width:6%;" />
+            <col style="width:6%;" />
+            <col style="width:11%;" />
+            <col style="width:12%;" />
+            <col style="width:8%;" />
+            <col style="width:11.5%;" />
+            <col style="width:11.5%;" />
+        </colgroup>
+
+        <thead class="slds-truncate">
+            <tr class="slds-line-height_reset">
+                <th class="slds-cell-wrap" style="padding-left:2px;padding-right:2px;" scope="col">
+                    <template if:true={isMedicalPersistencyListEmpty}>
+                        <div class="slds-truncate" title="Company">Company</div>
+                    </template>
+
+                    <template if:false={isMedicalPersistencyListEmpty}>
+                        <a onclick={sortFields} data-record="AccountFirm__r.Name"
+                            class="slds-th__action slds-text-link--reset" tabindex="0">
+                            <span class="slds-truncate" title="Company">Company&nbsp;</span>
+                            <div class="slds-icon_container sortIconPadding">
+                                <template if:true={sortCompanyAsc}>
+                                    <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                        icon-name="utility:arrowdown" size="xx-small">
+                                    </lightning-icon>
+                                </template>
+                                <template if:false={sortCompanyAsc}>
+                                    <lightning-icon class="slds-icon slds-icon--x-small slds-icon-text-default"
+                                        icon-name="utility:arrowup" size="xx-small">
+                                    </lightning-icon>
+                                </template>
+                            </div>
+                        </a>
+                    </template>
+                </th>
+                <th class="slds-cell-wrap" scope="col">
+                    <div class="slds-cell-wrap" title="February Prior Membership">February Prior Membership</div>
+                </th>
+                <th class="slds-cell-wrap" scope="col">
+                    <div class="slds-cell-wrap" title="February Current Membership">February Current Membership</div>
+                </th>
+                <th class="slds-cell-wrap" scope="col">
+                    <div class="slds-cell-wrap" title="Transfer In">Transfer In</div>
+                </th>
+                <th class="slds-cell-wrap" scope="col">
+                    <div class="slds-cell-wrap" title="Transfer Out">Transfer Out</div>
+                </th>
+                <th class="slds-cell-wrap" scope="col">
+                    <div class="slds-cell-wrap" title="Adjusted February Prior Membership">Adjusted February Prior
+                        Membership</div>
+                </th>
+                <th class="slds-cell-wrap" scope="col">
+                    <div class="slds-cell-wrap" title="Adjusted February Current Membership">Adjusted February Current
+                        Membership</div>
+                </th>
+                <th class="slds-cell-wrap" style="border-right:3px solid #dfe9f9;" scope="col">
+                    <div class="slds-cell-wrap" title="Persistency">Persistency</div>
+                </th>
+                <th class="slds-cell-wrap" scope="col">
+                    <div class="slds-cell-wrap" title="Case Management Start Date">Case Management Start Date</div>
+                </th>
+                <th class="slds-cell-wrap" scope="col">
+                    <div class="slds-cell-wrap" title="Case Management End Date">Case Management End Date</div>
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <template if:true={isMedicalPersistencyListEmpty}>
+                <tr>
+                    <td colspan="12" style="width:100%">
+                        <div class="slds-text-align--center slds-p-around_x-small">
+                            <!--slds-p-around_x-small-->
+                            <!-- No Records Found -->
+                            <!-- {noRecordsMessage1}&nbsp;{salesCycle}&nbsp;{noRecordsMessage2} -->
+                            {noRecordsMessage}
+                        </div>
+                    </td>
+                </tr>
+            </template>
+
+            <template if:false={isMedicalPersistencyListEmpty}>
+                <template for:each={backEndData} for:item="res">
+                    <tr key={res.Id}>
+                        <!-- <td class="tableVerticleAlign">
+                            <div class="slds-truncate slds-cell-wrap" title="Company">{res.accountName}</div>
+                        </td> -->
+                        <td class="tableVerticleAlign" data-label="Company">
+                            <p class="slds-truncate slds-cell-wrap"><a href={res.companyLink} variant="base"
+                                    label={res.accountName} title="Company" value={res.accountName} target="_self"
+                                    onclick={goToRecordPage}>{res.accountName}</a></p>
+                        </td>
+                        <td class="tableVerticleAlign">
+                            <div class="slds-truncate slds-cell-wrap" title="February Prior Membership">
+                                <lightning-formatted-number value={res.previousYearGlMembership}>
+                                </lightning-formatted-number>
+                            </div>
+                        </td>
+                        <td class="tableVerticleAlign">
+                            <div class="slds-truncate slds-cell-wrap" title="February Current Membership">
+                                <lightning-formatted-number value={res.currentYearGlMembership}>
+                                </lightning-formatted-number>
+                            </div>
+                        </td>
+                        <td class="tableVerticleAlign">
+                            <div class="slds-truncate slds-cell-wrap" title="Transfer In">
+                                <lightning-formatted-number value={res.transferIn}></lightning-formatted-number>
+                            </div>
+                        </td>
+                        <td class="tableVerticleAlign">
+                            <div class="slds-truncate slds-cell-wrap" title="Transfer Out">
+                                <lightning-formatted-number value={res.transferOut}></lightning-formatted-number>
+                            </div>
+                        </td>
+                        <td class="tableVerticleAlign">
+                            <div class="slds-truncate slds-cell-wrap" title="Adjusted February Prior Membership">
+                                <lightning-formatted-number value={res.adjustedPreviousYearGlMembership}>
+                                </lightning-formatted-number>
+                            </div>
+                        </td>
+                        <td class="tableVerticleAlign">
+                            <div class="slds-truncate slds-cell-wrap" title="Adjusted February Current Membership">
+                                <lightning-formatted-number value={res.adjustedCurrentYearGlMembership}>
+                                </lightning-formatted-number>
+                            </div>
+                        </td>
+                        <td class="tableVerticleAlign" style="border-right:3px solid #dfe9f9;">
+                            <div class="slds-truncate slds-cell-wrap" title="Persistency">{res.medicalPersistency}</div>
+                        </td>
+                        <td class="tableVerticleAlign">
+                            <div class="slds-truncate slds-cell-wrap" title="Case Management Start Date">
+                                {res.cmStartDate}</div>
+                        </td>
+                        <td class="tableVerticleAlign">
+                            <div class="slds-truncate slds-cell-wrap" title="Case Management End Date">
+                                {res.cmEndDate}</div>
+                        </td>
+                        <!-- <td colspan="12">
+                            <div class="slds-text-align--center">
+                                The Persistency rates displayed above are calculated at the company level.The Incentive Compensation Team will adjust these rates as needed.
+                            </div>
+                        </td> -->
+                    </tr>
+                </template>
+                <tr>
+                    <td colspan="10">
+                        <div class="slds-text-body_small slds-truncate slds-cell-wrap">
+                            {persistenctyFootNote}
+                        </div>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+    <!-- <div class="slds-text-body_small">
+        The Persistency rates displayed above are calculated at the company level.The Incentive Compensation Team will adjust these rates as needed.
+    </div> -->
+</template>

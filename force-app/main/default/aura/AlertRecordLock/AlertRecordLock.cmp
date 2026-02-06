@@ -1,0 +1,21 @@
+<aura:component implements="flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,force:hasRecordId,lightning:actionOverride">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <div role="alertdialog" tabindex="-1" aura:id="resetConfirm" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Alert</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">The reconciliation and membership true-up process with Finance is complete for this Sales Season. As a result, this membership record is locked. If changes or corrections are required, please contact the Merit Team.</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.confirmOk}">Ok</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" aura:id="resetConfirm"></div>
+</aura:component>

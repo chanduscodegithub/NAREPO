@@ -1,0 +1,226 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 06-05-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <lightning-accordion-section allow-multiple-sections-open active-section-name={activeSections}
+        class="section-header-sub" name="Pharmacy Products" label="Pharmacy Products" style="padding-bottom:0px;">
+        <template if:false={editmode}>
+            <template for:each={childCompPharmacyRecords} for:item="pharm" for:index="index">
+                <div key={pharm.Id} class="slds-grid slds-wrap slds-p-around_xx-small sub-products border-bottom"
+                    style="width:97%;">
+                    <div class="slds-col slds-size_2-of-6">
+                        <span>{pharm.Product2.Name}</span>
+                    </div>
+                    <div class="slds-col slds-size_2-of-6" style="text-align: left;">
+                        <span>{pharm.Level_2_Option__c}</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span style="float:right;">{pharm.Pharmacy_Carve_Out_DropDown__c}</span>
+                        <span>{pharm.Level2_Info__c}</span>
+                    </div>
+                    <div class="slds-col slds-size_2-of-6" style="text-align: right;">
+                        <span>{pharmdispValue}</span>
+                    </div>
+                    <template if:true={pharm.displayCarveInQuestions}>
+                        <lightning-accordion allow-multiple-sections-open active-section-name={activeSectionsPCIP} style="width:100%;">
+                        <lightning-accordion-section name="Pharmacy Carve In Programs"
+                            label="Pharmacy Carve In Programs" style="width:100%;" class="section-header-sub sec-padding pharmacyPadding" >
+                            <div style="width:100%;padding: 0px 0px 10px 0px;" class="slds-grid">
+                                <div class="pharmacyDep slds-col slds-size_6-of-6">
+                                    <p>
+                                        <span class="slds-text-color_error">
+                                        <b>Note: You can only opt  for ESP (Enhanced Savings Program) Opt-in or Price Edge Opt-in but not both.</b>
+                                        </span>
+                                    </p>
+                                    <p class="pharmacyDepInside">
+                                        <span class='responsePharma1'>
+                                            ESP (Enhanced Savings Program) Opt-in
+                                        </span><span class='responsePharma'>
+                                            {pharm.ESP_Enhanced_Savings_Program_Opt_in__c}</span>
+                                    </p>
+                                    <p class="pharmacyDepInside">
+                                        <span class='responsePharma1'>
+                                            Price Edge Opt-in
+                                        </span><span class='responsePharma'>
+                                            {pharm.Price_Edge_Opt_in__c}</span>
+                                    </p>
+                                    <p class="pharmacyDepInside">
+                                        <span class='responsePharma1'>
+                                            Vital Medication program Opt-in
+                                        </span>
+                                        <span class='responsePharma'>
+                                            {pharm.Vital_Medication_program_Opt_in_Opt_out__c}
+                                        </span>
+                                    </p>
+                                    <!-- <p class="pharmacyDepInside">
+                                        <span class='responsePharma1'>
+                                            My ScriptRewards Opt-in</span>
+                                        <span class='responsePharma'>
+                                            {pharm.My_ScriptRewards__c}
+                                        </span>
+                                    </p> -->
+                                    <template if:false={pharm.isRxOneRx}>
+                                    <p class="pharmacyDepInside">
+                                        <span class='responsePharma1'>
+                                            If Fully Insured include quoted Rx plan number in text box
+                                        </span>
+                                        <span class='responsePharma'>
+                                            {pharm.If_Fully_Insured_include_quoted_Rx_plan__c}
+                                        </span>
+                                    </p>
+                                    </template>
+                                </div>
+                            </div>
+                        </lightning-accordion-section>
+                    </lightning-accordion>
+                    </template>
+                </div>
+            </template>
+        </template>
+
+        <template if:true={editmode}>
+            <template for:each={childCompPharmacyRecords} for:item="pharm" for:index="index">
+                <div key={pharm.id} class="slds-grid slds-wrap slds-p-around_xx-small sub-products border-bottom"
+                    style="width:97%;">
+
+                    <div class="slds-col slds-size_2-of-6" style="padding-top: 7px;">
+                        <span>{pharm.Product2.Name}</span>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-6" style="text-align: left; ">
+                        <span>
+                            <template if:true={pharm.Product2.Level_2_Options__c}>
+                                <lightning-combobox data-index={index} class="pharmaLevel2" style="text-align: left;"
+                                    name="Level_2_Option__c" variant="label-hidden" data-id={pharm.Id}
+                                    data-prod="pharmacy" data-obj="OpportunityLineItem" value={pharm.Level_2_Option__c}
+                                    placeholder="Select an Option" options={pharm.level2Opt}
+                                    onchange={level2ChangeHandler}>
+                                </lightning-combobox>
+                            </template>
+                        </span>
+                    </div>
+
+                    <!--PHARMA CARVE OUT DROP DOWN PHARMA CARVE OUT DROP DOWN PHARMA CARVE OUT DROP DOWN PHARMA CARVE OUT DROP DOWN-->
+                    <div class="slds-col slds-size_1-of-6"
+                        style="text-align: left; padding-right:6px;padding-left:6px;">
+                        <template if:true={pharm.displayDropDown}>
+                            <lightning-combobox style="text-align: left;" name="Pharmacy_Carve_Out_DropDown__c"
+                                variant="label-hidden" data-id={pharm.Id} data-index={index} data-prod="pharmacy"
+                                data-obj="OpportunityLineItem" value={pharm.Pharmacy_Carve_Out_DropDown__c}
+                                placeholder="Select an Option" options={pharmacyCarveOutDropDown}
+                                onchange={level2ChangeHandler}>
+                            </lightning-combobox>
+                        </template>
+
+                        <template if:true={pharm.displayTextarea}>
+                            <lightning-input type="text" variant="label-hidden" data-id={pharm.Id} data-prod="pharmacy"
+                                data-obj="OpportunityLineItem" name="Level2_Info__c" data-index={index}
+                                value={pharm.Level2_Info__c} placeholder="Indicate Vendor"
+                                onchange={level2ChangeHandler} max-length="25">
+                            </lightning-input>
+                        </template>
+                    </div>
+                    <!--PHARMA CARVE OUT DROP DOWN PHARMA CARVE OUT DROP DOWN PHARMA CARVE OUT DROP DOWN PHARMA CARVE OUT DROP DOWN-->
+
+                    <div class="slds-col slds-size_2-of-6" style="text-align: right; padding-top: 6px;">
+                        <span>{pharmdispValue}</span>
+                    </div>
+                    <template if:true={pharm.displayCarveInQuestions}>
+                        <lightning-accordion allow-multiple-sections-open active-section-name={activeSectionsPCIP} style="width:100%;">
+                        <lightning-accordion-section name="Pharmacy Carve In Programs"
+                            label="Pharmacy Carve In Programs" style="width:100%;" class="section-header-sub sec-padding pharmacyPadding">
+                            <div style="width:100%;padding: 0px 0px 10px 0px;" class="slds-grid">
+                                <!-- <div class="slds-col slds-size_2-of-6"></div> -->
+                                <div class="pharmacyDep slds-col slds-size_6-of-6">
+                                    <p>
+                                        <span class="slds-text-color_error">
+                                        <b>Note: You can only opt  for ESP (Enhanced Savings Program) Opt-in or Price Edge Opt-in but not both.</b>
+                                        </span>
+                                    </p>
+                                    <p class="pharmacyDepInside"> <span class='responsePharma1'>ESP (Enhanced Savings
+                                            Program)
+                                            Opt-in</span>
+                                        <span class='responsePharma'>
+                                            <lightning-combobox style="text-align: left;"
+                                                name="ESP_Enhanced_Savings_Program_Opt_in__c"
+                                                label="ESP (Enhanced Savings Program) Opt-in" data-id={pharm.Id}
+                                                data-index={index} data-prod="pharmacy" data-obj="OpportunityLineItem"
+                                                value={pharm.ESP_Enhanced_Savings_Program_Opt_in__c}
+                                                placeholder="Select an Option" options={yesNoValues}
+                                                onchange={level2ChangeHandler} variant="label-hidden">
+                                            </lightning-combobox>
+                                        </span>
+                                    </p>
+                                    <p class="pharmacyDepInside"> <span class='responsePharma1'>Price Edge Opt-in</span>
+                                    <span class='responsePharma'>
+                                        <lightning-combobox style="text-align: left;"
+                                            name="Price_Edge_Opt_in__c"
+                                            label="Price Edge Opt-in" data-id={pharm.Id}
+                                            data-index={index} data-prod="pharmacy" data-obj="OpportunityLineItem"
+                                            value={pharm.Price_Edge_Opt_in__c}
+                                            placeholder="Select an Option" options={yesNoValues}
+                                            onchange={level2ChangeHandler} variant="label-hidden">
+                                        </lightning-combobox>
+                                    </span>
+                                    </p>
+                                    <p class="pharmacyDepInside"> <span class='responsePharma1'> Vital Medication
+                                            program
+                                            Opt-in</span>
+                                        <span class='responsePharma'>
+                                            <lightning-combobox style="text-align: left;"
+                                                name="Vital_Medication_program_Opt_in_Opt_out__c"
+                                                label="Vital Medication program Opt-in/Opt-out" data-id={pharm.Id}
+                                                data-index={index} data-prod="pharmacy" data-obj="OpportunityLineItem"
+                                                value={pharm.Vital_Medication_program_Opt_in_Opt_out__c}
+                                                placeholder="Select an Option" options={yesNoValues}
+                                                onchange={level2ChangeHandler} variant="label-hidden">
+                                            </lightning-combobox>
+                                        </span>
+                                    </p>
+                                    <!-- <p class="pharmacyDepInside"> <span class='responsePharma1'> My ScriptRewards
+                                            Opt-in</span>
+                                        <span class='responsePharma'>
+                                            <lightning-combobox style="text-align: left;" name="My_ScriptRewards__c"
+                                                label="My ScriptRewards" data-id={pharm.Id} data-index={index}
+                                                data-prod="pharmacy" data-obj="OpportunityLineItem"
+                                                value={pharm.My_ScriptRewards__c} placeholder="Select an Option"
+                                                options={includedNotIncluded} variant="label-hidden"
+                                                onchange={level2ChangeHandler}>
+                                            </lightning-combobox>
+                                        </span>
+                                    </p> -->
+                                    <br />
+                                    <template if:false={pharm.isRxOneRx}>
+                                    <p class="pharmacyDepInside"> <span class='responsePharma1'>If Fully Insured include
+                                            quoted Rx
+                                            plan number in text box</span>
+                                        <span class='responsePharma'>
+                                            <lightning-input type="text"
+                                                label="If Fully Insured include quoted Rx plan number in text box"
+                                                data-id={pharm.Id} data-prod="pharmacy" data-obj="OpportunityLineItem"
+                                                name="If_Fully_Insured_include_quoted_Rx_plan__c" data-index={index}
+                                                value={pharm.If_Fully_Insured_include_quoted_Rx_plan__c}
+                                                onchange={level2ChangeHandler} variant="label-hidden" max-length="25">
+                                            </lightning-input>
+                                        </span>
+                                    </p>
+                                    </template>
+                                </div>
+                            </div>
+                        </lightning-accordion-section>
+                        </lightning-accordion>
+                    </template>
+                </div>
+
+            </template>
+        </template>
+
+        <template if:true={isPharmacyEmpty}>
+            <div class="slds-text-color_weak no-products">
+                No Pharmacy products
+            </div>
+        </template>
+    </lightning-accordion-section>
+</template>

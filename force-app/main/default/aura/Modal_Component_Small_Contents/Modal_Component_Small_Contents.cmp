@@ -1,0 +1,39 @@
+<aura:component controller='MA_Client_Reference_Class'>
+    <aura:attribute name="Child_Data" type="Object"/>    
+    <aura:attribute name="dataToDisplay" type="String[]" />
+    <aura:attribute name="inputBoxValue" type="String[]" />
+    <aura:attribute name="checkBoxCount" type="Integer" default="0"/>
+    <aura:attribute name="selectedAddPopupDataName" type="String[]"/>
+    <aura:attribute name="isSpinnertoLoad"  type="Boolean"  default="false"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="MultiCheckDataSelect" event="c:MultiCheckDataSelect" action="{!c.addSelectedData}"/>
+    
+    <aura:registerEvent name="modalCmpCloseEvent1" type="c:Modal_Closing_RR_Event"/>
+    
+    <article class="slds-card slds-card_boundary">
+        <div class="slds-grid slds-wrap slds-is-relative">
+            <aura:if isTrue="{!v.isSpinnertoLoad}">
+                <div class="slds-spinner_container" style="padding-top: 2rem;">
+                    <div role="status" class="slds-spinner slds-spinner_small slds-spinner_brand">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </aura:if>
+            <div class="slds-size_1-of-1">
+                <table class="slds-table slds-no-row-hover slds-table--cell-buffer BGHCheckboxAlign" style="padding: 10px;">
+                    <tbody class="slds-grid">
+                        <aura:iteration items="{!v.dataToDisplay}" var="dataToDisplayObj" indexVar="index">
+                            <c:Modal_Component_Small_Contents_Table dataToDisplayObj="{!dataToDisplayObj}" inputBoxValue="{!v.Child_Data.inputBoxValue}" selectedAddPopupDataName="{!v.selectedAddPopupDataName}"></c:Modal_Component_Small_Contents_Table>
+                        </aura:iteration> 
+                    </tbody>
+                </table>
+            </div>
+            <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-p-vertical_small selection-content-footer">
+            	 <ui:button class="slds-button slds-button_brand slds-float_right " aura:id="saveBtn" disabled="true" press="{!c.saveSelectedData}">Save and Close</ui:button>
+            </div>
+        </div>
+    </article>
+</aura:component>

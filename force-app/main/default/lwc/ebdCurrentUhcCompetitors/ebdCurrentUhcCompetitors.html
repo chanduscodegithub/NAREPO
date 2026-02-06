@@ -1,0 +1,92 @@
+<template>
+    <div>
+    <div class="section-header">
+    <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+        <span><b>Current UHC Competitors and Niche Vendors Active in this Account </b></span>
+    </div>
+    </div> 
+    </div>
+     <!--<div class="slds-p-top_small  slds-text-align_right slds-text-heading_small">-->
+          <!-- <template lwc:if={isEditMode}>
+                               
+                                <lightning-button  label="Clear Data" variant="Neutral" 
+                                    alternative-text="Delete All Rows" size="small" title="Delete All Rows" onclick={deleteAllRows}>
+                                </lightning-button>
+                            </template>
+                            <template lwc:else>
+                              
+                                <lightning-button  label="Clear Data" variant="Neutral" disabled
+                                    alternative-text="Delete All Rows" size="small" title="Delete All Rows" onclick={deleteAllRows}>
+                                </lightning-button>
+                            </template>-->
+        <!--</div>-->
+    <div class="slds-p-top_large slds-p-bottom_large">
+        <table class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <thead class="header-color">
+                <tr>
+                    <td class="slds-border_right">   <b>Competitor </b></td>
+                    <td class="slds-border_right">   <b>Service Competitor is Providing Client</b></td>
+                    <td class="slds-border_right">   <b>Competitor’s Strengths / Notes</b></td>
+                    <td class="slds-border_right">  <b>Tenure Working with Client</b></td>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <template lwc:if ={localCompetitorData}>
+                <template lwc:if ={localCompetitorData.length}>
+
+                <template for:each={localCompetitorData} for:item="competitor" for:index="index">
+                    <tr key={competitor.id} data-index={index}>
+                        <td class="slds-border_right">
+                            <template if:true ={competitor.CompetitorAccount__r}>
+                                {competitor.CompetitorAccount__r.Name}
+                            </template>
+                        </td>
+                        <td class="slds-border_right" style="word-wrap: break-word; white-space: normal;">
+                            <template if:true ={competitor.Type_of_Products_Services_Provided__c}>
+                                {competitor.Type_of_Products_Services_Provided__c}
+                            </template>
+                            </td>
+                        <td class="slds-border_right">
+                             <template lwc:if={isEditMode}>
+                            <lightning-textarea  variant="label-hidden" name="Strength__c" data-index={index}
+                                value={competitor.Strength__c} onchange={handleInputChange} >
+                            </lightning-textarea>
+                        </template>
+                        <template lwc:else>
+                            <template lwc:if={competitor.Strength__c}>
+                                <lightning-formatted-rich-text style="word-wrap: break-word; white-space: normal;"  value={competitor.Strength__c}></lightning-formatted-rich-text>
+                            </template>
+                        </template>
+                        </td>
+                        <td class="slds-border_right">
+                             <template lwc:if={isEditMode}>
+                            <lightning-textarea type="text" variant="label-hidden" name="Tenure__c" data-index={index}
+                                value={competitor.Tenure__c} onchange={handleInputChange} >
+                            </lightning-textarea>
+                        </template>
+                        <template lwc:else>
+                            <template lwc:if={competitor.Tenure__c}>
+                                <lightning-formatted-rich-text style="word-wrap: break-word; white-space: normal;"   value={competitor.Tenure__c}></lightning-formatted-rich-text>
+                            </template>
+                        </template>
+                        </td>
+                    </tr>
+                </template>
+                </template>
+                <template lwc:else>
+                    <tr>
+                        <td colspan="4" class="slds-text-align_center">No records to Display </td>
+                    </tr>
+                </template>
+                </template>
+                <template lwc:else>
+                    <tr>
+                        <td colspan="4" class="slds-text-align_center">No records to display</td>
+                    </tr>
+                </template>
+
+            </tbody>
+            </table>
+    </div>
+</template>

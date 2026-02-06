@@ -1,0 +1,56 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="progressionIndicator" type="String[]"/>
+    <aura:attribute name="ProgressionSalesStage" type="String[]"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="hasPrevVal" type="Boolean" default="false"/>
+    <aura:attribute name="green_Branch" type="String"/>
+    <aura:attribute name="previousCount" type="Boolean"/>
+    <aura:attribute name="bottom_brnch" type="String"/>
+    <aura:attribute name="SalesStageItag" type="String"/>
+    <aura:attribute name="Selected_Stage_Name" type="String"/>
+    <aura:attribute name="previousSalesStage" type="String"/>
+    <aura:attribute name="Intial_Stage_values" type="String[]"/>
+    <aura:attribute name="progression" type="String[]"/>
+    <aura:attribute name="MAFeildValue" type="Object"/>
+    <aura:attribute name="blue_Branch" type="String"/>
+    <aura:attribute name="oppCategory" type="String"/>
+    <aura:attribute name="topdotted_Branch" type="String"/>
+    <aura:attribute name="saleStageIntialValueMap" type="Object"/>
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:registerEvent name="makeFieldsEditable" type="c:Edit_Read_Event"/>
+    <aura:handler name="SalesStageProgressionEvt" event="c:SalesStage_Progression_Event" progressionIndicator="{!progressionIndicator}" action="{!c.handleProgressionChildEvent}"/>
+    <aura:method name="syncSelectedStage" action="{!c.SyncSalesStage}" description="sync the selected Stage"> 
+        <aura:attribute name="Selected_Stage" type="String"/> 
+        <!--<aura:attribute name="param2" type="Object" />--> 
+    </aura:method>
+    <div class="slds-p-vertical_large slds-is-relative">
+        <div class="slds-progress kanban-branch">
+            <ol class="slds-progress__list" aura:id="SalesStageProgression_Id">
+                <aura:iteration items="{!v.progressionIndicator}" var="item" indexVar="index">
+                    <c:SalesStage_Child_Progression aura:id="child_Progression_Id" 
+                                                    isEdit='{!v.isEdit}' 
+                                                    index="{!index}" 
+                                                    ProgressionSalesStage="{!v.ProgressionSalesStage}"
+                                                    progression="{!v.progression}"
+                                                    Selected_Stage_Name="{!v.Selected_Stage_Name}" 
+                                                    Stage_Name="{!item}"
+                                                    progressionIndicator="{!v.progressionIndicator}">
+                    </c:SalesStage_Child_Progression>
+                </aura:iteration>
+            </ol>
+            <div class="path" aura:id="green_branch">
+                <div class="path-progress slds-is-relative" style="{!v.green_Branch}"></div>
+                <hr class="dp-top slds-is-relative" style="{!v.topdotted_Branch}"/>
+            </div>
+            <div class="direct-path" style="{!v.bottom_brnch}" aura:id="bottom_branch">
+                <span class="dp dp-1"></span>
+                <span class="dp dp-2"></span>
+                <span class="dp dp-3"></span>
+                <hr class="dp dpr-1"/>
+                <hr class="dp dpr-2"/>
+                <hr class="dp dpr-3"/>
+            </div>
+        </div>
+    </div>
+</aura:component>

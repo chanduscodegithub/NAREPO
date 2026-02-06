@@ -1,0 +1,283 @@
+<template>
+
+<div>
+    <div class="section-header">
+    <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+        <span><b>Client Overview</b></span>
+    </div>
+    </div>
+    </div>
+    <div class="slds-p-top_large slds-p-bottom_large">
+        <table class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+            <tr>
+                <td class="slds-border_right ">
+                        <span><b>Company Name</b></span>
+                        </td>
+                    <td colspan="2">
+                        <template lwc:if={accountInfo.Name}>
+                            <span>{accountInfo.Name}</span>
+                        </template>
+                    </td>
+                
+            </tr>
+            <tr>
+                <td class="slds-border_right ">
+                        <span><b>Brief Company Description</b></span>
+                        </td>
+                    <td colspan="2" >
+                        <template if:true = {isEditMode}>
+                            <lightning-textarea type="text" variant="label-hidden" name ="Brief_Company_Description__c" value = {ebdListData.Brief_Company_Description__c}
+                                 onchange={handleInputChange} max-length="32768">
+                            </lightning-textarea>
+                        </template>
+                        <template if:false = {isEditMode}>
+                                    <!-- <lightning-formatted-rich-text style="word-wrap: break-word; white-space: normal;" value={ebdListData.Brief_Company_Description__c}>
+                                    </lightning-formatted-rich-text> -->
+                                    <lightning-formatted-text style="word-wrap: break-word; white-space: normal;"
+                                    value={ebdListData.Brief_Company_Description__c}></lightning-formatted-text>
+                        </template>
+                    </td>
+            </tr>
+            <tr>
+                <td class="slds-border_right ">
+                        <span><b>Involvement in CAC</b></span>
+                        </td>
+                    <td colspan="2">
+                        <template lwc:if={isEditMode}>
+                            <lightning-input  type="checkbox" variant="label-hidden" name="Involvement_In_CAC__c"
+                                checked={ebdListData.Involvement_In_CAC__c} onchange={handleInputChange} max-length="32768">
+                            </lightning-input>
+                        </template>
+                        <template lwc:else>
+                            <lightning-input  type="checkbox" variant="label-hidden" name="Involvement_In_CAC__c" disabled
+                                checked={ebdListData.Involvement_In_CAC__c} onchange={handleInputChange} max-length="32768">
+                        </lightning-input>
+                        </template>
+                    </td>
+            </tr>
+            <tr>
+                <td class="slds-border_right ">
+                        <span style="word-wrap: break-word; white-space: normal;"><b>Business Group on Health</b></span>
+                        </td>
+                    <td colspan="2">
+                        <template lwc:if={bghDataStr}>
+                            <span style="word-wrap: break-word; white-space: normal;">{bghDataStr}</span>
+                        </template>
+                    </td>
+            </tr>
+            <tr>
+                 <td class="slds-border_right ">
+                        <span><b>Current Medical Deal Start Date</b></span>
+                        </td>
+                    <td colspan="2">
+                        <template lwc:if={currentMedicalStr}>
+                            <span>{currentMedicalStr}</span>
+                        </template>
+                    </td>
+            </tr>
+            <tr>
+                 <td class="slds-border_right ">
+                        <span><b>Next Medical Renewal Date</b></span>
+                        </td>
+                    <td colspan="2">
+                       <template lwc:if={nextMedicalStr}>
+                            <span>{nextMedicalStr}</span>
+                        </template>
+                    </td>
+            </tr>
+            <tr>
+                 <td class="slds-border_right ">
+                        <span><b>Tenure</b></span>
+                        </td>
+                    <td colspan="2">
+                       <template lwc:if={accountInfo.Tenure__c}>
+                            <span>{accountInfo.Tenure__c}</span>
+                        </template>
+                    </td>
+            </tr>
+            <tr>
+                 <td class="slds-border_right ">
+                        <span><b>Medical Membership Penetration</b></span>
+                        </td>
+                    <td colspan="2">
+                       <!--<template lwc:if={accountInfo.Medical_Membership_Penetration__c}>
+                            <span>{accountInfo.Medical_Membership_Penetration__c}%</span>
+                        </template>-->
+                        <template lwc:if={medicalMembershipPenetration}>
+                            <span>{medicalMembershipPenetration}</span>
+                        </template>
+                    </td>
+            </tr>
+            <tr>
+                 <td class="slds-border_right ">
+                        <span><b>Relationship History and Current State of the Relationship</b></span>
+                        </td>
+                    <td colspan="2">
+                       <template lwc:if={isEditMode}>
+                            <lightning-textarea type="text" variant="label-hidden" name="Relationship_History__c"
+                                value={ebdListData.Relationship_History__c} onchange={handleInputChange} max-length="32768">
+                            </lightning-textarea>
+                        </template>
+                        <template lwc:else>
+                            <div class="text-wrap">
+                                <lightning-formatted-text style="word-wrap: break-word; white-space: normal;" value={ebdListData.Relationship_History__c}>
+                                    </lightning-formatted-text>
+                                    </div>
+                        </template>
+                    </td>
+            </tr>
+        </table>
+    </div>
+     <!-- Senior UHG Start-->
+    <div>
+    <div class="section-header">
+    <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium ">
+        <span><b>Senior UHG Executives Engaged in the Account</b></span>
+    </div>
+    </div>
+    </div>
+    <div class="slds-p-top_large slds-p-bottom_large">
+        <div class="slds-col slds-size_1-of-2">
+        <table class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                <thead>
+                    <tr class="header-color">
+                     <td class="slds-border_right">
+                        <span><b>Role</b></span>
+                        </td>
+                    <td>
+                       <span><b>Name</b></span>
+                    </td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                     <td class="slds-border_right ">
+                        <span><b>Enterprise Executive Sponsor</b></span>
+                        </td>
+                    <td>
+                        <template lwc:if={seniorExecutiveListData.EnterpriseExecutiveSponsorName__c}>
+                                <span>{seniorExecutiveListData.EnterpriseExecutiveSponsorName__c}</span>
+                            </template>
+                    </td>
+                </tr>
+                <tr>
+                     <td class="slds-border_right ">
+                        <span><b>UHC Executive Sponsor</b></span>
+                        </td>
+                    <td>
+                        <template lwc:if={seniorExecutiveListData.UHCExecutiveSponsorName__c}>
+                                <span>{seniorExecutiveListData.UHCExecutiveSponsorName__c}</span>
+                            </template>
+                    </td>                    
+                </tr>
+                <tr>
+                     <td class="slds-border_right ">
+                        <span><b>Optum Executive Sponsor</b></span>
+                        </td>
+                    <td>
+                        <template lwc:if={seniorExecutiveListData.OptumExecutiveSponsorName__c}>
+                                <span>{seniorExecutiveListData.OptumExecutiveSponsorName__c}</span>
+                            </template>
+                    </td>
+                </tr>
+                <tr>
+                     <td class="slds-border_right ">
+                        <span><b>Surest Executive Sponsor</b></span>
+                        </td>
+                    <td>
+                        <template lwc:if={seniorExecutiveListData.SurestExecutiveSponsorName__c}>
+                                <span>{seniorExecutiveListData.SurestExecutiveSponsorName__c}</span>
+                            </template>
+                    </td>
+                </tr>
+                </tbody>
+        </table>
+        </div>
+    </div>
+    <!-- Senior UHG END-->
+    <div>
+    <div class="section-header">
+    <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+        <span><b>Account Team Leaders</b></span>
+    </div>
+    </div>
+    </div>
+    <div class="slds-p-top_large slds-p-bottom_large">
+        <div class="slds-col slds-size_1-of-2">
+        <table class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <tr>
+                 <td class="slds-border_right ">
+                        <span><b>VPCR / RVP</b></span>
+                        </td>
+                    <td>
+                        <template lwc:if={accountInfo.CMVPCRRVP__c}>
+                            <span>{accountInfo.CMVPCRRVP__r.Name}</span>
+                        </template>
+                    </td>
+            </tr>
+            <tr>
+                 <td class="slds-border_right ">
+                        <span><b>SCE</b></span>
+                        </td>
+                    <td>
+                         <template lwc:if={accountInfo.CM_SCE__c}>
+                            <span>{accountInfo.CM_SCE__r.Name}</span>
+                        </template>
+                    </td>
+            </tr>
+        </table>
+        </div>
+    </div>
+    <!--Account Team Leaders End-->
+    <div>
+    <div class="section-header">
+    <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+        <span><b>Executive Leadership and/or Key Personnel at Client</b></span>
+    </div>
+    </div>
+    </div>
+    <div class="slds-p-top_large slds-p-bottom_large">
+        <table class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <thead class="header-color">
+                <tr>
+                    <td class="slds-border_right"><b> Name</b></td>
+                    <td class="slds-border_right"><b> Title </b></td>
+                    <td class="slds-border_right"> <b>UHG Primary Contact with the Executive </b></td>
+                </tr>
+            </thead>
+            <tbody>
+                <template lwc:if={companyContactsData}>
+                <template lwc:if={companyContactsData.length}>
+                <template for:each={companyContactsData} for:item="contact">
+                    <tr key={contact.Id}>
+                        <td class="slds-border_right" style="word-wrap: break-word; white-space: normal;">
+                            <template lwc:if={contact.Name}>
+                                <span>{contact.Name}</span>
+                            </template>
+                        </td>
+                        <td class="slds-border_right" style="word-wrap: break-word; white-space: normal;">
+                            <template lwc:if={contact.Title}>
+                                <span>{contact.Title}</span>
+                            </template>
+                        </td>
+                        <td class="slds-border_right" style="word-wrap: break-word; white-space: normal;">
+                            <template lwc:if={contact.UHGPrimaryContactwithExecutive__c}>
+                                <span>{contact.UHGPrimaryContactwithExecutive__c}</span>
+                            </template>
+                        </td>
+                    </tr>
+                </template>
+                </template>
+                <template lwc:else>
+                    <td colspan="3" class="slds-text-align_center"> No records to display</td>
+                </template>
+                </template>
+                <template lwc:else>
+                    <td colspan="3" class="slds-text-align_center"> No records to display</td>
+                </template>
+                
+                
+            </tbody>
+            </table>
+    </div>
+</template>

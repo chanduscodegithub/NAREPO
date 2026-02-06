@@ -1,0 +1,330 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 02-02-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+  <lightning-accordion class="section-header-style" allow-multiple-sections-open onsectiontoggle={handleSectionToggle}
+    active-section-name={activeSections}>
+    <lightning-accordion-section class="section-header" name="Network" label="Network">
+      <div class="slds-grid slds-wrap slds-p-left_medium" style="font-size:12px;">
+        <template if:true={isDataReceived}>
+          <table class="slds-table slds-no-row-hover" style="width:50%;">
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>PPO Network Access and Discounts</b></span>
+                    <c-tooltip-lwc help-text={ppoNetworkAccesssHelpText}>
+                    </c-tooltip-lwc>
+                  </div>
+
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                    <template if:false={editmode}>
+                      <span>{soldCaseDataCopy.PPO_Network_Access_and_Discounts__c}</span></template>
+                    <template if:true={editmode}>
+                      <template if:true={ppoNetworkAccessDiscountsValues}>
+                        <span class="slds-text-align_left">
+                          <lightning-combobox name="Sold_Case_Checklist__c.PPO_Network_Access_and_Discounts__c"
+                            label=" " variant="label-hidden"
+                            value={soldCaseDataCopy.PPO_Network_Access_and_Discounts__c} placeholder="Select an Option"
+                            options={ppoNetworkAccessDiscountsSccValues} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </span>
+                      </template>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>HI/PR Leased Network</b></span>
+                    <c-tooltip-lwc help-text={hiPrLeasedNetworkHelpText}>
+                    </c-tooltip-lwc>
+                  </div>
+
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                    <span>
+                      <template if:false={editmode}>
+                        <template if:true={soldCaseDataCopy.Leased_Network__c}>
+                          {soldCaseDataCopy.Leased_Network__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <span class="slds-text-align_left">
+                          <lightning-combobox name="Sold_Case_Checklist__c.Leased_Network__c" label=" "
+                            variant="label-hidden" value={soldCaseDataCopy.Leased_Network__c} placeholder="Select an Option"
+                            options={leasedNetworkValues} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </span>
+                      </template>
+                    </span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Extended Network Access</b></span>
+                  </div>
+
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                    <template if:false={editmode}>
+                      <template if:true={enableExtendedLevel2}>
+                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right"
+                          style="float: left;">
+                          <span>{soldCaseDataCopy.Extended_Network_Access__c}</span>
+                        </div>
+                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right"
+                          style="float: right;">
+                          <span>{soldCaseDataCopy.Extended_Network_Access_Level2__c} </span>
+                        </div>
+                      </template>
+                      <template if:false={enableExtendedLevel2}>
+                        <span>{soldCaseDataCopy.Extended_Network_Access__c}</span>
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <template if:true={ppoNetworkAccessDiscountsValues}>
+                        <span class="slds-text-align_left">
+                          <lightning-combobox class="exNetAccess"
+                            name="Sold_Case_Checklist__c.Extended_Network_Access__c" label=" " variant="label-hidden"
+                            value={soldCaseDataCopy.Extended_Network_Access__c} placeholder="Select an Option"
+                            options={ppoNetworkAccessDiscountsSccValues} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </span>
+                      </template>
+                      <template if:true={enableExtendedLevel2}>
+                        <span class="slds-text-align_left">
+                          <lightning-input type="text" class="exNetAccessLevel2" variant="label-hidden"
+                            name="Sold_Case_Checklist__c.Extended_Network_Access_Level2__c"
+                            value={soldCaseDataCopy.Extended_Network_Access_Level2__c} onchange={FieldChangeHandler}
+                            max-length="25">
+                          </lightning-input>
+                        </span>
+                      </template>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Customer Sponsored (CSP) Network</b></span>
+                  </div>
+
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                    <template if:false={editmode}>
+                      <span>{soldCaseDataCopy.Customer_Sponsored_CSP_Network__c}</span></template>
+                    <template if:true={editmode}>
+                      <span class="slds-text-align_left">
+                        <template if:true={cspNetworkSccValues}>
+                          <lightning-combobox name="Sold_Case_Checklist__c.Customer_Sponsored_CSP_Network__c" label=" "
+                            variant="label-hidden" value={soldCaseDataCopy.Customer_Sponsored_CSP_Network__c}
+                            placeholder="Select an Option" options={cspNetworkSccValues} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </template>
+                      </span>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <table class="slds-table slds-no-row-hover" style="width:50%;">
+            <tr>
+              <td class="right">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Group Specific Provider (GSP) Network</b></span>
+                  </div>
+
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                    <template if:false={editmode}>
+                      <span>{soldCaseDataCopy.Group_Specific_Provider_GSP_Network__c}</span></template>
+                    <template if:true={editmode}>
+                      <span class="slds-text-align_left">
+                        <template if:true={gspNetworkSccValues}>
+                          <lightning-combobox name="Sold_Case_Checklist__c.Group_Specific_Provider_GSP_Network__c"
+                            label=" " variant="label-hidden"
+                            value={soldCaseDataCopy.Group_Specific_Provider_GSP_Network__c} placeholder="Select an Option"
+                            options={gspNetworkSccValues} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </template>
+                      </span>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="right">
+                <div class="slds-grid slds-grid--vertical-align-center">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Passport Connect with Harvard Pilgrim</b></span>
+                  </div>
+
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                    <template if:false={editmode}>
+                      <span>{soldCaseDataCopy.Passport_Connect_with_Harvard_Pilgrim__c}</span></template>
+                    <template if:true={editmode}>
+                      <span class="slds-text-align_left">
+                        <template if:true={passportConnectSccValues}>
+                          <lightning-combobox name="Sold_Case_Checklist__c.Passport_Connect_with_Harvard_Pilgrim__c"
+                            label=" " variant="label-hidden"
+                            value={soldCaseDataCopy.Passport_Connect_with_Harvard_Pilgrim__c} placeholder="Select an Option"
+                            options={passportConnectSccValues} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </template>
+                      </span>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="right">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span class="slds-text-color_error slds-wrap">Passport Connect with Harvard Pilgrim is not Available for Surest</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <template if:true={enableConditionalMandatoryFields}>
+                <td class="right">
+                  <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                      <span><b>HP-Sold Members</b></span>
+                    </div>
+
+                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                      <template if:false={editmode}>
+                        <span>{soldCaseDataCopy.HP_Sold_Retained_Members__c}</span>
+                      </template>
+                      <template if:true={editmode}>
+                        <span class="slds-text-align_left">
+                          <lightning-input type="text" variant="label-hidden"
+                            name="Sold_Case_Checklist__c.HP_Sold_Retained_Members__c"
+                            value={soldCaseDataCopy.HP_Sold_Retained_Members__c} onchange={FieldChangeHandler}
+                            max-length="25">
+                          </lightning-input>
+                        </span>
+                      </template>
+                    </div>
+                  </div>
+                </td>
+              </template>
+            </tr>
+
+            <tr>
+              <template if:true={enableConditionalMandatoryFields}>
+                <td class="right">
+                  <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                      <span><b>HP Alliance</b></span>
+                    </div>
+
+                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                      <template if:false={editmode}>
+                        <span>{soldCaseDataCopy.HP_Alliance__c}</span>
+                      </template>
+                      <template if:true={editmode}>
+                        <template if:true={hpAllianceSccValues}>
+                          <span class="slds-text-align_left">
+                            <lightning-combobox name="Sold_Case_Checklist__c.HP_Alliance__c"
+                              label=" " variant="label-hidden"
+                              value={soldCaseDataCopy.HP_Alliance__c} placeholder="Select an Option"
+                              options={hpAllianceSccValues} onchange={FieldChangeHandler}>
+                            </lightning-combobox>
+                          </span>
+                        </template>
+                      </template>
+                    </div>
+                  </div>
+                </td>
+              </template>
+            </tr>
+
+            <tr>
+              <template if:true={enableConditionalMandatoryFields}>
+                <td class="right">
+                  <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                      <span><b>Preferred HP</b></span>
+                    </div>
+
+                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                      <template if:false={editmode}>
+                        <span>{soldCaseDataCopy.Preferred_HP__c}</span>
+                      </template>
+                      <template if:true={editmode}>
+                        <template if:true={preferredHpSccValues}>
+                          <span class="slds-text-align_left">
+                            <lightning-combobox name="Sold_Case_Checklist__c.Preferred_HP__c"
+                              label=" " variant="label-hidden"
+                              value={soldCaseDataCopy.Preferred_HP__c} placeholder="Select an Option"
+                              options={preferredHpSccValues} onchange={FieldChangeHandler}>
+                            </lightning-combobox>
+                          </span>
+                        </template>
+                      </template>
+                    </div>
+                  </div>
+                </td>
+              </template>
+            </tr>
+
+            <tr>
+              <td class="right">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Physical Health Solutions (Network Only)</b></span>
+                  </div>
+
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                    <span>
+                      <template if:false={editmode}>
+                        <template if:true={soldCaseDataCopy.Physical_Health_Solutions_Network_Only__c}>
+                          {soldCaseDataCopy.Physical_Health_Solutions_Network_Only__c}
+                        </template>
+                      </template>
+                      <template if:true={editmode}>
+                        <template if:true={ppoNetworkAccessDiscountsValues}>
+                          <span class="slds-text-align_left">
+                            <lightning-combobox name="Sold_Case_Checklist__c.Physical_Health_Solutions_Network_Only__c"
+                              label=" " variant="label-hidden"
+                              value={soldCaseDataCopy.Physical_Health_Solutions_Network_Only__c} placeholder="Select an Option"
+                              options={ppoNetworkAccessDiscountsSccValues} onchange={FieldChangeHandler}>
+                            </lightning-combobox>
+                          </span>
+                        </template>
+                      </template>
+                    </span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </template>
+      </div>
+    </lightning-accordion-section>
+  </lightning-accordion>
+</template>

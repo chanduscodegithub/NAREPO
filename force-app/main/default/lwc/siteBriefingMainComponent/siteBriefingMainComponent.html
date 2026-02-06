@@ -1,0 +1,49 @@
+<template>
+     
+      <header class="slds-modal__header custom-modal-header">
+         <div class ="align-side">
+            <!-- <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Strategy Memo Template</h2> -->
+            <h2  class = "blue-text bold-text slds-align_absolute-center">  Site Visit Briefing Template </h2>
+         </div>
+      </header>
+      <!--Modal Body-->
+      <div class=" slds-style slds-p-around_medium">
+         <div class="slds-theme_default slds-p-around_medium">
+            <template if:true={showErrorMessage}>
+               <div class="slds-text-color_error">
+                  Please select the appropriate Membership Activity to print.
+               </div>
+            </template>
+            <template if:true={opportunityOptions} class="slds-style">
+               <template if:true={opportunityOptions.length}>
+                  <div class=" slds-style">
+                     <p style="font-weight: bold; font-size: 0.888rem;">
+                        Please select the appropriate Membership Activity and click "Print" to download the corresponding Briefing Document
+                     </p>
+                     <lightning-radio-group class="slds-style" name="opportunityRadioGroup"
+                        label=""
+                        options={opportunityOptions} value={selectedOpportunityId} onchange={handleRadioChange}>
+                     </lightning-radio-group>
+                  </div>
+               </template>
+               <template if:false={opportunityOptions.length}>
+                  <div class="slds-alert-message slds-text-body_regular bold">
+                    
+                     There are no open membership activities to this company, you can choose to continue and
+                     generate a Briefing Doc with blank Membership Activity sections
+                  </div>
+               </template>
+            </template>
+         </div>
+      </div>
+      <div class="slds-modal__footer">
+        <!-- <lightning-button class = "slds-align-center  pointer-allowed slds-button_large" label ="Print" variant="brand" onclick ={handleClickPrint}>
+         </lightning-button> -->
+         <!-- Added by Vignesh -->
+         <lightning-button label="Print" variant="brand" icon-name="action:download"
+                class="slds-p-around_x-small" onclick={handleGenerateWord}>
+        </lightning-button>
+      </div>
+ 
+   
+</template>

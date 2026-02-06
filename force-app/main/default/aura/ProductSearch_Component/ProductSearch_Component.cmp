@@ -1,0 +1,236 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 02-28-2024
+  @last modified by  : Spoorthy
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="ProductsSearchController">
+    <aura:attribute name="productsdata" type="PricebookEntry"/>
+    <aura:attribute name="selectedProducts" type="List"/>
+    <aura:attribute name="ProductCategoryValues" type="List"/>
+    <aura:attribute name="ProductSurestValues" type="List"/>
+    
+    <aura:attribute name="selectedProductsLength" type="Integer" default='0'/>
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='isProductEmpty' type='Boolean' />
+    <aura:attribute name='isOtherProdExists' type='Boolean' default="false"/>
+    <aura:attribute name='isMedicalProdExists' type='Boolean' default="false"/>
+    <aura:attribute name='isRemainder' type='Boolean' default="true"/>
+    <aura:attribute name='pages' type='Integer'/>
+    <aura:attribute name='selectedTab' type='String'/>
+    <aura:attribute name="Child_Data" type="Object"/>
+    <aura:attribute name='possibleSaleStageValues' type='List' default="['Medical','Other']"/>
+    <aura:attribute name='total' type='Integer' />
+    <aura:attribute name='isMedical' type='Boolean' default="false" />
+    <aura:attribute name='isMedicalAndOther' type='Boolean' default="false" />
+    <aura:attribute name='isMedAndOther' type='Boolean' default="false" />
+    <aura:attribute name='isSurest' type='Boolean' default="false" />
+    <aura:attribute name='BuyupProductList' type='list' />
+    <aura:attribute name='prodLine' type='string' />
+    
+    
+    
+    
+    
+    
+    <aura:registerEvent name="ProductsToOpportunityProductEvents" type="c:ProductsToOpportunityProductEvents"/>
+    
+    <aura:handler name="ProductSearchComp" event="c:ProductSearch_Component_Event" action="{!c.addSelectedProducts}"/>
+    <aura:handler name="init" action="{!c.productsSearchController}" value="{!this}"/> 
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="AddProductRemainder" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide z-9052">
+        <div class="slds-modal__container">
+            
+            <div class="slds-modal__header slds-theme_warning slds-theme--alert-texture" aura:id="alertClass">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Reminder</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">            
+                <aura:if isTrue="{!v.isMedicalProdExists}">
+                    <p style="text-align:left;">
+                        We noticed you didn’t select any Other Buy Up Programs.  To view the list of Other Buy Up Programs, click OK below, and then click the OTHER BUY UP PROGRAMS tab above.
+                    </p>
+                </aura:if>
+            </div>
+            <div class="slds-modal__footer slds-theme--default ">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeAlert}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide z-9051" aura:id="AddProductRemainder"></div>
+    
+    <div class="slds-grid slds-wrap slds-grid_pull-padded modal-body-padded modal-content"> 
+        <lightning:spinner aura:id="mySpinner" class="slds-hide"/>
+        <aura:if isTrue="{!and(v.isMedicalAndOther,v.isMedical)}">
+            <div class="slds-form-element slds-size_1-of-1 help-text slds-p-vertical_x-small slds-p-horizontal_large">
+                <p class="slds-text-body_small">
+                    <strong>
+                        Note:  You are in the MEDICAL products tab.  To view the list of Other Buy Up Programs, click the OTHER BUY UP PROGRAMS tab below.
+                    </strong>
+                </p>                    
+            </div>
+        </aura:if>
+        <div class="slds-size_1-of-1 tab-list">
+            <div class="slds-tabs_default">
+                <ul class="slds-tabs_default__nav tab_nav" aura:id="TabView" role="tablist">
+                    <li class="slds-tabs_default__item slds-hide" id="Medical_Tab" aura:id="Medical_Tab" title="Item One" role="presentation">
+                        <a class="slds-tabs_default__link boldClass" role="tab" data-record="Medical_Tab" onclick="{!c.tabChange}">Medical</a>
+                    </li>
+                    <li class="slds-tabs_default__item slds-hide" title="Item Two" id="Pharmacy_Tab" aura:id="Pharmacy_Tab" role="presentation">
+                        <a class="slds-tabs_default__link boldClass" role="tab"    data-record="Pharmacy_Tab"  onclick="{!c.tabChange}">Pharmacy</a>
+                    </li>
+                    <li class="slds-tabs_default__item slds-hide" title="Item Three" id="Dental_Tab" aura:id="Dental_Tab" role="presentation">
+                        <a class="slds-tabs_default__link boldClass" role="tab"    data-record="Dental_Tab" onclick="{!c.tabChange}">Dental</a>
+                    </li>
+                    <li class="slds-tabs_default__item slds-hide" title="Item One"  id="Vision_Tab" aura:id="Vision_Tab" role="presentation">
+                        <a class="slds-tabs_default__link boldClass" role="tab"   data-record="Vision_Tab" onclick="{!c.tabChange}">Vision</a>
+                    </li>
+                    <li class="slds-tabs_default__item slds-hide" title="Item Two" id="Other_Tab" aura:id="Other_Tab" role="presentation">
+                        <a class="slds-tabs_default__link boldClass"  role="tab" tabindex="-1" aria-selected="false"  data-record="Other_Tab" onclick="{!c.tabChange}">Other Buy Up Programs</a>
+                    </li>
+                    <!--li class="slds-tabs_default__item slds-hide" title="Item Two" id="Surest_Tab" aura:id="Surest_Tab" role="presentation">
+                        <a class="slds-tabs_default__link boldClass"  role="tab" tabindex="-1" aria-selected="false"  data-record="Surest_Tab" onclick="{!c.tabChange}">Surest Other Buy Up Programs</a>
+                    </li--> 
+                </ul>
+            </div>
+        </div>
+        <div class="slds-size_1-of-1 hidden-xs-up slds-p-horizontal_medium slds-p-vertical_large xs-title">
+            <h1>Medical Products</h1>
+        </div>
+        <div class="slds-size_1-of-1 slds-grid slds-wrap search-product">
+            <div class="slds-col slds-grid slds-grid_vertical slds-nowrap">              
+                <div class="slds-shrink-none slds-theme_shade slds-p-vertical_x-small slds-p-horizontal_large search-pdt-wrapper">
+                    <div class="slds-grid slds-wrap slds-grid_vertical-align-end">
+                        <!--Search Products-->
+                        <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_3-of-12 slds-p-right_x-small input-container" style='width:23%'>
+                            <div class="slds-form-element">                                    
+                                <label class="slds-form-element__label">Search By Product Description</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputText class="slds-input " updateOn="keyup"  keyup="{!c.enableGoBtn}" aura:id="Srch_By_Prd_Des" />
+                                </div>
+                            </div>    
+                        </div>            
+                        <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_3-of-12 slds-p-right_x-small input-container" style='width:23%'>
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">Search By Product Category</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputSelect class="slds-input " aura:id="Srch_By_Prdu_Cate" change="{!c.onProCatChange}">
+                                        <aura:iteration items="{!v.ProductCategoryValues}" var="prdCatVal">
+                                            <ui:inputSelectOption text="{!prdCatVal}" label="{!prdCatVal}"/>
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div> 
+                        </div> 
+                        <aura:if isTrue="{!v.isSurest}">
+                            <div class="slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_3-of-12 slds-p-right_x-small input-container" style='width:24%'>
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label">Search By Surest Applicable Products</label>
+                                    <div class="slds-form-element__control">
+                                        <ui:inputSelect class="slds-input " aura:id="Srch_By_Prdu_Surest_Cate" change="{!c.onProSurestCatChange}">
+                                            <aura:iteration items="{!v.ProductSurestValues}" var="prdCatVal">
+                                                <ui:inputSelectOption text="{!prdCatVal}" label="{!prdCatVal}"/>
+                                            </aura:iteration>
+                                        </ui:inputSelect>
+                                    </div>
+                                </div> 
+                            </div>
+                        </aura:if>
+                        <div class="slds-size_1-of-1 slds-medium-size_12-of-12 slds-large-size_3-of-12 slds-grid slds-grid_align-spread" style='width:29%'>
+                            <div>
+                                <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="goBtn" disabled="true" press="{!c.searchProductsRecords}">{!$Label.c.Go}</ui:button>                                                     
+                                <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="clrBtn" disabled="true" press="{!c.clearSearchKeyValues}">{!$Label.c.Clear}</ui:button> 
+                            </div>
+                            <div>
+                                <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="saveBtn" press="{!c.saveProducts}">{!$Label.c.Save}</ui:button>
+                                <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="cancelBtn" press="{!c.cancelPopUp}">{!$Label.c.Cancel}</ui:button>
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="slds-pill_container slds-pill_container_bare selected-pill slds-m-vertical_x-small slds-scrollable_y">
+                        <aura:iteration items="{!v.selectedProducts}" var="selectedProductsObj">
+                            <lightning:pill label="{!selectedProductsObj.Product2.Name}" name="{!selectedProductsObj.Id}" onremove="{! c.handleRemoveOnly }">
+                                <aura:set attribute="media">
+                                    <lightning:icon iconName="standard:product" alternativeText="Product"/>
+                                </aura:set>
+                            </lightning:pill>
+                        </aura:iteration>
+                    </div>
+                    <div class="slds-text-title slds-m-top_x-small slds-grid slds-grid_align-spread">
+                        <span><span class="count">{!v.selectedProductsLength}</span> Item(s) Selected</span>
+                        <!-- <div class="slds-float_right">
+                            
+                        </div>                        -->
+                    </div>
+                    <div class="slds-p-top_small">
+                        <p class="slds-text-body_small slds-text-color_weak">
+                            <strong>Note</strong> : Select the products involved in this Opportunity\Risk by clicking the "+" next to the product. 
+                            Your selections will display at the top of the screen. Click the Save button when complete.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-size_1-of-1 product-table">
+            <!--<div class="slds-scrollable slds-grow">-->
+            <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+            <div class="slds-table--header-fixed_container" aura:id="addHeightInDivForMedOth">
+                <div class="slds-scrollable_y" style="height: 100%;"> 
+                    <table style='table-layout:fixed' class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table--header-fixed">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" style='width:10%'><div class="slds-truncate slds-cell-fixed slds-grid slds-grid_vertical-align-center">&nbsp;</div></th>
+                                <th scope="col" style='width:30%'><div class="slds-truncate slds-cell-fixed slds-grid slds-grid_vertical-align-center" title="Product Description">Product Description</div></th>
+                                <th scope="col" style='width:25%'><div class="slds-truncate slds-cell-fixed slds-grid slds-grid_vertical-align-center" title="Product Category">Product Category</div></th>
+                                <aura:if isTrue="{!v.isSurest}">
+                                    <th scope="col" style='width:15%'>
+                                        <div class="slds-truncate slds-cell-fixed slds-grid slds-grid_vertical-align-center" title="Product Category">
+                                            <span style='color:#ff0000'>*</span>Product Selection
+                                        </div>
+                                    </th>
+                                    <th scope="col" style='width:15%'>
+                                        <div class="slds-truncate slds-cell-fixed slds-grid slds-grid_vertical-align-center" title="Product Category">
+                                            Surest Applicable Products?
+                                        </div>
+                                    </th>
+                                </aura:if>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.isProductEmpty}">
+                                <p></p>
+                                <tr>
+                                    <th colspan="5">
+                                        <aura:if isTrue="{!and(v.isMedicalAndOther,v.isMedical)}">
+                                            <div class="slds-text-align--center">
+                                                No Products Available. (If searching for Other Buy Up Programs, remember to go to the OTHER BUY UP PROGRAMS tab above.)
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <div class="slds-text-align--center">No Products Available</div>
+                                            </aura:set>
+                                        </aura:if>
+                                    </th>
+                                </tr>
+                                <aura:set attribute="else">
+                                    <aura:iteration items="{!v.productsdata}" var="productObj">
+                                        <c:ProductSearchChild_Component prodLine='{!v.prodLine}' aura:id="ProductSearchId" ProductsList='{!productObj}' isSurest='{!v.isSurest}' BuyupProductList='{!v.BuyupProductList}'></c:ProductSearchChild_Component>
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- </div>-->
+        </div>        
+    </div>
+    <div class="modal-footer slds-p-horizontal_medium">
+        <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+    </div>    
+</aura:component>

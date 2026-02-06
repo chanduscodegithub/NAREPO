@@ -1,0 +1,98 @@
+<aura:component >
+    <aura:attribute name="EBDdata" type="String[]"/>
+    <aura:attribute name="hasAccess" type="Boolean" default="false"/>
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="YearPicklist" type="String[]"/>
+    <aura:attribute name="hasUploadAccess" type="Boolean" default="false"/>
+    <aura:registerEvent name="ebdEvent" type="c:EBDChildEvent"/>
+    <tr class="slds-hint-parent">
+        <aura:if isTrue="{!v.isEdit}">
+            <td scope="row" data-label="Title">
+                <div class="slds-truncate" style="max-width: 50%;" title="{!v.EBDdata.EBDObj.Name}">
+                    <ui:inputText maxlength='80' aura:id='ebdname' value="{!v.EBDdata.EBDObj.Name}"/>
+                </div>
+                <div class="slds-required slds-p-vertical_xx-small err-msg"><span style="font-size: 0.75rem;">
+                    <lightning:formattedRichText aura:id='nameerr'/>
+                    </span>
+                </div>
+            </td>
+            <aura:set attribute="else">
+                <th scope="row" data-label="Title">
+                    <div class="slds-truncate" title="{!v.EBDdata.EBDObj.Name}">
+                        {!v.EBDdata.EBDObj.Name}
+                    </div>
+                </th>
+            </aura:set>
+        </aura:if>
+        <aura:if isTrue="{!v.isEdit}">
+            <td scope="row" data-label="Year">
+                <div class="slds-truncate" title="{!v.EBDdata.EBDObj.Year__c}">
+                    <ui:inputSelect aura:id="yearVal" change="{!c.onSelectChange}">
+                        <aura:iteration items="{!v.YearPicklist}" var="year">
+                            <aura:if isTrue='{!v.EBDdata.EBDObj.Year__c == year}'>
+                                <ui:inputSelectOption text="{!year}" label="{!year}" value="true"/>
+                                <aura:set attribute="else">
+                                    <ui:inputSelectOption text="{!year}" label="{!year}"/>
+                                </aura:set>
+                            </aura:if>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </div>
+            </td>
+            <aura:set attribute="else">
+                <td scope="row" data-label="Title">
+                    <div class="slds-truncate" title="{!v.EBDdata.EBDObj.Year__c}">
+                        {!v.EBDdata.EBDObj.Year__c}
+                    </div>
+                </td>
+            </aura:set>
+        </aura:if>
+        <td data-label="Actions">
+            <aura:if isTrue="{!v.EBDdata.hasFile}">
+                <aura:set attribute="else">
+                    <span style="padding: 10px;">Click the Upload Files button to attach the EBD</span>
+                </aura:set>
+                <div class="slds-truncate" title="{!v.EBDdata.DocumentId}"  data-record="{!v.EBDdata.DocumentId}" onclick="{!c.previewRecord}">
+                    <a style="padding: 10px;">Click Here to View or Replace the EBD</a>
+                </div>
+            </aura:if>
+        </td>
+        <td data-label="Actions">
+            <aura:if isTrue="{!and(v.hasUploadAccess, !v.EBDdata.hasFile)}">
+                <lightning:fileUpload name="fileUploader" 
+                                      multiple="true" 
+                                      recordId="{!v.EBDdata.EBDObj.Id}" 
+                                      onuploadfinished="{!c.handleUploadFinished}" />
+                
+            </aura:if>
+        </td> 
+        <aura:if isTrue="{!v.hasAccess}">
+            <aura:if isTrue="{!v.isEdit}">
+                <td data-label="Actions" style='cursor: pointer;'>
+                    <div class="slds-truncate" title="{!v.EBDdata.EBDObj.Id}" onclick="{!c.saveRecord}">
+                        <lightning:icon iconName="utility:check" size="xx-small"/>
+                    </div>
+                </td>
+                <td data-label="Actions" style='cursor: pointer;'>
+                    <div class="slds-truncate" onclick="{!c.cancelRecord}">
+                        <lightning:icon iconName="utility:close" size="xx-small"/>
+                    </div>
+                </td>
+                <aura:set attribute='else'>
+                    <td data-label="Actions" style='cursor: pointer;'>
+                        <div class="slds-truncate" onclick="{!c.editRecord}">
+                            <lightning:icon iconName="utility:edit" size="xx-small"/>
+                        </div>
+                    </td>
+                </aura:set>
+            </aura:if>
+        </aura:if>
+        <aura:if isTrue="{!and(v.hasAccess,!v.isEdit)}">
+            <td data-label="Last Modified By" style='cursor: pointer;'>
+                <div class="slds-truncate" title="{!v.EBDdata.EBDObj.Year__c}" onclick="{!c.RemoveRecord}">
+                    <lightning:icon iconName="utility:delete" size="xx-small"/>
+                </div>
+            </td>
+        </aura:if>        
+    </tr>
+</aura:component>

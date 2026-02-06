@@ -1,0 +1,1290 @@
+<aura:component access="global">    
+    <aura:attribute name="selectedProductTab" type="String"/>
+    <aura:attribute name="MArecordId" type="Id"/>   
+    <!-- Products and Competitors -->
+    <aura:attribute name="generalSalesStage" type="Object"/>
+    <aura:attribute name="selectedProdCatg" type="String"/>
+    <aura:attribute name="otherSalesStage" type="Object"/>
+    <aura:attribute name="SelectedMemInPropsal" type="Integer"/>    
+    <aura:attribute name="prevGeneralSalesStage" type="Object"/>
+    <aura:attribute name="prevOtherSalesStage" type="Object"/>
+    <aura:attribute name="selectedDispostion" type="String"/>
+    <aura:attribute name="selectedRiskProb" type="String"/>
+    <aura:attribute name="selectedRiskOther" type="String"/>    
+    <aura:attribute name="fieldSets" type="String[]"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="SalesStageItag" type="String"/>
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>   
+    <aura:attribute name="requiredFieldsItag" type="Map"/>
+    <aura:attribute name="readOnlyFieldsItag" type="Map"/>
+    <aura:attribute name="readOnlyFieldsItagMO" type="Map"/>
+    <aura:attribute name="genreadOnlyFieldsItag" type="Map"/>
+    <aura:attribute name="genreadOnlyFieldsItagMO" type="Map"/>
+    <aura:attribute name="requiredFieldsItagMO" type="Map"/>
+    <aura:attribute name="medicalFieldsList" type="String[]"/>
+    <aura:attribute name="othersFieldsList" type="String[]"/>
+    <aura:attribute name="Intial_Stage_values" type="String[]"/>
+    <aura:attribute name="Intial_Stage_MO_values" type="String[]"/>
+    <aura:attribute name="saleStageIntialValueMap" type="Object"/>
+    <aura:attribute name="GenSelcSalesStgNme" type="String" default=''/>
+    <aura:attribute name="GenSelcSalesStgMONme" type="String" default=''/>
+    <aura:attribute name="possible_Stage_values" type="Object"/>
+    <aura:attribute name="MedOthSelcSalesStgNme" type="String" default=''/>
+    <aura:attribute name="possible_Stage_MO_values" type="Object"/>
+    <aura:attribute name="oppCategory" type="String"/>
+    <aura:attribute name="DispositonItag" type="String" default=''/>
+    <aura:attribute name="DispositonMap" type="Object"/>
+    <aura:attribute name="MedOthsalesStageItag" type="String"/>
+    <aura:attribute name="isMedOth" type="Boolean"/>
+    <aura:attribute name="issalesStgEmt" type="Boolean" default="false"/>
+    <aura:attribute name="isMedOthsalesStgEmt" type="Boolean" default="false"/>
+    <aura:attribute name="clearValueMap" type="Object"/>
+    <aura:attribute name="selectedCategoryMap" type="Object"/>
+    <aura:attribute name="isComments" type="Boolean" default="false"/>
+    <aura:attribute name="isAdditionalInfo" type="Boolean" default="false"/>
+    <aura:attribute name="isAdditionalInfo2" type="Boolean" default="false"/>
+    <aura:attribute name="isCompanyWideMarket" type="Boolean" default="false"/>
+    <aura:attribute name="isProdCat" type="Boolean" default="false"/>
+    <aura:attribute name="accessObj" type="Object"/>
+    <aura:attribute name="possItag" type="String"/>
+    <aura:attribute name="accountreadOnlyFieldsItag" type="String[]"/>
+    <aura:attribute name="setCopiedValues" type="Object"/>
+    <aura:attribute name="isOnload" type="Boolean" default="false"/>
+    <aura:attribute name="SelectedFinalistDetail" type="String"/>
+    <aura:attribute name="maActivityType" type="String"/>
+    <aura:attribute name="isMedicalSelected" type="Boolean" default='false'/>
+    <aura:attribute name="isOtherSelected" type="Boolean" default='false'/>
+    <aura:attribute name="isPrdtsCmptrsLoadedFlag" type="Boolean" default="false" />    
+    <aura:handler name="change" value="{!v.isEdit}" action="{!c.onChildAttributeChange}"/>
+    <aura:handler name="NBEAOtherBuyUpValidation" event="c:NBEA_OtherBuyUpValidation"  action="{!c.onChildAttributeChange}"/>   
+    <aura:handler name="makeFieldsEditable" event="c:Edit_Read_Event"  action="{!c.onChildAttributeChange}"/>    
+    <aura:handler name="focusErrorField"  event="c:FocusErrorField_Event" action="{!c.focusErrorField}"/>
+    <aura:registerEvent name="makeFieldsEditable" type="c:Edit_Read_Event"/>
+    <aura:registerEvent name="handleSaveEvent" type="c:HandleSaveEvent"/>
+    <aura:registerEvent name="refreshTab" type="c:Refresh_Tab_Event"/>  
+    <aura:method name="focusOnErrorField" action="{!c.focusOnErrorField}" description="Sample method with parameters">    	  
+        <aura:attribute name="errorField_iTag" type="String"/>
+        <aura:attribute name="isProgression" type="Boolean" default="false"/>
+        <aura:attribute name="sales_Stage_Name" type="String"/>
+        <aura:attribute name="ErrorList" type="String[]"/>
+    </aura:method>
+
+    <div class="active">        
+        <lightning:spinner aura:id="mySpinner"/>
+        <aura:if isTrue="{!v.isComments}">
+            <div class="slds-text-align_right slds-p-right_xxx-small slds-p-bottom_x-small">
+                <aura:if isTrue="{!and(v.accessObj.readOnly != true,v.isEdit != true)}">                      
+                    <ui:button class="slds-button slds-button--neutral"  aura:id="editBtn" disabled="false" press="{!c.makeFieldsEditable}">{!$Label.c.Edit}</ui:button>
+                </aura:if> 
+            </div>             
+            <div id="editPageDiv" class="full forcePageBlock forceRecordLayout" aura:id="editPageDiv">
+                <aura:iteration items="{!v.fieldSets}" var="fieldSet" indexVar="index">
+                    <div aura:id="section_div" class="test-id__section slds-section full forcePageBlockSection forcePageBlockSectionView collapse-section is-open" data-aura-class="forcePageBlockSection forcePageBlockSectionView">
+                        <h3 class="slds-section__title  test-id__section-header-container">
+                            <button class="slds-button test-id__section-header-button slds-section__title-action" type="button" data-record="MA_CM_Proposal_Stage" aria-expanded="true" onclick="{!c.expandCollapse}">
+                                <lightning:icon class="slds-m-right_x-small " iconName="utility:chevrondown" size="xx-small" alternativeText="Indicates chevrondown"/>
+                                <span class="test-id__section-header-title slds-truncate "  aura:id="Section_Label">{!fieldSet.fsetSectionLabel}</span>
+                            </button>
+                        </h3>
+                        <div class="slds-section__content section__content" aria-hidden="false">
+                            <aura:if isTrue="{!fieldSet.fsetSectionSubLabel != null}">
+                                <div class="slds-form-element__help slds-m-top_xx-small slds-p-horizontal_x-small ">{!fieldSet.fsetSectionSubLabel}</div>
+                            </aura:if>
+                            <div class="slds-form " role="list">
+                                <div aria-hidden="false" class="slds-accordion__content slds-accordion__show" id="accordion-details-01">
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--4-of-4">
+                                            <ul class="slds-m-right_medium">                                                  
+                                                <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                       
+                                                    <aura:if isTrue="{!fields.left == true}">
+                                                        <li class="slds-form-element">
+                                                            
+                                                            <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                      Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                      fields="{!fields}" 
+                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                      accessObj="{!v.accessObj}"
+                                                                                      isComments="{!v.isComments}"
+                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                                                      SalesStage="{!v.generalSalesStage}"
+                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                </c:Build_Fields_Group>                                       
+                                                                <aura:set attribute="else">
+                                                                    <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                          Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                          iTag="{!fields.fieldPath}" 
+                                                                                          aura:id="genericFeildComponent_Id" 
+                                                                                          fields="{!fields}" 
+                                                                                          simpleRecord="{!v.simpleRecord}" 
+                                                                                          oppCategory="{!v.oppCategory}"
+                                                                                          saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                          Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                          MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                          selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                          isMedOth="{!v.isMedOth}"
+                                                                                          accessObj="{!v.accessObj}"
+                                                                                          isComments="{!v.isComments}"
+                                                                                          SalesStageOther="{!v.otherSalesStage}"
+                                                                                          SalesStage="{!v.generalSalesStage}"
+                                                                                          SalesStageItag="{!v.SalesStageItag}"
+                                                                                          SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                          SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                    </c:Build_Fields_Group>                                       
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </li>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                            </ul>
+                                        </div>
+                                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--4-of-4">
+                                            <ul class="slds-m-left_medium">
+                                                <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                 
+                                                    <aura:if isTrue="{!fields.right == true}">
+                                                        <li class="slds-form-element">
+                                                            
+                                                            <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                      Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                      fields="{!fields}" 
+                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                      accessObj="{!v.accessObj}"
+                                                                                      isComments="{!v.isComments}"
+                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                                                      SalesStage="{!v.generalSalesStage}"
+                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                </c:Build_Fields_Group>                                       
+                                                                <aura:set attribute="else">
+                                                                    <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                          Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                          iTag="{!fields.fieldPath}" 
+                                                                                          aura:id="genericFeildComponent_Id" 
+                                                                                          fields="{!fields}" 
+                                                                                          simpleRecord="{!v.simpleRecord}" 
+                                                                                          oppCategory="{!v.oppCategory}"
+                                                                                          saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                          Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                          MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                          selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                          isMedOth="{!v.isMedOth}"
+                                                                                          accessObj="{!v.accessObj}"
+                                                                                          isComments="{!v.isComments}"
+                                                                                          SalesStageOther="{!v.otherSalesStage}"
+                                                                                          SalesStage="{!v.generalSalesStage}"
+                                                                                          SalesStageItag="{!v.SalesStageItag}"
+                                                                                          SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                          SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                    </c:Build_Fields_Group>                                       
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </li>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>              
+                </aura:iteration>                   
+            </div>
+        </aura:if>       
+        <aura:if isTrue="{!v.isAdditionalInfo}">
+            <div aura:id="Competitive_Medical_CM" class="slds-section container forceRelatedListSingleContainer slds-is-open slds-m-bottom_none">
+                <article aura:id="articleClass" class="slds-card forceRelatedListCardDesktop slds-is-relative slds-card_boundary" onscroll="{!c.scrollBottom}">
+                    <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+                    <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread flex-auto appletHeader" >                    
+                        <div class="slds-grid slds-m-bottom--none flex-auto" data-record="Competitive_Medical_CM" id="utilityToggle" onclick="{!c.expandCollapse1}">
+                            <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                                <div class="slds-media__figure slds-grid slds-grid_vertical-align-center"> 
+                                    <button class="slds-button slds-text-body--regular action-bar-mobile">
+                                        <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevrondown" size="x-small" alternativeText="Product" />
+                                    </button>
+                                    <div aura:id="appletIcon">
+                                        <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Competitive_Landscape_Medical_CM_Applet_Name}">
+                                            <lightning:icon class="slds-icon slds-icon--small" iconName="custom:custom86" size="small" alternativeText="{!$Label.c.Competitive_Landscape_Medical_CM_Applet_Name}" />
+                                        </span>
+                                    </div>
+                                    <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-is-relative display-right">
+                                        <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                            <span class="slds-assistive-text">Loading</span>
+                                            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                                <div class="slds-spinner__dot-a"></div>
+                                                <div class="slds-spinner__dot-b"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-grid flex-alignCenter">
+                                        <!--<a href="javascript:void(0);" class="slds-card__header-link">-->                                       
+                                        <span class="slds-text-heading--small">Additional Info Maintained by the Private Exchange Team</span>                                                                                                                           
+                                        <!--</a>-->
+                                    </h2>
+                                </div>
+                            </header>                           
+                        </div>
+                        <div class="appletAddBtn" data-record="addInfo">                                                  
+                            <aura:if isTrue="{!and(v.accessObj.readOnly != true,v.isAdditionalInfo == true)}"> 
+                                <lightning:button class="slds-button slds-button--neutral" aura:id="editBtn" disabled="false" onclick="{!c.makeFieldsEditable}">{!$Label.c.Edit}</lightning:button>
+                                <lightning:button class="slds-button slds-button--brand slds-hide" aura:id="saveBtn" disabled="false" onclick="{!c.handleSave}">{!$Label.c.Save}</lightning:button>
+                                <lightning:button class="slds-button slds-button--neutral slds-hide" aura:id="cancelBtn" disabled="false" onclick="{!c.handleCancel}">{!$Label.c.Cancel}</lightning:button>                                
+                            </aura:if>                                                    
+                        </div>  
+                    </div>
+                    <div class="slds-section__content slds-border_top" style="padding-top:0px;position:relative;">
+                        <!--Original Content-->
+                        <div id="editPageDiv" class="forceRecordLayout slds-m-around_small" aura:id="editPageDiv">
+                            <aura:iteration items="{!v.fieldSets}" var="fieldSet" indexVar="index">                                
+                                <div aura:id="section_div" class="test-id__section slds-section full forcePageBlockSection forcePageBlockSectionView collapse-section is-open" data-aura-class="forcePageBlockSection forcePageBlockSectionView">                                   
+                                        <div class="slds-section__content section__content" aria-hidden="false">                           
+                                            <div class="slds-form " role="list">
+                                                <div aria-hidden="false" class="slds-accordion__content slds-accordion__show" id="accordion-details-01">
+                                                    <div class="slds-grid slds-wrap">
+                                                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                            <ul class="slds-m-right_medium">                                                  
+                                                                <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                       
+                                                                    <aura:if isTrue="{!fields.left == true}">
+                                                                        <li class="slds-form-element">
+                                                                            
+                                                                            <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                      Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                                      fields="{!fields}" 
+                                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                                      accessObj="{!v.accessObj}"
+                                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                              										  SalesStage="{!v.generalSalesStage}"
+                                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                </c:Build_Fields_Group>                                       
+                                                                                <aura:set attribute="else">
+                                                                                    <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                          Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                          iTag="{!fields.fieldPath}" 
+                                                                                                          aura:id="genericFeildComponent_Id" 
+                                                                                                          fields="{!fields}" 
+                                                                                                          simpleRecord="{!v.simpleRecord}" 
+                                                                                                          oppCategory="{!v.oppCategory}"
+                                                                                                          saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                          Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                          MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                          selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                          isMedOth="{!v.isMedOth}"
+                                                                                                          accessObj="{!v.accessObj}"
+                                                                                                          SalesStageOther="{!v.otherSalesStage}"
+                                                             											  SalesStage="{!v.generalSalesStage}"
+                                                                                                          SalesStageItag="{!v.SalesStageItag}"
+                                                                                                          SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                          SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                    </c:Build_Fields_Group>                                       
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </li>
+                                                                    </aura:if>
+                                                                </aura:iteration>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                            <ul class="slds-m-left_medium">
+                                                                <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                 
+                                                                    <aura:if isTrue="{!fields.right == true}">
+                                                                        <li class="slds-form-element">
+                                                                            
+                                                                            <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                      Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                                      fields="{!fields}" 
+                                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                                      accessObj="{!v.accessObj}"
+                                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                             										  SalesStage="{!v.generalSalesStage}"
+                                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                </c:Build_Fields_Group>                                       
+                                                                                <aura:set attribute="else">
+                                                                                    <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                          Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                          iTag="{!fields.fieldPath}" 
+                                                                                                          aura:id="genericFeildComponent_Id" 
+                                                                                                          fields="{!fields}" 
+                                                                                                          simpleRecord="{!v.simpleRecord}" 
+                                                                                                          oppCategory="{!v.oppCategory}"
+                                                                                                          saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                          Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                          MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                          selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                          isMedOth="{!v.isMedOth}"
+                                                                                                          accessObj="{!v.accessObj}"
+                                                                                                          SalesStageOther="{!v.otherSalesStage}"
+                                                                                                          SalesStage="{!v.generalSalesStage}"
+                                                                                                          SalesStageItag="{!v.SalesStageItag}"
+                                                                                                          SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                          SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                    </c:Build_Fields_Group>                                       
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </li>
+                                                                    </aura:if>
+                                                                </aura:iteration>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                             
+                            </aura:iteration>                   
+                        </div>
+                    </div>
+                </article>
+            </div>                        
+        </aura:if>       
+        <aura:if isTrue="{!v.isAdditionalInfo2}">
+            <div aura:id="Competitive_Medical_CSAD" class="slds-section container forceRelatedListSingleContainer slds-is-open slds-m-bottom_none">
+                <article aura:id="articleClass" class="slds-card forceRelatedListCardDesktop slds-is-relative slds-card_boundary" onscroll="{!c.scrollBottom}">
+                    <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+                    <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread flex-auto appletHeader" >
+                        <div class="slds-grid slds-m-bottom--none flex-auto" data-record="Competitive_Medical_CSAD" id="utilityToggle" onclick="{!c.expandCollapse1}">
+                            <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                                <div class="slds-media__figure slds-grid slds-grid_vertical-align-center"> 
+                                    <button class="slds-button slds-text-body--regular action-bar-mobile">
+                                        <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle1" iconName="utility:chevrondown" size="x-small" alternativeText="Product" />
+                                    </button>
+                                    <div aura:id="appletIcon">
+                                        <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Competitive_Landscape_Medical_CM_Applet_Name}">
+                                            <lightning:icon class="slds-icon slds-icon--small" iconName="custom:custom86" size="small" alternativeText="{!$Label.c.Competitive_Landscape_Medical_CM_Applet_Name}" />
+                                        </span>
+                                    </div>
+                                    <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-is-relative display-right">
+                                        <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                            <span class="slds-assistive-text">Loading</span>
+                                            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                                <div class="slds-spinner__dot-a"></div>
+                                                <div class="slds-spinner__dot-b"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-grid flex-alignCenter">
+                                        <!--<a href="javascript:void(0);" class="slds-card__header-link">-->                          
+                                        <span class="slds-text-heading--small">Additional Info Maintained by the CSAD Team</span>                                                                                                             
+                                        <!--</a>-->
+                                    </h2>
+                                </div>
+                            </header>                           
+                        </div> 
+                        <div class="appletAddBtn" data-record="addInfo2">                                                       
+                            <aura:if isTrue="{!and(v.accessObj.readOnly != true,v.isAdditionalInfo2 == true)}"> 
+                                <lightning:button class="slds-button slds-button--neutral" aura:id="editBtn1" disabled="false" onclick="{!c.makeFieldsEditable1}">{!$Label.c.Edit}</lightning:button>                                    
+                                <lightning:button class="slds-button slds-button--brand slds-hide" aura:id="saveBtn1" disabled="false" onclick="{!c.handleSave}">{!$Label.c.Save}</lightning:button>
+                                <lightning:button class="slds-button slds-button--neutral slds-hide" aura:id="cancelBtn1" disabled="false" onclick="{!c.handleCancel}">{!$Label.c.Cancel}</lightning:button>                                
+                            </aura:if>                                                     
+                        </div>  
+                    </div>                    	
+                    <div class="slds-section__content slds-border_top" style="padding-top:0px;position:relative;">
+                        <!--Original Content-->
+                        <div id="editPageDiv" class="forceRecordLayout slds-m-around_small" aura:id="editPageDiv">                            	
+                            <aura:iteration items="{!v.fieldSets}" var="fieldSet" indexVar="index">
+                                <aura:if isTrue="{!fieldSet.fSetName == 'NBEA_Add_info_Maintained_CSAD'}">
+                                    <div aura:id="section_div" class="test-id__section slds-section full forcePageBlockSection forcePageBlockSectionView collapse-section is-open" data-aura-class="forcePageBlockSection forcePageBlockSectionView">                                   
+                                        <div class="slds-section__content section__content" aria-hidden="false">                           
+                                            <div class="slds-form " role="list">
+                                                <div aria-hidden="false" class="slds-accordion__content slds-accordion__show" id="accordion-details-01">
+                                                    <div class="slds-grid slds-wrap">
+                                                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                            <ul class="slds-m-right_medium">                                                  
+                                                                <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                       
+                                                                    <aura:if isTrue="{!fields.left == true}">
+                                                                        <li class="slds-form-element">
+                                                                            
+                                                                            <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                      Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                                      fields="{!fields}" 
+                                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                                      accessObj="{!v.accessObj}"
+                                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                                                                      SalesStage="{!v.generalSalesStage}"
+                                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                </c:Build_Fields_Group>                                       
+                                                                                <aura:set attribute="else">
+                                                                                    <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                          Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                          iTag="{!fields.fieldPath}" 
+                                                                                                          aura:id="genericFeildComponent_Id" 
+                                                                                                          fields="{!fields}" 
+                                                                                                          simpleRecord="{!v.simpleRecord}" 
+                                                                                                          oppCategory="{!v.oppCategory}"
+                                                                                                          saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                          Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                          MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                          selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                          isMedOth="{!v.isMedOth}"
+                                                                                                          accessObj="{!v.accessObj}"
+                                                                                                          SalesStageOther="{!v.otherSalesStage}"
+                                                                                                          SalesStage="{!v.generalSalesStage}"
+                                                                                                          SalesStageItag="{!v.SalesStageItag}"
+                                                                                                          SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                          SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                    </c:Build_Fields_Group>                                       
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </li>
+                                                                    </aura:if>
+                                                                </aura:iteration>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                            <ul class="slds-m-left_medium">
+                                                                <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                 
+                                                                    <aura:if isTrue="{!fields.right == true}">
+                                                                        <li class="slds-form-element">
+                                                                            
+                                                                            <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                      Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                                      fields="{!fields}" 
+                                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                                      accessObj="{!v.accessObj}"
+                                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                                                                      SalesStage="{!v.generalSalesStage}"
+                                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                </c:Build_Fields_Group>                                       
+                                                                                <aura:set attribute="else">
+                                                                                    <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                          Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                          iTag="{!fields.fieldPath}" 
+                                                                                                          aura:id="genericFeildComponent_Id" 
+                                                                                                          fields="{!fields}" 
+                                                                                                          simpleRecord="{!v.simpleRecord}" 
+                                                                                                          oppCategory="{!v.oppCategory}"
+                                                                                                          saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                          Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                          MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                          selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                          isMedOth="{!v.isMedOth}"
+                                                                                                          accessObj="{!v.accessObj}"
+                                                                                                          SalesStageOther="{!v.otherSalesStage}"
+                                                                                                          SalesStage="{!v.generalSalesStage}"
+                                                                                                          SalesStageItag="{!v.SalesStageItag}"
+                                                                                                          SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                          SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                    </c:Build_Fields_Group>                                       
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </li>
+                                                                    </aura:if>
+                                                                </aura:iteration>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>              
+                                </aura:if>
+                            </aura:iteration>                                                   
+                        </div>
+                    </div>                    	
+                </article>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.isCompanyWideMarket}">
+            <div aura:id="Company_Wide_Market" class="slds-section container forceRelatedListSingleContainer slds-is-open slds-m-bottom_none">
+                <article aura:id="articleClass" class="slds-card forceRelatedListCardDesktop slds-is-relative slds-card_boundary" onscroll="{!c.scrollBottom}">
+                    <!--<div class="slds-spinner_container slds-hide" aura:id="spinner3"></div>-->
+                    <lightning:spinner aura:id="mySpinner3" class="slds-hide"/> 
+                    <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread flex-auto appletHeader" >
+                        <div class="slds-grid slds-m-bottom--none flex-auto" data-record="Company_Wide_Market" id="utilityToggle" onclick="{!c.expandCollapse1}">
+                            <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                                <div class="slds-media__figure slds-grid slds-grid_vertical-align-center"> 
+                                    <button class="slds-button slds-text-body--regular action-bar-mobile">
+                                        <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevrondown" size="x-small" alternativeText="Product" />
+                                    </button>
+                                    <div aura:id="appletIcon">
+                                        <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Competitive_Landscape_Medical_CM_Applet_Name}">
+                                            <lightning:icon class="slds-icon slds-icon--small" iconName="custom:custom86" size="small" alternativeText="{!$Label.c.Competitive_Landscape_Medical_CM_Applet_Name}" />
+                                        </span>
+                                    </div>
+                                    <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-is-relative display-right">
+                                        <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                            <span class="slds-assistive-text">Loading</span>
+                                            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                                <div class="slds-spinner__dot-a"></div>
+                                                <div class="slds-spinner__dot-b"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-grid flex-alignCenter">
+                                        <!--<a href="javascript:void(0);" class="slds-card__header-link">--> 
+                                        <aura:if isTrue="{!v.oppCategory == 'NBEA'}">
+                                        	<span class="slds-text-heading--small">Company-Wide BiC and Top Market Information</span>                                                                                                             
+                                        	<aura:set attribute="else">
+                                            	<span class="slds-text-heading--small">Company-Wide BiC and Top Market Information</span>   
+                                            </aura:set>
+                                        </aura:if>
+                                        <!--</a>-->
+                                    </h2>
+                                </div>
+                            </header>                           
+                        </div> 
+                        <div class="appletAddBtn" data-record="addInfo2">                                                       
+                            <aura:if isTrue="{!and(v.accessObj.readOnly != true,v.isCompanyWideMarket == true)}"> 
+                                <lightning:button class="slds-button slds-button--neutral" aura:id="editBtn2" disabled="false" onclick="{!c.makeFieldsEditable2}">{!$Label.c.Edit}</lightning:button>                                    
+                                <lightning:button class="slds-button slds-button--brand slds-hide" aura:id="saveBtn2" disabled="false" onclick="{!c.handleSave}">{!$Label.c.Save}</lightning:button>
+                                <lightning:button class="slds-button slds-button--neutral slds-hide" aura:id="cancelBtn2" disabled="false" onclick="{!c.handleCancel}">{!$Label.c.Cancel}</lightning:button>                                
+                            </aura:if>                                                     
+                        </div>  
+                    </div>                    	
+                    <div class="slds-section__content slds-border_top" style="padding-top:0px;position:relative;">
+                        <!--Original Content-->
+                        <div id="editPageDiv" class="forceRecordLayout slds-m-around_small" aura:id="editPageDiv">                            	
+                            <aura:iteration items="{!v.fieldSets}" var="fieldSet" indexVar="index">                                
+                                    <div aura:id="section_div" class="test-id__section slds-section full forcePageBlockSection forcePageBlockSectionView collapse-section is-open" data-aura-class="forcePageBlockSection forcePageBlockSectionView">                                   
+                                        <div class="slds-section__content section__content" aria-hidden="false">                           
+                                            <div class="slds-form " role="list">
+                                                <div aria-hidden="false" class="slds-accordion__content slds-accordion__show" id="accordion-details-01">
+                                                    <div class="slds-grid slds-wrap">
+                                                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                            <ul class="slds-m-right_medium">                                                  
+                                                                <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                       
+                                                                    <aura:if isTrue="{!fields.left == true}">
+                                                                        <li class="slds-form-element">
+                                                                            
+                                                                            <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                      Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                                      fields="{!fields}" 
+                                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                                      accessObj="{!v.accessObj}"
+                                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                                                                      SalesStage="{!v.generalSalesStage}"
+                                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                </c:Build_Fields_Group>                                       
+                                                                                <aura:set attribute="else">
+                                                                                    <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                          Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                          iTag="{!fields.fieldPath}" 
+                                                                                                          aura:id="genericFeildComponent_Id" 
+                                                                                                          fields="{!fields}" 
+                                                                                                          simpleRecord="{!v.simpleRecord}" 
+                                                                                                          oppCategory="{!v.oppCategory}"
+                                                                                                          saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                          Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                          MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                          selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                          isMedOth="{!v.isMedOth}"
+                                                                                                          accessObj="{!v.accessObj}"
+                                                                                                          SalesStageOther="{!v.otherSalesStage}"
+                                                                                                          SalesStage="{!v.generalSalesStage}"
+                                                                                                          SalesStageItag="{!v.SalesStageItag}"
+                                                                                                          SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                          SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                    </c:Build_Fields_Group>                                       
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </li>
+                                                                    </aura:if>
+                                                                </aura:iteration>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                            <ul class="slds-m-left_medium">
+                                                                <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                 
+                                                                    <aura:if isTrue="{!fields.right == true}">
+                                                                        <li class="slds-form-element">
+                                                                            
+                                                                            <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                      Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                                      fields="{!fields}" 
+                                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                                      accessObj="{!v.accessObj}"
+                                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                                                                      SalesStage="{!v.generalSalesStage}"
+                                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                </c:Build_Fields_Group>                                       
+                                                                                <aura:set attribute="else">
+                                                                                    <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                          Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                          iTag="{!fields.fieldPath}" 
+                                                                                                          aura:id="genericFeildComponent_Id" 
+                                                                                                          fields="{!fields}" 
+                                                                                                          simpleRecord="{!v.simpleRecord}" 
+                                                                                                          oppCategory="{!v.oppCategory}"
+                                                                                                          saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                          Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                          MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                          selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                          isMedOth="{!v.isMedOth}"
+                                                                                                          accessObj="{!v.accessObj}"
+                                                                                                          SalesStageOther="{!v.otherSalesStage}"
+                                                                                                          SalesStage="{!v.generalSalesStage}"
+                                                                                                          SalesStageItag="{!v.SalesStageItag}"
+                                                                                                          SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                          SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                    </c:Build_Fields_Group>                                       
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </li>
+                                                                    </aura:if>
+                                                                </aura:iteration>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                        
+                            </aura:iteration>                                                   
+                        </div>
+                    </div>                    	
+                </article>
+            </div>
+        </aura:if>
+        {!v.body}
+        <aura:if isTrue="{!v.isProdCat}">
+            
+            <div class="slds-grid slds-wrap slds-m-bottom_medium kanban-container">
+                
+                <aura:if isTrue="{!v.isMedOth}">
+                    <div class="slds-size_1-of-1">
+                        <div class="slds-float--right">
+                            <aura:if isTrue="{!and(v.accessObj.readOnly != true,v.isEdit != true)}">                      
+                                <ui:button class="slds-button slds-button--neutral"  aura:id="editBtn" disabled="false" press="{!c.makeFieldsEditable}">{!$Label.c.Edit}</ui:button>
+                            </aura:if> 
+                        </div> 
+                        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-start">
+                            <h3 class="kanban-title" title="Medical">Medical :</h3>                                                             
+                        </div>                    
+                        <aura:if isTrue="{!v.issalesStgEmt}">
+                            
+                            <div class="slds-text-color_error">
+                                <aura:if isTrue="{!v.oppCategory == 'NBEA'}">
+                                    {!$Label.c.NBEA_Sales_Stage_Select_Label}
+                                    <aura:set attribute="else">
+                                        {!$Label.c.NB_Sales_Stage_Select_Label}
+                                    </aura:set>
+                                </aura:if>                                   
+                            </div>
+                            <aura:set attribute="else">
+                                <c:SalesStage_Progression isEdit="{!v.isEdit}" 
+                                                          aura:id="saleStageProgressionId" 
+                                                          Selected_Stage_Name="{!v.GenSelcSalesStgNme}"  
+                                                          saleStageIntialValueMap="{!v.saleStageIntialValueMap}" 
+                                                          progression="{!v.possible_Stage_values}" 
+                                                          Intial_Stage_values="{!v.Intial_Stage_values}"
+                                                          SalesStageItag="{!v.SalesStageItag}" 
+                                                          simpleRecord="{!v.simpleRecord}" 
+                                                          oppCategory="{!v.oppCategory}">
+                                </c:SalesStage_Progression>
+                            </aura:set>                    
+                        </aura:if>
+                    </div>
+                    <div class="slds-size_1-of-1">                	
+                        <h3 class="kanban-title">Other Buy Up Programs :</h3>
+                        <aura:if isTrue="{!v.isMedOthsalesStgEmt}">                                
+                            <div class="slds-text-color_error">
+                                <aura:if isTrue="{!v.oppCategory == 'NBEA'}">
+                                    {!$Label.c.NBEA_Sales_Stage_Select_Label}
+                                    <aura:set attribute="else">
+                                        {!$Label.c.NB_Sales_Stage_Select_Label}
+                                    </aura:set>
+                                </aura:if>                                
+                            </div>
+                            <aura:set attribute="else">
+                                <c:SalesStage_Progression isEdit="{!v.isEdit}" 
+                                                          aura:id="saleStageProgressionId" 
+                                                          Selected_Stage_Name="{!v.MedOthSelcSalesStgNme}"  
+                                                          saleStageIntialValueMap="{!v.saleStageIntialValueMap}" 
+                                                          progression="{!v.possible_Stage_MO_values}" 
+                                                          Intial_Stage_values="{!v.Intial_Stage_MO_values}"
+                                                          SalesStageItag="{!v.MedOthsalesStageItag}" 
+                                                          simpleRecord="{!v.simpleRecord}" 
+                                                          oppCategory="{!v.oppCategory}">
+                                </c:SalesStage_Progression>
+                            </aura:set>
+                        </aura:if>
+                    </div>                
+                    <aura:set attribute="else">
+                        <div class="slds-size_1-of-1">
+                            <div class="slds-float--right">
+                                <aura:if isTrue="{!and(v.accessObj.readOnly != true,v.isEdit != true)}">                      
+                                    <ui:button class="slds-button slds-button--neutral"  aura:id="editBtn" disabled="false" press="{!c.makeFieldsEditable}">{!$Label.c.Edit}</ui:button>
+                                </aura:if> 
+                            </div>                                                                 
+                            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-start">
+                                <aura:if isTrue="{!v.selectedProdCatg == 'Other_Buy_Up_Programs'}">
+                                    <h3 class="kanban-title">Other Buy Up Programs :</h3> 
+                                    <aura:set attribute="else">
+                                        <h3 class="kanban-title">{!v.selectedProdCatg} :</h3>
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </div>
+                            <aura:if isTrue="{!v.issalesStgEmt}">                        
+                                <div class="slds-text-color_error">
+                                    <aura:if isTrue="{!v.oppCategory == 'NBEA'}">
+                                        {!$Label.c.NBEA_Sales_Stage_Select_Label}
+                                        <aura:set attribute="else">
+                                            {!$Label.c.NB_Sales_Stage_Select_Label}
+                                        </aura:set>
+                                    </aura:if>                                         
+                                </div>
+                                <aura:set attribute="else">
+                                    <c:SalesStage_Progression isEdit="{!v.isEdit}" 
+                                                              aura:id="saleStageProgressionId" 
+                                                              Selected_Stage_Name="{!v.GenSelcSalesStgNme}"  
+                                                              saleStageIntialValueMap="{!v.saleStageIntialValueMap}" 
+                                                              progression="{!v.possible_Stage_values}" 
+                                                              Intial_Stage_values="{!v.Intial_Stage_values}"
+                                                              SalesStageItag="{!v.SalesStageItag}" 
+                                                              simpleRecord="{!v.simpleRecord}" 
+                                                              oppCategory="{!v.oppCategory}">
+                                    </c:SalesStage_Progression>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </aura:set>
+                </aura:if>
+                <!-- Ghanshyam  C Note: display link  start -->
+                <div class="slds-size_1-of-1 slds-grid slds-grid_align-end">
+                    <aura:if isTrue="{!and(v.oppCategory =='NBEA', v.isProdCat)}">
+                        <div aura:id ="instructionId" >
+                            <a style="width:100%;" onclick="{!c.showPopcomponent}" > 
+                                Need Help? Click here            </a>
+                            
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!and(v.oppCategory =='NB', v.isProdCat)}">
+                        <div aura:id ="instructionId">
+                            <a style="width:100%;" onclick="{!c.showPopcomponent}" > 
+                                Need Help? Click here               </a>
+                            
+                            
+                        </div>
+                    </aura:if>
+                </div>
+                <!-- Ghanshyam C END -->
+            </div>
+            <div id="editPageDiv" class="full forcePageBlock forceRecordLayout" aura:id="editPageDiv">
+                <aura:if isTrue="{!v.oppCategory == 'NBEA'}">
+                    <aura:iteration items="{!v.fieldSets}" var="fieldSet" indexVar="index">
+                        <aura:if isTrue="{!fieldSet.fsetSectionLabel != 'Additional Information Maintained by Client Development:'}">
+                            <div aura:id="section_div" class="test-id__section slds-section full forcePageBlockSection forcePageBlockSectionView collapse-section is-open" data-aura-class="forcePageBlockSection forcePageBlockSectionView">
+                                <h3 class="slds-section__title  test-id__section-header-container">
+                                    <button class="slds-button test-id__section-header-button slds-section__title-action" type="button" data-record="MA_CM_Proposal_Stage" aria-expanded="true" onclick="{!c.expandCollapse}">
+                                        <lightning:icon class="slds-m-right_x-small " iconName="utility:chevrondown" size="xx-small" alternativeText="Indicates chevrondown"/>
+                                        <span class="test-id__section-header-title slds-truncate" aura:id="Section_Label" data-record="{!fieldSet.fsetSectionSubLabel}">{!fieldSet.fsetSectionLabel}</span>
+                                    </button>
+                                </h3> 
+                                <div class="slds-section__content section__content" aria-hidden="false">
+                                    <aura:if isTrue="{!fieldSet.fsetSectionSubLabel != null}">
+                                        <div class="slds-form-element__help slds-m-top_xx-small slds-p-horizontal_x-small ">{!fieldSet.fsetSectionSubLabel}</div>
+                                    </aura:if>
+                                    <div class="slds-form " role="list">
+                                        <div aria-hidden="false" class="slds-accordion__content slds-accordion__show" id="accordion-details-01">
+                                            <div class="slds-grid slds-wrap">
+                                                <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                    <ul class="slds-m-right_medium">                                                  
+                                                        <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                       
+                                                            <aura:if isTrue="{!fields.left == true}">
+                                                                <li class="slds-form-element">
+                                                                    
+                                                                    <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                        <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                              Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                              iTag="{!fields.fieldPath}" 
+                                                                                              aura:id="genericFeildComponent_Id" 
+                                                                                              fields="{!fields}" 
+                                                                                              simpleRecord="{!v.simpleRecord}" 
+                                                                                              oppCategory="{!v.oppCategory}"
+                                                                                              saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                              Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                              MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                              selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                              isMedOth="{!v.isMedOth}"
+                                                                                              accessObj="{!v.accessObj}"
+                                                                                              SalesStageOther="{!v.otherSalesStage}"
+                                                                                              SalesStage="{!v.generalSalesStage}"
+                                                                                              SalesStageItag="{!v.SalesStageItag}"
+                                                                                              SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                              SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                        </c:Build_Fields_Group>                                       
+                                                                        <aura:set attribute="else">
+                                                                            <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                  Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                  iTag="{!fields.fieldPath}" 
+                                                                                                  aura:id="genericFeildComponent_Id" 
+                                                                                                  fields="{!fields}" 
+                                                                                                  simpleRecord="{!v.simpleRecord}" 
+                                                                                                  oppCategory="{!v.oppCategory}"
+                                                                                                  saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                  Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                  MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                  selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                  isMedOth="{!v.isMedOth}"
+                                                                                                  accessObj="{!v.accessObj}"
+                                                                                                  SalesStageOther="{!v.otherSalesStage}"
+                                                                                                  SalesStage="{!v.generalSalesStage}"
+                                                                                                  SalesStageItag="{!v.SalesStageItag}"
+                                                                                                  SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                  SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                            </c:Build_Fields_Group>                                       
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </li>
+                                                            </aura:if>
+                                                        </aura:iteration>
+                                                    </ul>
+                                                </div>
+                                                <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                    <ul class="slds-m-left_medium">
+                                                        <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                 
+                                                            <aura:if isTrue="{!fields.right == true}">
+                                                                <li class="slds-form-element">
+                                                                    
+                                                                    <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                        <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                              Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                              iTag="{!fields.fieldPath}" 
+                                                                                              aura:id="genericFeildComponent_Id" 
+                                                                                              fields="{!fields}" 
+                                                                                              simpleRecord="{!v.simpleRecord}" 
+                                                                                              oppCategory="{!v.oppCategory}"
+                                                                                              saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                              Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                              MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                              selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                              isMedOth="{!v.isMedOth}"
+                                                                                              accessObj="{!v.accessObj}"
+                                                                                              SalesStageOther="{!v.otherSalesStage}"
+                                                                                              SalesStage="{!v.generalSalesStage}"
+                                                                                              SalesStageItag="{!v.SalesStageItag}"
+                                                                                              SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                              SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                        </c:Build_Fields_Group>                                       
+                                                                        <aura:set attribute="else">
+                                                                            <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                  Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                  iTag="{!fields.fieldPath}" 
+                                                                                                  aura:id="genericFeildComponent_Id" 
+                                                                                                  fields="{!fields}" 
+                                                                                                  simpleRecord="{!v.simpleRecord}" 
+                                                                                                  oppCategory="{!v.oppCategory}"
+                                                                                                  saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                  Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                  MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                  selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                  isMedOth="{!v.isMedOth}"
+                                                                                                  accessObj="{!v.accessObj}"
+                                                                                                  SalesStageOther="{!v.otherSalesStage}"
+                                                                                                  SalesStage="{!v.generalSalesStage}"
+                                                                                                  SalesStageItag="{!v.SalesStageItag}"
+                                                                                                  SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                  SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                            </c:Build_Fields_Group>                                       
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </li>
+                                                            </aura:if>
+                                                        </aura:iteration>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!and(v.isComments == false,v.isPrdtsCmptrsLoadedFlag)}">
+                                    <c:ProductsAndCompetitors aura:id="productsAndCompetitorsAuraId"
+                                                              previousSalesStage="{!v.prevGeneralSalesStage}" 
+                                                              previousSalesStageOther="{!v.prevOtherSalesStage}"  
+                                                              productTypesValues="{!v.selectedProductTab}"  
+                                                              isEditRecord="{!v.isEdit}" 
+                                                              maType="{!v.oppCategory}" 
+                                                              SalesStageOther="{!v.otherSalesStage}"
+                                                              SalesStage="{!v.generalSalesStage}" 
+                                                              Disposition="{!v.selectedDispostion}" 
+                                                              isMedicalAndOthersTab="{!v.isMedOth}" 
+                                                              MArecordId="{!v.MArecordId}" 
+                                                              accountId="{!v.simpleRecord.AccountId}" 
+                                                              opportunityRecord="{!v.simpleRecord}"
+                                                              RiskProbability="{!v.selectedRiskProb}"
+                                                              RiskProbabilityOther="{!v.selectedRiskOther}"
+                                                              SelectedMemInPropsal="{!v.SelectedMemInPropsal}"   
+                                                              isReadOnly="{!v.accessObj.readOnly}"
+                                                              >
+                                    </c:ProductsAndCompetitors>
+                                </aura:if>
+                                <div aura:id="section_div" class="test-id__section slds-section full forcePageBlockSection forcePageBlockSectionView collapse-section" data-aura-class="forcePageBlockSection forcePageBlockSectionView">
+                                    <h3 class="slds-section__title  test-id__section-header-container">
+                                        <button class="slds-button test-id__section-header-button slds-section__title-action" type="button" data-record="MA_CM_Proposal_Stage" aria-expanded="true" onclick="{!c.expandCollapse}">
+                                            <lightning:icon class="slds-m-right_x-small " iconName="utility:chevrondown" size="xx-small" alternativeText="Indicates chevrondown"/>
+                                            <span class="test-id__section-header-title slds-truncate" aura:id="Section_Label" data-record="{!fieldSet.fsetSectionSubLabel}">{!fieldSet.fsetSectionLabel}</span>
+                                        </button>
+                                    </h3>
+                                    <div class="slds-section__content section__content" aria-hidden="false">
+                                        <aura:if isTrue="{!fieldSet.fsetSectionSubLabel != null}">
+                                            <div class="slds-form-element__help slds-m-top_xx-small slds-p-horizontal_x-small ">{!fieldSet.fsetSectionSubLabel}</div>
+                                        </aura:if>
+                                        <div class="slds-form " role="list">
+                                            <div aria-hidden="false" class="slds-accordion__content slds-accordion__show" id="accordion-details-01">
+                                                <div class="slds-grid slds-wrap">
+                                                    <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                        <ul class="slds-m-right_medium">                                                  
+                                                            <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                       
+                                                                <aura:if isTrue="{!fields.left == true}">
+                                                                    <li class="slds-form-element">
+                                                                        <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                            <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                  Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                                  iTag="{!fields.fieldPath}" 
+                                                                                                  aura:id="genericFeildComponent_Id" 
+                                                                                                  fields="{!fields}" 
+                                                                                                  simpleRecord="{!v.simpleRecord}" 
+                                                                                                  oppCategory="{!v.oppCategory}"
+                                                                                                  saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                  Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                  MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                  selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                  isMedOth="{!v.isMedOth}"
+                                                                                                  accessObj="{!v.accessObj}"
+                                                                                                  SalesStageOther="{!v.otherSalesStage}"
+                                                                                                  SalesStage="{!v.generalSalesStage}"
+                                                                                                  SalesStageItag="{!v.SalesStageItag}"
+                                                                                                  SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                  SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                            </c:Build_Fields_Group>                                       
+                                                                            <aura:set attribute="else">
+                                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                      Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                                      fields="{!fields}" 
+                                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                                      accessObj="{!v.accessObj}"
+                                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                                                                      SalesStage="{!v.generalSalesStage}"
+                                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                </c:Build_Fields_Group>                                       
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </li>
+                                                                </aura:if>
+                                                            </aura:iteration>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                        <ul class="slds-m-left_medium">
+                                                            <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                 
+                                                                <aura:if isTrue="{!fields.right == true}">
+                                                                    <li class="slds-form-element">
+                                                                        <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                            <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                  Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                                  iTag="{!fields.fieldPath}" 
+                                                                                                  aura:id="genericFeildComponent_Id" 
+                                                                                                  fields="{!fields}" 
+                                                                                                  simpleRecord="{!v.simpleRecord}" 
+                                                                                                  oppCategory="{!v.oppCategory}"
+                                                                                                  saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                  Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                  MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                  selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                  isMedOth="{!v.isMedOth}"
+                                                                                                  accessObj="{!v.accessObj}"
+                                                                                                  SalesStageOther="{!v.otherSalesStage}"
+                                                                                                  SalesStage="{!v.generalSalesStage}"
+                                                                                                  SalesStageItag="{!v.SalesStageItag}"
+                                                                                                  SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                  SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                            </c:Build_Fields_Group>                                       
+                                                                            <aura:set attribute="else">
+                                                                                <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                      Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                      iTag="{!fields.fieldPath}" 
+                                                                                                      aura:id="genericFeildComponent_Id" 
+                                                                                                      fields="{!fields}" 
+                                                                                                      simpleRecord="{!v.simpleRecord}" 
+                                                                                                      oppCategory="{!v.oppCategory}"
+                                                                                                      saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                      Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                      MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                      selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                      isMedOth="{!v.isMedOth}"
+                                                                                                      accessObj="{!v.accessObj}"
+                                                                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                                                                      SalesStage="{!v.generalSalesStage}"
+                                                                                                      SalesStageItag="{!v.SalesStageItag}"
+                                                                                                      SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                                </c:Build_Fields_Group>                                       
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </li>
+                                                                </aura:if>
+                                                            </aura:iteration>
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                    
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:set>
+                        </aura:if>                      
+                    </aura:iteration>                   
+                    <aura:set attribute="else">
+                        <aura:iteration items="{!v.fieldSets}" var="fieldSet" indexVar="index">
+                            <div aura:id="section_div" class="test-id__section slds-section full forcePageBlockSection forcePageBlockSectionView collapse-section is-open" data-aura-class="forcePageBlockSection forcePageBlockSectionView">
+                                <h3 class="slds-section__title  test-id__section-header-container">
+                                    <button class="slds-button test-id__section-header-button slds-section__title-action" type="button" data-record="MA_CM_Proposal_Stage" aria-expanded="true" onclick="{!c.expandCollapse}">
+                                        <lightning:icon class="slds-m-right_x-small " iconName="utility:chevrondown" size="xx-small" alternativeText="Indicates chevrondown"/>
+                                        <span class="test-id__section-header-title slds-truncate"  aura:id="Section_Label">{!fieldSet.fsetSectionLabel}</span>
+                                    </button>
+                                </h3> 
+                                
+                                
+                                <div class="slds-section__content section__content" aria-hidden="false">
+                                    <aura:if isTrue="{!fieldSet.fsetSectionSubLabel != null}">
+                                        <div class="slds-form-element__help slds-m-top_xx-small slds-p-horizontal_x-small ">{!fieldSet.fsetSectionSubLabel}</div>
+                                    </aura:if>
+                                    <div class="slds-form " role="list">
+                                        <div aria-hidden="false" class="slds-accordion__content slds-accordion__show" id="accordion-details-01">
+                                            <div class="slds-grid slds-wrap">
+                                                <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                    <ul class="slds-m-right_medium">                                                  
+                                                        <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                       
+                                                            <aura:if isTrue="{!fields.left == true}">
+                                                                <li class="slds-form-element">
+                                                                    
+                                                                    <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                        <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                              Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                              iTag="{!fields.fieldPath}" 
+                                                                                              aura:id="genericFeildComponent_Id" 
+                                                                                              fields="{!fields}" 
+                                                                                              simpleRecord="{!v.simpleRecord}" 
+                                                                                              oppCategory="{!v.oppCategory}"
+                                                                                              saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                              Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                              MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                              selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                              isMedOth="{!v.isMedOth}"
+                                                                                              accessObj="{!v.accessObj}"
+                                                                                              SalesStageOther="{!v.otherSalesStage}"
+                                                                                              SalesStage="{!v.generalSalesStage}"
+                                                                                              SalesStageItag="{!v.SalesStageItag}"
+                                                                                              SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                              SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                        </c:Build_Fields_Group>                                       
+                                                                        <aura:set attribute="else">
+                                                                            <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                  Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                  iTag="{!fields.fieldPath}" 
+                                                                                                  aura:id="genericFeildComponent_Id" 
+                                                                                                  fields="{!fields}" 
+                                                                                                  simpleRecord="{!v.simpleRecord}" 
+                                                                                                  oppCategory="{!v.oppCategory}"
+                                                                                                  saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                  Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                  MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                  selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                  isMedOth="{!v.isMedOth}"
+                                                                                                  accessObj="{!v.accessObj}"
+                                                                                                  SalesStageOther="{!v.otherSalesStage}"
+                                                                                                  SalesStage="{!v.generalSalesStage}"
+                                                                                                  SalesStageItag="{!v.SalesStageItag}"
+                                                                                                  SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                  SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                            </c:Build_Fields_Group>                                       
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </li>
+                                                            </aura:if>
+                                                        </aura:iteration>
+                                                    </ul>
+                                                </div>
+                                                <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                                                    <ul class="slds-m-left_medium">
+                                                        <aura:iteration items="{!fieldSet.fsetMember}" var="fields" indexVar="index">                                                 
+                                                            <aura:if isTrue="{!fields.right == true}">
+                                                                <li class="slds-form-element">
+                                                                    
+                                                                    <aura:if isTrue="{!and(v.isMedOth,fields.fieldPath  == v.MedOthsalesStageItag)}">
+                                                                        <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                              Intial_Stage_values="{!v.Intial_Stage_MO_values}" 
+                                                                                              iTag="{!fields.fieldPath}" 
+                                                                                              aura:id="genericFeildComponent_Id" 
+                                                                                              fields="{!fields}" 
+                                                                                              simpleRecord="{!v.simpleRecord}" 
+                                                                                              oppCategory="{!v.oppCategory}"
+                                                                                              saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                              Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                              MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                              selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                              isMedOth="{!v.isMedOth}"
+                                                                                              accessObj="{!v.accessObj}"
+                                                                                              SalesStageOther="{!v.otherSalesStage}"
+                                                                                              SalesStage="{!v.generalSalesStage}"
+                                                                                              SalesStageItag="{!v.SalesStageItag}"
+                                                                                              SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                              SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                        </c:Build_Fields_Group>                                       
+                                                                        <aura:set attribute="else">
+                                                                            <c:Build_Fields_Group isEdit="{!v.isEdit}" 
+                                                                                                  Intial_Stage_values="{!v.Intial_Stage_values}" 
+                                                                                                  iTag="{!fields.fieldPath}" 
+                                                                                                  aura:id="genericFeildComponent_Id" 
+                                                                                                  fields="{!fields}" 
+                                                                                                  simpleRecord="{!v.simpleRecord}" 
+                                                                                                  oppCategory="{!v.oppCategory}"
+                                                                                                  saleStageIntialValueMap='{!v.saleStageIntialValueMap}'
+                                                                                                  Selected_Stage_Name="{!v.GenSelcSalesStgNme}"
+                                                                                                  MedOthSelcSalesStgNme="{!v.MedOthSelcSalesStgNme}"
+                                                                                                  selectedCategoryMap="{!v.selectedCategoryMap}"
+                                                                                                  isMedOth="{!v.isMedOth}"
+                                                                                                  SalesStageOther="{!v.otherSalesStage}"
+                                                                                                  SalesStage="{!v.generalSalesStage}"
+                                                                                                  accessObj="{!v.accessObj}"
+                                                                                                  SalesStageItag="{!v.SalesStageItag}"
+                                                                                                  SalesStageOtherItag="{!v.MedOthsalesStageItag}"
+                                                                                                  SelectedMemInPropsal="{!v.SelectedMemInPropsal}">
+                                                                            </c:Build_Fields_Group>                                       
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </li>
+                                                            </aura:if>
+                                                        </aura:iteration>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                        <aura:if isTrue="{!and(v.isComments == false,v.isPrdtsCmptrsLoadedFlag)}">
+                            <c:ProductsAndCompetitors aura:id="productsAndCompetitorsAuraId"
+                                                      previousSalesStage="{!v.prevGeneralSalesStage}" 
+                                                      previousSalesStageOther="{!v.prevOtherSalesStage}"  
+                                                      productTypesValues="{!v.selectedProductTab}"  
+                                                      isEditRecord="{!v.isEdit}" 
+                                                      maType="{!v.oppCategory}" 
+                                                      SalesStageOther="{!v.otherSalesStage}"
+                                                      SalesStage="{!v.generalSalesStage}" 
+                                                      Disposition="{!v.selectedDispostion}" 
+                                                      isMedicalAndOthersTab="{!v.isMedOth}" 
+                                                      MArecordId="{!v.MArecordId}" 
+                                                      accountId="{!v.simpleRecord.AccountId}" 
+                                                      opportunityRecord="{!v.simpleRecord}"
+                                                      RiskProbability="{!v.selectedRiskProb}"
+                                                      RiskProbabilityOther="{!v.selectedRiskOther}"
+                                                      SelectedMemInPropsal="{!v.SelectedMemInPropsal}"   
+                                                      isReadOnly="{!v.accessObj.readOnly}"
+                                                      >
+                            </c:ProductsAndCompetitors>
+                        </aura:if>                 
+                    </aura:set>
+                </aura:if>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

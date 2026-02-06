@@ -1,0 +1,53 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" 
+                access="global" controller="Account_CSIAdminSectionApex">
+    
+    <aura:handler name="init" action="{!c.doinit}" value="{!this}"/>
+    <aura:attribute name="acc" type="Account" default="{'sobjectType ':'Account',
+                                                       'RMO_Address__c ':'',
+                                                       'Toll_Free_Number__c ':''}"/>   
+    <aura:attribute name="enableInput" type="boolean" default="false"/>
+    
+    <lightning:card class="slds-text-heading_small slds-card_boundary" iconName="standard:account" title="{!$Label.c.Account_CSIAdminSection_TITLE}">
+        <aura:set attribute="actions">
+            <aura:if isTrue="{!v.enableInput}">
+                <lightning:button label="Save" onclick="{!c.saveData}" variant="Brand"/>
+                <lightning:button label="Cancel" onclick="{!c.disableInput}"/>
+                <aura:set attribute="else">
+                    <lightning:button label="Edit" onclick="{!c.EnableInput}"/>
+                </aura:set>
+            </aura:if>
+        </aura:set>
+        <aura:if isTrue="{!v.enableInput}">
+            <div class="slds-form slds-form_stacked">
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="InputRMOAddress">RMO Address</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputTextArea aura:id="InputRMOAddress" value="{!v.acc.RMO_Address__c}" rows="3"/> 
+                    </div>
+                </div>
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="InputTollFreeNumber">Toll Free Number</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputPhone aura:id="InputTollFreeNumber" value="{!v.acc.Toll_Free_Number__c}" />
+                    </div>
+                </div>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-form slds-form_stacked">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="OutputRMOAddress">RMO Address</label>
+                        <div class="slds-form-element__control">
+                            <ui:outputTextArea aura:id="OutputRMOAddress" value="{!v.acc.RMO_Address__c}"/> 
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="OutputTollFreeNumber">Toll Free Number</label>
+                        <div class="slds-form-element__control">
+                            <ui:outputPhone aura:id="OutputTollFreeNumber" value="{!v.acc.Toll_Free_Number__c}"/> 
+                        </div>
+                    </div>
+                </div>    
+            </aura:set>
+        </aura:if> 
+    </lightning:card>
+</aura:component>

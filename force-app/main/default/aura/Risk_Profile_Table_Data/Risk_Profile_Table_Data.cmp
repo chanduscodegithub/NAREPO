@@ -1,0 +1,175 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <aura:attribute name="RiskProfileDataobj" type="Object" />
+    <aura:attribute name="RiskProfileObj" type="RiskProfile__c" />        
+    
+    <aura:attribute name="riskProfileSelectValues" type="Map" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>    
+    <aura:attribute name="selectedRiskProfile" type="String[]"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    
+    <aura:attribute name="index" type="Integer" />    
+    
+    <aura:attribute name="RiskHelptTextSet" type="List" />  
+    <aura:attribute name="riskHelpText" type="String" />  
+    
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    
+    <aura:attribute name="RiskTypeValues" type="Set" default=""/>
+    <aura:attribute name="RiskTypeMap" type="Map" default=""/>	
+    <aura:attribute name="comments" type="String" default=""/>	
+    
+    <aura:attribute name="ImpactValues" type="Set" default=""/>
+    <aura:attribute name="BidRiskValues" type="List[]" default=""/>
+    <aura:attribute name="AddlInfo" type="Set" default=""/>        
+    <aura:attribute name="isEditAccess" type="Boolean" default="false"/>
+    <aura:attribute name="isParitalAccess" type="Boolean" default="false"/>
+    
+    <aura:attribute name="isRiskTypeNotFound" type="Boolean" default="false"/>
+    <aura:attribute name="isImactNotFound" type="Boolean" default="false"/>
+    <aura:attribute name="isAddInfoNotFound" type="Boolean" default="false"/>
+    
+    <aura:attribute name="riskProfiledata" type="Object"/>
+        
+    <aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>    
+    
+    <aura:registerEvent name="riskProfileEvent" type="c:Risk_Profile_Event"/>        
+    
+    <tr class="slds-hint-parent">        
+        <th scope="row" data-label="Risk Type" class="slds-p-around--small">
+            <div class="slds-grid">
+                <aura:if isTrue="{!v.isEditAccess}">
+                <div class="slds-form-element slds-truncate slds-grid readMode" aura:id="readMode">
+                    <div class="slds-form-element__control">
+                        <div class="" title=""><a class="slds-cell-wrap" tabindex="0" onclick="{!c.navSObject}" >{!v.RiskProfileObj.SCERiskTypeAddlRiskFactorType__c}</a></div>
+                    </div>                    
+                </div>                                     
+                <aura:set attribute="else">
+                    <div class="slds-form-element slds-truncate readMode" aura:id="readMode">
+                        <div class="slds-form-element__control">
+                            <div class="slds-cell-wrap" title="">{!v.RiskProfileObj.SCERiskTypeAddlRiskFactorType__c}</div>
+                        </div>
+                    </div>                                        
+                </aura:set>
+                </aura:if> 
+           <!-- <div class="slds-is-relative slds-grid slds-grid_vertical-align-center helptext  slds-p-horizontal_x-small" aura:id="readMode">
+                <c:RiskProfileEachHelpText helpLink="Help"  helpHeading="{!v.RiskProfileObj.SCERiskTypeAddlRiskFactorType__c}" helpText="{!v.riskHelpText}"/>
+            </div> -->
+            </div>
+            <div class="slds-form-element toggle slds-grid" aura:id="editMode">
+                <ui:inputSelect class="generalPadding" aura:id="RiskTypes" label="" change="{!c.onSelectChange}">
+                    <aura:iteration items="{!v.RiskTypeValues}" var="level">                        
+                        <aura:if isTrue="{!level == v.RiskProfileObj.SCERiskTypeAddlRiskFactorType__c}" >          
+                            	<ui:inputSelectOption class="generalPadding" text="{!level}" label="{!level}" value="true"/>
+                            <aura:set attribute="else">
+                                <ui:inputSelectOption class="generalPadding" text="{!level}" label="{!level}" />
+                            </aura:set>
+                        </aura:if>                        
+                    </aura:iteration>
+                    <aura:if isTrue="{!v.isRiskTypeNotFound}">						               
+                        <ui:inputSelectOption class="generalPadding" text="{!v.RiskProfileObj.SCERiskTypeAddlRiskFactorType__c}" label="{!v.RiskProfileObj.SCERiskTypeAddlRiskFactorType__c}" value="true"/>
+                    </aura:if>                    
+                </ui:inputSelect> 
+               <!-- <aura:if isTrue="{!empty(v.RiskProfileObj.SCERiskTypeAddlRiskFactorType__c) == false}">
+                <div class="slds-is-relative slds-grid slds-grid_vertical-align-center helptext  slds-p-horizontal_x-small" aura:id="editMode">
+                    <c:RiskProfileEachHelpText helpLink="Help"  helpHeading="{!v.RiskProfileObj.SCERiskTypeAddlRiskFactorType__c}" helpText="{!v.riskHelpText}"/>
+                </div> 
+            </aura:if> -->
+            </div>                       
+        </th>
+        <th scope="row" data-label="Impact" class="slds-p-around--small">
+            <div class="slds-form-element readMode" aura:id="readMode">
+                <div class="slds-form-element__control">
+                    <div class="slds-cell-wrap" title="">{!v.RiskProfileObj.Impact__c}</div>
+                </div>
+            </div>                                        
+            <div class="slds-form-element toggle" aura:id="editMode">
+                <ui:inputSelect class="generalPadding" aura:id="Impacts" label="" change="{!c.onSelectChangeImpact}">
+                    <aura:iteration items="{!v.ImpactValues}" var="Impact">
+                        <aura:if isTrue="{!Impact == v.RiskProfileObj.Impact__c}" >          
+                            	<ui:inputSelectOption class="generalPadding" text="{!Impact}" label="{!Impact}" value="true"/>
+                            <aura:set attribute="else">
+                                <ui:inputSelectOption class="generalPadding" text="{!Impact}" label="{!Impact}" />
+                            </aura:set>
+                        </aura:if>                                                     
+                    </aura:iteration>
+                    <aura:if isTrue="{!v.isImactNotFound}">						               
+                        <ui:inputSelectOption class="generalPadding" text="{!v.RiskProfileObj.Impact__c}" label="{!v.RiskProfileObj.Impact__c}" value="true"/>
+                    </aura:if>                    
+                </ui:inputSelect>
+            </div>
+        </th>
+        <th scope="row" data-label="Additional Information" class="slds-p-around--small">
+            <div class="slds-form-element slds-truncate readMode" aura:id="readMode">
+                <div class="slds-form-element__control">
+                    <div class="slds-cell-wrap" title="">{!v.RiskProfileObj.AdditionalInformation1__c}</div>
+                </div>
+            </div>                                        
+            <div class="slds-form-element toggle" aura:id="editMode">
+                <ui:inputSelect class="generalPadding" aura:id="AddlInfos" label="" change="{!c.onSelectAddlInfo}">
+                    <aura:iteration items="{!v.AddlInfo}" var="addInfo">
+                        <aura:if isTrue="{!addInfo == v.RiskProfileObj.AdditionalInformation1__c}" >          
+                            	<ui:inputSelectOption class="generalPadding" text="{!addInfo}" label="{!addInfo}" value="true"/>
+                            <aura:set attribute="else">
+                                <ui:inputSelectOption class="generalPadding" text="{!addInfo}" label="{!addInfo}"/>
+                            </aura:set>
+                        </aura:if>                                                     
+                    </aura:iteration>
+                    <aura:if isTrue="{!v.isAddInfoNotFound}">						               
+                        <ui:inputSelectOption class="generalPadding" text="{!v.RiskProfileObj.AdditionalInformation1__c}" label="{!v.RiskProfileObj.AdditionalInformation1__c}" value="true"/>
+                    </aura:if> 
+                </ui:inputSelect>
+            </div>
+        </th>
+        <th scope="row" data-label="Comments" class="slds-p-around--small">
+            <div class="slds-form-element readMode RPComments" aura:id="readMode">
+                <ui:outputTextArea class="generalPaddingComments readonly-textarea" value="{!v.RiskProfileObj.Comments__c }" />
+            </div>                                        
+            <div class="slds-form-element toggle" aura:id="editMode">
+                 <ui:inputTextArea class="generalPaddingComments" aura:id="comments" change="{!c.onSelectComments}" value="{!v.RiskProfileObj.Comments__c }" rows="3" maxlength="16000"/>
+            </div>
+        </th>
+        <th scope="row" data-label="Date Risk Added" class="slds-p-around--small">
+            <ui:outputDate class="dateAlign" value="{!v.RiskProfileObj.DateRiskAdded__c}" format="M/d/yyyy"/>             
+        </th>
+        <th scope="row" data-label="Date Risk Modified" class="slds-p-around--small">
+            <ui:outputDate class="dateAlign" value="{!v.RiskProfileObj.DateRiskModified__c}" format="M/d/yyyy"/>
+        </th>
+        <th scope="row" data-label="Date Risk Closed" class="slds-is-relative slds-p-around--small">
+            <div class="slds-form-element readMode" aura:id="readMode">
+                <div class="slds-form-element__control">
+                    <ui:outputDate class="dateAlign" value="{!v.RiskProfileObj.DateRiskClosed__c}" format="M/d/yyyy"/>   
+                </div>
+            </div>                                        
+            <div class="slds-form-element toggle" aura:id="editMode">
+                <ui:inputDate class="dateAlign generalPadding" aura:id="DateRiskClosed" change="{!c.onDateChange}" value="{!v.RiskProfileObj.DateRiskClosed__c}" displayDatePicker="true" format="M/d/yyyy"/>
+            </div>
+        </th>      
+        <th scope="row" data-label="Risk Score" class="slds-p-around--small">
+            <ui:outputNumber value="{!v.RiskProfileObj.RiskScore__c}" format="0.00"/>            
+        </th>
+        <aura:if isTrue="{!v.isParitalAccess || v.isEditAccess}">
+            <th scope="row" class="slds-resizable">
+                <div class="slds-form-element readMode">
+                    <div class="slds-form-element__control">
+                        <div aura:id="deleteIcon" class="slds-truncate" onclick="{!c.removeRisk}" title="{!$Label.c.Remove}" style="text-align: left;">                    
+                            <button class="slds-button slds-text-body--regular" aura:id="editItem">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                            </button>
+                        </div>                 
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer slds-float--left">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </th>    
+        </aura:if>                
+    </tr>
+</aura:component>

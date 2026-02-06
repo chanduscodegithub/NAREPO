@@ -1,0 +1,55 @@
+<aura:component >
+    <aura:attribute name="businessGroupsObj" type="Object"/>
+    <aura:attribute name="BGHIndex" type="String"/>
+    <aura:attribute name="bghIdToRemove" type="String" />
+    <aura:attribute name="bghNameToRemove" type="String" />
+    <aura:attribute name="isEditAccess" type="Boolean"/>
+    
+    <aura:registerEvent name="BGHMemberContacts" type="c:BGH_Member_Contacts_Table_Event"/>
+    
+    <aura:method name="remEditCancel" action="{!c.remEditCancel}" access="PUBLIC"></aura:method>
+    
+    <aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>
+    
+    <tr class="slds-hint-parent">
+        <th class="HideRow">&nbsp;</th>
+        <th scope="row" data-label="Contact Last Name">
+            <div class="slds-truncate" title="">
+                <a data-record="{!v.businessGroupsObj.BGHContact__r.Id}" onclick="{!c.navToRecord}">{!v.businessGroupsObj.BGHContact__r.LastName}</a>
+            </div>
+        </th>
+        
+        <th scope="row" data-label="Contact First Name">
+            <div class="slds-truncate" title="">{!v.businessGroupsObj.BGHContact__r.FirstName}</div>
+        </th>
+        <th scope="row" data-label="Contact First Name">
+            <div class="slds-truncate" title="">{!v.businessGroupsObj.BGHContact__r.Account.Name}</div>
+        </th>
+        <th scope="row" data-label="Contact First Name">
+            <div class="slds-truncate" title="">{!v.businessGroupsObj.BGHContact__r.Account.RecordType.Name}</div>
+        </th>
+        
+        <th scope="row" data-label="Role">
+            <div class="slds-truncate" title="">{!v.businessGroupsObj.Role__c}</div>
+        </th>
+        
+        <aura:if isTrue="{!v.isEditAccess}">
+            <th scope="row" class="data-del">
+                <div aura:id="deleteIcon" class="slds-truncate" onclick="{!c.removeBGH}" title="{!$Label.c.Remove}">
+                    <button class="slds-button slds-text-body--regular">
+                        <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                    </button>
+                </div>
+                <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                    <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </div>
+            </th>
+        </aura:if>
+    </tr>
+</aura:component>

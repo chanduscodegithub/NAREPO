@@ -1,0 +1,97 @@
+<apex:page showHeader="false"
+   sidebar="false"
+   contentType="{!ContentTypeValue}"
+   controller="GenerateReportController">
+    <apex:includeLightning />
+    <div id="LightningComponentid" />
+<html>
+    
+    
+ 
+
+    <body data-rsssl='1'>
+        
+       <!--<h1>Client Overview Report</h1>
+        <p>{!tableContent}</p>
+    </body>-->
+    
+     <style>
+        .client-overview {
+            background-color: #0070d2;
+            color: white;
+            padding: 10px;
+            font-size: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <div id="LightningComponentid"></div>
+    <h2 class="client-overview">Client Overview</h2>
+    <table>
+        <thead>
+            <tr>
+                <td colspan ="2" class="client-overview">Client Overview</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Company</th>
+                <td>{!opportunity.Account.Name}</td>
+            </tr>
+            <tr>
+                 <th>Owner</th>
+                <td>{!opportunity.Owner.Name}</td>
+                </tr>
+            <tr>
+                <th>Effective Date</th>
+                <td>{!opportunity.EffectiveDate__c}</td>
+                </tr>
+            <tr>
+                <th>Notes Taken</th>
+                <apex:outputText value="{!opportunity.Notes_taken_on_call_with_consultant__c}" escape="false" />
+                </tr>
+                
+          
+        </tbody>
+    </table>
+         <apex:outputPanel rendered="{!recordTypeName == 'CD'}">
+            <h2 class="client-overview">CD Members Report</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Members Transferred from or To Another Segment</th>
+                        <th>Estimated Additional New Members</th>
+                        <th>Estimated Members (Existing + New)</th>
+                        <th>Members Quoted in the Proposal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Data 1</td>
+                        <td>Data 2</td>
+                        <td>Data 3</td>
+                        <td>Data 4</td>
+                    </tr>
+                </tbody>
+            </table>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!recordTypeName == 'CM'}">
+            <h2 class="client-overview">CM Products</h2>
+            <p style="color: red; font-weight: bold;">CM - products can't be displayed.</p>
+        </apex:outputPanel>
+        </body>
+    </html>
+   
+<!--</apex:page>-->
+</apex:page>

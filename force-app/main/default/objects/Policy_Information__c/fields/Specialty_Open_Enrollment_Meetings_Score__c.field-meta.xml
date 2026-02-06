@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Specialty_Open_Enrollment_Meetings_Score__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(AND(Specialty_Open_Enrollment_Meetings__c &gt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_1_25.Start_Range__c, Specialty_Open_Enrollment_Meetings__c &lt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_1_25.End_Range__c ) , $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_1_25.Weightage__c * $CustomMetadata.Capacity_Planning_SBC_Calculation_Weight__mdt.Weightages.Specialty_Open_Enrollment_Meeting_Weight__c,
+
+IF(AND(Specialty_Open_Enrollment_Meetings__c &gt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_26_50.Start_Range__c, Specialty_Open_Enrollment_Meetings__c &lt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_26_50.End_Range__c ) , $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_26_50.Weightage__c * $CustomMetadata.Capacity_Planning_SBC_Calculation_Weight__mdt.Weightages.Specialty_Open_Enrollment_Meeting_Weight__c,
+
+IF(AND(Specialty_Open_Enrollment_Meetings__c &gt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_51_75.Start_Range__c, Specialty_Open_Enrollment_Meetings__c &lt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_51_75.End_Range__c ) , $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_51_75.Weightage__c * $CustomMetadata.Capacity_Planning_SBC_Calculation_Weight__mdt.Weightages.Specialty_Open_Enrollment_Meeting_Weight__c,
+		
+IF(AND(Specialty_Open_Enrollment_Meetings__c &gt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meeting_76_100.Start_Range__c, Specialty_Open_Enrollment_Meetings__c &lt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meeting_76_100.End_Range__c ) , $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meeting_76_100.Weightage__c * $CustomMetadata.Capacity_Planning_SBC_Calculation_Weight__mdt.Weightages.Specialty_Open_Enrollment_Meeting_Weight__c,
+		
+IF(Specialty_Open_Enrollment_Meetings__c &gt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_100.Start_Range__c , $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Specialty_Open_Enrollment_Meetings_100.Weightage__c * $CustomMetadata.Capacity_Planning_SBC_Calculation_Weight__mdt.Weightages.Specialty_Open_Enrollment_Meeting_Weight__c,			
+			
+	0) ) ) ) )</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Specialty Open Enrollment Meetings Score</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

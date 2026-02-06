@@ -1,0 +1,94 @@
+<template>   
+    <td class="slds-cell-wrap" data-label="Company" style="vertical-align: middle;">
+        <div class="slds-cell-wrap" title="Company">{vpcrRec.company}</div>
+    </td>           
+    <td class="slds-cell-wrap" data-label="Current SCE" style="vertical-align: middle;">
+        <div class="slds-cell-wrap" title="Current SCE">{vpcrRec.currentSCE}</div>
+    </td>    
+    <template if:true={isGrowthDataEmpty}>
+        <td  data-label="# of Products" style="vertical-align: middle;">
+            <div class="slds-cell-wrap" title="# of Products in Growth"></div>
+        </td>
+    </template>             
+    <template if:false={isGrowthDataEmpty}>
+        <td  data-label="# of Products" style="vertical-align: middle;">
+            <div class="slds-cell-wrap" title="# of Products in Growth">{totalGrowthProducts}</div>
+        </td>
+    </template>          
+    <!-- <td  data-label="# of Products Not Yet Sent">
+        <div class="slds-cell-wrap" title={vpcrRec.growthNoOfProductsNotYetSent}>{vpcrRec.growthNoOfProductsNotYetSent}</div>
+    </td>
+    <td  data-label="# of Products Not Yet Sent">
+        <div class="slds-cell-wrap" title={vpcrRec.growthNoOfProductsSent}>{vpcrRec.growthNoOfProductsSent}</div>
+    </td> -->
+    <template if:true={isGrowthSCEDifferent}>
+        <td class="slds-cell-wrap" data-label="SCE Receiving Compensation" style="vertical-align: middle;">
+            <div class="slds-cell-wrap colourtxt" title="Growth SCE(s) Receiving Compensation">{concatGrowthSCEs}</div>
+        </td>            
+    </template>
+    <template if:false={isGrowthSCEDifferent}>
+        <template if:true={isGrowthNotSent}>
+            <td class="slds-cell-wrap" data-label="SCE Receiving Compensation" style="vertical-align: middle;">
+                <div class="slds-cell-wrap highlight" title="Growth SCE(s) Receiving Compensation">{concatGrowthSCEs}</div>
+            </td>            
+        </template>             
+        <template if:false={isGrowthNotSent}>
+            <td class="slds-cell-wrap" data-label="SCE Receiving Compensation" style="vertical-align: middle;">
+                <div class="slds-cell-wrap" title="Growth SCE(s) Receiving Compensation">{concatGrowthSCEs}</div>
+            </td>            
+        </template>   
+    </template>        
+
+  <!--  <td class="slds-cell-wrap" data-label="Additional SCE Receiving Compensation">
+        <div class="slds-cell-wrap colourtxt" title={vpcrRec.growthAdditionalSCEReceivingCompensation}>{vpcrRec.growthAdditionalSCEReceivingCompensation}</div>
+    </td>  -->
+    <td class="slds-cell-wrap">
+        <div class="slds-cell-wrap" title="Spacer"></div>
+    </td>
+    <template if:true={isRetentionDataEmpty}>
+        <td  data-label="# of Products" style="vertical-align: middle;">
+            <div class="slds-cell-wrap" title="# of Products in Renewal"></div>
+        </td> 
+    </template>             
+    <template if:false={isRetentionDataEmpty}>
+        <td  data-label="# of Products" style="vertical-align: middle;">
+            <div class="slds-cell-wrap" title="# of Products in Renewal">{totalRetentionProducts}</div>
+        </td> 
+    </template> 
+    
+    <!--<td  data-label="# of Products Not Yet Sent">
+        <div class="slds-cell-wrap" title={vpcrRec.retentionNoOfProductsNotYetSent}>{vpcrRec.retentionNoOfProductsNotYetSent}</div>
+    </td>
+    <td  data-label="# of Products Not Yet Sent">
+        <div class="slds-cell-wrap" title={vpcrRec.retentionNoOfProductsSent}>{vpcrRec.retentionNoOfProductsSent}</div>
+    </td>-->
+    <template if:true={isRetentionSCEDifferent}>
+        <td class="slds-cell-wrap" data-label="SCE Receiving Compensation" style="vertical-align: middle;">
+            <div class="slds-cell-wrap colourtxt" title="Renewal SCE(s) Receiving Compensation">{concatRetentionSCEs}</div>
+        </td>            
+    </template>
+    <template if:false={isRetentionSCEDifferent}>
+        <template if:true={isRetentionNotSent}>
+            <td class="slds-cell-wrap" data-label="SCE Receiving Compensation" style="vertical-align: middle;">
+                <div class="slds-cell-wrap highlight" title="Renewal SCE(s) Receiving Compensation">{concatRetentionSCEs}</div>
+            </td>            
+        </template>             
+        <template if:false={isRetentionNotSent}>
+            <td class="slds-cell-wrap" data-label="SCE Receiving Compensation" style="vertical-align: middle;">
+                <div class="slds-cell-wrap" title="Renewal SCE(s) Receiving Compensation">{concatRetentionSCEs}</div>
+            </td>            
+        </template>             
+    </template>  
+ <!--   <td class="slds-cell-wrap" data-label="Additional SCE Receiving Compensation">
+        <div class="slds-cell-wrap colourtxt" title={vpcrRec.retentionAdditionalSCEReceivingCompensation}>{vpcrRec.retentionAdditionalSCEReceivingCompensation}</div>
+    </td>  -->
+   <!-- <td class="slds-cell-wrap" data-label="SCE Receiving Compensation" style="vertical-align: middle;">
+        <div class={addClass} title="Renewal SCE(s) Receiving Compensation">{vpcrRec.proactiveRenewalSCEReceivingCompensation}</div>
+    </td> -->
+    <td class="slds-cell-wrap">
+        <div class="slds-cell-wrap" title="Spacer"></div>
+    </td>
+    <td class="slds-cell-wrap" data-label="SCE Receiving Compensation" style="vertical-align: middle;">
+        <div class={addClass} title="Renewal SCE(s) Receiving Compensation">{scesReceivingCompensation}</div>
+    </td>
+</template>

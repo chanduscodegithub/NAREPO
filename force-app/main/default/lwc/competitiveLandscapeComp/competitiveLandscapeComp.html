@@ -1,0 +1,340 @@
+<template>
+
+        <div >
+                <div class="section-header" >
+                    <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small">
+                    <span ><b>{label.headerName}</b></span>
+                </div>
+                </div>
+            </div>
+            
+
+                    <div class="slds-p-top_medium">
+                            <div class="section-header-sub slds-text-body_small slds-p-left_x-small">
+                                    <span style="font-size:14px"><b>{label.subHeader1Name}</b></span>
+                                   
+                        </div>
+                        <div>
+                   
+                                <div class="slds-p-top_xx-small  slds-p-left_x-small slds-text-body_small" >
+                                        <span ><i>{label.subHeader1InstText}</i></span>                       
+                                </div>       
+                         </div>
+
+
+                         <div class="slds-grid slds-gutters slds-p-top_x-small ">
+                                <div class="slds-col">
+                                       
+                                    <table class = "slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                                        
+                                    
+                                    <tbody>
+                                      <tr class="header-color" >
+                                                <th  class = "slds-border_right" scope="col">
+                                                    <div class="slds-truncate" >
+                                                        <span ><strong>Medical Carrier</strong></span>
+                                                    </div>
+                                                </th>
+                                                <th  scope="col">
+                                                        <div  >
+                                                            <span ><strong>Participating Members</strong></span>
+                                                        </div>
+                                                </th>
+                                      </tr>
+                                      <template for:each={medicalCompetitorList} for:item="eachMedCompData" for:index="index">
+                                          <tr key={eachMedCompData.Id}>
+                                                <td class="slds-border_right">
+                                                    <template if:true={eachMedCompData.CompetitorAccount__r}>                          
+                                                        <span >{eachMedCompData.CompetitorAccount__r.Name}</span>    
+                                                    </template> 
+                                                </td>
+                                                <td class="slds-border_right">
+                                                                                
+                                                            <span ><lightning-formatted-number value={eachMedCompData.MembershipEstimate__c}></lightning-formatted-number></span>    
+                                                       
+                                                       
+                                                    </td>
+                                          </tr>
+                                      </template>
+                                      <tr>
+                                            <td class = "slds-border_right"><span><strong>Total</strong></span></td>
+                                            <td> 
+                                                <template if:true={medicalTotalCompetitorObj.MembershipEstimate__c}>                          
+                                                        <span ><b><lightning-formatted-number value={medicalTotalCompetitorObj.MembershipEstimate__c}></lightning-formatted-number></b></span>    
+                                                    </template>
+                                                    <template if:false={medicalTotalCompetitorObj.MembershipEstimate__c}>                          
+                                                            <span ><b>0</b></span>    
+                                                        </template>
+                                            </td>
+                                      </tr>
+                                    
+                                      <tr class="header-color">
+                                                <th  class = "slds-border_right" scope="col">
+                                                    <div class="slds-truncate" >
+                                                        <span><strong>Pharmacy Carrier</strong></span>
+                                                    </div>
+                                                </th>
+                                                <th  scope="col">
+                                                        <div  >
+                                                            <span ><strong>Number of Members Held</strong></span>
+                                                        </div>
+                                                </th>
+                                      </tr>
+                                      <template for:each={pharmacyCompetitorList} for:item="eachPharCompData" for:index="index">
+                                          <tr key={eachPharCompData.Id}>
+                                                <td class="slds-border_right">
+                                                    <template if:true={eachPharCompData.CompetitorAccount__r}>                          
+                                                        <span >{eachPharCompData.CompetitorAccount__r.Name}</span>    
+                                                    </template> 
+                                                </td>
+                                                <td class="slds-border_right">
+                                                         <span ><lightning-formatted-number value={eachPharCompData.NumberOfMembersHeld__c}></lightning-formatted-number></span>    
+                                                       
+                                                    </td>
+                                          </tr>
+                                      </template>
+                                      <tr>
+                                            <td class = "slds-border_right"><span><strong>Total</strong></span></td>
+                                            <td><template if:true={pharmacyTotalCompetitorObj.NumberOfMembersHeld__c}>                          
+                                                    <span ><b><lightning-formatted-number value ={pharmacyTotalCompetitorObj.NumberOfMembersHeld__c}></lightning-formatted-number></b></span>    
+                                                   
+                                                    </template> 
+                                                    <template if:false={pharmacyTotalCompetitorObj.NumberOfMembersHeld__c}>                          
+                                                            <span ><b>0</b></span>    
+                                                           
+                                                            </template> 
+                                            </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                
+                                </div>
+                                
+                             
+                                <div class="slds-col">
+                                        
+                                    <table class = "slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                                        
+                                    
+                                    <tbody>
+                                      <tr class="header-color">
+                                                <th  class = "slds-border_right" scope="col">
+                                                    <div class="slds-truncate" >
+                                                        <span ><strong>Dental Carrier</strong></span>
+                                                    </div>
+                                                </th>
+                                                <th  scope="col">
+                                                        <div  >
+                                                            <span ><strong>Number of Members Held</strong></span>
+                                                        </div>
+                                                </th>
+                                      </tr>
+                                      <template for:each={dentalCompetitorList} for:item="eachDentalCompData" for:index="index">
+                                          <tr key={eachDentalCompData.Id}>
+                                                <td class="slds-border_right">
+                                                    <template if:true={eachDentalCompData.CompetitorAccount__r}>                          
+                                                        <span >{eachDentalCompData.CompetitorAccount__r.Name}</span>    
+                                                    </template> 
+                                                </td>
+                                                <td class="slds-border_right">
+                                                          <span ><lightning-formatted-number value={eachDentalCompData.NumberOfMembersHeld__c}></lightning-formatted-number></span>    
+                                                       
+                                                    </td>
+                                          </tr>
+                                      </template>
+                                      <tr>
+                                            <td class = "slds-border_right"><span><strong>Total</strong></span></td>
+                                            <td><template if:true={dentalTotalCompetitorObj.NumberOfMembersHeld__c}>                          
+                                                    <span ><b><lightning-formatted-number value ={dentalTotalCompetitorObj.NumberOfMembersHeld__c}></lightning-formatted-number></b></span>    
+                                                   
+                                                    </template> 
+                                                    <template if:false={dentalTotalCompetitorObj.NumberOfMembersHeld__c}>                          
+                                                            <span ><b>0</b></span>    
+                                                           
+                                                            </template> 
+                                            </td>
+                                           
+                                      </tr>
+                                    
+                                      <tr class="header-color">
+                                                <th  class = "slds-border_right" scope="col">
+                                                    <div  >
+                                                        <span ><strong>Vision Carrier</strong></span>
+                                                    </div>
+                                                </th>
+                                                <th  scope="col">
+                                                        <div class="slds-truncate" >
+                                                            <span ><strong>Number of Members Held</strong></span>
+                                                        </div>
+                                                </th>
+                                      </tr>
+                                      <template for:each={visionCompetitorList} for:item="eachVisionCompData" for:index="index">
+                                          <tr key={eachVisionCompData.Id}>
+                                                <td class="slds-border_right">
+                                                    <template if:true={eachVisionCompData.CompetitorAccount__r}>                          
+                                                        <span >{eachVisionCompData.CompetitorAccount__r.Name}</span>    
+                                                    </template> 
+                                                </td>
+                                                <td class="slds-border_right">
+                                                        <span ><lightning-formatted-number value={eachVisionCompData.NumberOfMembersHeld__c}></lightning-formatted-number></span>    
+                                                        
+                                                    </td>
+                                          </tr>
+                                      </template>
+                                      <tr>
+                                            <td class = "slds-border_right"><span><strong>Total</strong></span></td>
+                                            <td><template if:true={visionTotalCompetitorObj.NumberOfMembersHeld__c}>                          
+                                                    <span ><b><lightning-formatted-number value ={visionTotalCompetitorObj.NumberOfMembersHeld__c}></lightning-formatted-number></b></span>    
+                                                   
+                                                    </template> 
+                                                    <template if:false={visionTotalCompetitorObj.NumberOfMembersHeld__c}>                          
+                                                            <span ><b>0</b></span>    
+                                                           
+                                                            </template> 
+                                            </td>
+                                           
+                                      </tr>
+                                    </tbody>
+                                  </table> 
+                                  
+                                </div>
+                               
+                              </div>
+                
+
+
+                    </div>
+
+
+
+                    <div class="slds-p-top_medium">
+                        <div class="section-header-sub slds-text-body_small slds-p-left_x-small">
+                                <span style="font-size:14px"><b>{label.subHeader3Name}</b></span>
+                               
+                    </div>
+                    <div >
+               
+                            <div class="slds-p-top_xx-small  slds-p-left_x-small slds-text-body_small" >
+                                    <span ><i>{label.subHeader3InstText}</i></span>                       
+                            </div>       
+                     </div>
+
+                     <div class="slds-grid slds-gutters slds-p-top_x-small">
+                            <div class="slds-col ">
+                                   
+                                <table class = "slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                                    
+                                <tbody>
+                                  <tr class="header-color">
+                                            <td  class = "slds-border_right" >
+                                                <div class="slds-truncate">
+                                                    <span ><strong>Type of Other Products\Services Provided</strong></span>
+                                                </div>
+                                            </td>
+                                            <td colspan="3">
+                                                    <div  class="slds-cell-wrap">
+                                                        <span><strong>Other Products\Services Carrier</strong></span>
+                                                    </div>
+                                            </td>
+                                  </tr>
+                                   
+                                  <tr>
+                                        <td class = "slds-border_right"><span>Life</span></td>
+                                        <td colspan="3" style='white-space: break-spaces;'><template if:true={lifeCarriers}>                          
+                                               <span>{lifeCarriers}</span>  
+                                            </template> 
+                                        </td>
+                                  </tr>
+                                  <tr>
+                                    <td class = "slds-border_right"><span>Disability</span></td>
+                                    <td colspan="3" style='white-space: break-spaces;'><template if:true={disabilityCarriers}>                          
+                                        <span>{disabilityCarriers}</span>  
+                                        </template> 
+                                    </td>
+                              </tr>
+                              <tr> 
+                                <td class = "slds-border_right"><span>Supplemental Health (APP\Cl\Hl)</span></td>
+                                <td colspan="3" style='white-space: break-spaces;'><template if:true={supplementalCarriers}>                          
+                                    <span>{supplementalCarriers}</span>    
+                                    </template> 
+                                </td>
+                          </tr>
+                          <tr>
+                            <td class = "slds-border_right"><span>Hearing</span></td>
+                            <td colspan="3" style='white-space: break-spaces;'><template if:true={hearingCarriers}>                          
+                                <span>{hearingCarriers}</span> 
+                                </template> 
+                            </td>
+                      </tr>
+                      <tr>
+                        <td class = "slds-border_right"><span>Pet Insurance</span></td>
+                        <td colspan="3" style='white-space: break-spaces;'><template if:true={petInsuranceCarriers}>                          
+                            <span>{petInsuranceCarriers}</span>
+                            </template> 
+                        </td>
+                  </tr>
+                                </tbody>
+                              </table> 
+                              
+                            </div>
+                            
+                          </div>
+                
+
+                </div>    
+
+
+
+
+                    <div class="slds-p-top_medium">
+                            <div class="section-header-sub slds-text-body_small slds-p-left_x-small">
+                                    <span style="font-size:14px"><b>{label.subHeader2Name}</b></span>
+                                   
+                        </div>
+                        <div >
+                   
+                                <div class="slds-p-top_xx-small  slds-p-left_x-small slds-text-body_small" >
+                                        <span ><i>{label.subHeader2InstText}</i></span>                       
+                                </div>       
+                         </div>
+
+                         <div class="slds-grid slds-gutters slds-p-top_x-small">
+                                <div class="slds-col ">
+                                       
+                                    <table class = "slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+                                        
+                                    <tbody>
+                                      <tr class="header-color">
+                                                <td  class = "slds-border_right" >
+                                                    <div class="slds-truncate">
+                                                        <span ><strong>Other Products\Services Carrier</strong></span>
+                                                    </div>
+                                                </td>
+                                                <td colspan="3" >
+                                                        <div  class="slds-cell-wrap">
+                                                            <span><strong>Type of Other Products\Services Provided</strong></span>
+                                                        </div>
+                                                </td>
+                                      </tr>
+                                       
+                                      <tr>
+                                            <td class = "slds-border_right"><span>UHC-Optum</span></td>
+                                            <td colspan="3" style='white-space: break-spaces;'><template if:true={otherproductsCompetitor.Type_of_Products_Services_Provided__c}>                          
+                                                    <span >{otherproductsCompetitor.Type_of_Products_Services_Provided__c}</span>    
+                                                </template> 
+                                            </td>
+                                      </tr>
+                                    </tbody>
+                                  </table> 
+                                  
+                                </div>
+                                
+                              </div>
+                    
+
+                    </div>  
+           
+                    
+            
+            
+</template>

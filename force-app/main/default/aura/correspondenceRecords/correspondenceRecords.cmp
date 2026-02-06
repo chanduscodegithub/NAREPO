@@ -1,0 +1,39 @@
+<aura:component controller="createCorrespondenceMember" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!--Component Created to Query Contacts and insert into Correspondence campaign Object based on Correspondence Type & Survey Type -->
+    <aura:handler name="init" action="{!c.doInitAction}" value="{!this}" />
+    <aura:attribute name="showMsg" type="Boolean" default="false"/>
+    <aura:attribute name="isSuccess" type="Boolean" default="false"/>
+    <aura:attribute name="displayMsg" type="String" default=""/>
+    <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative" aura:id="modalbody" id="modalbody">
+        <div class="" style="position:relative">
+            <lightning:spinner aura:id="loadingSpinner" variant="brand" size="large" class="slds-hide" alternativeText="Loading"/>
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.showMsg}">        
+        <aura:if isTrue="{!v.isSuccess}">  
+            <div class="slds-scoped-notification slds-media slds-media_center slds-theme_success" role="status">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-utility-success" title="success">        
+                        <lightning:icon variant="inverse" iconName="utility:success" alternativeText="success" title="success" />
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <p>{!v.displayMsg}</p>
+                </div>
+            </div>
+            <aura:set attribute="else">                
+                <div class="slds-scoped-notification slds-media slds-media_center slds-theme_error" role="status">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-utility-error" title="error">    
+                            <lightning:icon variant="inverse" iconName="utility:error" alternativeText="error" title="error" />
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <p>{!v.displayMsg}</p>
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+    </aura:if>
+</aura:component>

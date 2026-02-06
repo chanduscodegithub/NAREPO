@@ -1,0 +1,285 @@
+<!--
+  @description       : 
+  @author            : Thanushree
+  @group             : 
+  @last modified on  : 11-08-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <lightning-accordion-section class="section-header-sub" name="Guarantees - Surest" label="Guarantees - Surest">
+        <template if:true={isDataReceived}>
+            <div class="slds-grid slds-wrap slds-grid--vertical-align-start slds-p-left_medium client-detail-sec-style"
+                style="font-size: 12px;">
+                <template if:true={isSurestProductMed}>
+                    <table class="slds-table slds-no-row-hover" style="width:50%;">
+                        <template if:true={isSurestProductMed}>
+                            <tr>
+                                <td class="left">
+                                    <div class="slds-grid slds-grid--vertical-align-center border-bottom slds-cell-wrap">
+                                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                            <span><b>Medical Performance Guarantee</b></span>
+                                        </div>
+                                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right">
+                                            <span>
+                                                <template if:false={enableEdit}>
+                                                    <template
+                                                        if:true={soldCaseDataCopy.Surest_Medical_Performance_Guarantee__c}>
+                                                        {soldCaseDataCopy.Surest_Medical_Performance_Guarantee__c}
+                                                    </template>
+                                                </template>
+                                                <template if:true={enableEdit}>
+                                                    <lightning-input type="text" variant="label-hidden"
+                                                        name="Sold_Case_Checklist__c.Surest_Medical_Performance_Guarantee__c"
+                                                        value={soldCaseDataCopy.Surest_Medical_Performance_Guarantee__c}
+                                                        onchange={FieldChangeHandler} max-length="25">
+                                                    </lightning-input>
+                                                </template>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+
+                        <template if:true={medSold}>
+                            <tr>
+                                <td class="left">
+                                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                            <span><b>Clinical Performance Guarantee</b></span>
+                                        </div>
+                                        <div
+                                            class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                            <span>
+                                                <template if:false={enableEdit}>
+                                                    <template
+                                                        if:true={soldCaseDataCopy.Surest_Clinical_Performance_Guarantee__c}>
+                                                        {soldCaseDataCopy.Surest_Clinical_Performance_Guarantee__c}
+                                                    </template>
+                                                </template>
+                                                <template if:true={enableEdit}>
+                                                    <lightning-input type="text" variant="label-hidden"
+                                                        name="Sold_Case_Checklist__c.Surest_Clinical_Performance_Guarantee__c"
+                                                        value={soldCaseDataCopy.Surest_Clinical_Performance_Guarantee__c}
+                                                        onchange={FieldChangeHandler} max-length="25">
+                                                    </lightning-input>
+                                                </template>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+
+                        <template if:true={medSold}>
+                            <tr>
+                                <td class="left">
+                                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                            <span><b>Discount Guarantee</b></span>
+                                        </div>
+                                        <div
+                                            class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                            <span>
+                                                <template if:false={enableEdit}>
+                                                    <template
+                                                        if:true={soldCaseDataCopy.Surest_Discount_Guarantee__c}>
+                                                        {soldCaseDataCopy.Surest_Discount_Guarantee__c}
+                                                    </template>
+                                                </template>
+                                                <template if:true={enableEdit}>
+                                                    <lightning-input type="text" variant="label-hidden"
+                                                        name="Sold_Case_Checklist__c.Surest_Discount_Guarantee__c"
+                                                        value={soldCaseDataCopy.Surest_Discount_Guarantee__c}
+                                                        onchange={FieldChangeHandler} max-length="25">
+                                                    </lightning-input>
+                                                </template>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </table>
+                </template>
+
+                <table class="slds-table slds-no-row-hover" style="width:50%;">
+                    <template if:true={isSurestProductMed}>
+                        <tr>
+                            <td class="right">
+                                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                        <span><b>Claim Trend Guarantee</b></span>
+                                    </div>
+                                    <div
+                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                        <span>
+                                            <template if:false={enableEdit}>
+                                                <template
+                                                    if:true={soldCaseDataCopy.Surest_Claim_Trend_Guarantee__c}>
+                                                    {soldCaseDataCopy.Surest_Claim_Trend_Guarantee__c}
+                                                </template>
+                                            </template>
+                                            <template if:true={enableEdit}>
+                                                <lightning-input type="text" variant="label-hidden"
+                                                    name="Sold_Case_Checklist__c.Surest_Claim_Trend_Guarantee__c"
+                                                    value={soldCaseDataCopy.Surest_Claim_Trend_Guarantee__c}
+                                                    onchange={FieldChangeHandler} max-length="25">
+                                                </lightning-input>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="right">
+                                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                        <span><b>Total Cost of Care Guarantee</b></span>
+                                    </div>
+                                    <div
+                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                        <span>
+                                            <template if:false={enableEdit}>
+                                                <template
+                                                    if:true={soldCaseDataCopy.Surest_Total_Cost_of_Care_Guarantee__c}>
+                                                    {soldCaseDataCopy.Surest_Total_Cost_of_Care_Guarantee__c}
+                                                </template>
+                                            </template>
+                                            <template if:true={enableEdit}>
+                                                <lightning-input type="text" variant="label-hidden"
+                                                    name="Sold_Case_Checklist__c.Surest_Total_Cost_of_Care_Guarantee__c"
+                                                    value={soldCaseDataCopy.Surest_Total_Cost_of_Care_Guarantee__c}
+                                                    onchange={FieldChangeHandler} max-length="25">
+                                                </lightning-input>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+
+                        <template if:true={isSurestProductPharmacy}>
+                        <tr>
+                            <td class="right">
+                                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                        <span><b>Pharmacy Performance Guarantee</b></span>
+                                    </div>
+                                    <div
+                                        class="slds-col slds-size_2-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                        <span>
+                                            <template if:false={enableEdit}>
+                                                <template
+                                                    if:true={soldCaseDataCopy.Surest_Pharmacy_Performance_Guarantee__c}>
+                                                    {soldCaseDataCopy.Surest_Pharmacy_Performance_Guarantee__c}
+                                                </template>
+                                            </template>
+                                            <template if:true={enableEdit}>
+                                                <lightning-input type="text" variant="label-hidden"
+                                                    name="Sold_Case_Checklist__c.Surest_Pharmacy_Performance_Guarantee__c"
+                                                    value={soldCaseDataCopy.Surest_Pharmacy_Performance_Guarantee__c}
+                                                    onchange={FieldChangeHandler} max-length="25">
+                                                </lightning-input>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </template>
+                </table>
+                <table class="slds-table slds-no-row-hover" style="width:100%;">
+                    <template if:true={isSurestProductMed}>
+                        <template for:each={otherCustomGuaranteeMedLst} for:item="otherCustomGuarantee"
+                            for:index="index">
+                            <tr key={otherCustomGuarantee.value}>
+                                <td class="border-bottom">
+                                    <div class="slds-grid slds-grid--vertical-align-center">
+                                        <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small">
+                                            <span><b>{otherCustomGuarantee.rowHeading}</b></span>
+                                        </div>
+                                        <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small">
+                                            <span style="white-space:break-spaces;word-break:break-word;">
+                                                <template if:false={enableEdit}>
+                                                    <div class="slds-grid slds-grid--vertical-align-center"
+                                                        style="margin-left:8%;">
+                                                        <div class="slds-col slds-size_3-of-8 "
+                                                            style="width:16rem; text-align: right;">
+                                                            {otherCustomGuarantee.writeIn}
+                                                        </div>
+                                                        <div class="slds-col slds-size_1-of-8 "
+                                                            style="width:2.5rem;">
+                                                        </div>
+                                                        <div class="slds-col slds-size_3-of-8 "
+                                                            style="text-align: right;">
+                                                            {otherCustomGuarantee.mainField}
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <template if:true={enableEdit}>
+                                                    <div class="slds-grid slds-grid--vertical-align-center"
+                                                        style="margin-left:8%;">
+                                                        <div class="slds-col slds-size_3-of-8"
+                                                            style="width:16rem;">
+                                                            <lightning-input type="text"
+                                                                variant="label-hidden" data-index={index}
+                                                                data-type="writeIn"
+                                                                data-fieldreference={otherSurest}
+                                                                value={otherCustomGuarantee.writeIn}
+                                                                onchange={handleDynamicInputChange}
+                                                                max-length="200"
+                                                                placeholder="Specify PG">
+                                                            </lightning-input>
+                                                        </div>
+                                                        <div class="slds-col slds-size_1-of-8 "
+                                                            style="width:2.5rem;">
+                                                        </div>
+                                                        <div class="slds-col slds-size_3-of-8 ">
+                                                            <lightning-input type="text"
+                                                                variant="label-hidden" data-index={index}
+                                                                data-type="mainField"
+                                                                data-fieldreference={otherSurest}
+                                                                value={otherCustomGuarantee.mainField}
+                                                                onchange={handleDynamicInputChange}
+                                                                max-length="25"
+                                                                placeholder="Included">
+                                                            </lightning-input>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </span>
+                                        </div>
+                                        <div
+                                            class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+                                            <template if:true={otherCustomGuarantee.showAddButton}>
+                                                <lightning-button variant="brand" label="Add Another PG"
+                                                    data-buttonindex={index} onclick={addGuaranteeFunction}
+                                                    title="Add Another PG" class="slds-m-left_x-small"
+                                                    data-fieldreference={otherSurest}
+                                                    disabled={disableButtons}>
+                                                </lightning-button>
+                                            </template>
+                                            <template if:true={otherCustomGuarantee.showRemoveButton}>
+                                                <lightning-button-icon variant="destructive"
+                                                    icon-name="utility:delete" alternative-text="Delete"
+                                                    onclick={deleteGuaranteeFunction}
+                                                    data-buttonindex={index}
+                                                    data-fieldreference={otherSurest}
+                                                    class="slds-m-left_xx-small doNotDeleteVendor"
+                                                    title="Delete" disabled={disableButtons}>
+                                                </lightning-button-icon>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                </table>
+            </div>
+        </template>
+    </lightning-accordion-section>
+</template>

@@ -1,0 +1,52 @@
+<template>
+    <lightning-card title="Client Overview" if:true={account} class="custom-card">
+        <div class="overview-table">
+            <div class="row">
+                <div class="cell label">Company Name:</div>
+                <div class="cell value">{account.Name}</div>
+            </div>
+            <div class="row">
+                <div class="cell label">Brief Company Description:</div>
+                <div class="cell value">
+                    <lightning-input type="text" value={briefDescription} onchange={handleDescriptionChange}></lightning-input>
+                </div>
+            </div>
+            <div class="row">
+                <div class="cell label">Involvement in CAC:</div>
+                <div class="cell value">New checkbox field - EBD</div>
+            </div>
+            <div class="row">
+                <div class="cell label">Business Group on Health:</div>
+                <div class="cell value">{account.BGH__c}</div>
+            </div>
+            <div class="row">
+                <div class="cell label">Current Medical Deal Start Date:</div>
+                <div class="cell value">{account.formattedStartDate}</div>
+            </div>
+            <div class="row">
+                <div class="cell label">Next Medical Renewal Date:</div>
+                <div class="cell value">{account.formattedNextRenewalDate}</div>
+            </div>
+            <div class="row">
+                <div class="cell label">Tenure:</div>
+                <div class="cell value">{account.Tenure__c}</div>
+            </div>
+            <div class="row">
+                <div class="cell label">Medical Membership Penetration:</div>
+                <div class="cell value">UHC Total Members x 100%</div>
+            </div>
+            <div class="row">
+                <div class="cell label">Relationship History and Current State:</div>
+                <div class="cell value">
+                    <lightning-input type="text" value={relationshipHistory} onchange={handleHistoryChange}></lightning-input>
+                </div>
+            </div>
+        </div>
+        <lightning-button variant="brand" label="Save" onclick={handleSave}></lightning-button>
+    </lightning-card>
+    <template if:true={isLoading}>
+        <div class="spinner-container">
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </div>
+    </template>
+</template>

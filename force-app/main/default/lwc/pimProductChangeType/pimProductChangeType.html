@@ -1,0 +1,33 @@
+<template>
+        <lightning-quick-action-panel header="Decision Support - Specialist Management Solution (SMS) - Change Review">
+            <p> Following product field changes have been detected from PIM Integration. Please review and publish the
+                updates
+                to MERIT Product.</p>
+            <!-- Differences of fields -->
+            <template if:true={hasDifferences}>
+
+                <template for:each={differences} for:item="row">
+                    <lightning-layout key={row.stageField} multiple-rows>
+                        <lightning-layout-item padding="around-small" size="6">
+                            <div class="header-column">
+                                <p class="field-title slds-p-bottom_small" title="Field 1">{row.stageLabel}</p>
+                                <p class="field-value with-border">{row.stageValue}</p>
+                            </div>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" size="6">
+                            <div class="header-column">
+                                <p class="field-title slds-p-bottom_small" title="Field 1">{row.prodLabel}</p>
+                                <p class="field-value with-border">{row.prodValue}</p>
+                            </div>
+                        </lightning-layout-item>
+                    </lightning-layout>
+
+                </template>
+            </template>
+            <div slot="footer">
+                <lightning-button variant="brand" class="slds-p-around_medium" label="Publish" onclick={handleUpdate}>
+                </lightning-button>
+                <!-- <lightning-button variant="neutral" label="Cancel" onclick={handleCancel}></lightning-button> -->
+            </div>
+        </lightning-quick-action-panel>
+</template>

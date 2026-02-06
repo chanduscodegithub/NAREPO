@@ -1,0 +1,309 @@
+<aura:component access="global" controller="ConsultantHistoryController" >
+    <aura:attribute name="consultingHistoryList" type="ConsultantHistory__c[]"/>
+    <aura:attribute name="consultantHistoryId" type="String"/>
+    <aura:attribute name="isEditAccess" type="Boolean"/>
+    <aura:attribute name="Child_Data" type="Object"/>
+    <aura:attribute name="tableBodyHeight" type="String"/>
+    <aura:attribute name="isConsultantNoData" type="Boolean" default="false"/>    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    
+    <aura:attribute name="lastSortField" type="String" default=""/>
+    <aura:handler name="Sorting_Mobile_Event" event="c:Sorting_Mobile_Event" action="{!c.sortFieldsMobile}"/>
+    
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="sortLastNameAsc" type="Boolean" default="false"/>
+    <aura:attribute name="sortFirstNameAsc" type="Boolean" default="false"/>
+    <aura:attribute name="sortJobTitleAsc" type="Boolean" default="false"/>
+    <aura:attribute name="sortStartDateAsc" type="Boolean" default="false"/>    
+    <aura:attribute name="sortEndDateAsc" type="Boolean" default="false"/>
+    <aura:attribute name="sortStatusAsc" type="Boolean" default="false"/>
+    <aura:attribute name="sortStatusReasonAsc" type="Boolean" default="false"/>
+    
+    <aura:attribute name="lastFieldNameToBeSorted" type="String" default="LastName__c"/>    
+    <aura:attribute name="isLastFieldNameSortedAsc" type="Boolean" default="true"/>
+    
+    <aura:handler event="c:Consultant_Hisotry_Delete_Child_Event" action="{!c.deleteCH}"/>
+    
+    {!v.body}
+    <style>
+        @media (max-width: 767px){
+        .cuf-scroller-inside{
+        padding: 0 !important;
+        }
+        }
+    </style>
+    
+    <div aura:id="contact_History" class="slds-section slds-is-open ipadbottom consultant-modal-xs mb-ipad container modal-content">
+        
+        <article class="ShowFullListArticle">
+           <!-- <div class="slds-page-header subHeaderHeight slds-p-left_none">
+                <div class="headerHeight slds-grid">
+                    <div class="slds-is-relative slds-grid slds-grid_align-spread slds-size_1-of-12 widthForDesktop">
+                        <c:tooltip helpLink="Help" helpText="{!$Label.c.Consultant_History_Help_Text}"/> 
+                    </div>                           
+                    <div style="width:100%;float:right;text-align: right;">
+                        <aura:if isTrue="{!v.isConsultantNoData}">
+                            <aura:set attribute="else">
+                                <div class="sorting-in-mobile">                            
+                                    <div class="ui-m-btn ui-m-btn-group" style="width:100%;float:right;text-align: right;">
+                                        <aura:if isTrue="{!or($Browser.isPhone,$Browser.isTablet)}">
+                                            <button class="slds-button slds-buttonneutral" onclick="{!c.openSortingPopup}">
+                                                <lightning:icon iconName="utility:sort" size="small" alternativeText="Sort"/>
+                                            </button>                                                    
+                                        </aura:if>                                                                                  
+                                    </div>
+                                </div>
+                            </aura:set>
+                        </aura:if>                                
+                    </div>                            
+                </div>
+            </div>-->
+            <div class="slds-section__content sinnerSection slds-p-top_none slds-p-bottom_none slds-is-relative">
+                <div class="slds-spinner_container slds-hide" aura:id="spinner">
+                    <div role="status" class="slds-spinner--brand slds-spinner slds-spinner--medium spinner-md-d">
+                        <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+                
+                <div class="{!'spinnerScrollForBody slds-card__body '+ v.tableBodyHeight}">
+                    <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                    <div class="ipadPagination slds-p-vertical_small slds-p-horizontal_medium">
+                        This section lists all consultants that are/were associated with this Firm.
+                    </div>                    
+                    <ui:scrollerWrapper class="scrollerSize">                        
+                        <table aura:id="consultantHisTableId" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout data-table">
+                            <aura:if isTrue="{!v.isConsultantNoData}">
+                                <thead>
+                                    <tr>                                      
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" style="padding:0.5rem 0.5rem;" scope="col">
+                                            <span class="slds-cell-wrap" title="Last Name">{!$Label.c.Last_Name}</span>
+                                        </th>
+                                        
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" style="padding:0.5rem 0.5rem;" scope="col">                                   
+                                            <span class="slds-cell-wrap" title="First Name">{!$Label.c.First_Name}</span>
+                                        </th>
+                                        
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" style="padding:0.5rem 0.5rem;" scope="col">
+                                            <span class="slds-cell-wrap" title="Job Title">{!$Label.c.Job_Title}</span>
+                                        </th>
+                                        
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" style="padding:0.5rem 0.5rem;" scope="col">                         
+                                            <span class="slds-cell-wrap" title="Start Date">{!$Label.c.Start_Date}</span>
+                                        </th>
+                                        
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" style="padding:0.5rem 0.5rem;" scope="col">
+                                            <span class="slds-cell-wrap" title="End Date">{!$Label.c.End_Date}</span>                                                
+                                            
+                                        </th>
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" style="padding:0.5rem 0.5rem;" scope="col">
+                                            <span class="slds-cell-wrap" title="Status">{!$Label.c.Status}</span>
+                                        </th>
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" style="padding:0.5rem 0.5rem;" scope="col">
+                                            <span class="slds-cell-wrap" title="Status Reason">{!$Label.c.Status_Reason}</span>
+                                        </th>                                                                
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <p></p>
+                                    <tr>
+                                        <th colspan="7">
+                                            <div class="slds-text-align--center">{!$Label.c.Consultant_History_No_Records}</div>
+                                        </th>
+                                    </tr>
+                                </tbody>                                
+                                <aura:set attribute="else">                                  
+                                    <thead>
+                                        <tr class="slds-text-title--caps">                                                                                                                                      
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                                <a onclick="{!c.sortFields}"  data-record="LastName__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span class="slds-cell-wrap" title="Last Name">{!$Label.c.Last_Name}</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortLastNameAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span ></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                                <a onclick="{!c.sortFields}" data-record="Name" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span class="slds-cell-wrap" title="First Name">{!$Label.c.First_Name}</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortFirstNameAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span ></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                                <a onclick="{!c.sortFields}" data-record="JobTitle__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort}  </span>
+                                                    <span class="slds-cell-wrap" title="Job Title">{!$Label.c.Job_Title}</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortJobTitleAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span ></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:17%">
+                                                <a onclick="{!c.sortFields}" data-record="StartDate__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span class="slds-cell-wrap" title="Start Date">{!$Label.c.Start_Date}</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortStartDateAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span ></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:17%">
+                                                <a onclick="{!c.sortFields}" data-record="EndDate__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span class="slds-cell-wrap" title="End Date">{!$Label.c.End_Date}</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortEndDateAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span ></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:10% !important;">
+                                                <a onclick="{!c.sortFields}" data-record="Status__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span class="slds-cell-wrap" title="Status">{!$Label.c.Status}</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortStatusAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span ></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:10% !important;">
+                                                <a onclick="{!c.sortFields}" data-record="StatusReason__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                    <span class="slds-assistive-text">{!$Label.c.Sort} </span>
+                                                    <span class="slds-cell-wrap" title="Status Reason">{!$Label.c.Status_Reason}</span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortStatusReasonAsc}">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                </a>
+                                                <div class="slds-resizable">
+                                                    <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                    <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                                    <span class="slds-resizable__handle">
+                                                        <span ></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            <aura:if isTrue="{!v.isEditAccess}">
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:5%;"></th>    
+                                            </aura:if>                                
+                                            <aura:if isTrue="{!v.isEditAccess}">
+                                                <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:5%;"></th>
+                                            </aura:if>	    
+                                            
+                                        </tr>
+                                    </thead>                                
+                                    <tbody>
+                                        <aura:iteration items="{!v.consultingHistoryList}" var="consultingHistoryobj" indexVar="index">
+                                            <c:Consultant_History_Modal_Table isEditAccess="{!v.isEditAccess}"  consultingHistoryData="{!consultingHistoryobj}" consultingHistoryModalIndx="{!index}"></c:Consultant_History_Modal_Table>
+                                        </aura:iteration>
+                                    </tbody>                                    
+                                </aura:set>
+                            </aura:if>                                                       
+                        </table>
+                    </ui:scrollerWrapper>
+                </div>                                
+                <div class="slds-p-horizontal_medium slds-p-right_xx-small foot-pagination">
+                    <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>        
+                </div>
+                <div class="slds-card__footer ip-pad">
+                </div>            
+            </div>
+        </article>
+    </div>
+</aura:component>

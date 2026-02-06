@@ -1,0 +1,71 @@
+<aura:component controller="ConsultantHistoryController">
+    <aura:attribute name="consultingHistoryData" type="ConsultantHistory__c"/>    
+    <aura:attribute name="consultingHistoryModalIndx" type="String"/>
+    <aura:attribute name="isEditAccess" type="Boolean"/>
+    <aura:attribute name="enableEditDeleteButton" type="Boolean" default="true"/>
+    
+    <aura:registerEvent name="consultantHistoryModalTable" type="c:Consultant_History_Modal_Table_Event"/>
+    <aura:registerEvent name="alertEvent" type="c:Consultant_History_Alert_Event"/>        
+    <aura:registerEvent name="navigateToObject" type="c:Consultant_History_NavigateTo_Object"/>        
+    
+    <tr class="slds-hint-parent">                       
+        <th scope="row" data-label="Last Name">
+            <div class="slds-truncate" title="Last Name">
+                <a onclick="{!c.navigateToContactPage}" class="slds-truncate" tabindex="0" title="{!v.consultingHistoryData.LastName__c}">{!v.consultingHistoryData.LastName__c}</a>
+			</div>
+        </th>
+        <th scope="row" data-label="First Name">
+            <div class="slds-truncate" title="First Name">{!v.consultingHistoryData.Name}</div>
+        </th>
+        <th scope="row" data-label="Job Title">
+            <div class="slds-truncate" title="Job Title">{!v.consultingHistoryData.JobTitle__c}</div>
+        </th>
+        <th scope="row" data-label="Start Date">
+            <ui:inputDate aura:id="StartDate" disabled="true" value="{!v.consultingHistoryData.StartDate__c}" displayDatePicker="true" format="M/d/yyyy"/>
+        </th>
+        <th scope="row" data-label="End Date">
+            <ui:inputDate aura:id="EndDate"   disabled="true" value="{!v.consultingHistoryData.EndDate__c}" displayDatePicker="true" format="M/d/yyyy"/>
+        </th>
+        <th scope="row" data-label="Status">
+            <div class="slds-truncate" title="Status">{!v.consultingHistoryData.Status__c}</div>
+        </th>
+        <th scope="row" data-label="Status Reason">
+            <div class="slds-truncate" title="Status Reason">{!v.consultingHistoryData.StatusReason__c}</div>
+        </th>
+        <aura:if isTrue="{!v.enableEditDeleteButton}">
+         <aura:if isTrue="{!v.isEditAccess}">
+            <th scope="row" data-label="Edit">
+                <div class="slds-truncate" onclick="{!c.edit}" title="{!$Label.c.Edit}" >                     
+                    <button class="slds-button slds-text-body--regular boxShadow" aura:id="editItem">
+                        <lightning:icon class="slds-icon slds-icon--small" iconName="utility:edit" size="x-small" alternativeText="Product" />
+                    </button>
+                </div>               
+        
+            </th>
+             <th scope="row" data-label="Remove">
+                <div class="slds-truncate" onclick="{!c.remove}" title="{!$Label.c.Remove}" style="text-align: left;">                    
+                    <button class="slds-button slds-text-body--regular boxShadow" aura:id="editItem">
+                        <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                    </button>
+                </div>                
+            </th>    
+		</aura:if>
+            <aura:set attribute="else">
+            <th scope="row" data-label="cancel">
+            <div class="slds-truncate" onclick="{!c.cancelInlineEdit}" title="">
+            <button class="slds-button slds-text-body--regular boxShadow"  aura:id="inlineEdit">
+               <lightning:icon class="slds-icon slds-icon--small" iconName="utility:close" size="x-small" alternativeText="Product" />
+            </button>
+            </div>
+        </th>
+        <th scope="row" data-label="save">
+            <div class="slds-truncate" onclick="{!c.saveInlineEdit}" title="">
+            <button class="slds-button slds-text-body--regular boxShadow"  aura:id="inlineEdit">
+               <lightning:icon class="slds-icon slds-icon--small" iconName="utility:check" size="x-small" alternativeText="Product" />
+            </button>
+            </div>
+        </th>
+            </aura:set>
+        </aura:if>
+    </tr>    
+</aura:component>

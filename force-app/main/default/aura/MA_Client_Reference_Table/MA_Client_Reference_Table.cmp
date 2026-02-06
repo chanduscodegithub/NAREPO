@@ -1,0 +1,130 @@
+<aura:component>
+    <aura:attribute name="maRefAccount" type="String[]" />
+    <aura:attribute name="maRefAccountIndex" type="Integer" />
+    <aura:attribute name="isLoggedInUserValid" type="Boolean" default="false" />
+
+    <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+    <!-- <aura:handler name="init" action="{!c.doInit}" value="{!this}" /> -->
+    <aura:attribute name="isEditDisabled" type="Boolean" default="false" />
+    <aura:attribute name="isSaveCancelDisabled" type="Boolean" default="true" />
+
+    <aura:attribute name="editValueFromParent" type="Boolean" />
+    <aura:attribute name="refStatusList" type="Map" />
+    <aura:attribute name="applicableFor" type="Map" />
+
+    <aura:attribute name="notesValue" type="String" />
+    <aura:attribute name="refStatMap" type="Object[]" />
+    <aura:attribute name="notesMap" type="Object[]" />
+    <aura:attribute name="interMap" type="Object[]" />
+    <aura:attribute name="finalMap" type="Object[]" />
+    <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+
+    <aura:registerEvent name="addRefAccountsEvent" type="c:addRefAccountsEvent" />
+    <aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>
+
+    <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+    <aura:method name="onEdit" action="{!c.onEditFunc}" access="PUBLIC"></aura:method>
+    <aura:method name="onSave" action="{!c.onSave}" access="PUBLIC"></aura:method>
+    <aura:method name="onCancel" action="{!c.onCancel}" access="PUBLIC"></aura:method>
+    <aura:method name="organizeData" action="{!c.organizeData}" access="PUBLIC"></aura:method>
+    <aura:registerEvent name="refStatEvent" type="c:refStatEvent" />
+    <aura:registerEvent name="MA_ClentReference_ValueChange_Event" type="c:MA_ClentReference_ValueChange_Event" />
+    <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+
+    <tr class="slds-hint-parent">
+        <td data-label="Reference Company Name">
+            <div class="slds-truncate" title="{!v.maRefAccount.RefCompany__r.Name}">
+                <a data-record="{!v.maRefAccount.RefCompany__r.Id}"
+                    onclick="{!c.navToRecord}">{!v.maRefAccount.RefCompany__r.Name}</a>
+            </div>
+        </td>
+        <td data-label="Reference Request Status">
+            <div class="slds-truncate">
+                <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH value="{!v.maRefAccount.Ref_Status__c}"-->
+                <aura:if isTrue="{!v.editValueFromParent}">
+                    <div style="padding-bottom: 15px;padding-right: 10px;">
+                        <lightning:select aura:id="statusPicklist" name="refStatusPicklist"
+                            value="{!v.maRefAccount.Ref_Status__c}" onchange="{!c.handelRecordChange}"
+                                          >
+                            <option value="">--None--</option>
+                            <aura:iteration items="{!v.refStatusList}" var="i" indexVar="key">
+                                <option text="{!i.value}" value="{!i.value}" />
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    <aura:set attribute="else">
+                        {!v.maRefAccount.Ref_Status__c}
+                    </aura:set>
+                </aura:if>
+                <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+            </div>
+        </td>
+        <td data-label="Applicable for?">
+            <div class="slds-truncate">
+                <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH value="{!v.maRefAccount.Ref_Status__c}"-->
+                <aura:if isTrue="{!v.editValueFromParent}">
+                    <div style="padding-bottom: 15px;padding-right: 10px;">
+                        <lightning:select aura:id="statusPicklist" name="refStatusPicklist"
+                            value="{!v.maRefAccount.Applicable_for__c}" onchange="{!c.handelRecordChange}"
+                                          >
+                            <option value="">--None--</option>
+                            <aura:iteration items="{!v.applicableFor}" var="i" indexVar="key">
+                                <option text="{!i.value}" value="{!i.value}" />
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    <aura:set attribute="else">
+                        {!v.maRefAccount.Applicable_for__c}
+                    </aura:set>
+                </aura:if>
+                <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+            </div>
+        </td>
+        <td data-label="Reference Request Status">
+            <div class="slds-truncate" title="{!v.maRefAccount.CreatedBy.Name}">
+                {!v.maRefAccount.CreatedBy.Name}
+            </div>
+        </td>
+        
+       
+        <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+        <td data-label="Notes">
+            <aura:if isTrue="{!v.editValueFromParent}">
+                <div style="padding-bottom: 15px;">
+                    <!-- <lightning:input aura:id="notesTextArea" name="input8" value="{!v.maRefAccount.Notes__c}"
+                        placeholder="Add a note..." onchange="{!c.changeNotesVal}" /> -->
+
+                    <lightning:textarea aura:id="notesTextArea" name="input8" value="{!v.maRefAccount.Notes__c}"
+                        placeholder="Add a note..." onchange="{!c.handelRecordChange}" maxlength="1000"/>
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-wrap slds-truncate">
+                        <!-- {!v.maRefAccount.Notes__c} -->
+                        <lightning:textarea value="{!v.maRefAccount.Notes__c}" readonly="true"/>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </td>
+        <!--SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH SAMARTH-->
+        <aura:if isTrue="{!v.isLoggedInUserValid}">
+            <th scope="row" data-label="">
+                <div class=" slds-truncate" aura:id="deleteIcon" onclick="{!c.remove}" title="{!$Label.c.Remove}">
+                    <!--<a data-record="{!index}" onclick="{!c.remove}">{!$Label.c.Remove}</a>-->
+                    <button class="slds-button slds-text-body--regular">
+                        <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small"
+                            alternativeText="Product" />
+                    </button>
+                </div>
+                <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                    <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </div>
+            </th>
+        </aura:if>
+    </tr>
+</aura:component>

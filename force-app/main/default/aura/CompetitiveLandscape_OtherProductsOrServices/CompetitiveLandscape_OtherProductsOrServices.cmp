@@ -1,0 +1,114 @@
+<aura:component access="global" implements="force:hasRecordId,flexipage:availableForAllPageTypes">
+    
+    <aura:registerEvent name="competitiveLandscapeEvent" type="c:CompetitiveLandscape_Event"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="isEditSaveDeleteButtonsEnabled" type="Boolean" default="true"/>    
+    <aura:attribute name="competitorsAttributes" type="Object"/>
+    <aura:attribute name="accountType" type="String" />
+    <aura:attribute name="otherProductsData" type="String" />
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="indexVal" type="Integer" />
+       
+    <aura:method name="editFields" action="{!c.editCompetitiveRecords}" access="PUBLIC">
+        <aura:attribute name="cancelEdit" type="Boolean" default="false" />
+    </aura:method>
+    
+    <aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>
+    
+    <aura:attribute name="typeOfOtherProductsOrServicesProvidedArrayPickListValues" type="List" />
+    <aura:attribute name="isEnableMultiPickListComponent" type="Boolean" default="false"/>
+    <aura:handler name="multiPickListEvent" event="c:multiPickListEvent" action="{!c.handleMultiPickList}"/>
+    
+    <aura:attribute name="typesOfOtherProductsOrServices" type="String" />
+    
+    <tr class="slds-hint-parent">
+        <th scope="row" data-label="{!$Label.c.Other_Products_Services_Carrier}">
+            <div class="slds-cell-wrap">{!v.otherProductsData.CompetitorAccount__r.Name}</div>
+        </th>
+        <th scope="row" data-label="{!$Label.c.Type_of_Other_Products_Services_Provided}">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    
+                    <!--Including LWC for choosing TYPE OF OTHER PRODUCTS/SERVICES PROVIDED using Mouse Click - START -->
+                    <aura:if isTrue="{!v.isEnableMultiPickListComponent}" aura:id="multipleSelect">  
+                        <c:competitivelandscapelwc typeOfOtherProductsOrServicesProvidedArrayPickListValues="{!v.typeOfOtherProductsOrServicesProvidedArrayPickListValues}" otherProductsDataCompetitorAccount="{!v.otherProductsData.CompetitorAccount__r}" oneventCall="{!c.handleMultiPickList}"></c:competitivelandscapelwc>
+                    </aura:if>
+                    <!--Including LWC for choosing TYPE OF OTHER PRODUCTS/SERVICES PROVIDED using Mouse Click - END -->
+                    
+                    <!--<ui:inputSelect multiple="true" class="multiple slds-hide" aura:id="multipleSelect" change="{!c.onChangeValues}" />-->
+                    <!--<ui:inputSelect multiple="true" class="multiple slds-hide" aura:id="multipleSelect" change="{!c.onChangeValues}">
+                        <aura:iteration items="{!v.competitorsAttributes.TypeOfOtherProductsOrServicesProvided}" var="otherProductOrServicesVal"> 
+                            <ui:inputSelectOption text="{!otherProductOrServicesVal}" value="true"/> 
+                        </aura:iteration>
+                    </ui:inputSelect>-->
+                    <div aura:id="multiResult" class="">
+                        <!--<lightning:textarea class="slds-cell-wrap no-label textarea-content-fix slds-is-relative" value="{!v.otherProductsData.TypesofOtherProductsServicesProvide__c}" disabled="true" />-->
+                        <ui:outputTextArea value="{!v.typesOfOtherProductsOrServices}"/>
+                    </div>
+                    <!--<div class="slds-cell-wrap" aura:id="multiResult">{!v.otherProductsData.TypesofOtherProductsServicesProvide__c}</div>-->
+                </div>
+            </div>
+        </th>
+        <th scope="row" data-label="{!$Label.c.Comments}">
+            <aura:if isTrue="{!v.isEdit}">
+                <lightning:textarea class="slds-cell-wrap no-label textarea-content-fix-edit" value="{!v.otherProductsData.Comments__c}" maxlength="255" />
+                <aura:set attribute="else">
+                    <ui:outputTextArea value="{!v.otherProductsData.Comments__c}"/>
+                </aura:set>
+            </aura:if>
+            <!--<div aura:id="OutputComments" class="">
+                <lightning:textarea class="slds-cell-wrap no-label textarea-content-fix slds-is-relative" value="{!v.otherProductsData.Comments__c}" disabled="true" />
+            </div>
+            <div aura:id="InputComments" class="slds-hide">
+                <lightning:textarea class="slds-cell-wrap no-label textarea-content-fix-edit" value="{!v.otherProductsData.Comments__c}" maxlength="255" />
+            </div>-->
+        </th>
+        <th scope="row" class="alignDataCenter" data-label="">
+            <aura:if isTrue="{!and(v.accountType != null, v.accountType == $Label.c.Client_Management)}">
+                <aura:if isTrue="{!and(v.otherProductsData.CompetitorAccount__r.Name != null, v.otherProductsData.CompetitorAccount__r.Name == 'UHC-Optum')}">
+                    <span class="slds-grid"></span>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.isEditSaveDeleteButtonsEnabled}">
+                            <div aura:id="deleteIcon">
+                                <button class="slds-button slds-text-body--regular" onclick="{!c.removeRecord}">
+                                    <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                                </button>
+                            </div>
+                            <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                                <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!(v.accountType != null)}">
+                        <aura:if isTrue="{!or(v.accountType == $Label.c.Client_Development, v.accountType == $Label.c.Aggregator)}">
+                            <aura:if isTrue="{!v.isEditSaveDeleteButtonsEnabled}">
+                                <div aura:id="deleteIcon">
+                                    <button class="slds-button slds-text-body--regular" onclick="{!c.removeRecord}">
+                                        <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                                    </button>
+                                </div>
+                                <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                                    <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                        <span class="slds-assistive-text">Loading</span>
+                                        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:if>
+                        </aura:if>
+                    </aura:if>
+                </aura:set>
+            </aura:if>
+        </th>
+    </tr>
+</aura:component>

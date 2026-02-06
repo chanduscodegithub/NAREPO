@@ -1,0 +1,28 @@
+<aura:component >
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="ModalBody" type="String"/>
+    <aura:attribute name="Modalheader" type="String"/>
+    <aura:attribute name="ModalBodyData" type="Object"/>
+    <aura:attribute name="refreshOnClosingModel" type="String" default="false"/>
+    <aura:method name="modalClosing" action="{!c.modalClose}" access="PUBLIC"></aura:method>
+    <aura:registerEvent name="modalCmpCloseEvent" type="c:Model_Closing_Event"/>
+	<div tabindex="-1" role="dialog" aura:id="contact_History_Modal_PHONE" class="uiPanel--default uiPanel forceMobileOverlay active" data-aura-class="uiPanel--default uiPanel forceMobileOverlay"  aria-hidden="false" style="z-index: 3; visibility: visible;">
+        <div class="container">
+            <span class="assistiveText" >Start of Dialog</span>
+            <div class="panel-header panel-align">
+                
+                <h2 class="title slds-truncate" >{!v.Modalheader}</h2>
+                <button class="slds-button slds-button--neutral cuf-publisherCancelButton uiButton" aria-live="off" type="button" data-aura-class="uiButton">
+                    <span class=" label bBody truncate" onclick="{!c.fireComponentEvent}">Close</span>
+                </button>
+            </div>
+            <div class="panel-content scrollable" data-scoped-scroll="true">
+                <div class="baseMobile forceChatterBasePublisher forceChatterLightningComponent"  data-aura-class="forceChatterBasePublisher forceChatterLightningComponent">
+                    <section class="PHONE forceChatterPublisherPresentationMobile"  data-aura-class="forceChatterPublisherPresentationMobile">
+                        {!v.body}
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,206 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller='NPSAccountStragergyAndActionPlanApex'>   
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
+    <aura:attribute name="openCaseList" type="Action_Service_Plan__c[]"/>
+    <aura:attribute name="closedCaseList" type="Action_Service_Plan__c[]"/>
+    <aura:attribute name="isEmtOpenCases" type="Boolean" default="false" />
+    <aura:attribute name="isEmtClosedCases" type="Boolean" default="false"/>
+    <aura:attribute name="isEmtOpenCasesViewAll" type="Boolean" default="false" />
+    <aura:attribute name="isEmtClosedCasesViewAll" type="Boolean" default="false"/>
+    <aura:attribute name="isNewButtonEnable" type="Boolean" default="false"/>
+    <aura:attribute name="responseObj" type="Object"/>
+    <aura:attribute name="ownerId" type="String"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+
+	<aura:attribute name="sortStatusAsc" type="Boolean" default="true"/>    
+    {!v.body}
+    <div aura:id="NPS_Account_Strategy_and_Action_Plan_Managed_By_Sales" class="slds-section ipadbottom">
+        <article class="slds-card slds-card_boundary">
+            <div class="slds-card__header slds-grid avoid-clicks" data-record="NPS_Account_Strategy_and_Action_Plan_Managed_By_Sales" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                        </button>                        
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Client_Survey_Results_Heading}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:poll" size="small" alternativeText="{!$Label.c.Client_Survey_Results_Heading}" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2>
+                            <span class="slds-text-heading--small">Client NPS Action Plan - owned by SCE</span>
+                        </h2>
+                    </div>
+                    <aura:if isTrue="{!v.isNewButtonEnable}">
+                        <div>
+                            <button class="slds-button slds-button_neutral" onclick="{!c.createRecord}">New Action Item</button>
+                            <c:NPSActionPlanCmp accountId="{!v.recordId}"/>
+                        </div>
+                    </aura:if>
+                </header>                
+            </div>            
+            <div class="slds-is-relative">
+                <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>                
+                <!--  Error PopUp STARTS --> 
+                <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                                <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                                <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                            </button>
+                            <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <p style="text-align:center;">{!v.ErrorMessage}</p>
+                        </div>
+                        <div class="slds-modal__footer slds-theme--default">
+                            <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="ErrorMessage"></div>
+                <!--  Error PopUp ENDS -->                
+                <div class="slds-section__content slds-is-relative slds-p-top_none">   
+                    <div class="slds-card__body">                    
+                        <table aura:id="clientSurveyTbl" id="clientSurveyTbl" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table_fixed-layout clientSurveyTbl">
+                            <thead>
+                                <tr class="slds-hint-parent">    
+                                </tr>
+                            </thead>                        
+                            <!-- collapsable Open/Close start -->                            
+                            <tr class="slds-hint-parent">
+                                <div class="slds-section__content slds-p-top_none">
+                                    <div class="slds-card slds-m-bottom_none">
+                                        <table class="slds-table slds-max-medium-table--stacked-horizontal slds-table_bordered data-table slds-table_fixed-layout">
+                                            <thead>
+                                                <tr class="slds-text-title_caps">
+                                                    <th scope="col" class="slds-truncate" width="7%">year</th>
+                                                    <th scope="col" class="slds-truncate" width="14%">Category</th>
+                                                    <th scope="col" class="slds-truncate">Subject</th>                                                    
+                                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap" style="{!'width:'+v.width100}" scope="col" width="9%">
+                                                        <a onclick="{!c.sortFields}" data-record="Status__c" class="slds-th__action slds-text-link--reset consultant-tab" tabindex="1">
+                                                            <span class="slds-assistive-text">{!$Label.c.Sort}</span>
+                                                            <span title="First Name">Status</span>
+                                                            <div class="slds-icon_container">
+                                                                <aura:if isTrue="{!v.sortStatusAsc}">
+                                                                    <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </div>
+                                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                        </a>
+                                                        <div class="slds-resizable">
+                                                            <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="1" />
+                                                            <span class="slds-resizable__handle">
+                                                                <span class="slds-resizable__divider"></span>
+                                                            </span>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-cell-wrap">Description comments</th>
+                                                    <th scope="col" class="slds-cell-wrap">Resolution comments</th>
+                                                    <th scope="col" class="slds-truncate slds-text-align_center" width="9%">Activities</th>
+                                                    <!--<th scope="col" class="slds-truncate slds-text-align_center">Closed Activities</th>-->
+                                                    <th scope="col" class="slds-cell-wrap" width="13%">Assigned to</th>                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:if isTrue="{!v.isEmtOpenCases}">                                                            
+                                                    <tr>
+                                                        <th colspan="8">
+                                                            <div class="slds-text-align--center">No Client NPS Actions Found</div>
+                                                        </th>
+                                                    </tr>                                           
+                                                    <aura:set attribute="else">
+                                                        <aura:iteration items="{!v.openCaseList}" var="caseObj" indexVar="index">
+                                                            <tr> <th scope="row" data-label="year">
+                                                                <div  title="Assigned To">{!caseObj.Year__c}</div>
+                                                                </th>
+                                                                <th scope="row" data-label="Category" class="slds-cell-wrap">
+                                                                    <div  title="Assigned To">{!caseObj.Category__c}</div>
+                                                                </th>
+                                                                <th scope="row" data-label="Subject" class="slds-cell-wrap">
+                                                                    <a data-record="{!caseObj.Id}" onclick="{!c.navigateToIssueDetailPage}" title="Subject">{!caseObj.Name}</a>
+                                                                </th>
+                                                                <th scope="row" data-label="Status" class="slds-cell-wrap">
+                                                                    <div  title="Assigned To">{!caseObj.Status__c}</div>
+                                                                </th>                                                                
+                                                                <th scope="row" data-label="Description Comments" class="slds-cell-wrap">
+                                                                    <div  title="Assigned To">{!caseObj.Description_Comments__c}</div>
+                                                                </th>
+                                                                <th scope="row" data-label="Resolution Comments" class="slds-cell-wrap">
+                                                                    <div  title="Assigned To">{!caseObj.Resolution_Comments__c}</div>
+                                                                </th>                                                                                                                               
+                                                                <th scope="row" class="slds-text-align_center" data-label="Open Activities">
+                                                                    <aura:if isTrue="{!caseObj.activities != 0}">
+                                                                        <a data-record="{!caseObj.Id}" data-status="Open" onclick="{!c.navigateToOpenActivities}" title="Open Activities">{!caseObj.activities}</a>
+                                                                        <aura:set attribute="else">
+                                                                            <div  title="No of open activities">{!caseObj.activities}</div>
+                                                                        </aura:set>
+                                                                    </aura:if>                                                                        
+                                                                </th>
+                                                                <!--<th scope="row" class="slds-text-align_center" data-label="Open Activities">
+                                                                    <aura:if isTrue="{!caseObj.closeActivities != 0}">
+                                                                        <a data-record="{!caseObj.Id}" data-status="Completed" onclick="{!c.navigateToOpenActivities}" title="Open Activities">{!caseObj.closeActivities}</a>
+                                                                        <aura:set attribute="else">
+                                                                            <div  title="No of open activities">{!caseObj.closeActivities}</div>
+                                                                        </aura:set>
+                                                                    </aura:if>                                                                        
+                                                                </th>-->
+                                                                <th scope="row" data-label="Assigned To" class="slds-cell-wrap">
+                                                                    <div  title="Assigned To">{!caseObj.Company_Name__r.Owner.Name}</div>
+                                                                </th>
+                                                                <!--<th scope="row" data-label="Date/Time Opened" class="slds-cell-wrap">
+                                                                    <ui:outputDate format="M/d/yyyy hh:mm a" value="{!caseObj.CreatedDate}" />
+                                                                </th>-->
+                                                            </tr>
+                                                        </aura:iteration>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </tbody>                                                    
+                                        </table>
+                                        <aura:if isTrue='{!!v.isEmtOpenCasesViewAll}'>
+                                            <footer class="slds-card__footer">
+                                                <a class="slds-card__footer-action" onclick="{!c.ViewAllOpenIssues}">View All
+                                                    <span class="slds-assistive-text">Contacts</span>
+                                                </a>
+                                            </footer>
+                                        </aura:if>    
+                                        <!--<div class="slds-p-vertical_small slds-p-horizontal_medium avoid-clicks" data-record="OpenServicePlan" id="UtilityToggleOpenServicePlan" onclick="{!c.expandCollapseSection}">
+                                            <div class="slds-grid">
+                                                <header class="slds-text-heading_small slds-accordion__summary-heading">
+                                                    <button class="slds-button slds-button_reset slds-accordion__summary-action accordion-link">
+                                                        <lightning:icon class="slds-p-right_xx-small" aura:id="UtilityToggleOpenServicePlan" iconName="utility:chevronright" size="xx-small" />
+                                                        <span class="slds-truncate">Open NPS Action Plans</span>
+                                                    </button>
+                                                </header>
+                                            </div>
+                                        </div>-->
+                                        <!--<section class="collapsible-sec slds-hide" aura:id="OpenServicePlan" data-record="OpenServicePlan">                                            
+                                                                                        
+                                        </section> -->                                       
+                                    </div>                                    
+                                </div>                                                                                                 
+                            </tr>
+                        </table>
+                    </div>
+                </div>                
+            </div>
+        </article>
+    </div>
+</aura:component>

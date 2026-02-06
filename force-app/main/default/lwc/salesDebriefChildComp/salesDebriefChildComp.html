@@ -1,0 +1,113 @@
+<template>
+    <template if:true={isTextComponent}>
+        <table class="slds-table slds-table_bordered slds-border_left slds-border_right slds-table_col-bordered">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Value of credits ({productType} credit only)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={tableData} for:item="tabDat">
+                    <tr key={tabDat.labelVal}>
+                        <td>
+                         <b>  {tabDat.labelVal}</b> 
+                        </td>
+                        <td>
+                            <lightning-input type="text" variant="label-hidden" value={tabDat.currentVal}
+                                disabled={isEditMode} data-fieldapi={tabDat.apiVal}
+                                onchange={onchangeHandler} max-length="255"></lightning-input>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+
+    <template if:true={isRadioComponent}>
+        <table class="slds-table slds-table_bordered slds-border_left slds-border_right slds-table_col-bordered fixed-width table-width">
+            <thead>
+                <tr>
+                    <th></th>
+                    <template for:each={optionsToDisplayArray} for:item="optArr">
+                        <th key={optArr} style="text-align:center;" class="table-header-text-wrap">
+                            {optArr}
+                        </th>
+                    </template>
+                </tr>
+            </thead>
+
+            <tbody>
+                <template for:each={tableData} for:item="tabDat">
+                    <tr key={tabDat.originalLabel}>
+                        <td>
+                            <b>{tabDat.labelVal}</b>
+                        </td>
+                        <template for:each={tabDat.optionsVal} for:item="opt">
+                            <td key={opt} style="text-align:center;">
+                                <lightning-radio-group type="radio" name={tabDat.originalLabel} variant="label-hidden"
+                                    options={opt} value={tabDat.currentVal} data-fieldapi={tabDat.apiVal}
+                                    onchange={onchangeHandler} disabled={isEditMode}>
+                                </lightning-radio-group>
+                            </td>
+                        </template>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+
+    <template if:true={isTableComponent}>
+        <template if:true={isEditMode}>
+            <div style="width:90%;">
+                <table
+                    class="slds-table slds-table_bordered slds-border_left slds-border_right slds-table_col-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="11">
+                                <span style="float:left;">Not At All Likely</span>
+                                <span style="float:right;">Very Likely</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="line-height: 40px;">
+                            <template for:each={optionsToDisplayArray} for:item="opt">
+                                <td class="pointerNotAllowed" key={opt} data-fieldapi={tableData.apiVal}
+                                    data-optvalue={opt}>
+                                    {opt}
+                                </td>
+                            </template>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        <template if:false={isEditMode}>
+            <div style="width:90%;">
+                <table
+                    class="slds-table slds-table_bordered slds-border_left slds-border_right slds-table_col-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="11">
+                                <span style="float:left;">Not At All Likely</span>
+                                <span style="float:right;">Very Likely</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="line-height: 40px;">
+                            <template for:each={optionsToDisplayArray} for:item="opt">
+                                <td class="pointer" key={opt} data-fieldapi={tableData.apiVal} data-optvalue={opt}
+                                    onclick={onchangeHandler}>
+                                    {opt}
+                                </td>
+                            </template>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+    </template>
+</template>

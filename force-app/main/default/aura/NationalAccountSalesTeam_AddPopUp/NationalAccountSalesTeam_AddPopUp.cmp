@@ -1,0 +1,151 @@
+<aura:component access="global" controller="NationalAccountSalesTeamClass">
+    
+    <aura:attribute name="UsersList" type="String[]"/>
+    <aura:attribute name="isUserListEmpty" type="Boolean" default="true" />
+    <aura:attribute name="sortLastNameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortFirstNameAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortDepartmentAsc" type="Boolean" default="true"/>
+    <aura:attribute name="user_SearchFieldValues" type="String[]" default="Last Name,First Name,Job Title"/>
+    <aura:attribute name="user_SearchFieldValues1" type="String[]" default="Begins With,Equals to,Contains"/>
+    <aura:attribute name="ErrorMessage" type="String" default=""/>
+    <aura:attribute name="isGoButtonClicked" type="Boolean" default="false"/>
+    
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    <aura:handler name="nationalAccountSalesTeamUserModalEvent" action="{!c.addNewCMAccountHistoryRecord}" event="c:NationalAccountSalesTeam_AddPopUpEvent" />
+    <aura:registerEvent name="nationalAccountSalesTeamUserEvent" type="c:NationalAccountSalesTeam_UserEvent"/>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div class="slds-section ipadbottom slds-m-vertical--none container forceRelatedListSingleContainer">
+        <article class="slds-card userList forceRelatedListCardDesktop">
+            <div style="padding-top:0px;position:relative;">
+                <div class="slds-spinner_container slds-hide" aura:id="userLoadingspinner">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                        <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div> 
+                <div class="slds-card__header slds-grid uiInputSelect search-item">
+                    <div class="uiInputSelect uiMenuList">
+                        <form class="uiMenuList slds-form--inline slds-grid slds-grid--vertical-align-center account-team--popup">
+                            <div class="slds-form-element search-align">
+                                <div class="slds-form-element__control">
+                                    <span class="slds-truncate" title="Search Results Where">{!$Label.c.Search_Results_Where}</span>
+                                </div>
+                            </div>
+                            <div class="slds-form-element last-align">
+                                <div class="slds-form-element__control nm-wdt">
+                                    <ui:inputSelect class="slds-form-control" aura:id="SearchDropDown" multiple="false" change="{!c.clearSearchKeyValues}">
+                                        <aura:iteration items="{!v.user_SearchFieldValues}" var="user_SearchFieldVal"> 
+                                            <ui:inputSelectOption text="{!user_SearchFieldVal}"/> 
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                            <div class="slds-form-element begin-align">
+                                <div class="slds-form-element__control nm-wdt">
+                                    <ui:inputSelect class="slds-form-control" aura:id="SearchDropDown1" multiple="false" change="{!c.clearSearchKeyValues}">
+                                        <aura:iteration items="{!v.user_SearchFieldValues1}" var="user_SearchFieldVal1"> 
+                                            <ui:inputSelectOption text="{!user_SearchFieldVal1}"/> 
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                            <div class="slds-form-element input-align">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-hide">
+                                        <ui:inputText class="slds-form-control"></ui:inputText>
+                                    </div> 
+                                    <ui:inputText class="slds-form-control" updateOn="keyup" aura:id="searchKey" keyup="{!c.enableGoBtn}"></ui:inputText>
+                                </div>
+                            </div>
+                            <div class="slds-form-element go-btn">
+                                <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="goBtn" disabled="true" press="{!c.searchUserRecords}">{!$Label.c.Go}</ui:button>
+                            </div>
+                            <div class="slds-form-element clr-btn" >
+                                <div class="d-inline-flex slds-p-right--small seperator-md">
+                                	<ui:button class="slds-button slds-button--brand mt-md-0" aura:id="clrBtn" press="{!c.doInit}">{!$Label.c.Clear}</ui:button>
+                                </div>
+                            </div>
+                            <div class="slds-col--bump-left prev-btn">
+                                    <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="slds-card__body slds-m-bottom--none">
+                    <ui:scrollerWrapper class="scrollerSize">
+                    <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout data-table">
+                        <thead>
+                            <tr class="slds-text-title--caps headData">
+                                <th class="slds-is-sortable slds-is-resizable bold" scope="col" width="80"></th>
+                                <th class="slds-is-sortable slds-is-resizable bold" style="padding: .5rem .5rem;" scope="col">
+                                    <span class="slds-cell-wrap" title="Last Name">Last Name</span>
+                                </th>
+                                <th class="slds-is-sortable slds-is-resizable bold" style="padding: .5rem .5rem;" scope="col">
+                                    <span class="slds-cell-wrap" title="First Name">First Name</span>
+                                </th>
+                                <th class="slds-is-sortable slds-is-resizable bold" style="padding: .5rem .5rem;" scope="col">
+                                    <span class="slds-cell-wrap" title="Job Title">Job Title</span>
+                                </th>
+                                <th class="slds-is-sortable slds-is-resizable bold" style="padding: .5rem .5rem;" scope="col">
+                                    <span class="slds-cell-wrap" title="Role">Role</span>
+                                </th>
+                                <th class="slds-is-sortable slds-is-resizable bold" style="padding: .5rem .5rem;" scope="col">
+                                    <span class="slds-cell-wrap" title="Email">Email</span>
+                                </th>
+                                <th class="slds-is-sortable slds-is-resizable bold" style="padding: .5rem .5rem;" scope="col">
+                                    <span class="slds-cell-wrap" title="Reports To">Reports To</span>                                            
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.isUserListEmpty}">
+                                <p></p>
+                                <tr>
+                                    <th colspan="7">
+                                        <div class="slds-text-align--center">{!$Label.c.NationalAccountSalesTeam_AddPopUp_NoRecords_Message}</div>
+                                    </th>
+                                </tr>
+                                <aura:set attribute="else">
+                                    <p></p>
+                                    <aura:iteration items="{!v.UsersList}" var="obj">    
+                                        <c:NationalAccountSalesTeam_AddPopUp_TableComponent userData="{!obj}" />
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                        </tbody>
+                    </table>
+                    </ui:scrollerWrapper>
+                    <div class="slds-p-horizontal_medium modal-footer"><!--only for footer-->
+                    	<c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                    </div>
+                </div>                
+            </div>
+        </article>
+    </div>
+</aura:component>

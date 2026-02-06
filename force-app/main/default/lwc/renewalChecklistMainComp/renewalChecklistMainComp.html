@@ -1,0 +1,33 @@
+<template>
+    <lightning-card>
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:true={showRenewalChecklist}>
+                <lightning-tabset active-tab-value={activeTab}>
+                    <lightning-tab label="Product Change Checklist" value="Renewal Checklist" onactive={handleActive}>
+                        <c-renewal-summary-tab-comp onaccountid={handleCustomEvent} summary-sce-data={parentSceData} onsalesseasonchange={handleSSChange}>
+                        </c-renewal-summary-tab-comp>
+                    </lightning-tab>
+                    <template if:true={showDetail}>
+                        <lightning-tab label="Details" value="Details">
+                            <template if:true={isId}>
+                                <c-renewal-detail-tab-comp acc-record-data={parentAccData} onactivetab={handleActiveTab}
+                                    user-name={userName} onscedata={handleSceData} selected-sales-season={selectedSS}>
+                                </c-renewal-detail-tab-comp>
+                            </template>
+                        </lightning-tab>
+                    </template>
+                </lightning-tabset>
+            </template>
+            <template if:false={showRenewalChecklist}>
+                <div style="text-align:center;" class="slds-m-around_x-small">
+                        <b>{errorMessage}</b>
+                </div>
+            </template>
+        </template>
+
+    </lightning-card>
+</template>

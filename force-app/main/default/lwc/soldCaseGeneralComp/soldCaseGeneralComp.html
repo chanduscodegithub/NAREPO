@@ -1,0 +1,856 @@
+<!--
+  @description       : 
+  @author            : Thanushree
+  @group             : 
+  @last modified on  : 09-17-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+  <lightning-accordion class="section-header-style" allow-multiple-sections-open onsectiontoggle={handleSectionToggle}
+    active-section-name={activeSections}>
+    <template if:true={isDataReceived}>
+      <template if:true={isTraditionalProduct}>
+      <lightning-accordion-section name="General - Traditional" class="section-header" label="General - Traditional">
+        <div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium" style="font-size: 12px;">
+          <table class="slds-table slds-no-row-hover">
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Disabled Dependent Verification</b></span>
+                  </div>
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Disabled_Dependent_Verification__c}>
+                        <span>{soldCaseDataCopy.Disabled_Dependent_Verification__c}</span>
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <template if:true={ddvValues}>
+                        <span class="slds-text-align_left">
+                          <lightning-combobox name="Sold_Case_Checklist__c.Disabled_Dependent_Verification__c" label=" "
+                            variant="label-hidden" value={soldCaseDataCopy.Disabled_Dependent_Verification__c}
+                            placeholder="Select an Option" options={ddvValues} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </span>
+                      </template>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="right">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small">
+                    <span><b>Pre-Implementation Audit</b></span>
+                  </div>
+                  <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <div class="slds-grid slds-grid--vertical-align-center">
+                        <template if:false={showPreImplementationLevel2}>
+                          <div class="slds-col slds-size_2-of-3 slds-p-around_xx-small slds-cell-wrap"
+                            style="margin-left: auto; margin-right: 0;">
+                            {soldCaseDataCopy.Pre_Implementation_Audit__c}
+                          </div>
+                        </template>
+                        <template if:true={showPreImplementationLevel2}>
+                          <div class="slds-col slds-size_1-of-3 slds-p-around_xx-small slds-cell-wrap">
+                            {soldCaseDataCopy.Pre_Implementation_Audit__c}
+                          </div>
+                          <div class="slds-col slds-size_1-of-3 slds-p-around_xx-small slds-cell-wrap">
+                            {Pre_Implementation_Audit_Level_2__c}
+                          </div>
+                          <div class="slds-col slds-size_1-of-3 slds-p-around_xx-small slds-cell-wrap">
+                            {soldCaseDataCopy.Pre_Implementation_Audit_Write_In__c}
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+
+                    <template if:true={editmode}>
+                      <template if:true={preImpValues}>
+                        <span class="slds-text-align_left">
+                          <lightning-combobox class='preAud1 slds-p-around_xx-small' name="Sold_Case_Checklist__c.Pre_Implementation_Audit__c"
+                            label=" " variant="label-hidden" value={soldCaseDataCopy.Pre_Implementation_Audit__c}
+                            placeholder="Select an Option" options={preImpValues} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </span>
+                      </template>
+                      <template if:true={showPreImplementationLevel2}>
+                        <template if:true={preImpLevel2Values}>
+                          <span class="slds-text-align_left">
+                            <c-multi-pick-list-generic-component class="slds-text-align_left preAud2"
+                              received-pick-list-values={preImpLevel2Values}
+                              onmultipicklistgenericevent={multipicklistgenericevent}
+                              selected-values={soldCaseDataCopy.Pre_Implementation_Audit_Level_2__c}
+                              field-api-name="Sold_Case_Checklist__c.Pre_Implementation_Audit_Level_2__c">
+                            </c-multi-pick-list-generic-component>
+                          </span>
+                        </template>
+                        <lightning-input type="text" variant="label-hidden" class="preAud3"
+                          name="Sold_Case_Checklist__c.Pre_Implementation_Audit_Write_In__c"
+                          value={soldCaseDataCopy.Pre_Implementation_Audit_Write_In__c} onchange={FieldChangeHandler}
+                          max-length="25" placeholder="Indicate Vendor">
+                        </lightning-input>
+                      </template>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Offshore Provisions</b></span>
+                  </div>
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Offshore_Provisions__c}>
+                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                          style="float: left;padding-left: 0;">
+                          <span>{soldCaseDataCopy.Offshore_Provisions__c}</span>
+                        </div>
+                      </template>
+                      <template if:true={showOffshoreLevel0}>
+                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                          style="float: left;padding-left: 0;">
+                          <span>{Offshore_Provisions_Level_0__c}</span>
+                        </div>
+                      </template>
+                      <template if:true={showOffshoreLevel7}>
+                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                          style="float: left;padding-left: 0;">
+                          <span>{soldCaseDataCopy.Offshore_Provisions_Level_7__c}</span>
+                        </div>
+                      </template>
+                    </template>
+
+                    <template if:true={editmode}>
+                      <template if:true={offShoreProvisionsValue}>
+                        <span class="slds-text-align_left spanClass1">
+                          <lightning-combobox class="offShoreMain" name="Sold_Case_Checklist__c.Offshore_Provisions__c"
+                            label=" " variant="label-hidden" value={soldCaseDataCopy.Offshore_Provisions__c}
+                            placeholder="Select an Option" options={offShoreProvisionsValue}
+                            onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </span>
+                      </template>
+                      <template if:true={showOffshoreLevel0}>
+                        <template if:true={offShoreLevel0Values}>
+                          <c-multi-pick-list-generic-component class="slds-text-align_left offShore0"
+                            received-pick-list-values={offShoreLevel0Values}
+                            onmultipicklistgenericevent={multipicklistgenericevent} selected-values={level0Pickval}
+                            field-api-name="Sold_Case_Checklist__c.Offshore_Provisions_Level_0__c">
+                          </c-multi-pick-list-generic-component>
+                        </template>
+                      </template>
+                      <template if:true={showOffshoreLevel7}>
+                        <span class="slds-text-align_left slds-cell-wrap spanClass2">
+                          <lightning-combobox class="offShore7"
+                            name="Sold_Case_Checklist__c.Offshore_Provisions_Level_7__c" label=" "
+                            variant="label-hidden" value={soldCaseDataCopy.Offshore_Provisions_Level_7__c}
+                            placeholder="Select an Option" options={offShoreLevel7Values} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </span>
+                      </template>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Third Party Stop Loss Reporting</b></span>
+                  </div>
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                        style="float: left;padding-left: 0;">
+                        <span>{soldCaseDataCopy.Stop_Loss__c}</span>
+                      </div>
+                      <template if:true={showThirdPartyWriteIn}>
+                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                          style="float: left;padding-left: 0;">
+                          <span>{soldCaseDataCopy.Third_Party_Stop_Loss_Reporting_Write_In__c}</span>
+                        </div>
+                      </template>
+                    </template>
+
+                    <template if:true={editmode}>
+                      <template if:true={stopLossValues}>
+                        <span class="slds-text-align_left">
+                          <lightning-combobox name="Sold_Case_Checklist__c.Stop_Loss__c" variant="label-hidden"
+                            value={soldCaseDataCopy.Stop_Loss__c} placeholder="Select an Option"
+                            options={stopLossValues} onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </span>
+                      </template>
+                      <template if:true={showThirdPartyWriteIn}>
+                        <span class="slds-text-align_left" style="padding-top: 5px;">
+                          <lightning-input type="text" variant="label-hidden" class="slds-p-top_xx-small"
+                            name="Sold_Case_Checklist__c.Third_Party_Stop_Loss_Reporting_Write_In__c"
+                            value={soldCaseDataCopy.Third_Party_Stop_Loss_Reporting_Write_In__c}
+                            onchange={FieldChangeHandler} max-length="25" placeholder="Indicate Vendor">
+                          </lightning-input>
+                        </span>
+                      </template>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>CAA/IDR Service Fees</b></span>
+                  </div>
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.CAA_IDR_Service_Fees__c}>
+                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                          style="float: left;padding-left: 0;">
+                          <span>{soldCaseDataCopy.CAA_IDR_Service_Fees__c}</span>
+                        </div>
+                      </template>
+                      <template if:true={showCaaTextBox}>
+                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                          style="float: left;padding-left: 0;">
+                          <span>{soldCaseDataCopy.CAA_Service_Fees_Write_In__c}</span>
+                        </div>
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <template if:true={caaIdrServiceFeesValues}>
+                        <span class="slds-text-align_left">
+                          <lightning-combobox class="caaMain" name="Sold_Case_Checklist__c.CAA_IDR_Service_Fees__c"
+                            label=" " variant="label-hidden" value={soldCaseDataCopy.CAA_IDR_Service_Fees__c}
+                            placeholder="Select an Option" options={caaIdrServiceFeesValues}
+                            onchange={FieldChangeHandler}>
+                          </lightning-combobox>
+                        </span>
+                      </template>
+                      <template if:true={showCaaTextBox}>
+                        <span>
+                          <lightning-input class="caaTextBoxClass" type="text" variant="label-hidden"
+                            name="Sold_Case_Checklist__c.CAA_Service_Fees_Write_In__c"
+                            value={soldCaseDataCopy.CAA_Service_Fees_Write_In__c} onchange={FieldChangeHandler}
+                            max-length="25" placeholder={caaTextBoxPlaceholder}>
+                          </lightning-input>
+                        </span>
+                      </template>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Do non-pref New Business Rates apply</b></span>
+                    <c-tooltip-lwc help-text={nonPrefNewBusinessRatesHelpText}>
+                    </c-tooltip-lwc>
+                  </div>
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Do_non_pref_New_Business_Rates_apply__c}>
+                        <span>{soldCaseDataCopy.Do_non_pref_New_Business_Rates_apply__c}</span>
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <span class="slds-text-align_left">
+                        <template if:true={doNonprefNewBusinessRatesapplyValues}>
+                          <span class="slds-text-align_left">
+                            <lightning-combobox name="Sold_Case_Checklist__c.Do_non_pref_New_Business_Rates_apply__c"
+                              variant="label-hidden" value={soldCaseDataCopy.Do_non_pref_New_Business_Rates_apply__c}
+                              placeholder="Select an Option" options={doNonprefNewBusinessRatesapplyValues}
+                              onchange={FieldChangeHandler}>
+                            </lightning-combobox>
+                          </span>
+                        </template>
+
+                      </span>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Will Consultant Participate in Implementation</b></span>
+                  </div>
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Will_Consultant_Participate_in_Impln__c}>
+                        <span>{soldCaseDataCopy.Will_Consultant_Participate_in_Impln__c}</span>
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <span class="slds-text-align_left">
+                        <template if:true={willConsPartInImplnValues}>
+                          <span class="slds-text-align_left">
+                            <lightning-combobox name="Sold_Case_Checklist__c.Will_Consultant_Participate_in_Impln__c"
+                              variant="label-hidden" value={soldCaseDataCopy.Will_Consultant_Participate_in_Impln__c}
+                              placeholder="Select an Option" options={willConsPartInImplnValues}
+                              onchange={FieldChangeHandler}>
+                            </lightning-combobox>
+                          </span>
+                        </template>
+                      </span>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Are SSO/Technology required</b></span>
+                  </div>
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Are_SSO_Technology_required__c}>
+                        <span>{soldCaseDataCopy.Are_SSO_Technology_required__c}</span>
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <span class="slds-text-align_left">
+                        <template if:true={areSsoTechRequiredValues}>
+                          <span class="slds-text-align_left">
+                            <lightning-combobox name="Sold_Case_Checklist__c.Are_SSO_Technology_required__c"
+                              variant="label-hidden" value={soldCaseDataCopy.Are_SSO_Technology_required__c}
+                              placeholder="Select an Option" options={areSsoTechRequiredValues}
+                              onchange={FieldChangeHandler}>
+                            </lightning-combobox>
+                          </span>
+                        </template>
+                      </span>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="left">
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                    <span><b>Supplemental Compensation Payee</b></span>
+                  </div>
+                  <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Supplemental_Compensation_Payee__c}>
+                        <span>{soldCaseDataCopy.Supplemental_Compensation_Payee__c}</span>
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <span class="slds-text-align_left">
+                        <template if:true={supplementalCompensationVal}>
+                          <span class="slds-text-align_left">
+                            <lightning-combobox name="Sold_Case_Checklist__c.Supplemental_Compensation_Payee__c"
+                              variant="label-hidden" value={soldCaseDataCopy.Supplemental_Compensation_Payee__c}
+                              placeholder="Select an Option" options={supplementalCompensationVal}
+                              onchange={FieldChangeHandler}>
+                            </lightning-combobox>
+                          </span>
+                        </template>
+                      </span>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+          </table>
+        </div>
+      </lightning-accordion-section>
+      </template>
+      <template if:true={isSurestProduct}>
+      <lightning-accordion class="section-header-style" allow-multiple-sections-open onsectiontoggle={handleSectionToggle}
+        active-section-name={activeSections}>
+        <template if:true={isDataReceived}>
+          <lightning-accordion-section name="General - Surest" class="section-header" label="General - Surest">
+            <div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium" style="font-size: 12px;">
+              <table class="slds-table slds-no-row-hover">
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                        <span><b>Disabled Dependent Verification</b></span>
+                      </div>
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                        <template if:false={editmode}>
+                          <template if:true={soldCaseDataCopy.Surest_Disabled_Dependent_Verification__c}>
+                            <span>{soldCaseDataCopy.Surest_Disabled_Dependent_Verification__c}</span>
+                          </template>
+                        </template>
+                        <template if:true={editmode}>
+                          <template if:true={surestDDVvalues}>
+                            <span class="slds-text-align_left">
+                              <lightning-combobox name="Sold_Case_Checklist__c.Surest_Disabled_Dependent_Verification__c" label=" "
+                                variant="label-hidden" value={soldCaseDataCopy.Surest_Disabled_Dependent_Verification__c}
+                                placeholder="Select an Option" options={surestDDVvalues} onchange={FieldChangeHandler}>
+                              </lightning-combobox>
+                            </span>
+                          </template>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+    
+                <tr>
+                  <td class="right">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small">
+                        <span><b>Pre-Implementation Audit</b></span>
+                      </div>
+                      <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                        <template if:false={editmode}>
+                          <div class="slds-grid slds-grid--vertical-align-center">
+                            <template if:false={showSurestPreImplementationLevel2}>
+                              <div class="slds-col slds-size_2-of-3 slds-p-around_xx-small slds-cell-wrap"
+                                style="margin-left: auto; margin-right: 0;">
+                                {soldCaseDataCopy.Surest_Pre_Implementation_Audit__c}
+                              </div>
+                            </template>
+                            <template if:true={showSurestPreImplementationLevel2}>
+                              <div class="slds-col slds-size_1-of-3 slds-p-around_xx-small slds-cell-wrap">
+                                {soldCaseDataCopy.Surest_Pre_Implementation_Audit__c}
+                              </div>
+                              <div class="slds-col slds-size_1-of-3 slds-p-around_xx-small slds-cell-wrap">
+                                {Surest_Pre_Implementation_Audit_Level_2__c}
+                              </div>
+                              <div class="slds-col slds-size_1-of-3 slds-p-around_xx-small slds-cell-wrap">
+                                {soldCaseDataCopy.Surest_Pre_Implementation_Audit_Write_In__c}
+                              </div>
+                            </template>
+                          </div>
+                        </template>
+    
+                        <template if:true={editmode}>
+                          <template if:true={surestPreImplValues}>
+                            <span class="slds-text-align_left">
+                              <lightning-combobox class='spreAud1 slds-p-around_xx-small' name="Sold_Case_Checklist__c.Surest_Pre_Implementation_Audit__c"
+                                label=" " variant="label-hidden" value={soldCaseDataCopy.Surest_Pre_Implementation_Audit__c}
+                                placeholder="Select an Option" options={surestPreImplValues} onchange={FieldChangeHandler}>
+                              </lightning-combobox>
+                            </span>
+                          </template>
+                          <template if:true={showSurestPreImplementationLevel2}>
+                            <template if:true={surestPreImpLevel2Values}>
+                              <span class="slds-text-align_left">
+                                <c-multi-pick-list-generic-component class="slds-text-align_left spreAud2"
+                                  received-pick-list-values={surestPreImpLevel2Values}
+                                  onmultipicklistgenericevent={multipicklistgenericevent}
+                                  selected-values={soldCaseDataCopy.Surest_Pre_Implementation_Audit_Level_2__c}
+                                  field-api-name="Sold_Case_Checklist__c.Surest_Pre_Implementation_Audit_Level_2__c">
+                                </c-multi-pick-list-generic-component>
+                              </span>
+                            </template>
+                            <lightning-input type="text" variant="label-hidden" class="spreAud3"
+                              name="Sold_Case_Checklist__c.Surest_Pre_Implementation_Audit_Write_In__c"
+                              value={soldCaseDataCopy.Surest_Pre_Implementation_Audit_Write_In__c} onchange={FieldChangeHandler}
+                              max-length="25" placeholder="Indicate Vendor">
+                            </lightning-input>
+                          </template>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+    
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                        <span><b>Offshore Provisions</b></span>
+                      </div>
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                        <template if:false={editmode}>
+                          <template if:true={soldCaseDataCopy.Surest_Offshore_Provisions__c}>
+                            <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                              style="float: left;padding-left: 0;">
+                              <span>{soldCaseDataCopy.Surest_Offshore_Provisions__c}</span>
+                            </div>
+                          </template>
+                          <template if:true={showSurestOffshoreLevel0}>
+                            <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                              style="float: left;padding-left: 0;">
+                              <span>{Surest_Offshore_Provisions_Level_0__c}</span>
+                            </div>
+                          </template>
+                          <template if:true={showSurestOffshoreLevel7}>
+                            <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                              style="float: left;padding-left: 0;">
+                              <span>{soldCaseDataCopy.Surest_Offshore_Provisions_Level_7__c}</span>
+                            </div>
+                          </template>
+                        </template>
+    
+                        <template if:true={editmode}>
+                          <template if:true={surestOffShoreProvisionsValue}>
+                            <span class="slds-text-align_left spanClass3">
+                              <lightning-combobox class="offShoreMain1" name="Sold_Case_Checklist__c.Surest_Offshore_Provisions__c"
+                                label=" " variant="label-hidden" value={soldCaseDataCopy.Surest_Offshore_Provisions__c}
+                                placeholder="Select an Option" options={surestOffShoreProvisionsValue}
+                                onchange={FieldChangeHandler}>
+                              </lightning-combobox>
+                            </span>
+                          </template>
+                          <template if:true={showSurestOffshoreLevel0}>
+                            <template if:true={surestOffShoreLevel0Values}>
+                              <c-multi-pick-list-generic-component class="slds-text-align_left offShorelevel0"
+                                received-pick-list-values={surestOffShoreLevel0Values}
+                                onmultipicklistgenericevent={multipicklistgenericevent} selected-values={surestLevel0Pickval}
+                                field-api-name="Sold_Case_Checklist__c.Surest_Offshore_Provisions_Level_0__c">
+                              </c-multi-pick-list-generic-component>
+                            </template>
+                          </template>
+                          <template if:true={showSurestOffshoreLevel7}>
+                            <span class="slds-text-align_left slds-cell-wrap spanClass4">
+                              <lightning-combobox class="offShore7"
+                                name="Sold_Case_Checklist__c.Surest_Offshore_Provisions_Level_7__c" label=" "
+                                variant="label-hidden" value={soldCaseDataCopy.Surest_Offshore_Provisions_Level_7__c}
+                                placeholder="Select an Option" options={surestOffShoreLevel7Values} onchange={FieldChangeHandler}>
+                              </lightning-combobox>
+                            </span>
+                          </template>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+    
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                        <span><b>Third Party Stop Loss Reporting</b></span>
+                      </div>
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                        <template if:false={editmode}>
+                          <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                            style="float: left;padding-left: 0;">
+                            <span>{soldCaseDataCopy.Surest_Third_Party_Stop_Loss_Reporting__c}</span>
+                          </div>
+                          <template if:true={showSurestThirdPartyWriteIn}>
+                            <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                              style="float: left;padding-left: 0;">
+                              <span>{soldCaseDataCopy.Surest_Third_Party_Stop_Loss_Write_In__c}</span>
+                            </div>
+                          </template>
+                        </template>
+    
+                        <template if:true={editmode}>
+                          <template if:true={surestStopLossValues}>
+                            <span class="slds-text-align_left">
+                              <lightning-combobox name="Sold_Case_Checklist__c.Surest_Third_Party_Stop_Loss_Reporting__c" variant="label-hidden"
+                                value={soldCaseDataCopy.Surest_Third_Party_Stop_Loss_Reporting__c} placeholder="Select an Option"
+                                options={surestStopLossValues} onchange={FieldChangeHandler}>
+                              </lightning-combobox>
+                            </span>
+                          </template>
+                          <template if:true={showSurestThirdPartyWriteIn}>
+                            <span class="slds-text-align_left" style="padding-top: 5px;">
+                              <lightning-input type="text" variant="label-hidden" class="slds-p-top_xx-small"
+                                name="Sold_Case_Checklist__c.Surest_Third_Party_Stop_Loss_Write_In__c"
+                                value={soldCaseDataCopy.Surest_Third_Party_Stop_Loss_Write_In__c}
+                                onchange={FieldChangeHandler} max-length="25" placeholder="Indicate Vendor">
+                              </lightning-input>
+                            </span>
+                          </template>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+    
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                        <span><b>CAA/IDR Service Fees</b></span>
+                      </div>
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                        <template if:false={editmode}>
+                          <template if:true={soldCaseDataCopy.Surest_CAA_IDR_Service_Fees__c}>
+                            <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                              style="float: left;padding-left: 0;">
+                              <span>{soldCaseDataCopy.Surest_CAA_IDR_Service_Fees__c}</span>
+                            </div>
+                          </template>
+                          <template if:true={showSurestCaaTextBox}>
+                            <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap"
+                              style="float: left;padding-left: 0;">
+                              <span>{soldCaseDataCopy.Surest_CAA_IDR_Service_Fees_Write_In__c}</span>
+                            </div>
+                          </template>
+                        </template>
+                        <template if:true={editmode}>
+                          <template if:true={surestcaaIdrServiceFeesValues}>
+                            <span class="slds-text-align_left">
+                              <lightning-combobox class="caaMain1" name="Sold_Case_Checklist__c.Surest_CAA_IDR_Service_Fees__c"
+                                label=" " variant="label-hidden" value={soldCaseDataCopy.Surest_CAA_IDR_Service_Fees__c}
+                                placeholder="Select an Option" options={surestcaaIdrServiceFeesValues}
+                                onchange={FieldChangeHandler}>
+                              </lightning-combobox>
+                            </span>
+                          </template>
+                          <template if:true={showSurestCaaTextBox}>
+                            <span>
+                              <lightning-input class="caaTextBoxClass1" type="text" variant="label-hidden"
+                                name="Sold_Case_Checklist__c.Surest_CAA_IDR_Service_Fees_Write_In__c"
+                                value={soldCaseDataCopy.Surest_CAA_IDR_Service_Fees_Write_In__c} onchange={FieldChangeHandler}
+                                max-length="25" placeholder={surestCaaTextBoxPlaceholder}>
+                              </lightning-input>
+                            </span>
+                          </template>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+    
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                        <span><b>Do non-pref New Business Rates apply</b></span>
+                        <c-tooltip-lwc help-text={nonPrefNewBusinessRatesHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                        <template if:false={editmode}>
+                          <template if:true={soldCaseDataCopy.Surest_Do_non_pref_New_Business_Rates__c}>
+                            <span>{soldCaseDataCopy.Surest_Do_non_pref_New_Business_Rates__c}</span>
+                          </template>
+                        </template>
+                        <template if:true={editmode}>
+                          <span class="slds-text-align_left">
+                            <template if:true={surestDoNonprefNewBusinessRatesValues}>
+                              <span class="slds-text-align_left">
+                                <lightning-combobox name="Sold_Case_Checklist__c.Surest_Do_non_pref_New_Business_Rates__c"
+                                  variant="label-hidden" value={soldCaseDataCopy.Surest_Do_non_pref_New_Business_Rates__c}
+                                  placeholder="Select an Option" options={surestDoNonprefNewBusinessRatesValues}
+                                  onchange={FieldChangeHandler}>
+                                </lightning-combobox>
+                              </span>
+                            </template>
+    
+                          </span>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+    
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                        <span><b>Will Consultant Participate in Implementation</b></span>
+                      </div>
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                        <template if:false={editmode}>
+                          <template if:true={soldCaseDataCopy.Surest_Will_Consultant_Participate__c}>
+                            <span>{soldCaseDataCopy.Surest_Will_Consultant_Participate__c}</span>
+                          </template>
+                        </template>
+                        <template if:true={editmode}>
+                          <span class="slds-text-align_left">
+                            <template if:true={surestWillConsPartInImplnValues}>
+                              <span class="slds-text-align_left">
+                                <lightning-combobox name="Sold_Case_Checklist__c.Surest_Will_Consultant_Participate__c"
+                                  variant="label-hidden" value={soldCaseDataCopy.Surest_Will_Consultant_Participate__c}
+                                  placeholder="Select an Option" options={surestWillConsPartInImplnValues}
+                                  onchange={FieldChangeHandler}>
+                                </lightning-combobox>
+                              </span>
+                            </template>
+                          </span>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+    
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                        <span><b>Are SSO/Technology required</b></span>
+                      </div>
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                        <template if:false={editmode}>
+                          <template if:true={soldCaseDataCopy.Surest_Are_SSO_Technology_required__c}>
+                            <span>{soldCaseDataCopy.Surest_Are_SSO_Technology_required__c}</span>
+                          </template>
+                        </template>
+                        <template if:true={editmode}>
+                          <span class="slds-text-align_left">
+                            <template if:true={surestAreSsoTechRequiredValues}>
+                              <span class="slds-text-align_left">
+                                <lightning-combobox name="Sold_Case_Checklist__c.Surest_Are_SSO_Technology_required__c"
+                                  variant="label-hidden" value={soldCaseDataCopy.Surest_Are_SSO_Technology_required__c}
+                                  placeholder="Select an Option" options={surestAreSsoTechRequiredValues}
+                                  onchange={FieldChangeHandler}>
+                                </lightning-combobox>
+                              </span>
+                            </template>
+                          </span>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                        <span><b>Supplemental Compensation Payee</b></span>
+                      </div>
+                      <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small  slds-cell-wrap">
+                        <template if:false={editmode}>
+                          <template if:true={soldCaseDataCopy.Surest_Supplemental_Compensation_Payee__c}>
+                            <span>{soldCaseDataCopy.Surest_Supplemental_Compensation_Payee__c}</span>
+                          </template>
+                        </template>
+                        <template if:true={editmode}>
+                          <span class="slds-text-align_left">
+                            <template if:true={surestSupplementalCompensationVal}>
+                              <span class="slds-text-align_left">
+                                <lightning-combobox name="Sold_Case_Checklist__c.Surest_Supplemental_Compensation_Payee__c"
+                                  variant="label-hidden" value={soldCaseDataCopy.Surest_Supplemental_Compensation_Payee__c}
+                                  placeholder="Select an Option" options={surestSupplementalCompensationVal}
+                                  onchange={FieldChangeHandler}>
+                                </lightning-combobox>
+                              </span>
+                            </template>
+                          </span>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+              </table>
+            </div>
+          </lightning-accordion-section>
+        </template>
+      </lightning-accordion>
+      </template>
+      <lightning-accordion-section name="Additional Details" class="section-header" label="Additional Details">
+        <div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium" style="font-size: 12px;">
+          <table class="slds-table slds-no-row-hover">
+            <tr>
+              <td>
+                <div class="slds-grid slds-grid--vertical-align-center border-bottom" style="width:98%;">
+                  <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small">
+                    <span><b>Additional Sold Case Checklist Details</b></span>
+                    <c-tooltip-lwc help-text={additionalInfoHelpText}></c-tooltip-lwc>
+                  </div>
+                  <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
+                    <template if:false={editmode}>
+                      <span>{soldCaseDataCopy.Additional_Sold_Case_Checklist_Details__c}</span>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-textarea type="text" variant="label-hidden"
+                        name="Sold_Case_Checklist__c.Additional_Sold_Case_Checklist_Details__c"
+                        value={soldCaseDataCopy.Additional_Sold_Case_Checklist_Details__c} onchange={FieldChangeHandler}
+                        max-length="1000">
+                      </lightning-textarea>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </lightning-accordion-section>
+
+      <lightning-accordion-section name="Sign Off" class="section-header" label="Sign Off">
+        <div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium" style="font-size: 12px;">
+          <table class="slds-table slds-no-row-hover">
+            <tr>
+              <td class="left">
+                <div class="slds-grid border-bottom">
+                  <div class="slds-col slds-cell-wrap slds-p-around_xx-small" style="width: 25%;">
+                    <span><b>{opportunityFieldLabels.Completed_by_Sales__c.label}</b></span>
+                  </div>
+                  <div class="slds-col slds-cell-wrap slds-p-around_xx-small " style="width: 10%;">
+                    <template if:true={editmode}>
+                      <lightning-input type="checkbox" label="" variant="label-hidden"
+                        name="Last_email_sent_by_sales__c" onchange={FieldChangeHandler}>
+                      </lightning-input>
+                    </template>
+                    <template if:false={editmode}>
+                      <lightning-input type="checkbox" label="" variant="label-hidden"
+                        name="Last_email_sent_by_sales__c" onchange={FieldChangeHandler} disabled>
+                      </lightning-input>
+                    </template>
+                  </div>
+                  <div class="slds-col slds-cell-wrap slds-p-around_xx-small " style="width: 65%;">
+                    <template if:true={generalProductDetails.Last_email_sent_by_sales__c}>
+                      <!--<lightning-input type="date" variant="label-hidden" disabled value={recordDetail.Last_email_sent_by_sales__c} ></lightning-input>-->
+                      <p>
+                        <lightning-formatted-date-time value={generalProductDetails.Last_email_sent_by_sales__c}
+                          time-zone={userTimeZone} year="numeric" month="numeric" day="numeric" hour="2-digit"
+                          minute="2-digit" hour12="false">
+                        </lightning-formatted-date-time>
+                      </p>
+                    </template>
+                  </div>
+                </div>
+              </td>
+              <td class="right">
+                <div class="slds-grid border-bottom">
+                  <div class="slds-col slds-cell-wrap slds-p-around_xx-small" style="width: 25%;">
+                    <span><b>{opportunityFieldLabels.Completed_by_IPM__c.label}</b></span>
+                  </div>
+                  <div class="slds-col slds-cell-wrap slds-p-around_xx-small " style="width: 10%;">
+                    <template if:true={editmode}>
+                      <lightning-input type="checkbox" label="" variant="label-hidden" name="Last_email_sent_by_IPM__c"
+                        onchange={FieldChangeHandler}>
+                      </lightning-input>
+                    </template>
+                    <template if:false={editmode}>
+                      <lightning-input type="checkbox" label="" variant="label-hidden" name="Last_email_sent_by_IPM__c"
+                        onchange={FieldChangeHandler} disabled>
+                      </lightning-input>
+                    </template>
+                  </div>
+                  <div class="slds-col slds-cell-wrap slds-p-around_xx-small " style="width: 65%;">
+                    <template if:true={generalProductDetails.Last_email_sent_by_IPM__c}>
+                      <!--<lightning-input type="date" variant="label-hidden" disabled value={recordDetail.Last_email_sent_by_IPM__c} ></lightning-input>-->
+                      <p>
+                        <lightning-formatted-date-time value={generalProductDetails.Last_email_sent_by_IPM__c}
+                          time-zone={userTimeZone} year="numeric" month="numeric" day="numeric" hour="2-digit"
+                          minute="2-digit" hour12="false">
+                        </lightning-formatted-date-time>
+                      </p>
+                    </template>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </lightning-accordion-section>
+    </template>
+  </lightning-accordion>
+</template>

@@ -1,0 +1,234 @@
+<template>
+    <table
+        class="slds-text-body-XX_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
+        <tbody>
+            <tr>
+                <td class="slds-text-align_left custom-td ">Intent to Bid Due</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type="Date" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.Intent_to_Bid_Due__c} name="Intent_to_Bid_Due__c" 
+                        onchange={handleChange} date-style="short">
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Intent_to_Bid_Due__c}>
+                            <span>{formattedIntentToBidDue}</span>
+                            
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Bidder’s Conference Call Date (if applicable)</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type ="Date"  date-style="short" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.Bidder_s_Conference_Call_Date__c} name="Bidder_s_Conference_Call_Date__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Bidder_s_Conference_Call_Date__c}>
+                            <span>{formattedIntentToBidder}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Questions to Consultant Due</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                         <lightning-input type ="Date"  date-style="short" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.Questions_to_Consultant_Due__c} name="Questions_to_Consultant_Due__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Questions_to_Consultant_Due__c}>
+                            <span>{formattedIntentToQuestions}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td ">Q&A Responses Due Back</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                         <lightning-input type ="Date"  date-style="short" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.Q_A_Responses_Due_Back__c} name="Q_A_Responses_Due_Back__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Q_A_Responses_Due_Back__c}>
+                            <span>{formattedIntentToQa}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td ">NAC Deliverables Due to CD Dir.</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                         <lightning-input type ="Date" date-style="short" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.NAC_Deliverables_Due_to_CD_Dir__c} name="NAC_Deliverables_Due_to_CD_Dir__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.NAC_Deliverables_Due_to_CD_Dir__c}>
+                            <span>{formattedIntentToNac}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">All Optum Pricing Due to NPS and Sales</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type ="Date" date-style="short" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.All_Optum_Pricing_Due_to_NPS_and_Sales__c} name="All_Optum_Pricing_Due_to_NPS_and_Sales__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.All_Optum_Pricing_Due_to_NPS_and_Sales__c}>
+                            <span>{formattedIntentToNps}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td ">Executive Summary & Cover Letter Due</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                         <lightning-input type ="Date" date-style="short" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.Executive_Summary_Cover_Letter_Due__c} name="Executive_Summary_Cover_Letter_Due__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Executive_Summary_Cover_Letter_Due__c}>
+                            <span>{formattedIntentToExe}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                
+                <td class="slds-text-align_left custom-td">E-Ship Date</td>
+                <td colspan="3" class="value">
+                    <template if:true={proposalDueDate}>
+                        <span>{proposalDueDate}</span>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-p-left_large custom-td-padding custom-td">Internal E-Ship Recipients</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                       <lightning-input type ="text" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.Internal_E_Ship_Recipients__c} name="Internal_E_Ship_Recipients__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Internal_E_Ship_Recipients__c}>
+                            <span>{strategyMemo.Internal_E_Ship_Recipients__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-p-left_large custom-td-padding slds-text-align_left custom-td">External E-Ship
+                    Recipients</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type ="text" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.External_E_Ship_Recipients__c} name="External_E_Ship_Recipients__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.External_E_Ship_Recipients__c}>
+                            <span>{strategyMemo.External_E_Ship_Recipients__c}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Submission Instructions</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-textarea  class="slds-p-around_xxx-small cramp-line" max-length="32768"  variant="label-hidden" value={strategyMemo.Submission_Instructions__c} name="Submission_Instructions__c" onchange={handleChange}>
+                        </lightning-textarea>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Submission_Instructions__c}>
+                           <lightning-formatted-text value={strategyMemo.Submission_Instructions__c}></lightning-formatted-text>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Finalist Date</td>
+                <td colspan="3" class="value"><template if:true={finalistDate}>
+                        <span>{finalistDate}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Anticipated/Actual Close Date</td>
+                <td colspan="3" class="value"><template if:true={anticipatedActualCloseDate}>
+                        <span>{anticipatedActualCloseDate}</span>
+                    </template></td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-background-colour">Implementation Kick-Off Date</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type ="Date" class="slds-p-around_xxx-small" date-style="short"  variant="label-hidden" value={strategyMemo.Implementation_Kick_Off_Date__c} name="Implementation_Kick_Off_Date__c"  onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Implementation_Kick_Off_Date__c}>
+                            <span>{formattedIntentToImp}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td custom-background-colour">Effective Date</td>
+                <td colspan="3" class="value"><template if:true={effectiveDate}>
+                        <span>{effectiveDate}</span>
+                    </template></td>
+            </tr>
+            <tr class="slds-p-around_medium">
+                <td colspan="4">
+                    <template if:true={relatedOpportunitiesInfo}>
+                        <template if:true={relatedOpportunitiesInfo.length}>
+                            <h3 class="section-header slds-p-right_medium slds-p-top_medium slds-p-bottom_medium slds-p-left_xxx-small">Membership Activity List</h3>
+                            <!--<h3 class = "slds-p-around_medium">Medical</h3> -->
+                            <table class="slds-p-around_medium ">
+                                <thead>
+                                    <th class="custom-th section-header" style="height: 30px;">Name</th>
+                                    <th class="custom-th section-header" style="height: 30px;">Type</th>
+                                    <th class="custom-th section-header" style="height: 30px;">Effective Date</th>
+                                    <th class="custom-th section-header" style="height: 30px;">Status</th>
+                                    <th class="custom-th section-header" style="height: 30px;">Products Involved</th>
+
+                                </thead>
+                                <tbody>
+                                    <template for:each={relatedOpportunitiesInfo} for:item="opp">
+                                        <tr key={opp.id}>
+                                            <td class="value">{opp.Name}</td>
+                                            <td class="value">{opp.Membership_Activity_Type__c}</td>
+                                            <td class="value">{opp.EffectiveDateFormatted}</td>
+                                            <td class="value">{opp.Status__c}</td>
+                                            <td class="value">{opp.Product_Type_Involved_in_Opp__c}</td>
+
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</template>

@@ -1,0 +1,26 @@
+<aura:component >
+    <aura:attribute name="recordName" type="sObject" />
+    <aura:attribute name="IconName" type="string"/>
+    <aura:attribute name="getSelectedRecordID" type="Id"/>
+    <aura:attribute name="LookupVal1" type="string"/>
+    <aura:attribute name="LookupVal2" type="string"/>
+    <aura:attribute name="LookupVal" type="string"/>
+    
+    
+    <aura:registerEvent name="onSelectedRecordEvent" type="c:selectedsObjectRecordEvnt"/>
+    
+    
+    <li role="presentation" class="slds-listbox__item" onclick="{!c.selectRecord}">
+        <span id="listbox-option-unique-id-01" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+            <span class="slds-media__body">  
+                <aura:if isTrue="{!v.recordName.User__c!=undefined}">
+			<span class="slds-listbox__option-text slds-listbox__option-text_entity">{!v.recordName.Name}&nbsp;{!v.recordName.Last_Name__c}</span>
+				<aura:set attribute="else">
+				<span class="slds-listbox__option-text slds-listbox__option-text_entity">{!v.recordName.Name}</span>
+				</aura:set>
+				</aura:if>
+
+            </span>
+        </span>
+    </li>
+</aura:component>

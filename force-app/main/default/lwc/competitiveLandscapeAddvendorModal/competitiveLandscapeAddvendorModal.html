@@ -1,0 +1,279 @@
+<!-- sldsValidatorIgnore -->
+<template>
+  <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+    class="slds-modal slds-fade-in-open slds-modal_full">
+    <div class="slds-modal__container">
+      <div class="slds-modal__header">
+        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate modal-header">Search Competitors</h1>
+        <lightning-icon icon-name="utility:close"
+          class="slds-button__icon slds-button__icon_x-small slds-float_right slds-m-right_large cursor"
+          aria-hidden="true" alternative-text="Utility close" title="close"
+          onclick={handleModalCancel}></lightning-icon>
+      </div>
+      <div class="slds-modal__content slds-modal_full-content modal-height"
+        id="modal-content-id-1">
+        <template lwc:if={isLoading}>
+          <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+
+        <template lwc:else>
+          <div>
+            <template lwc:if={isCarrier}>
+              <div class="top-section grey-background">
+                <div class="search-carrier">
+                  <lightning-input type="search" placeholder="Search By Competitor Name" class="search-input"
+                    variant="label-hidden" onchange={handleSearchInput} onkeyup={handleEnterKeyPress}></lightning-input>
+                  <lightning-button label="Go" onclick={handleSearch} class="slds-m-left_x-small search-button"
+                    variant="brand" disabled></lightning-button>
+                  <lightning-button label="Clear" onclick={handleClear} class="slds-m-left_x-small clear-button"
+                    variant="label-hidden" disabled></lightning-button>
+                  <span class="send-email" onclick={handleEmail}><a href="#">Unable to find your Competitor? Send an
+                      Email</a></span>
+                </div>
+                <div>
+                  <p class="help-text" style="padding-bottom: 0;">
+                    Select the Carriers for Other Products/Services by clicking the applicable
+                    "+" next to the Competitor Name. Your selections will display below. Click the Save button when
+                    complete. If your Carrier is not listed among the Top Competitors, you can find and select other
+                    Competitors by either (1) clicking on one of the additional tabs below or (2) Searching by
+                    Competitor
+                    Name.
+                  </p>
+                </div>
+              </div>
+              <hr style="margin: 0;">
+              <lightning-tabset>
+
+                <div class="vendor-names slds-m-top_small grey-background" style='padding-bottom: 0;'>
+                  <template for:each={displayVendorName} for:item='selecteCompetitor'>
+                    <span class="slds-pill slds-pill_link vendor" key={selecteCompetitor.Id}>
+                      <span class="slds-pill__icon_container">
+                        <span class="slds-icon_container slds-icon-standard-account" title="Account">
+                          <lightning-icon icon-name="standard:product" class="slds-icon" alternative-text="Competitor"
+                            aria-hidden="true" title="Competitor"></lightning-icon>
+                          <span class="slds-assistive-text">Competitor</span>
+                        </span>
+                      </span>
+                      <a href="#" class="slds-pill__action" title="Full pill label verbiage mirrored here">
+                        <span class="slds-pill__label">Other:{selecteCompetitor.name}</span>
+                      </a>
+                      <button class="slds-button slds-button_icon slds-button_icon slds-pill__remove" title="Remove"
+                        onclick={removeVendorName} data-id={selecteCompetitor.Id}>
+                        <lightning-icon icon-name="utility:close" class="slds-button__icon" aria-hidden="true"
+                          alternative-text="Utility close" title="close"></lightning-icon>
+                        <span class="slds-assistive-text">Remove</span>
+                      </button>
+                    </span>
+                  </template>
+                </div>
+                <div class="grey-background">
+                  <p>{numOfVendors} Item(s) selected</p>
+                </div>
+
+                <lightning-tab label='All Other Competitors' active-tab-value={activeTab} onactive={handleActiveTab} class="padding-top table-padding">
+                  <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                    <thead>
+                      <tr>
+                        <th>COMPETITOR NAME</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template for:each={allOtherCompetitors} for:item='result' for:index="index">
+                        <tr key={result.Id}>
+                          <td>{result.Name}</td>
+                          <td><lightning-input type="checkbox-button" label="Input One" data-index={index}
+                              data-id={result.Id} name={result.Name} onchange={handleChecked} value={result.isChecked}
+                              data-accountname={result.Name} checked={result.isChecked}></lightning-input></td>
+                        </tr>
+                        <!-- data-pointsolution={result.Point_Solution__c} data-hubvendor={result.Hub_vendor__c} -->
+                      </template>
+                    </tbody>
+                  </table>
+                </lightning-tab>
+
+                <lightning-tab label='The Blues and their Affiliates' active-tab-value={activeTab}
+                  onactive={handleActiveTab} class="padding-top table-padding">
+                  <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                    <thead>
+                      <tr>
+                        <th>COMPETITOR NAME</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template for:each={theBluesandtheirAffiliates} for:item='result' for:index="index">
+                        <tr key={result.Id}>
+                          <td>{result.Name}</td>
+                          <td><lightning-input type="checkbox-button" label="Input One" data-index={index}
+                              data-id={result.Id} name={result.Name} onchange={handleChecked} value={result.isChecked}
+                              data-accountname={result.Name} checked={result.isChecked}></lightning-input></td>
+                        </tr>
+                        <!-- data-pointsolution={result.Point_Solution__c} data-hubvendor={result.Hub_vendor__c} -->
+                      </template>
+                    </tbody>
+                  </table>
+                </lightning-tab>
+
+                <lightning-tab label='Exchange Competitors' active-tab-value={activeTab} onactive={handleActiveTab} class="padding-top table-padding">
+                  <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                    <thead>
+                      <tr>
+                        <th>COMPETITOR NAME</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template for:each={exchangeCompetitors} for:item='result' for:index="index">
+                        <tr key={result.Id}>
+                          <td>{result.Name}</td>
+                          <td><lightning-input type="checkbox-button" label="Input One" data-index={index}
+                              data-id={result.Id} name={result.Name} onchange={handleChecked} value={result.isChecked}
+                              data-accountname={result.Name} checked={result.isChecked}></lightning-input></td>
+                        </tr>
+                        <!-- data-pointsolution={result.Point_Solution__c} data-hubvendor={result.Hub_vendor__c} -->
+                      </template>
+                    </tbody>
+                  </table>
+                </lightning-tab>
+
+                <lightning-tab label='Top Medical Competitors' active-tab-value={activeTab} onactive={handleActiveTab} class="padding-top table-padding">
+                  <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                    <thead>
+                      <tr>
+                        <th>COMPETITOR NAME</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template for:each={topCompetitors} for:item='result' for:index="index">
+                        <tr key={result.Id}>
+                          <td>{result.Name}</td>
+                          <td><lightning-input type="checkbox-button" label="Input One" data-index={index}
+                              data-id={result.Id} name={result.Name} onchange={handleChecked} value={result.isChecked}
+                              data-accountname={result.Name} checked={result.isChecked}></lightning-input></td>
+                        </tr>
+                        <!-- data-pointsolution={result.Point_Solution__c} data-hubvendor={result.Hub_vendor__c} -->
+                      </template>
+                    </tbody>
+                  </table>
+                </lightning-tab>
+              </lightning-tabset>
+
+              <div class="slds-float_right slds-p-bottom_small">
+                <template lwc:if={isPrevious}>
+                  <lightning-button variant="brand" label="Previous" onclick={handlePreviousPage}
+                    class="slds-m-left_x-small"></lightning-button>
+                </template>
+                <template lwc:if={isNext}>
+                  <lightning-button variant="brand" label="Next" onclick={handleNextPage}
+                    class="slds-m-left_x-small"></lightning-button>
+                </template>
+              </div>
+
+            </template>
+
+            <template lwc:else>
+              <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                <colgroup>
+                  <col style="width:60%">
+                  <col style="width:40%">
+                </colgroup>
+                <thead>
+                  <tr style="height: 2rem;">
+                    <th scope="col">COMPETITOR NAME</th>
+                    <th scope="col">Type of Other Products\Services Provided</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template for:each={selectedCarrierArr} for:item='carrier'>
+                    <tr key={carrier.Id}>
+                      <td scope="col">{carrier.Name}</td>
+                      <td scope="col">
+                        <!-- <c-generic-multiselect-dropdown picklist-values={options} related-data={carrier}
+                          onpicklistsave={handleTypeOfProd}
+                          options-onload={carrier.Type_of_Products_Services_Provided__c}></c-generic-multiselect-dropdown> -->
+                          <c-competitivelandscapelwc
+                            type-of-other-products-or-services-provided-array-pick-list-values={carrier.Type_of_Products_Services_Provided__c}
+                            other-products-data-competitor-account={carrier} oneventcall={handleTypeOfProd}
+                            from-a-m-t-section="false"></c-competitivelandscapelwc>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </template>
+          </div>
+        </template>
+
+      </div>
+      <div class="slds-modal__footer">
+        <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+          onclick={handleModalCancel}>Cancel</button>
+        <template lwc:if={isCarrier}>
+          <button class="slds-button slds-button_brand" onclick={handleAddProducts} disabled={disableAddProducts}>Add Products</button>
+        </template>
+        <template lwc:else>
+          <button class="slds-button slds-button_brand" onclick={handleVendorInsert}>Save</button>
+          <button class="slds-button slds-button_brand slds-float_left" onclick={handleBack}>Back</button>
+        </template>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal for send email feature -->
+  <template lwc:if={isSendEmail}>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-02"
+      class="slds-modal slds-fade-in-open slds-modal_full email-modal">
+      <div class="slds-modal__container">
+        <div class="slds-modal__header">
+          <h1 id="modal-heading-02" class="slds-modal__title slds-hyphenate modal-header">Send an Email to the CRM Help
+            Desk</h1>
+          <lightning-icon icon-name="utility:close"
+            class="slds-button__icon slds-button__icon_x-small slds-float_right slds-m-right_large cursor"
+            aria-hidden="true" alternative-text="Utility close" title="close"
+            onclick={handleEmailModalClose}></lightning-icon>
+        </div>
+        <div class="slds-modal__content slds-modal_full-content slds-p-around_medium" id="modal-content-id-2">
+          <div class="slds-align_absolute-center">
+            Complete the below information and click Send. A member of the CRM Solutions team will generally respond
+            within the same or next day of receipt.
+          </div>
+          <hr>
+          <h1>COMPETITOR INFORMATION</h1>
+          <div class="fields">
+            <div class="slds-grid slds-gutters">
+              <div class="slds-col">
+                <lightning-input type="text" label="Company Name" value={emailDataObj.companyName}
+                  onchange={handleEmailInput} name="companyName" required></lightning-input>
+                <lightning-dual-listbox label="Product Types Offered" source-label="Available" selected-label="Selected"
+                  field-level-help="Select your preferred languages" options={emailProduct}
+                  value={emailDataObj.prodTypesOffered} name="prodTypesOffered"
+                  onchange={handleEmailInput}></lightning-dual-listbox>
+              </div>
+              <div class="slds-col">
+                <lightning-input type="text" label="Web Address" value={emailDataObj.webAddress} name="webAddress"
+                  onchange={handleEmailInput}></lightning-input>
+                <lightning-textarea label="Address" value={emailDataObj.address} name="address"
+                  onchange={handleEmailInput}></lightning-textarea>
+              </div>
+              <div class="slds-col">
+                <div></div>
+                <lightning-textarea label="Additional Comments" value={emailDataObj.additionalComments}
+                  name="additionalComments" onchange={handleEmailInput}></lightning-textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slds-modal__footer">
+          <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+            onclick={handleEmailCancel}>Cancel</button>
+          <button class="slds-button slds-button_brand" onclick={handleEmailSend}>Send</button>
+        </div>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+  </template>
+
+  <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</template>

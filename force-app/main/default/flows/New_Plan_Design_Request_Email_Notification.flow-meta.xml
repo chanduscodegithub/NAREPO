@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Send an email to Benefit Strategist when a new request is created.</description>
+        <name>Send_Email_to_BS</name>
+        <label>Send Email to BS</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <actionName>Plan_Design_Request__c.EmailPlanBenefitStrategist</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Plan_Design_Request__c.EmailPlanBenefitStrategist</nameSegment>
+    </actionCalls>
+    <apiVersion>60.0</apiVersion>
+    <description>New Plan Design Request Email Notification</description>
+    <environments>Default</environments>
+    <interviewLabel>New Plan Design Request Email Notification {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>New Plan Design Request Email Notification</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Send_Email_to_BS</targetReference>
+        </connector>
+        <object>Plan_Design_Request__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

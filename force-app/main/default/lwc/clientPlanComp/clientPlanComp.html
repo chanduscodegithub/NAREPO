@@ -1,0 +1,115 @@
+<template>
+
+        
+        <div >
+                <div class="section-header" >
+                    <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small">
+                    <span ><b>{label.headerName}</b></span>
+                </div>
+                </div>
+            </div>
+            <div >
+                   
+                        <div class= "slds-p-top_xx-small  slds-p-left_x-small slds-text-body_small" >
+                                <span><i>The information for this section comes from the Client Plan tab for the current sales season ({defaultSeasonSale}) and includes only the two mandatory Client Plan goals. For additional Client Plan goals, refer to the Client Plan tab.</i></span>                       
+                            </div>
+                           
+                    </div>        
+   
+
+
+<div  class="slds-p-top_x-small">
+        <div class="section-header-sub slds-text-body_small slds-p-left_x-small">
+                <span style="font-size:14px"><b>{label.subHeader2Name}</b></span>
+               
+    </div>
+    <div class = "slds-p-top_xx-small ">
+<table  class=" slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+        <thead>
+
+                <tr class="header-color">
+                    <td  class="slds-border_right " colspan="1">
+                            <div>
+                                <span><b>Strategy</b></span>
+                            </div>
+                        </td>
+                    <td colspan="1">
+                        <div >
+                            <span><b>Action Plan</b></span>
+                        </div>
+                    </td>
+                </tr>
+                </thead>
+                <template if:false={isClientPlanData}>
+                <tbody>
+                        <template for:each={protectCurrentGoalStartegy} for:item="eachProtectCurrentGoalStartegy"
+                        for:index="index">
+                        <tr key = {eachProtectCurrentGoalStartegy}>
+                               
+                                <td class="slds-border_right slds-cell-wrap" >
+                                    <template if:true={eachProtectCurrentGoalStartegy.Strategy__c}>                          
+                                        <span>{eachProtectCurrentGoalStartegy.Strategy__c}</span>    
+                                    </template>                            
+                                </td> 
+                                <td class="slds-cell-wrap">
+                                        <template if:true={eachProtectCurrentGoalStartegy.Action_Steps_PlannedTaken__c}>                          
+                                            <span>{eachProtectCurrentGoalStartegy.Action_Steps_PlannedTaken__c}</span>    
+                                        </template>                            
+                                    </td>                   
+                            </tr>
+                        </template>
+                </tbody>
+</template>
+</table>
+</div>
+</div>
+
+
+<div class="slds-p-top_medium">
+    <div class="section-header-sub slds-text-body_small slds-p-left_x-small">
+            <span style="font-size:14px"><b>{label.subHeader1Name}</b></span>
+           
+</div>
+<div class = "slds-p-top_xx-small">
+<table  class=" slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+<thead>
+
+<tr class="header-color">
+<td  class="slds-border_right" colspan="1">
+        <div >
+            <span  ><b>Strategy</b></span>
+        </div>
+    </td>
+<td    colspan="1">
+    <div  >
+        <span ><b>Action Plan</b></span>
+    </div>
+</td>
+</tr>
+</thead>
+<template if:false={isClientPlanData}>
+<tbody>
+    <template for:each={attainNPSGoalStrategy} for:item="eachAttainNPSGoalStrategy"
+    for:index="index">
+    <tr key = {eachAttainNPSGoalStrategy}>
+           
+            <td class="slds-border_right slds-cell-wrap" >
+                <template if:true={eachAttainNPSGoalStrategy.Strategy__c}>                          
+                    <span>{eachAttainNPSGoalStrategy.Strategy__c}</span> 
+                    
+                </template>                            
+            </td> 
+            <td class="slds-cell-wrap">
+                    <template if:true={eachAttainNPSGoalStrategy.Action_Steps_PlannedTaken__c}>                          
+                        <span>{eachAttainNPSGoalStrategy.Action_Steps_PlannedTaken__c}</span>    
+                    </template>                            
+                </td>                   
+        </tr>
+    </template>
+
+</tbody>
+</template>
+</table>
+</div>
+</div>
+</template>

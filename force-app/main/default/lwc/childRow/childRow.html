@@ -1,0 +1,73 @@
+<template>
+    <!--<td  data-label="Effective Date">
+           
+        <div class="slds-truncate" title={eachdata.Efective_Date__c}>{eachdata.EffectiveDate}</div>
+    </td>-->
+    <td data-label="Company" class="tableVerticleAlign">
+
+        <p><a href="javascript:void(0);" variant="base" label={eachdata.CompanyName} class="slds-cell-wrap "
+                title="Company" value={eachdata.renewalId} target="_blank"
+                onclick={goToRecordPage}>{eachdata.CompanyName}</a></p>
+        <!--<div class="slds-truncate" title={eachdata.CompanyName}>{eachdata.Company__c}</div>-->
+    </td>
+    <template if:true={issbsceuser}>
+        <td data-label="Medical SCE on the Integrated Account" class="tableVerticleAlign">
+            <div class="slds-truncate " title="Medical SCE on the Integrated Account">{eachdata.companyOwnerName}</div>
+        </td>
+    </template>
+
+    <td data-label="Effective Date" class="tableVerticleAlign">
+        <div class="slds-truncate " title="Effective Date">{eachdata.EffectiveDate}</div>
+    </td>
+
+    <td data-label="Product Types" class="tableVerticleAlign">
+        <div class="slds-cell-wrap " title="Product Types">{eachdata.ProductType}</div>
+    </td>
+
+    <td data-label="Product Details" class="tableVerticleAlign">
+        <div class="slds-cell-wrap" title="Product Details">{eachdata.ProductDetail}</div>
+    </td>
+
+    <template if:true={dataNotSent}>
+        <td data-label="Date Ready to Send to IncentiveComp Team" class=" tableVerticleAlign">
+            <div class="slds-cell-wrap colourtxt" title="Date Ready to Send to IncentiveComp Team">
+                {eachdata.ReadyToSendDate}</div>
+        </td>
+    </template>
+
+    <template if:false={dataNotSent}>
+        <td data-label="Date Ready to Send to IncentiveComp Team" class=" tableVerticleAlign">
+            <div class="slds-cell-wrap" title="Date Ready to Send to IncentiveComp Team">{eachdata.ReadyToSendDate}
+            </div>
+        </td>
+    </template>
+
+    <template if:true={dataNotExtracted}>
+        <td data-label="Date Incentive Comp Team Extracted Data" class=" tableVerticleAlign">
+            <div class="slds-cell-wrap colourtxt" title="Date Incentive Comp Team Extracted Data">
+                {eachdata.ReadyToExtractDate}</div>
+        </td>
+    </template>
+
+    <template if:false={dataNotExtracted}>
+        <td data-label="Date Incentive Comp Team Extracted Data" class="tableVerticleAlign">
+            <div class="slds-cell-wrap" title="Date Incentive Comp Team Extracted Data">{eachdata.ReadyToExtractDate}
+            </div>
+        </td>
+    </template>
+        <template if:true={saleSplitExist}>
+            <td data-label="Will Sales Incentives be Split" class=" tableVerticleAlign">
+                <!-- <p><a href="javascript:void(0);" variant="base" label={eachdata.Salesperson1} title="View Salesperson1"  value={eachdata.Salesperson1} target="_blank" onclick={goToUserRecordPage} >{eachdata.Salesperson1}</a></p>-->
+                <div class="slds-cell-wrap colourtxt" title="Will Sales Incentives be Split">{eachdata.SalesSplitExist}
+                </div>
+            </td>
+        </template>
+
+        <template if:false={saleSplitExist}>
+            <td data-label="Will Sales Incentives be Split" class=" tableVerticleAlign">
+                <!-- <p><a href="javascript:void(0);" variant="base" label={eachdata.Salesperson1} title="View Salesperson1"  value={eachdata.Salesperson1} target="_blank" onclick={goToUserRecordPage} >{eachdata.Salesperson1}</a></p>-->
+                <div class="slds-cell-wrap" title="Will Sales Incentives be Split">{eachdata.SalesSplitExist}</div>
+            </td>
+        </template>
+
+</template>

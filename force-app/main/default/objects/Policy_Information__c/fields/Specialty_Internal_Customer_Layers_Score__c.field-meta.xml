@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Specialty_Internal_Customer_Layers_Score__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(AND(Internal_Customer_Layers__c &gt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Internal_Customer_Layers_0_3.Start_Range__c, Internal_Customer_Layers__c &lt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Internal_Customer_Layers_0_3.End_Range__c )  , $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Internal_Customer_Layers_0_3.Weightage__c * $CustomMetadata.Capacity_Planning_SBC_Calculation_Weight__mdt.Weightages.Internal_Customer_Layers_Multiplier__c, 
+				
+IF(AND(Internal_Customer_Layers__c &gt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Internal_Customer_Layers_4_7.Start_Range__c, Internal_Customer_Layers__c  &lt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Internal_Customer_Layers_4_7.End_Range__c ) , $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Internal_Customer_Layers_4_7.Weightage__c * $CustomMetadata.Capacity_Planning_SBC_Calculation_Weight__mdt.Weightages.Internal_Customer_Layers_Multiplier__c, 
+			
+IF(Internal_Customer_Layers__c &gt;= $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Internal_Customer_Layers_Over_7.Start_Range__c, $CustomMetadata.Capacity_Plan_SBC_Range_Weightage__mdt.Internal_Customer_Layers_Over_7.Weightage__c * $CustomMetadata.Capacity_Planning_SBC_Calculation_Weight__mdt.Weightages.Internal_Customer_Layers_Multiplier__c, 0) ) )</formula>
+    <label>Specialty Internal Customer Layers Score</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

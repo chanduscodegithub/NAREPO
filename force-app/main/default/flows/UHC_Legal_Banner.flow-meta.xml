@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <assignments>
+        <name>Force_Logout_User</name>
+        <label>Force Logout User</label>
+        <locationX>745</locationX>
+        <locationY>47</locationY>
+        <assignmentItems>
+            <assignToReference>LoginFlow_ForceLogout</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <constants>
+        <name>RemoteAccessClient</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Remote Access Client</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <name>Check_Browser</name>
+        <label>Check Browser</label>
+        <locationX>390</locationX>
+        <locationY>52</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_IE_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>isIE</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>ProfileName</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>CSI Administrator</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>ProfileName</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>NA Services Community Profile</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Block_Message</targetReference>
+            </connector>
+            <label>Is IE : Yes</label>
+        </rules>
+    </decisions>
+    <formulas>
+        <name>isIE</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+NOT(CONTAINS({!LoginFlow_UserAgent},&quot;Firefox&quot;)),
+NOT(CONTAINS({!LoginFlow_UserAgent},&quot;Chrome&quot;)),
+NOT(CONTAINS({!LoginFlow_UserAgent},&quot;Safari&quot;)),
+NOT(CONTAINS({!LoginFlow_UserAgent},&quot;Edge&quot;))
+)</expression>
+    </formulas>
+    <formulas>
+        <name>ProfileName</name>
+        <dataType>String</dataType>
+        <expression>{!$Profile.Name}</expression>
+    </formulas>
+    <interviewLabel>UHC Legal Banner {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>UHC Legal Banner</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <screens>
+        <name>Block_Message</name>
+        <label>Block Message</label>
+        <locationX>595</locationX>
+        <locationY>47</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Force_Logout_User</targetReference>
+        </connector>
+        <fields>
+            <name>LegalBanner</name>
+            <fieldText>&lt;p&gt;You are receiving this message because Merit/Salesforce does not support the Internet Explorer 11 browser that you are using. Please use Google Chrome to access Merit/Salesforce.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Suggested Next Steps:&lt;/p&gt;&lt;p&gt;1.Paste this link in your Google Chrome Browser to access Merit.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&amp;nbsp;https://uhcmerit.my.salesforce.com&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;2.Please contact Merit Helpdesk &amp;nbsp;if you have any questions.&lt;/p&gt;&lt;p&gt;&amp;nbsp;Merit Help Desk : 860-702-6976&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;   &amp;nbsp;merit@uhc.com&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>false</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Check_Browser</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>LoginFlow_ForceLogout</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>LoginFlow_UserAgent</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

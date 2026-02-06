@@ -1,0 +1,110 @@
+<aura:component >
+    <aura:attribute name="businessGroupsObj" type="Object"/>
+    <aura:attribute name="BGHIndex" type="String"/>
+    <aura:attribute name="bghIdToRemove" type="String" />
+    <aura:attribute name="bghNameToRemove" type="String" />
+    <aura:attribute name="isEditAccess" type="Boolean"/>
+    <aura:attribute name="isContact" type="boolean"/>
+    <aura:attribute name="isEditable" type="boolean" default="false"/>
+    <aura:attribute name="RolePicklist" type="String[]"/>
+    <aura:attribute name="oldPickVal" type="String" default="{!v.businessGroupsObj.Role__c}"/>
+
+    <aura:registerEvent name="BGHTable" type="c:BGH_Table_Event"/>
+    <aura:registerEvent name="BGH_Role_Edit_Save" type="c:BGHRole_Edit_Save_Event"/>
+    
+    <aura:method name="remEditCancel" action="{!c.remEditCancel}" access="PUBLIC"></aura:method>
+    
+    <aura:method name="removeProcessingIcon" action="{!c.removeProcessingOnCancel}" access="PUBLIC"></aura:method>
+    
+    <aura:if isTrue="{!v.isContact}">
+        <tr class="slds-hint-parent">
+                <th class="HideRow">&nbsp;</th>
+                <th scope="row" data-label="Name">
+                    <div class="slds-truncate" title="">
+                        <a data-record="{!v.businessGroupsObj.CompanyBGH__r.Id}" onclick="{!c.navToRecord}">{!v.businessGroupsObj.CompanyBGH__r.Name}</a>
+                    </div>
+                </th>
+            <aura:if isTrue="{!v.isEditable}">
+                <th scope="row" data-label="Role">
+                    <ui:inputSelect class="slds-form-control" aura:id="Role" multiple="false">
+                        <aura:iteration items="{!v.RolePicklist}" var="bgh_Role"> 
+                            <aura:if isTrue="{!bgh_Role == v.businessGroupsObj.Role__c}">
+                                <ui:inputSelectOption text="{!bgh_Role}" value="true" /> 
+                                <aura:set attribute="else">
+                                    <ui:inputSelectOption text="{!bgh_Role}"/> 
+                                </aura:set>
+                            </aura:if>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </th>
+                <aura:set attribute="else">
+                    <th scope="row" data-label="Name">
+                        <div class="slds-truncate" title="">{!v.businessGroupsObj.Role__c}</div>
+                    </th>
+                </aura:set>
+            </aura:if>
+                    
+                <aura:if isTrue="{!v.isEditAccess}">
+                    <th scope="row" class="data-del">
+                        <div aura:id="editRole" class="slds-truncate" onclick="{!c.editRole}" title="{!$Label.c.Edit}">
+                            <button class="slds-button slds-text-body--regular">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="utility:edit" size="x-small" alternativeText="Product" />
+                            </button>
+                        </div>
+                        
+                        <div aura:id="saveCancel" class="slds-truncate slds-hide"  title="{!$Label.c.Edit}">
+                            <button class="slds-button slds-text-body--regular" onclick="{!c.saveRole}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="utility:check" size="x-small" alternativeText="Product" />
+                            </button>
+                            <button class="slds-button slds-text-body--regular" onclick="{!c.cancel}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="utility:close" size="x-small" alternativeText="Product" />
+                            </button>
+                        </div>
+                        
+                    </th>
+                    <th scope="row" class="data-del">
+                        <div aura:id="deleteIcon" class="slds-truncate" onclick="{!c.removeBGH}" title="{!$Label.c.Remove}">
+                            <button class="slds-button slds-text-body--regular">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                            </button>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </th>
+                </aura:if>
+            </tr>
+        <aura:set attribute="else">
+            <tr class="slds-hint-parent">
+                <th class="HideRow">&nbsp;</th>
+                <th scope="row" data-label="Name">
+                    <div class="slds-truncate" title="">{!v.businessGroupsObj.BGH_Account__r.Name}</div>
+                </th>
+                <aura:if isTrue="{!v.isEditAccess}">
+                    <th scope="row" class="data-del">
+                        <div aura:id="deleteIcon" class="slds-truncate" onclick="{!c.removeBGH}" title="{!$Label.c.Remove}">
+                            <button class="slds-button slds-text-body--regular">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="utility:delete" size="x-small" alternativeText="Product" />
+                            </button>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </th>
+                </aura:if>
+            </tr>
+        </aura:set>
+    </aura:if>
+</aura:component>

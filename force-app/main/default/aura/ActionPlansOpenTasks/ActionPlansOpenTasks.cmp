@@ -1,0 +1,99 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="openCaseList" type="String[]"/>   
+    <aura:attribute name="closeCaseList" type="String[]"/>
+    <aura:attribute name="openCaseEmpty" type="Boolean" default="false"/>
+    <aura:attribute name="closeCaseEmpty" type="Boolean" default="false"/>
+    <aura:attribute name="Child_Data" type="String[]"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:registerEvent name="modalCmpCloseEvent" type="c:Model_Closing_Event"/>
+    <div class="slds-p-top_none slds-p-bottom_medium">
+        <div class="slds-card slds-m-bottom_none">
+            <h2 class="slds-p-vertical_x-small slds-p-horizontal_medium slds-text-heading--small">Open Activities</h2>
+            <table class="slds-table slds-max-medium-table_stacked slds-table_bordered data-table">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" class="slds-truncate" width="20%">Type</th>
+                        <th scope="col" class="slds-truncate" width="10%">Priority</th>
+                        <th scope="col" class="slds-truncate" width="20%">Subject</th>
+                        <th scope="col" class="slds-truncate" width="25%">Comments</th>
+                        <th scope="col" class="slds-truncate" width="10%">Status</th>
+                        <th scope="col" class="slds-truncate" width="12%">Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:if isTrue="{!v.openCaseEmpty}">
+                        <tr><th colspan="6"><div class="slds-text-align_center">No Open activities found</div></th></tr>
+                        <aura:set attribute="else">
+                            <aura:iteration items="{!v.openCaseList}" var="caseObj" indexVar="index">
+                                <tr> <th scope="row" data-label="Type">
+                                    <div  title="Assigned To">{!caseObj.Type}</div>
+                                    </th>
+                                    <th scope="row" data-label="Priority">
+                                        <div  title="Assigned To">{!caseObj.Priority}</div>
+                                    </th>
+                                    <th scope="row" data-label="Subject" class="slds-cell-wrap">
+                                        <a data-record="{!caseObj.Id}" onclick="{!c.navigateToTaskDetailPage}" title="Subject">{!caseObj.Subject}</a>
+                                    </th>
+                                    <th scope="row" data-label="Category" class="slds-cell-wrap">
+                                        <div  title="Comments">{!caseObj.Description}</div>
+                                    </th>     
+                                    <th scope="row" data-label="Status">
+                                        <div  title="Assigned To">{!caseObj.Status}</div>
+                                    </th>
+                                    <th scope="row" data-label="Due Date">
+                                        <ui:outputDate format="M/d/yyyy" value="{!caseObj.ActivityDate}" />
+                                    </th>
+                                </tr>
+                            </aura:iteration>
+                        </aura:set>
+                    </aura:if>                         
+                </tbody>                                                    
+            </table>                                       
+        </div>
+    </div>
+    <div class="slds-p-top_none slds-p-bottom_medium">
+        <div class="slds-card slds-m-bottom_none">
+            <h2 class="slds-p-vertical_x-small slds-p-horizontal_medium slds-text-heading--small">Closed Activities</h2>
+            <table class="slds-table slds-max-medium-table_stacked slds-table_bordered data-table">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" class="slds-truncate" width="20%">Type</th>
+                        <th scope="col" class="slds-truncate" width="10%">Priority</th>
+                        <th scope="col" class="slds-truncate" width="20%">Subject</th>
+                        <th scope="col" class="slds-truncate" width="25%">Comments</th>
+                        <th scope="col" class="slds-truncate" width="10%">Status</th>
+                        <th scope="col" class="slds-truncate" width="12%">Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:if isTrue="{!v.closeCaseEmpty}">
+                        <tr><th colspan="6"><div class="slds-text-align_center">No Closed activities found</div></th></tr>
+                        <aura:set attribute="else">
+                            <aura:iteration items="{!v.closeCaseList}" var="caseObj" indexVar="index">
+                                <tr> <th scope="row" data-label="Type">
+                                    <div  title="Assigned To">{!caseObj.Type}</div>
+                                    </th>
+                                    <th scope="row" data-label="Priority">
+                                        <div  title="Assigned To">{!caseObj.Priority}</div>
+                                    </th>
+                                    <th scope="row" data-label="Subject" class="slds-cell-wrap">
+                                        <a data-record="{!caseObj.Id}" onclick="{!c.navigateToTaskDetailPage}" title="Subject">{!caseObj.Subject}</a>
+                                    </th>
+                                    <th scope="row" data-label="Category" class="slds-cell-wrap">
+                                        <div  title="Comments">{!caseObj.Description}</div>
+                                    </th> 
+                                    <th scope="row" data-label="Status">
+                                        <div  title="Assigned To">{!caseObj.Status}</div>
+                                    </th>
+                                    <th scope="row" data-label="Due Date">
+                                        <ui:outputDate format="M/d/yyyy" value="{!caseObj.ActivityDate}" />
+                                    </th>
+                                </tr>
+                            </aura:iteration> 
+                        </aura:set>
+                    </aura:if>                        
+                </tbody>                                                    
+            </table>                                       
+        </div>
+    </div>
+</aura:component>

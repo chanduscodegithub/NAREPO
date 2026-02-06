@@ -1,0 +1,178 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="RiskApexController">
+    
+    <aura:attribute name="riskProfileObjArray" type="RiskProfile__c[]"/>    
+    
+    <aura:attribute name="riskProfileObj" type="RiskProfile__c"/>    
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="RiskProfilePopup" type="String[]"/>
+    <aura:attribute name="selectedRiskProfile" type="String[]"/>
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="Child_Data" type="Object"/>
+    
+    <aura:attribute name="indexValue" type="Integer" default="0"/>
+    
+    <aura:attribute name="alertMesage" type="String" default="A Risk Type must be selected in order to save the record."/>
+    
+    <aura:attribute name="RiskTypeValues" type="Set" default=""/>
+    <aura:attribute name="RiskTypeMap" type="Map" default=""/>
+    <aura:attribute name="rowCount" type="Integer" default="0"/>
+    
+    <aura:attribute name="riskProfileList" type="List" default=""/>    
+    
+    <aura:attribute name="ImpactValues" type="String[]" default=",High,Medium,Low"/>
+    <aura:attribute name="BidRiskValues" type="String[]" default=",Yes,No"/>
+    <aura:attribute name="AddlInfo" type="String[]" default=""/>
+    
+    <aura:handler name="riskProfilePopUpEvent" event="c:Risk_Profile_Add_Popup_Event" action="{!c.riskProfilePopUpEventMethod}"/>    
+    <aura:registerEvent name="addorCancelRiskEvent" type="c:addorCancelRiskEvent"/>
+    <aura:attribute name="RPpopupRemoveIndex" type="String"/>
+    
+    {!v.body}
+    
+    <div role="alertdialog" tabindex="-1" aura:id="RiskProfile" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Alert}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.alertMesage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeAlert}">Ok</button>                
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="RiskProfile"></div>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    
+    <div role="alertdialog" tabindex="-1" aura:id="RiskProfileRemove" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.confirmCancel}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Alert}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">{!$Label.c.Confirmation}</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!$Label.c.Risk_Profile_Remove_Alert}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmDelete}">{!$Label.c.Delete}</button>
+                <button class="slds-button slds-button--neutral" onclick="{!c.confirmCancel}">{!$Label.c.Cancel}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="RiskProfileRemove"></div>
+    
+    <div aura:id="Risk_Modal" class="slds-section slds-is-open ipadbottom container risk-modal-content">
+        <article class="slds-card">
+            <div class="slds-card__header slds-grid " style="padding:0px">
+                <div class="slds-section__content" style="padding-top:0px;position:relative;">
+                    <div class="slds-spinner_container slds-hide" aura:id="spinner">
+                        <div role="status" class="slds-spinner--brand slds-spinner slds-spinner--medium spinner-md-d">
+                            <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                    <div class="slds-card__body" style="overflow:hidden">                        
+                        <div class="slds-page-header slds-p-horizontal_medium slds-p-vertical_small">  
+                            <div class="slds-p-left_none header-content" >
+                                <!--<p>{!$Label.c.Risk_Profile_Pop_Up_Text}</p> -->
+                                <p>Select the Risk from the drop-down. Then update the Impact and Additional Information, and provide a description within the Comments field. To add an additional Risk, click the Add an Additional Risk button. Click the Save button when complete.</p>
+                            </div>                                              
+                        </div>
+                        <div class="slds-p-vertical_x-small slds-grid slds-grid_align-end slds-p-horizontal_medium">                         
+                            <lightning:button class="slds-button slds-button--neutral" aura:id="savePopupRiskProfile" onclick="{!c.savePopupRiskProfile}">{!$Label.c.Save}</lightning:button>
+                            <lightning:button class="slds-button slds-button--neutral" aura:id="cancelPopupRiskProfile" onclick="{!c.cancelPopupRiskProfile}">{!$Label.c.Cancel}</lightning:button>
+                            <lightning:button class="slds-button slds-button--neutral addRiskClass" aura:id="AddAdditionalRisk" onclick="{!c.AddAdditionalRisk}">Add an Additional Risk</lightning:button>
+                        </div>
+                        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout data-table">
+                            <thead>
+                                <tr class="slds-text-title--caps">                                    
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:20%">                                    
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Risks_Tracked_by_the_SCE}"><b>{!$Label.c.Risk_Profile_Col_Risks_Tracked_by_the_SCE}</b></span>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:10%;padding:0.5rem 0.5rem;">                                  
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Impact}"><b>{!$Label.c.Risk_Profile_Col_Impact}</b></span>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th> 
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:20%;padding:0.5rem 0.5rem;">                                    
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Additional_Information}"><b>{!$Label.c.Risk_Profile_Col_Additional_Information}</b></span>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th> 
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col" style="width:34%;padding:0.5rem 0.5rem;">
+                                        <span class="slds-cell-wrap" title="{!$Label.c.Risk_Profile_Col_Comments}"><b>{!$Label.c.Risk_Profile_Col_Comments}</b></span>
+                                        <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>                                    
+                                        <div class="slds-resizable">
+                                            <label for="cell-resize-handle-553" class="slds-assistive-text">Name column width</label>
+                                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-553" tabindex="0" />
+                                            <span class="slds-resizable__handle">
+                                                <span class="slds-resizable__divider"></span>
+                                            </span>
+                                        </div>
+                                    </th> 
+                                    <th class="slds-cell-shrink" scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.riskProfileList}" var="RiskProfilePopupDataobj" indexVar="index"> 
+                                    <c:Risk_Profile_Modal_Table aura:id="riskProfileAuraId" riskProfileSelectValues='{!RiskProfilePopupDataobj}' RiskTypeMap='{!v.RiskTypeMap}' RiskTypeValues='{!v.RiskTypeValues}' index="{!index}"></c:Risk_Profile_Modal_Table>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div> 
+                </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

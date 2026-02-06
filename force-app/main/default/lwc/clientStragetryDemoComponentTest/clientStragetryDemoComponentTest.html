@@ -1,0 +1,390 @@
+<template>
+    <!--      SPINNER     -->
+    <template if:true={isLoad}>
+        <div class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+    <!--      SPINNER     -->
+
+    <div class="slds-m-right_x-small" style="float:right">
+        <template if:true={showSalesDebrief}>
+        <template if:false={isEditMode}>
+            <lightning-button label="Refresh" onclick={handleRefreshButton} icon-name="utility:refresh">
+            </lightning-button>
+        </template>
+        </template>
+    </div>
+
+    <br />
+
+    <template if:false={showSalesDebrief}>
+        <div style="background-color:#ff9339; height:100px; margin-top: 20px; margin-right: 9px; margin-left: 9px;">
+            <!-- style="font-size: 15px;white-space: pre;text-align:center;padding-top:35px;" -->
+            <h2 class="alternateMessageClass">
+                {alternateMessage}
+                <span lwc:dom="manual"></span>
+            </h2>
+        </div>
+    </template>
+
+    <template if:true={showSalesDebrief}>
+        <!-- BUTTONS -->
+        <div class="slds-align_absolute-center slds-is-fixed" style="font-size: 12px; width: 98%; bottom: 3px; z-index: 100; background: #f3f2f2;
+        left: 13px; border-radius: 2px; padding: 5px; padding-left:24px;">
+            <template if:false={isEditMode}>
+                
+                <template if:false={isRecordLocked}>
+                    <lightning-button icon-name="action:edit" label="Edit" title="Edit" onclick={handleEdit}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                    <lightning-button icon-name="utility:print" type="submit" variant="brand" label="Print"
+                        class="slds-m-left_x-small" onclick={exportRecords}></lightning-button>
+                </template>
+
+            </template>
+
+            <template if:true={isEditMode}>
+                <lightning-button icon-name="action:remove" label="Cancel" title="Cancel" onclick={handleCancel}
+                    class="slds-m-left_x-small">
+                </lightning-button>
+                <lightning-button icon-name="utility:save" label="Save" variant="brand" title="Save"
+                    onclick={handleSave} class="slds-m-left_x-small">
+                </lightning-button>
+            </template>
+        </div>
+        <!-- BUTTONS -->
+
+        <div class="entireQuestionaire">
+            <div class="slds-p-around_x-small">
+                <template for:each={questionAndAnswerData} for:item="mainArray" for:index="index">
+                    <!-- READ ONLY MODE -->
+                    <template if:false={isEditMode}>
+                        <template if:false={mainArray.Is_Dependent_Question__c}>
+                            <div key={mainArray.Id}>
+
+                                <template if:true={mainArray.displayAlternateSection}>
+                                    <h1 class="section-name slds-m-top_large">{mainArray.Section_Name__c}</h1>
+                                    <div class="other-info slds-m-bottom_medium slds-m-top_medium"
+                                        data-alternateapiclass={mainArray.Question__c} lwc:dom="manual">
+                                    </div>
+                                    <input type="hidden" data-api={mainArray.Api__c} value={mainArray.recordValue}>
+                                </template>
+
+                                <template if:true={mainArray.renderThisQuestion}>
+
+                                    <template if:true={mainArray.displaySection}>
+                                        <h1 class="section-name slds-m-top_large">{mainArray.Section_Name__c}</h1>
+                                    </template>
+
+                                    <div class="other-info slds-m-bottom_medium slds-m-top_medium"
+                                        data-apiclass={mainArray.Question__c} lwc:dom="manual">
+                                    </div>
+
+                                    <template if:false={mainArray.Child_Component__c}>
+                                        <div class="slds-m-bottom_small">
+                                            <div class="question-name">
+                                                <!-- Q:  -->
+                                                <lightning-formatted-rich-text value={mainArray.Question__c}></lightning-formatted-rich-text>
+                                            </div>
+
+                                            <div class="slds-p-top_x-small answer-class">
+                                                <!-- <b>A: </b> -->{mainArray.recordValue}
+                                            </div>
+
+                                            <template if:true={mainArray.showWriteIn}>
+                                                <div class="slds-p-top_x-small answer-class">
+                                                    <strong>Other: </strong>{mainArray.writeInValue}
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template if:true={mainArray.Child_Component__c}>
+                                        <div class="question-name">
+                                            <!-- Q:  --><lightning-formatted-rich-text value={mainArray.Question__c}></lightning-formatted-rich-text>
+                                        </div>
+                                        <div class="slds-p-top_x-small answer-class">
+                                            <c-sales-debrief-child-comp is-edit-mode={isEditMode}
+                                                table-data={mainArray.childComponentMetadata}
+                                                component-type={mainArray.Child_Component_Datatype__c}
+                                                field-set={mainArray.Child_Component_Field_Set__c}
+                                                options-to-display={mainArray.Child_Component_Options__c}>
+                                            </c-sales-debrief-child-comp>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </template>
+
+                        <template if:true={mainArray.Is_Dependent_Question__c}>
+                            <div key={mainArray.Id}>
+
+                                <template if:true={mainArray.displayAlternateSection}>
+                                    <h1 class="section-name slds-m-top_large">{mainArray.Section_Name__c}</h1>
+                                    <div class="other-info slds-m-bottom_medium slds-m-top_medium"
+                                        data-alternateapiclass={mainArray.Question__c} lwc:dom="manual">
+                                    </div>
+                                    <input type="hidden" data-api={mainArray.Api__c} value={mainArray.recordValue}>
+                                </template>
+
+                                <template if:true={mainArray.renderThisQuestion}>
+
+                                    <template if:true={mainArray.displaySection}>
+                                        <h1 class="section-name slds-m-top_large">{mainArray.Section_Name__c}</h1>
+                                    </template>
+
+                                    <div class="other-info slds-m-bottom_medium slds-m-top_medium"
+                                        data-apiclass={mainArray.Question__c} lwc:dom="manual">
+                                    </div>
+
+                                    <template if:false={mainArray.Child_Component__c}>
+                                        <div class="slds-m-bottom_small">
+                                            <div class="question-name">
+                                                <!-- Q:  --><lightning-formatted-rich-text value={mainArray.Question__c}></lightning-formatted-rich-text>
+                                            </div>
+
+                                            <div class="slds-p-top_x-small answer-class">
+                                                <!-- <b>A: </b> -->{mainArray.recordValue}
+                                            </div>
+
+                                            <template if:true={mainArray.showWriteIn}>
+                                                <div class="slds-p-top_x-small answer-class">
+                                                    <strong>Other: </strong>{mainArray.writeInValue}
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template if:true={mainArray.Child_Component__c}>
+                                        <div class="question-name">
+                                            <!-- <b>Q: </b> --><lightning-formatted-rich-text value={mainArray.Question__c}></lightning-formatted-rich-text>
+                                        </div>
+                                        <div class="slds-p-top_x-small answer-class">
+                                            <c-sales-debrief-child-comp is-edit-mode={isEditMode}
+                                                table-data={mainArray.childComponentMetadata}
+                                                component-type={mainArray.Child_Component_Datatype__c}
+                                                field-set={mainArray.Child_Component_Field_Set__c}
+                                                options-to-display={mainArray.Child_Component_Options__c}>
+                                            </c-sales-debrief-child-comp>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </template>
+                    </template>
+                    <!-- READ ONLY MODE -->
+
+                    <!-- EDIT MODE -->
+                    <template if:true={isEditMode}>
+                        <template if:false={mainArray.Is_Dependent_Question__c}>
+                            <div key={mainArray.Id}>
+
+                                <template if:true={mainArray.displayAlternateSection}>
+                                    <h1 class="section-name slds-m-top_large">{mainArray.Section_Name__c}</h1>
+                                    <div class="other-info slds-m-bottom_medium slds-m-top_medium"
+                                        data-alternateapiclass={mainArray.Question__c} lwc:dom="manual">
+                                    </div>
+                                    <input type="hidden" data-api={mainArray.Api__c} value={mainArray.recordValue}>
+                                </template>
+
+                                <template if:true={mainArray.renderThisQuestion}>
+
+                                    <template if:true={mainArray.displaySection}>
+                                        <h1 class="section-name slds-m-top_large">{mainArray.Section_Name__c}</h1>
+                                    </template>
+
+                                    <div class="other-info slds-m-bottom_medium slds-m-top_medium"
+                                        data-apiclass={mainArray.Question__c} lwc:dom="manual">
+                                    </div>
+
+                                    <template if:false={mainArray.Child_Component__c}>
+                                        <div class="slds-m-bottom_small">
+                                            <div class="question-name">
+                                                <!-- Q:  -->{mainArray.Question__c}
+                                            </div>
+
+                                            <div class="slds-p-top_x-small answer-class">
+                                                <template if:true={mainArray.isPicklistField}>
+                                                    <lightning-combobox variant="label-hidden"
+                                                        options={mainArray.Options}
+                                                        data-shortform={mainArray.Short_Form__c}
+                                                        data-question={mainArray.Question__c} data-oppid={recordId}
+                                                        data-year={mainArray.Year__c} data-api={mainArray.Api__c}
+                                                        data-questionid={mainArray.Id}
+                                                        data-valuetype={mainArray.Type__c}
+                                                        required={mainArray.Required__c} value={mainArray.recordValue}
+                                                        onchange={handleChange}>
+                                                    </lightning-combobox>
+                                                </template>
+                                                <template if:true={mainArray.isMultiPicklistField}>
+                                                    <lightning-dual-listbox variant="label-hidden"
+                                                        source-label="Response Options"
+                                                        data-shortform={mainArray.Short_Form__c}
+                                                        data-question={mainArray.Question__c} data-oppid={recordId}
+                                                        data-year={mainArray.Year__c} data-api={mainArray.Api__c}
+                                                        data-questionid={mainArray.Id}
+                                                        data-valuetype={mainArray.Type__c}
+                                                        selected-label={mainArray.multiPicklistSelectedLabel}
+                                                        options={mainArray.Options} value={mainArray.recordValue}
+                                                        onchange={handleChange}>
+                                                    </lightning-dual-listbox>
+                                                </template>
+                                                <template if:true={mainArray.isTextField}>
+                                                    <lightning-textarea type="text" variant="label-hidden"
+                                                        data-shortform={mainArray.Short_Form__c}
+                                                        data-question={mainArray.Question__c} data-oppid={recordId}
+                                                        data-year={mainArray.Year__c} data-api={mainArray.Api__c}
+                                                        data-questionid={mainArray.Id}
+                                                        data-valuetype={mainArray.Type__c}
+                                                        required={mainArray.Required__c} value={mainArray.recordValue}
+                                                        onchange={handleChange} max-length="1000">
+                                                    </lightning-textarea>
+                                                    <p style="color:#0070d2; float:right;">{mainArray.charLength}/1000
+                                                    </p>
+                                                </template>
+                                            </div>
+
+                                            <template if:true={mainArray.showWriteIn}>
+                                                <div class="slds-p-top_x-small answer-class">
+                                                    <!-- <strong>Please Specify:</strong> -->
+                                                    <lightning-textarea type="text" placeholder="Please Describe"
+                                                        variant="label-hidden" data-labelval="Write In"
+                                                        data-shortform={mainArray.Short_Form__c}
+                                                        data-question={mainArray.Question__c} data-oppid={recordId}
+                                                        data-year={mainArray.Year__c}
+                                                        data-writein={mainArray.Write_In__c}
+                                                        data-questionid={mainArray.Id} value={mainArray.writeInValue}
+                                                        onchange={handleChange} max-length="1000">
+                                                    </lightning-textarea>
+                                                    <p style="color:#0070d2; float:right;">{mainArray.charLength}/1000
+                                                    </p>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <template if:true={mainArray.Child_Component__c}>
+                                        <div class="question-name">
+                                            <!-- <b>Q: </b> -->{mainArray.Question__c}
+                                        </div>
+                                        <div class="slds-p-top_x-small answer-class">
+                                            <c-sales-debrief-child-comp is-edit-mode={isEditMode}
+                                                table-data={mainArray.childComponentMetadata}
+                                                component-type={mainArray.Child_Component_Datatype__c}
+                                                field-set={mainArray.Child_Component_Field_Set__c}
+                                                options-to-display={mainArray.Child_Component_Options__c}
+                                                onchildcomponentdata={dataFromChildComponent}>
+                                            </c-sales-debrief-child-comp>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </template>
+
+                        <template if:true={mainArray.Is_Dependent_Question__c}>
+                            <div key={mainArray.Id}>
+
+                                <template if:true={mainArray.displayAlternateSection}>
+                                    <h1 class="section-name slds-m-top_large">{mainArray.Section_Name__c}</h1>
+                                    <div class="other-info slds-m-bottom_medium slds-m-top_medium"
+                                        data-alternateapiclass={mainArray.Question__c} lwc:dom="manual">
+                                    </div>
+                                    <input type="hidden" data-api={mainArray.Api__c} value={mainArray.recordValue}>
+                                </template>
+                                
+                                <template if:true={mainArray.renderThisQuestion}>
+                                    
+                                    <template if:true={mainArray.displaySection}>
+                                        <h1 class="section-name slds-m-top_large">{mainArray.Section_Name__c}</h1>
+                                    </template>
+
+                                    <div class="other-info slds-m-bottom_medium slds-m-top_medium"
+                                        data-apiclass={mainArray.Question__c} lwc:dom="manual">
+                                    </div>
+
+                                    <template if:false={mainArray.Child_Component__c}>
+                                        <div class="question-name">
+                                            <!-- Q:  -->{mainArray.Question__c}
+                                        </div>
+
+                                        <div class="slds-p-top_x-small answer-class">
+                                            <template if:true={mainArray.isPicklistField}>
+                                                <lightning-combobox variant="label-hidden" options={mainArray.Options}
+                                                    data-shortform={mainArray.Short_Form__c}
+                                                    data-question={mainArray.Question__c} data-oppid={recordId}
+                                                    data-year={mainArray.Year__c} data-api={mainArray.Api__c}
+                                                    data-questionid={mainArray.Id} data-valuetype={mainArray.Type__c}
+                                                    required={mainArray.Required__c} value={mainArray.recordValue}
+                                                    onchange={handleChange}>
+                                                </lightning-combobox>
+                                            </template>
+                                            <template if:true={mainArray.isMultiPicklistField}>
+                                                <lightning-dual-listbox variant="label-hidden"
+                                                    source-label="Response Options"
+                                                    data-shortform={mainArray.Short_Form__c}
+                                                    data-question={mainArray.Question__c} data-oppid={recordId}
+                                                    data-year={mainArray.Year__c} data-api={mainArray.Api__c}
+                                                    data-questionid={mainArray.Id} data-valuetype={mainArray.Type__c}
+                                                    selected-label={mainArray.multiPicklistSelectedLabel}
+                                                    options={mainArray.Options} value={mainArray.recordValue}
+                                                    onchange={handleChange}>
+                                                </lightning-dual-listbox>
+                                            </template>
+                                            <template if:true={mainArray.isTextField}>
+                                                <lightning-textarea type="text" variant="label-hidden"
+                                                    data-shortform={mainArray.Short_Form__c}
+                                                    data-question={mainArray.Question__c} data-oppid={recordId}
+                                                    data-year={mainArray.Year__c} data-api={mainArray.Api__c}
+                                                    data-questionid={mainArray.Id} data-valuetype={mainArray.Type__c}
+                                                    required={mainArray.Required__c} value={mainArray.recordValue}
+                                                    onchange={handleChange} max-length="1000">
+                                                </lightning-textarea>
+                                                <p style="color:#0070d2; float:right;">{mainArray.charLength}/1000</p>
+                                            </template>
+                                        </div>
+
+                                        <template if:true={mainArray.showWriteIn}>
+                                            <div class="slds-p-top_x-small answer-class">
+                                                <!-- <strong>Please Specify:</strong> -->
+                                                <lightning-textarea type="text" placeholder="Please Describe"
+                                                    variant="label-hidden" data-labelval="Write In"
+                                                    data-shortform={mainArray.Short_Form__c}
+                                                    data-question={mainArray.Question__c} data-oppid={recordId}
+                                                    data-year={mainArray.Year__c} data-writein={mainArray.Write_In__c}
+                                                    data-questionid={mainArray.Id} value={mainArray.writeInValue}
+                                                    onchange={handleChange} max-length="1000">
+                                                </lightning-textarea>
+                                                <p style="color:#0070d2; float:right;">{mainArray.charLength}/1000</p>
+                                            </div>
+                                        </template>
+
+                                    </template>
+
+                                    <template if:true={mainArray.Child_Component__c}>
+                                        <div class="question-name">
+                                            <!-- Q:  -->{mainArray.Question__c}
+                                        </div>
+                                        <div class="slds-p-top_x-small answer-class">
+                                            <c-sales-debrief-child-comp is-edit-mode={isEditMode}
+                                                table-data={mainArray.childComponentMetadata}
+                                                component-type={mainArray.Child_Component_Datatype__c}
+                                                field-set={mainArray.Child_Component_Field_Set__c}
+                                                options-to-display={mainArray.Child_Component_Options__c}
+                                                onchildcomponentdata={dataFromChildComponent}>
+                                            </c-sales-debrief-child-comp>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </template>
+                    </template>
+                    <!-- EDIT MODE -->
+                </template>
+            </div>
+        </div>
+    </template>
+</template>

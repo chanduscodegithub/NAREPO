@@ -1,0 +1,32 @@
+<aura:component access="global">
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="ErrorModalBody" type="String"/>
+    <aura:attribute name="ErrorModalBodyData" type="Object"/>
+    <aura:attribute name="ErrorModalheader" type="String"/>
+    <aura:attribute name="refreshOnClosingModel" type="String" default="false"/>
+    <aura:attribute name="modalcssStyle" type="String" default=".slds-global-header_container{position:static} body.desktop{overflow:hidden} .forceStyle.desktop .viewport .stage{position:relative;z-index: 99}"/>
+    <aura:method name="alerterrormdlClose" action="{!c.alerterrorClose}" access="PUBLIC"></aura:method>
+    <aura:registerEvent name="alerterrorcmpCloseEvent" type="c:Alert_Error_Closing_Event"/>
+     <style>
+        {!v.modalcssStyle}
+    </style>
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.fireComponentEvent}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorModalBodyData.bodyMessage}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.fireComponentEvent}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+</aura:component>

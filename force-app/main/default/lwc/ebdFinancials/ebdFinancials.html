@@ -1,0 +1,351 @@
+<template>
+    <div>
+        <div class="section-header">
+            <div class="slds-p-top_xx-small slds-p-left_x-small slds-text-heading_small slds-p-bottom_medium">
+                <span><b>Financials </b></span>
+            </div>
+        </div>
+    </div>
+    <div class="slds-p-top_large slds-p-bottom_large">
+
+        <table
+            class="slds-text-body_small slds-table slds-border_left slds-border_right  slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout">
+            <thead>
+
+                <tr class="slds-border_top header-color">
+                    <td colspan="1" class="slds-border_right">
+                        <div class="slds-truncate" style="text-align: center; ">
+                            <span><strong>UHG</strong></span>
+                        </div>
+                    </td>
+                    <td colspan="1" class="slds-border_right">
+                        <div class="slds-truncate" style="text-align: center;">
+                            <span><strong>{financialDisplayData.year0}</strong></span>
+                        </div>
+                    </td>
+                    <td colspan="1" class="slds-border_right" >
+                        <div class="slds-truncate" style="text-align: center;">
+                            <span><strong>{financialDisplayData.year1}</strong></span>
+                        </div>
+                    </td>
+                    <td colspan="1" class="slds-border_right">
+                        <div class="slds-truncate" style="text-align: center;">
+                            <span><strong>Projected {financialDisplayData.year2}</strong></span>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <template if:false={isClientPlanSurveyData}>
+                <tbody>
+                    <tr>
+                        <td class="slds-border_right" colspan="1">
+
+                            <span><strong>Membership - Total</strong></span>
+                        </td>
+
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.totalMembership0} >
+                            </lightning-formatted-number>
+                            <!--<span>{financialDisplayData.totalMembership0}</span>-->
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.totalMembership1} >
+                            </lightning-formatted-number>
+
+                            <!--<span>{financialDisplayData.totalMembership1}</span>-->
+
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.totalMembership2}>
+                            </lightning-formatted-number>
+                            <!-- <span>{financialDisplayData.totalMembership2}</span>-->
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="slds-border_right" colspan="1">
+                            <span><strong>Membership - Surest</strong></span>
+                        </td>
+
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.surestMembership0} >
+                            </lightning-formatted-number>
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.surestMembership1}>
+                            </lightning-formatted-number>
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.surestMembership2} >
+                            </lightning-formatted-number>
+                        </td>
+
+
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right" colspan="1">
+                            <span><strong>Revenue - Total</strong></span>
+                        </td>
+
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.totalRevenue0} format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3">
+                            </lightning-formatted-number>
+                        
+                            <!--<span>{financialDisplayData.totalRevenue0}</span>-->
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.totalRevenue1} format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3">
+                            </lightning-formatted-number>
+                            <!--<span>{financialDisplayData.totalRevenue1}</span>-->
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.totalRevenue2} format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3">
+                            </lightning-formatted-number>
+                            <!--<span>{financialDisplayData.totalRevenue2}</span>-->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right" colspan="1">
+                            <span><strong>Revenue - Surest</strong></span>
+                        </td>
+
+                        <td class="slds-border_right">
+                            <lightning-formatted-number value={financialDisplayData.surestRevenue0}
+                                 format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3" >
+                            </lightning-formatted-number>
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.surestRevenue1}
+                              format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3"  >
+                            </lightning-formatted-number>
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <lightning-formatted-number value={financialDisplayData.surestRevenue2}
+                                format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3" >
+                            </lightning-formatted-number>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right" colspan="1">
+                            <span><strong>Revenue - URS</strong></span>
+                        </td>
+
+                        <td class="slds-border_right" colspan="1">
+                            <template lwc:if={isEditMode}>
+                                <lightning-input type="number" step="any" name="Revenue_URS__c"
+                                    data-year={financialDisplayData.year0} value={financialDisplayData.totalUrsRevenue0}
+                                    data-recordid={financialDisplayData.totalId0} onchange={handleChange}
+                                    disabled={isDisabled0}>
+                                </lightning-input>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-number value={financialDisplayData.totalUrsRevenue0}
+                                format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3">
+                            </lightning-formatted-number>
+
+                            </template>
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <template lwc:if={isEditMode}>
+                                <lightning-input type="number" step="any" name="Revenue_URS__c"
+                                    data-year={financialDisplayData.year1} value={financialDisplayData.totalUrsRevenue1}
+                                    data-recordid={financialDisplayData.totalId1} onchange={handleChange}
+                                    disabled={isDisabled1} >
+                                </lightning-input>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-number value={financialDisplayData.totalUrsRevenue1}
+                                format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3" >
+                            </lightning-formatted-number>
+                            </template>
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <template lwc:if={isEditMode}>
+                                <lightning-input type="number" step="any" name="Revenue_URS__c"
+                                    data-year={financialDisplayData.year2} value={financialDisplayData.totalUrsRevenue2}
+                                    data-recordid={financialDisplayData.totalId2} onchange={handleChange}
+                                    disabled={isDisabled2} >
+                                </lightning-input>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-number value={financialDisplayData.totalUrsRevenue2}
+                               format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3">
+                            </lightning-formatted-number>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-border_right" colspan="1">
+                            <span><strong>Revenue Total UHG</strong></span>
+                        </td>
+
+                        <td class="slds-border_right" colspan="1">
+                            <template lwc:if={isEditMode}>
+                                <lightning-input type="number" step="any" name="Revenue_Total_UHG__c"
+                                    data-year={financialDisplayData.year0} value={financialDisplayData.totalUhgRevenue0}
+                                    data-recordid={financialDisplayData.totalId0} onchange={handleChange}
+                                    disabled={isDisabled0} >
+                                </lightning-input>
+                            </template>
+                            <template lwc:else>
+
+                                <lightning-formatted-number value={financialDisplayData.totalUhgRevenue0}
+                                    format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3">
+                                </lightning-formatted-number>
+                                <!--<span>{financialDisplayData.totalUhgRevenue0}</span>-->
+                            </template>
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <template lwc:if={isEditMode}>
+                                <lightning-input type="number" step="any" name="Revenue_Total_UHG__c"
+                                    data-year={financialDisplayData.year1} value={financialDisplayData.totalUhgRevenue1}
+                                    data-recordid={financialDisplayData.totalId1} onchange={handleChange}
+                                    disabled={isDisabled1} >
+                                </lightning-input>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-number value={financialDisplayData.totalUhgRevenue1}
+                                    format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3">
+                                </lightning-formatted-number>
+                                <!--<span>{financialDisplayData.totalUhgRevenue1}</span>-->
+                            </template>
+                        </td>
+                        <td class="slds-border_right" colspan="1">
+                            <template lwc:if={isEditMode}>
+                                <lightning-input type="number" step="any" name="Revenue_Total_UHG__c"
+                                    data-year={financialDisplayData.year2} value={financialDisplayData.totalUhgRevenue2}
+                                    data-recordid={financialDisplayData.totalId2} onchange={handleChange}
+                                    disabled={isDisabled2} >
+                                </lightning-input>
+                            </template>
+                            <template lwc:else>
+                                <lightning-formatted-number value={financialDisplayData.totalUhgRevenue2}
+                                    format-style="currency" currency-code="USD"
+                                minimum-fraction-digits="0" maximum-fraction-digits="3">
+                                </lightning-formatted-number>
+                                <!-- <span>{financialDisplayData.totalUhgRevenue2}</span>-->
+                            </template>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </template>
+            <tr style="background-color: hsla(219, 49%, 67%, 0.79);">
+                <td colspan="4" style="height:3px"></td>
+
+            </tr>
+
+
+            <!--<div class="slds-p-top_large slds-p-bottom_large">-->
+            <!--<table class="slds-table  slds-no-row-hover">-->
+            <tr>
+                <td class="slds-border_right" colspan="1">
+                    <span><b>UHC Services Currently Provided to Client</b></span>
+                </td>
+                <td class="slds-border_right" colspan="3">
+                    <template if:true={ebdListData}>
+                        <template lwc:if={isEditMode}>
+                            <!--  <lightning-textarea  type="text"  name="UHC_Services__c"
+                                value={ebdListData.UHC_Services__c} onchange={handleInputChange} max-length="32768">
+                            </lightning-textarea >
+                        </template>
+                        <template lwc:else>
+                            <template lwc:if={ebdListData.UHC_Services__c}>
+                                <lightning-formatted-text value={ebdListData.UHC_Services__c}></lightning-formatted-text>
+                            </template>
+                        </template>-->
+                            <lightning-textarea type="text" name="UHC_Services__c" value={ebdListData.UHC_Services__c}
+                                onchange={handleInputChange} max-length="32768">
+                            </lightning-textarea>
+                        </template>
+                        <template if:false={isEditMode}>
+                            <template lwc:if={ebdListData.UHC_Services__c}>
+                                <lightning-formatted-text style="word-wrap: break-word; white-space: normal;"
+                                    value={ebdListData.UHC_Services__c}></lightning-formatted-text>
+                            </template>
+                        </template>
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-border_right" colspan="1">
+                    <span><b>Current Medical Contract Term</b></span>
+                </td>
+                <td class="slds-border_right" colspan="3">
+                    <span>{currentMedicalStr}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-border_right" colspan="1">
+                    <span><b>Surest Contract Term</b></span>
+                </td>
+                <td class="slds-border_right" colspan="3">
+                    <template lwc:if={surestCurrentStr}>
+                        <span>{surestCurrentStr}</span>
+                    </template>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="slds-border_right" colspan="1">
+                    <span><b>Surest Next Renewal Date</b></span>
+
+                </td>
+                <td class="slds-border_right" colspan="3">
+                    <span>{surestNextStr}</span>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="slds-border_right" colspan="1">
+                    <span><b>Client’s Interest in Surest</b></span>
+                </td>
+                <td class="slds-border_right" colspan="3">
+                    <!-- <template lwc:if={isEditMode}>
+                            <lightning-textarea type="text" variant="label-hidden" name="Client_s_Interest__c"
+                                value={ebdListData.Client_s_Interest__c} onchange={handleInputChange} max-length="32768">
+                            </lightning-textarea>
+                            
+                        </template>
+                        <template lwc:else>
+                            <template lwc:if={ebdListData.Client_s_Interest__c}>
+                                <lightning-formatted-text value={ebdListData.Client_s_Interest__c}></lightning-formatted-text>
+                            </template>
+                        </template>-->
+
+                    <template if:true={isEditMode}>
+                        <template if:true={ebdListData}>
+                            <lightning-textarea type="text" name="Client_s_Interest__c"
+                                value={ebdListData.Client_s_Interest__c} onchange={handleInputChange}
+                                max-length="32768">
+                            </lightning-textarea>
+                        </template>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={ebdListData}>
+                            <template lwc:if={ebdListData.Client_s_Interest__c}>
+                                <lightning-formatted-text style="word-wrap: break-word; white-space: normal;"
+                                    value={ebdListData.Client_s_Interest__c}></lightning-formatted-text>
+                            </template>
+                        </template>
+                    </template>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--</table>-->
+    <!--</div>-->
+</template>

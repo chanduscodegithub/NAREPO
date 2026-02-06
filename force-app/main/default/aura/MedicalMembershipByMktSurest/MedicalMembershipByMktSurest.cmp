@@ -1,0 +1,255 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 04-17-2024
+  @last modified by  : Spoorthy
+-->
+<aura:component controller="MedicalMemByMarket" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="Northeast" type="Integer"/>
+    <aura:attribute name="Southeast" type="Integer"/>
+    <aura:attribute name="Central" type="Integer"/>
+    <aura:attribute name="West" type="Integer"/>
+    <aura:attribute name="Other" type="Integer"/>
+    <aura:attribute name="Total" type="Integer"/>
+    <aura:attribute name="LinkId" type="String"/>
+    <aura:attribute name="GL_Date" type="String"/>
+    
+    <aura:attribute name="stateMap" type="String[]"/>
+    <aura:attribute name="unetMap" type="String[]"/>
+    
+    <aura:attribute name="currentRegion" type="String"/>
+    <aura:attribute name="currentState" type="String"/>
+    
+    <aura:attribute name="top" type="Integer"/>
+    <aura:attribute name="left" type="Integer"/>
+    
+    <aura:attribute name="dynamicComponentsByAuraId" type="String"/>
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>   
+    <aura:attribute name="AdditionalDetailsUrl" type="String" default="{!$Label.c.Medical_Membership_By_Mkt_Addional_Details_Url_Surest}" />
+    <aura:attribute name="AdditionalDetailsIframeProp" type="String" default="{!$Label.c.Medical_Membership_By_Mkt_Addional_Details_Iframe_Prop_Url_Surest}" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>    
+    <ltng:require styles="{! $Resource.IpadResetCSS}"/> 
+    {!v.body}
+    
+    
+    <!--*****************Pop up STARTS*******************-->  
+    <div aura:id="state_popup" class="slds-hide">                
+        <section role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal_prompt" aria-modal="true">
+            <div aura:id="unet_popup" class="slds-hide">
+                <section aura:id="unet_popup_sec" class="slds-popover slds-nubbin_left-top unet-market-popover" style="{!'position:absolute;top:'+v.top+'px;left:'+v.left+'px;background:#faffbd;'}" role="dialog" aria-labelledby="dialog-heading-id-21" aria-describedby="dialog-body-id-21">
+                    <button class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon" onclick="{!c.cancelUnet}" title="Close dialog">
+                        <lightning:icon iconName="utility:close" size="xx-small" class="slds-button__icon"></lightning:icon>                                        
+                        <span class="slds-assistive-text">Close dialog</span>
+                    </button>
+                    <header class="slds-popover__header">
+                        <h2 id="dialog-heading-id-21" class="slds-text-heading_small">{!v.currentState} Markets</h2>
+                    </header>
+                    <div class="slds-popover__body slds-is-relative" id="dialog-body-id-21">
+                        <div aura:id="unet_spin" class="slds-spinner_container">
+                            <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_small">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>                        
+                        <dl class="slds-list_horizontal slds-wrap slds-text-body_small">
+                            <dt class="slds-item_label slds-text-color_weak slds-truncate slds-text-heading_small slds-width_60">Market</dt>
+                            <dd class="slds-item_detail slds-text-color_weak slds-truncate slds-text-heading_small slds-width_40">Members</dd> 
+                            <aura:iteration items="{!v.unetMap}" var="unet">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate slds-width_60" title="{!unet.name}">{!unet.name}</dt>
+                                <dd class="slds-item_detail slds-text-color_weak slds-truncate slds-width_40"><ui:outputNumber format="#,###,##0" value="{!unet.members}"/></dd> 
+                            </aura:iteration>
+                        </dl>
+                    </div>
+                </section>
+            </div>
+            
+            <div class="slds-modal__container">
+                <header class="slds-modal__header slds-theme_shade">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                        <lightning:icon iconName="utility:close" size="x-small" class="slds-button__icon slds-button__icon_large"></lightning:icon>                    
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium">{!v.currentRegion} Region</h2>
+                </header>
+                <span class="font-color_black instruction_Text">Click on the State to view the membership breakdown by Market</span>
+                <div class="slds-modal__content slds-p-around_medium slds-border_top slds-border_bottom slds-is-relative">
+                    
+                    <div aura:id="state_spin" class="slds-spinner_container">
+                        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_small">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>                    
+                    <dl class="slds-list_horizontal slds-wrap slds-text-body_small">                        
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate slds-text-heading_small slds-width_50">State</dt>
+                        <dd class="slds-item_detail slds-text-color_weak slds-truncate slds-text-heading_small slds-width_50">Surest Members</dd> 
+                        <aura:iteration items="{!v.stateMap}" var="state">
+                            <dt class="slds-item_label slds-text-color_weak slds-truncate slds-width_50"><a title="{!state.name}" data-record="{!state.name}" onclick="{!c.openUnetDetails}">{!state.name}</a> </dt>
+                            <dd class="slds-item_detail slds-text-color_weak slds-truncate slds-width_50"><ui:outputNumber format="#,###,##0" value="{!state.members}"/></dd> 
+                        </aura:iteration>
+                    </dl>
+                </div>
+                <footer class="slds-modal__footer slds-theme_default">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.confirmCancel}">Ok</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    <!--*****************Pop up ENDS******************-->     
+    <div aura:id="Medical_MembershipBy_Market" class="slds-section ipadbottom component-content">
+        <article class="slds-card class slds-card_boundary">
+            <div class="slds-card__header slds-grid avoid-clicks" data-record="Medical_MembershipBy_Market" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                        </button>
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Client_Survey_Results_Heading}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:poll" size="small" alternativeText="{!$Label.c.Client_Survey_Results_Heading}" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2>      
+                            <span class="slds-text-heading--small">{!$Label.c.Surest_Medical_Membership_by_Market_Heading}</span>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-is-relative">
+                <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+                <!--  Error PopUp STARTS --> 
+                <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                                <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                                <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                            </button>
+                            <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <p style="text-align:center;">{!v.ErrorMessage}</p>
+                        </div>
+                        <div class="slds-modal__footer slds-theme--default">
+                            <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="ErrorMessage"></div>
+                <!--  Error PopUp ENDS -->
+                
+                <div class="slds-section__content slds-is-relative">   
+                    <div class="slds-card__body d-inline-block">                    
+                        <table aura:id="clientSurveyTbl" id="clientSurveyTbl" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout data-table clientSurveyTbl">
+                            <thead>                                
+                                <tr class="slds-hint-parent">                               
+                                    <th class="slds-text-align_center slds-is-relative" scope="col">                                                                                                                       
+                                        <aura:if isTrue="{!v.Northeast == 0}">
+                                            <span class="no_records"><strong>Northeast</strong></span>
+                                            <aura:set attribute="else">                                                
+                                                <a class="slds-truncate" title="Northeast" data-record="Northeast" onclick="{!c.openMap}"><strong>Northeast</strong></a>
+                                            </aura:set>
+                                        </aura:if>
+                                    </th>
+                                    <th class="slds-text-align_center" scope="col">                                                                                                                   
+                                        <aura:if isTrue="{!v.Southeast == 0}">
+                                            <span class="no_records"><strong>Southeast</strong></span>
+                                            <aura:set attribute="else">                                                
+                                                <a class="slds-truncate" title="Southeast" data-record="Southeast" onclick="{!c.openMap}"><strong>Southeast</strong></a> 
+                                            </aura:set>
+                                        </aura:if>
+                                    </th>
+                                    <th class="slds-text-align_center" scope="col">                                                                                                                                                                                                           
+                                        <aura:if isTrue="{!v.Central == 0}">
+                                            <span class="no_records"><strong>Central</strong></span>
+                                            <aura:set attribute="else">                                                
+                                                <a class="slds-truncate" title="Central" data-record="Central" onclick="{!c.openMap}"><strong>Central</strong></a> 
+                                            </aura:set>
+                                        </aura:if>
+                                    </th>
+                                    <th class="slds-text-align_center" scope="col"> 
+                                        <aura:if isTrue="{!v.West == 0}">
+                                            <span class="no_records"><strong>West</strong></span>
+                                            <aura:set attribute="else">
+                                                <a class="slds-truncate" title="West" data-record="West" onclick="{!c.openMap}"><strong>West</strong></a> 
+                                            </aura:set>
+                                        </aura:if>                                                                                                                
+                                    </th>
+                                    <th class="slds-text-align_center" scope="col">                                                                                                                                                                                                                               
+                                        <aura:if isTrue="{!v.Other == 0}">
+                                            <span class="no_records"><strong>Other</strong></span>
+                                            <aura:set attribute="else">                                                
+                                                <a class="slds-truncate" title="Other" data-record="Other" onclick="{!c.openMap}"><strong>Other</strong></a> 
+                                            </aura:set>
+                                        </aura:if>                                                                                                                
+                                    </th>
+                                    <th class="slds-text-align_center" scope="col">                                                                                                               
+                                        <span class="slds-truncate" title="Total"><strong>Total</strong></span>                                                                         
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>                           
+                                <tr class="slds-hint-parent">
+                                    <th class="slds-text-align_center" data-record="Northeast" onclick="{!c.openMap}" data-label="Northeast" scope="col">                                                                                                               
+                                        <span class="slds-truncate" title="Northeast"><strong><ui:outputNumber format="#,###,##0" value="{!v.Northeast}"/></strong></span>                                                    
+                                    </th>
+                                    <th class="slds-text-align_center" data-label="Southeast" data-record="Southeast" onclick="{!c.openMap}" scope="col">                                                                           
+                                        <span class="slds-truncate" title="Southeast"><strong><ui:outputNumber format="#,###,##0" value="{!v.Southeast}"/></strong></span>                                                                                                                        
+                                    </th>
+                                    <th class="slds-text-align_center" data-label="Central" data-record="Central" onclick="{!c.openMap}" scope="col">                                                                           
+                                        <span class="slds-truncate" title="Central"><strong><ui:outputNumber format="#,###,##0" value="{!v.Central}"/></strong></span>                                                                                         
+                                    </th>
+                                    <th class="slds-text-align_center" data-label="West" data-record="West" onclick="{!c.openMap}" scope="col">                                                                                                               
+                                        <span class="slds-truncate" title="West"><strong><ui:outputNumber format="#,###,##0" value="{!v.West}"/></strong></span>                                                                         
+                                    </th>
+                                    <th class="slds-text-align_center" data-label="Other" data-record="Other" onclick="{!c.openMap}" scope="col">                                                                                                               
+                                        <span class="slds-truncate" title="Other"><strong><ui:outputNumber format="#,###,##0" value="{!v.Other}"/></strong></span>                                                                         
+                                    </th>
+                                    <th class="slds-text-align_center" data-label="Total" scope="col">                                                                                                               
+                                        <span class="slds-truncate" title="Total"><strong><ui:outputNumber format="#,###,##0" value="{!v.Total}"/></strong></span>                                                                         
+                                    </th>
+                                </tr>                                
+                            </tbody>
+                        </table>
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-p-vertical_xx-small slds-border_bottom">
+                                <p><i>Click on the Region name to view the membership breakdown by State</i></p>
+                            </div>
+                            <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-p-vertical_xx-small slds-border_bottom ">
+                                <div class="slds-form slds-form_horizontal slds-grid">
+                                    <div class="slds-form-element slds-m-bottom_none">
+                                        <label class="slds-form-element__label slds-p-top_none label-normal">Surest membership as of :</label>
+                                        <div class="slds-form-element__control slds-p-left_none">
+                                            <ui:outputDate class="font-bold" format="M/d/yyyy" value="{!v.GL_Date}"/>
+                                        </div>
+                                    </div>
+                                </div>                                
+                            </div>          
+                            <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-p-vertical_xx-small slds-theme_shade slds-border_bottom">
+                                <ui:outputURL value="{!v.AdditionalDetailsUrl+v.LinkId+v.AdditionalDetailsIframeProp}" label="{!$Label.c.Medical_Membership_By_Market_Dashboard_Label}" target="_blank"/>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-card__footer">
+                </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

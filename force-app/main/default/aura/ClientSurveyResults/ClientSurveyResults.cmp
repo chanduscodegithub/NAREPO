@@ -1,0 +1,158 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="ClientSurveyResultsClass" access="global" >
+    <aura:attribute name="clientSurveys" type="String[]"/>
+    <aura:attribute name="YearArray" type="String[]"/>
+    <aura:attribute name="MeritId" type="String"/>
+    <aura:attribute name="LinkId" type="String"/>
+    <aura:attribute name="TableauLinkId" type="String"/>
+    <aura:attribute name="AccountType" type="String"/>
+    <aura:attribute name="ClientSurveyDashUrl" type="String" default="{!$Label.c.Client_Survey_Dashboard_Link_Url}" />
+    <aura:attribute name="AdditionalDetailsUrl" type="String" default="{!$Label.c.Client_Survey_Addional_Details_Url}" />
+    <aura:attribute name="NetPromoterScoreUrl" type="String" default="{!$Label.c.Client_Survey_Promoter_Score_Url}" />    
+    <aura:attribute name="AdditionalDetailsIframeProp" type="String" default="{!$Label.c.Client_Survey_Addional_Details_Iframe_Prop_Url}" />    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <style>
+            @media (max-width: 1199px){
+                .cuf-scroller-inside{
+                    padding: 0 !important;
+                }
+            }
+     </style> 
+    <div aura:id="client_Survey_Results" class="slds-section ipadbottom container forceRelatedListSingleContainer">
+        <article class="slds-card forceRelatedListCardDesktop class slds-card_boundary">
+            <div class="slds-card__header slds-grid slds-p-vertical--x-small slds-m-bottom--none appletHeader flex-auto" data-record="client_Survey_Results" id="utilityToggle" onclick="{!c.expandCollapse}">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-grid slds-grid_vertical-align-center">
+                        <button class="slds-button slds-text-body--regular action-bar-mobile">
+                            <lightning:icon class="icon-fallback-text sectionChevronIcon spin forceIcon" aura:id="utilityToggle" iconName="utility:chevronright" size="x-small" alternativeText="Product" />
+                        </button>
+                        <div aura:id="appletIcon">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="{!$Label.c.Client_Survey_Results_Heading}">
+                                <lightning:icon class="slds-icon slds-icon--small" iconName="standard:poll" size="small" alternativeText="{!$Label.c.Client_Survey_Results_Heading}" />
+                            </span>
+                        </div>
+                        <div aura:id="spinner" class="slds-hide dotsSpinnerContainer">
+                            <div class="dotsSpinnerContent slds-is-relative slds-p-around_medium">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small">                                
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-grid flex-alignCenter">
+                            <!--<a href="javascript:void(0);" class="slds-card__header-link slds-truncate">-->
+                                <span class="slds-text-heading--small">{!$Label.c.Client_Survey_Results_Heading}</span>
+                            <!--</a>-->
+                            <div class="slds-is-relative flex-alignCenter helptext show-md-up slds-p-horizontal_x-small">
+                                    <c:tooltip helpLink="Help" helpText="{!$Label.c.ClientNPSSurvey_AccountPeopleTab_HelpTxt}"/>
+                                </div>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-is-relative">
+               <div class="slds-spinner_container slds-hide" aura:id="spinner1"></div>
+            <!--  Error PopUp STARTS --> 
+                <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide pos-md-absolute">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                                <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                                <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                            </button>
+                            <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <p style="text-align:center;">{!v.ErrorMessage}</p>
+                        </div>
+                        <div class="slds-modal__footer slds-theme--default">
+                            <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open slds-hide pos-md-absolute" aura:id="ErrorMessage"></div>
+                <!--  Error PopUp ENDS -->
+            
+            <div class="slds-section__content" style="padding-top:0px;position:relative;">   
+                <div class="slds-card__body d-inline-block">                    
+                    <table aura:id="clientSurveyTbl" style="padding: 0 1em;" id="clientSurveyTbl" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--resizable-cols slds-table--fixed-layout clientSurveyTbl">
+                        <thead>
+                            <tr class="slds-hint-parent">
+                               <th style="width: 27%;" class="slds-is-resizable" scope="col">                                                                                                                                                  
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="slds-truncate bold" title="{!v.YearArray[3]}">{!v.YearArray[3]}</span>                                                    
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                           
+                                    <span class="slds-truncate bold" title="{!v.YearArray[2]}">{!v.YearArray[2]}</span>                                                                                                                        
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                           
+                                    <span class="slds-truncate bold" title="{!v.YearArray[1]}">{!v.YearArray[1]}</span>                                                                                         
+                                </th>
+                                <th class="slds-is-resizable align-center" scope="col">                                                                                                               
+                                    <span class="slds-truncate bold" title="{!v.YearArray[0]}">{!v.YearArray[0]}</span>                                                                         
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.clientSurveys}" var="clientSurveysObj" indexVar="index">
+                                <tr class="slds-hint-parent ">
+                                    <td class="alignRight" style="border-top:none;">
+                                        <div class="slds-truncate bold" title="{!clientSurveysObj[0]}">{!clientSurveysObj[0]}</div>
+                                    </td>
+                                    <td data-label="{!v.YearArray[3]}" class="addBorderLeft">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+              									<div class="slds-truncate" title="{!clientSurveysObj[1]}">{!clientSurveysObj[1]}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label="{!v.YearArray[2]}" class="addBorderLeft">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-truncate" title="{!clientSurveysObj[2]}">{!clientSurveysObj[2]}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label="{!v.YearArray[1]}" class="addBorderLeft">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-truncate" title="{!clientSurveysObj[3]}">{!clientSurveysObj[3]}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label="{!v.YearArray[0]}" class="addBorderLeft ">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">                                                
+                                                <div class="slds-truncate" title="{!clientSurveysObj[4]}">{!clientSurveysObj[4]}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>                            	            
+                            </aura:iteration>
+                            <aura:if isTrue="{!v.AccountType != 'Client Development'}">
+                                <tr class="slds-hint-parent CSRDashboard">                            
+                                    <td style="border-top:none; text-align: right;" class="tab-none"><!--<b>{!$Label.c.Client_Survey_Dashboard_Link_Label}</b>--></td>
+                            		<td colspan="4" style="border-top:none;"><ui:outputURL value="{!v.AdditionalDetailsUrl+v.TableauLinkId+v.AdditionalDetailsIframeProp}" label="{!$Label.c.Client_Survey_Dashboard_Additional_Link_Name}" target="_blank"/></td>
+                            	</tr>
+                            	<tr class="slds-hint-parent CSRDashboard">                            
+                                    <td style="border-top:none; text-align: right;" class="tab-none"><!--<b>{!$Label.c.Client_Survey_Dashboard_Link_Label}</b>--></td>
+                            		<td colspan="4" style="border-top:none;"><ui:outputURL value="{!v.ClientSurveyDashUrl}" label="{!$Label.c.Client_Survey_Dashboard_Link_Name}" target="_blank"/></td>
+                            	</tr>
+                                <!--tr class="slds-hint-parent CSRDashboard">                            
+                                    <td style="border-top:none; text-align: right;" class="tab-none"></td>
+                            		<td colspan="4" style="border-top:none;"><ui:outputURL value="{!v.NetPromoterScoreUrl}" label="{!$Label.c.Client_Survey_Net_Promoter_Link_Name}" target="_blank"/></td>
+                            	</tr-->                                
+                            </aura:if>                                
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-card__footer">
+            </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

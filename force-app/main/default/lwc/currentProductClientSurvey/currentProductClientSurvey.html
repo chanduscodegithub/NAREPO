@@ -1,0 +1,483 @@
+<template>
+    <p style='margin: 0px 0px 15px 15px;'>
+        <b>SCE’s only</b> - Validate the products held by the client. Click the “Edit” button to make changes, and use
+        the drop-down fields to update the information. Make sure to click on the “Save” button after you make updates.
+        Please make sure to record a Yes/No response for all products listed below – you will not be able to complete
+        the final validation at the bottom of this form if there are any blanks in the Products section.
+        </br>
+    </p>
+    <template if:true={showSpinner}>
+        <span>
+            <div class="slds-spinner_container">
+                <div class="slds-spinner--brand slds-spinner slds-spinner--medium slds-is-relative loading-Position"
+                    role="status">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </span>
+    </template>
+
+
+    <!-- hasTabAccess --><!-- hasTabAccess replaced by hasEditAccess - SAMARTH -->
+    <template if:true={hasEditAccess}>
+        <div style='float:right;margin-bottom:15px'>
+            <template if:true={isEdit}>
+                <lightning-button label="Edit" title="Edit" onclick={handleEdit} class="slds-m-left_x-small">
+                </lightning-button>
+
+            </template>
+            <template if:false={isEdit}>
+                <lightning-button label="Save" onclick={handleSave} class="slds-m-left_x-small">
+                </lightning-button>
+                <lightning-button label="Cancel" onclick={handleCancel} class="slds-m-left_x-small"></lightning-button>
+            </template>
+        </div>
+    </template>
+
+    <div class="slds-p-around_xx-small">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered"
+            style='table-layout:fixed'>
+            <thead>
+                <tr class="slds-text-title--caps addHeightStyle">
+                    <th style='height:30px;'>Product </th>
+                    <th>
+                        <abbr title="required" class="slds-required">*</abbr>
+                        Yes/No
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Pharmacy
+                        <lightning-helptext
+                            content="Only clients with Optum Rx Carve In will be asked pharmacy-related questions in the NA Client Survey.">
+                        </lightning-helptext>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Pharmacy__c" variant="label-hidden"
+                            options={Pharmacy__c} value={ProductMix__c.Pharmacy__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Surest</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Surest__c" variant="label-hidden"
+                            options={Surest__c} value={ProductMix__c.Surest__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dental</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Dental__c" variant="label-hidden"
+                            options={Dental__c} value={ProductMix__c.Dental__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Vision</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Vision__c" variant="label-hidden"
+                            options={Vision__c} value={ProductMix__c.Vision__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Supplemental Health
+
+                        <lightning-helptext content="This includes the following products: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        Accident Protection Plan \ Critical Illness Protection Plan \ Hospital Indemnity">
+                        </lightning-helptext>
+
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Supplemental_Health__c" variant="label-hidden"
+                            options={Supplemental_Health__c} value={ProductMix__c.Supplemental_Health__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Care Management
+                        <lightning-helptext
+                            content="This Includes the Following Products: Personal Health Support \ Advocate4Me \ Optum Health Care Advisor \ Complex Care Concierge (C3)">
+                        </lightning-helptext>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Care_Management__c" variant="label-hidden"
+                            options={Care_Management__c} value={ProductMix__c.Care_Management__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Decision Support
+                        <lightning-helptext
+                            content="This Includes the Following Products: Buoy \ ER Decision Support \ Nurseline \ Second Opinion Services (2nd MD) \ Surgical Management Solution (SMS)">
+                        </lightning-helptext>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Decision_Support__c" variant="label-hidden"
+                            options={Decision_Support__c} value={ProductMix__c.Decision_Support__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Women's Health
+                        <lightning-helptext
+                            content="This Includes the Following Products: Fertility Solutions \ Neonatal Resource Service \ Maven Maternity \ Doula Support programs \ UMR Maternity CARE">
+                        </lightning-helptext>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Women_s_Health__c" variant="label-hidden"
+                            options={Women_s_Health__c} value={ProductMix__c.Women_s_Health__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>Complex Conditions (Centers of Excellence)
+                        <lightning-helptext
+                            content="This includes the following products: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        Bariatric Resource Services \ Cancer Resource Services \ Cancer Support Program \ Comprehensive Kidney Solutions \ Kidney Resource Services \ Orthopedic Health Support \ Spine and Joint Solution \ Transplant Resource Services">
+                        </lightning-helptext>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Centers_of_Excellence__c" variant="label-hidden"
+                            options={Centers_of_Excellence__c} value={ProductMix__c.Centers_of_Excellence__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td>Disease Management
+                        <lightning-helptext
+                            content="This includes the following products: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        Asthma Program \ Coronary Artery Disease Program \ Congestive Heart Failure Program \ Diabetes Program \ Chronic Obstructive Pulmonary Disease (COPD) Program \ UMR Ongoing Condition CARE \ UMR Emerging CARE">
+                        </lightning-helptext>
+
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Disease_Management__c" variant="label-hidden"
+                            options={Disease_Management__c} value={ProductMix__c.Disease_Management__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>Worksite Wellness
+                        <lightning-helptext
+                            content="This includes the following products: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        Adult Flu Clinic  \ Biometric Screening  \  Onsite Fitness  \  Optum Onsite Health Promotion Specialist">
+                        </lightning-helptext>
+
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Worksite_Wellness__c" variant="label-hidden"
+                            options={Worksite_Wellness__c} value={ProductMix__c.Worksite_Wellness__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <!-- <tr>
+
+                    <td>Wellness Coaching</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Wellness_Coaching__c" variant="label-hidden"
+                            options={Wellness_Coaching__c} value={ProductMix__c.Wellness_Coaching__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr> -->
+                <tr>
+
+                    <td>Wellness and Wellness Coaching
+                        <lightning-helptext content="This includes the following products: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        Real Appeal \ Stride \ Tobacco Cessation \ UHC Motion \ Wellness Coaching \ Wellness-Rally \ UMR Wellness CARE">
+                        </lightning-helptext>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Wellness_and_Wellness_Coaching__c"
+                            variant="label-hidden" options={Wellness_and_Wellness_Coaching__c}
+                            value={ProductMix__c.Wellness_and_Wellness_Coaching__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <!-- <tr>
+
+                    <td>Rally Client (above base)
+
+                        <lightning-helptext content="This includes the following products: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        Rally Engage \ Rally Premium \ Rally Advantage"></lightning-helptext>
+
+
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Rally_Client_above_base__c"
+                            variant="label-hidden" options={Rally_Client_above_base__c}
+                            value={ProductMix__c.Rally_Client_above_base__c} onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr> -->
+                <tr>
+
+                    <td>Incentive Programs
+                        <lightning-helptext content="This includes the following products: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        UnitedHealth Personal Rewards \ All UnitedHealthcare Rewards products"></lightning-helptext>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Incentive_Products__c" variant="label-hidden"
+                            options={Incentive_Products__c} value={ProductMix__c.Incentive_Products__c}
+                            onchange={updateChanges} readonly={isEdit}></lightning-combobox>
+                    </td>
+                </tr>
+                <!-- <tr>
+
+                    <td>Health Savings Account (HSA)</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Health_Savings_Account_HSA__c"
+                            variant="label-hidden" options={Health_Savings_Account_HSA__c}
+                            value={ProductMix__c.Health_Savings_Account_HSA__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>Health Reimbursement Account (HRA)</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Health_Reimbursement_Account_HRA__c"
+                            variant="label-hidden" options={Health_Reimbursement_Account_HRA__c}
+                            value={ProductMix__c.Health_Reimbursement_Account_HRA__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>Flexible Spending Account (FSA) </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Flexible_Spending_Account_FSA__c"
+                            variant="label-hidden" options={Flexible_Spending_Account_FSA__c}
+                            value={ProductMix__c.Flexible_Spending_Account_FSA__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr> -->
+
+                <tr>
+
+                    <td>Financial Accounts 
+                        <lightning-helptext content="This includes the following products:   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        HSA/HRA/FSA/HIA"></lightning-helptext>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Financial_Accounts__c" variant="label-hidden"
+                            options={Financial_Accounts__c} value={ProductMix__c.Financial_Accounts__c}
+                            onchange={updateChanges} readonly={isEdit}></lightning-combobox>
+                    </td>
+                </tr>
+
+
+                <tr>
+
+                    <td>Behavioral Health</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Behavioral_Health__c" variant="label-hidden"
+                            options={Behavioral_Health__c} value={ProductMix__c.Behavioral_Health__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>EAP</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="EAP_Domestic__c" variant="label-hidden"
+                            options={EAP_Domestic__c} value={ProductMix__c.EAP_Domestic__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <!-- <tr>
+
+                    <td>EAP - Global</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="EAP_Global__c" variant="label-hidden"
+                            options={EAP_Global__c} value={ProductMix__c.EAP_Global__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr> -->
+                <tr>
+
+                    <td>Retiree Products</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="Retiree_Products__c" variant="label-hidden"
+                            options={Retiree_Products__c} value={ProductMix__c.Retiree_Products__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td>UHC Hub 
+                        <lightning-helptext content="This includes the following products: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                        All UHC Hub Solutions"></lightning-helptext>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="UHC_Hub__c" variant="label-hidden"
+                            options={UHC_Hub__c} value={ProductMix__c.UHC_Hub__c}
+                            onchange={updateChanges} readonly={isEdit}></lightning-combobox>
+                    </td>
+                </tr>
+
+                <!-- <tr>
+
+                    <td>UHC Cobra Administration</td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="UHC_Cobra_Administration__c"
+                            variant="label-hidden" options={UHC_Cobra_Administration__c}
+                            value={ProductMix__c.UHC_Cobra_Administration__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr> -->
+
+            </tbody>
+        </table>
+        <div>
+            <p style='text-align: center;padding: 11px;'><i>Required Questions For UMR Clients Only</i>
+                <lightning-helptext
+                    content="Please make sure to record a Yes/No response for all products listed below – you will not be able to complete the final validation at the bottom of this form if there are any blanks in the Products section.">
+                </lightning-helptext>
+            </p>
+        </div>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered"
+            style='table-layout:fixed'>
+            <tbody>
+                <!-- <tr>
+
+                    <td>
+                        UHC/UMR Telehealth Solutions -->
+                        <!--template if:true={isRequired}>
+                            <abbr title="required" class="slds-required">*</abbr>
+                        </template-->
+                    <!-- </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="UHC_UMR_Telehealth_Solutions__c"
+                            variant="label-hidden" options={UHC_UMR_Telehealth_Solutions__c} class="telehealthSolutions"
+                            value={ProductMix__c.UHC_UMR_Telehealth_Solutions__c} onchange={updateChanges}
+                            readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr> -->
+                <!-- Added Vignesh 21/04/25 - CR 3847 -->
+            <!--    <tr>                  
+                    <td>
+                        UHC/UMR Member Service and Tools
+                     <template if:true={isRequired}>
+                            <abbr title="required" class="slds-required">*</abbr>
+                        </template> 
+                    </td>
+                    <td>
+
+                        <lightning-combobox placeholder=" " data-name="UHC_UMR_Member_Service_and_Tools__c"
+                            variant="label-hidden" options={UHC_UMR_Member_Service_and_Tools__c}
+                            class="memberServiceAndTools" value={ProductMix__c.UHC_UMR_Member_Service_and_Tools__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr> -->
+                <tr>                  
+                    <td>
+                        Member Service Vendor
+                     <template if:true={isReq}>
+                            <abbr title="required" class="slds-required">*</abbr>
+                        </template> 
+                    </td>
+                    <td>
+
+                        <lightning-combobox placeholder=" " data-name="Member_Service_Vendor__c"
+                            variant="label-hidden" options={Member_Service_Vendor__c}
+                            value={ProductMix__c.Member_Service_Vendor__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+                <!-- <tr>
+
+                    <td>
+                        UMR COBRA Services -->
+                        <!--template if:true={isRequired}>
+                            <abbr title="required" class="slds-required">*</abbr>
+                        </template-->
+                    <!-- </td>
+                    <td>
+                        <lightning-combobox placeholder=" " data-name="UMR_COBRA_Services__c" variant="label-hidden"
+                            options={UMR_COBRA_Services__c} class="cobra" value={ProductMix__c.UMR_COBRA_Services__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr> -->
+            </tbody>
+        </table>
+    </div>
+    <template if:true={showProductError}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small"
+            aria-labelledby="modal-heading-01" aria-modal="true">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header slds-theme--error">
+
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <span class="slds-assistive-text">Close</span>
+
+                    <h2 class="slds-text-heading_medium slds-hyphenate">
+                        Error
+                    </h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    The Product section needs to be completed before you can validate. Please ensure that a “Yes” or
+                    “No” response is recorded for each product in this section and validate once you've made the updates
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_brand" onclick={closeModal} title="OK">OK</button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+</template>

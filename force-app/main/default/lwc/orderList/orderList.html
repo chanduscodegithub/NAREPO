@@ -1,0 +1,27 @@
+<template>
+    <lightning-card title="All Orders" icon-name="standard:order">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+
+        <!-- Show data table only if there are records -->
+        <template if:true={hasOrders}>
+            <lightning-datatable
+                key-field="jdeOrder"
+                data={orders}
+                columns={columns}
+                hide-checkbox-column="true"
+            ></lightning-datatable>
+        </template>
+
+        <!-- No data message -->
+        <template if:true={showNoDataMessage}>
+            <p>No orders found.</p>
+        </template>
+
+        <!-- Error message -->
+        <template if:true={error}>
+            <p class="slds-text-color_error">{error}</p>
+        </template>
+    </lightning-card>
+</template>

@@ -1,0 +1,48 @@
+<template>
+    <article class="slds-card slds-card_boundary slds-card_related-list-fix headerBottomBorder forceRelatedListSingleContainer">
+
+        <div class="header">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate slds-grid slds-align-spread">
+                <lightning-icon class="slds-icon_container slds-m-left_small slds-m-right_small" icon-name="utility:file" size="small" alternative-text="Files" title="Files"></lightning-icon>
+                <a class="slds-card__header-link baseCard__header-title-container slds-card__header-title">
+                    Files
+                </a>
+                <div class="slds-media__figure" style="margin-left:68%">
+                    <lightning-file-upload
+                        name="fileUploader"
+                        accept={acceptedFormats}
+                        record-id={recordId}
+                        onuploadfinished={handleUploadFinished}
+                        multiple
+                    >
+                    </lightning-file-upload>
+                </div>
+            </header>
+        </div>
+
+
+        <div class="slds-card__body slds-card__body_inner">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="large"></lightning-spinner>
+            </template>
+            <template if:true={fileRecordsList}>
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <template for:each={fileRecordsList} for:item="file">
+                        <div key={file.Id} class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <a href={file.File_URL__c} target="_blank" class="slds-text-link">{file.Name}</a>
+                                <p class="slds-text-body_small slds-m-top_x-small">{file.formattedDate}</p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+
+
+        <footer class="slds-card__footer">
+            <a class="slds-card__footer-action" onclick={viewAllLink}>View All
+            <span class="slds-assistive-text"></span>
+            </a>
+        </footer>
+    </article>
+</template>

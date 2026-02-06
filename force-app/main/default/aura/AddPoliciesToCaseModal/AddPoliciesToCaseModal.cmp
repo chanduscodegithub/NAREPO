@@ -1,0 +1,97 @@
+<aura:component controller="CasePolicyController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" >
+    <!-- {!v.recordId} -->
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="PolicyList" type="Policy_Information__c[]"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="Child_Data" type="Object"/>
+    <aura:attribute name="selectedPoliciesList" type="Policy_Information__c[]"/>
+    <aura:attribute name="PoliciesListToUpdate" type="Policycase__c[]"/>
+    <aura:attribute name="accountId" type="Id"/> 
+    <aura:attribute name="hasRecords" type="Boolean" default='true'/> 
+    <aura:attribute name="selectedPolicy" type="Boolean" />
+    <aura:attribute name="checkBoxCount" type="Integer" default="0"/>
+    <aura:attribute name="selectedallpolicy" type="Boolean" default="false"/>
+    <aura:registerEvent name="CloseCasePolicyModalEvent" type="c:CloseCasePolicyModalEvent"/>
+    <aura:registerEvent name="IndividualPolicyChildEvent" type="c:IndividualPolicyChildEvent"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="PolicyChildEvent" event="c:PolicyChildEvent" action="{!c.addSelectedPolicy}"/>
+    <div role="alertdialog" tabindex="-1" aura:id="ErrorMessage" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="{!c.closeErrorModal}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large"  iconName="utility:close" size="x-small" alternativeText="Product" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p style="text-align:center;">{!v.ErrorMessage}</p> 
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral buttonShadowBorder" onclick="{!c.closeErrorModal}">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="ErrorMessage"></div>
+    <div class="slds-section ipadbottom slds-m-vertical--none">
+        <article class="slds-card modal-content">
+            <div style="padding-top:0px;position:relative;">
+                <div class="slds-spinner_container slds-hide" aura:id="userLoadingspinner">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                        <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div> 
+                <div class="modal-footer" style="float:right;">
+                    <aura:if isTrue="{!v.hasRecords}">
+                        <div class="slds-p-vertical_small slds-p-horizontal_medium">
+                            <ui:button class="slds-button slds-button--neutral uiButton--default uiButton--brand uiButton forceActionButton" aura:id="savePolicy" disabled="true" press="{!c.savePolicyPopup}">
+                                <span class=" label bBody truncate" dir="ltr">{!$Label.c.Save}</span>
+                            </ui:button>                                            
+                            <button class="slds-button slds-button--neutral uiButton forceActionButton" type="button" title="Cancel"  onclick="{!c.cancelPolicyPopup}">
+                                <span class=" label bBody truncate">{!$Label.c.Cancel}</span>
+                            </button>
+                        </div>
+                    </aura:if>                    
+                </div>
+                <div class="slds-card__body">                   
+                    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout data-table">
+                        <aura:if isTrue="{!v.hasRecords}">
+                            <thead>
+                                <tr class="slds-text-title--caps">
+                                    <th class="slds-cell-shrink" scope="col">&nbsp;
+                                        <ui:inputCheckbox aura:id="box3" change="{!c.Selectall}"/></th>
+                                    <th class="" scope="col">
+                                        <div class="slds-cell-wrap" title="Policy Number">Policy Number </div>
+                                    </th> 
+                                    <th class="" scope="col">
+                                        <div class="slds-cell-wrap" title="Policy Name">Policy Name </div>
+                                    </th>  
+                                    <th class="" scope="col">
+                                        <div class="slds-cell-wrap" title="Policy Type">Policy Type </div>
+                                    </th>  
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.PolicyList}" var="PolicyObject">    
+                                    <c:AddPoliciesToCaseTable aura:id="PoliciesToCaseChild" PolicyObject="{!PolicyObject}"/>
+                                </aura:iteration>     
+                            </tbody>
+                            <aura:set attribute="else">
+                                <tfoot>
+                                    <tr>
+                                        <td class="slds-text-align_center">                                    		
+                                            {!$Label.c.No_Policies_Available}
+                                        </td>
+                                    </tr>
+                                </tfoot>                                                                     
+                            </aura:set>
+                        </aura:if>
+                    </table>                                        
+                </div>  
+            </div>
+        </article>
+    </div>
+</aura:component>

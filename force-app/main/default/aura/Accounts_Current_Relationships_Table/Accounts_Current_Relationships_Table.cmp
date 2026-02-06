@@ -1,0 +1,20 @@
+<aura:component >
+    <aura:attribute name="accountHistoryDataobj" type="AccountCFJunction__c"/>
+    <aura:attribute name="AccountIndex" type="String"/>
+    <aura:attribute name="isModalBody" type="Boolean" default="false"/>
+    <aura:registerEvent name="modalCmpCloseEvent" type="c:Model_Closing_Event"/>
+    <tr class="slds-hint-parent">
+        <th scope="row" data-label="Company Name">
+            <a data-record="{!v.accountHistoryDataobj.AccountFirm__c}" class="slds-truncate" tabindex="0" onclick="{!c.navigateToAccountPage}" title="{!v.accountHistoryDataobj.AccountFirm__r.Name}">
+                {!v.accountHistoryDataobj.AccountFirm__r.Name}
+            </a>
+        </th>
+        
+        <th scope="row" data-label="Company Type">
+            <div class="slds-truncate" title="">{!v.accountHistoryDataobj.AccountFirm__r.RecordType.Name}</div>
+        </th>
+        <th scope="row" data-label="Owner">
+            <div class="slds-truncate" title="">{!v.accountHistoryDataobj.AccountFirm__r.Owner.Name}</div>
+        </th>
+    </tr>
+</aura:component>

@@ -1,0 +1,138 @@
+<template>
+    <template if:true={ifGrowth}>
+        <td class="slds-cell-wrap" data-label="Company" style="vertical-align: middle;">
+            <div class="slds-cell-wrap" title="Company">{eachdata.company}</div>
+        </td>
+    </template>
+    <template if:false={ifGrowth}>
+        <td class="slds-cell-wrap" data-label="Company" style="vertical-align: middle;">
+            <p><a href={eachdata.companyLink} variant="base" label={eachdata.company} title="Company"
+                    value={eachdata.company} target="_self" onclick={goToRecordPage}>{eachdata.company}</a></p>
+        </td>
+    </template>
+    <template if:true={issbsceuser}>
+        <td class="slds-cell-wrap" data-label="Medical SCE on the Integrated Account" style="vertical-align: middle;">
+            <div class="slds-cell-wrap" title="Medical SCE on the Integrated Account">{eachdata.companyOwnerName}</div>
+        </td>
+    </template>
+    <template if:true={isSpecialtyUser}>
+        <td class="slds-cell-wrap" data-label="Medical SVP or SCE" style="vertical-align: middle;">
+            <div class="slds-cell-wrap" title="Medical SVP/SCE">{eachdata.medicalSVPorSCE}</div>
+        </td>
+    </template>
+    <td data-label="Effective Date" style="vertical-align: middle;">
+        <div class="slds-cell-wrap" title="Effective Date">
+            <lightning-formatted-date-time value={eachdata.effectiveDate} year="numeric" day="numeric" month="numeric"
+                time-zone="UTC"></lightning-formatted-date-time>
+        </div>
+    </td>
+    <template if:true={ifGrowth}>
+        <td class="slds-cell-wrap" data-label="Membership Activity Name" style="vertical-align: middle;">
+            <p><a href={eachdata.membershipActivityID} variant="base" label={eachdata.membershipActivityName}
+                    title="Membership Activity" value={eachdata.membershipActivityName} target="_self"
+                    onclick={goToRecordPage}>{eachdata.membershipActivityName}</a></p>
+        </td>
+    </template>
+    <template if:true={ifNotSent}>
+        <template if:true={iscmsceuser}>
+            <template if:true={isGreaterThanZero}>
+                <td data-label="# of Renewals Not Yet Confirmed" style="vertical-align: middle;">
+                    <div class="slds-truncate colourtxt" title="# of Renewals Not Yet Confirmed">
+                        {eachdata.noOfProductsNotYetConfirmed}
+                    </div>
+                </td>
+            </template>
+            <template if:false={isGreaterThanZero}>
+                <td data-label="# of Renewals Not Yet Confirmed" style="vertical-align: middle;">
+                    <div class="slds-truncate" title="# of Renewals Not Yet Confirmed">
+                        {eachdata.noOfProductsNotYetConfirmed}
+                    </div>
+                </td>
+            </template>
+            <template if:true={isNotYetSentGreaterThanZero}>
+                <td data-label="# of Confirmed Renewals Not Yet Sent to Incentive Comp"
+                    style="vertical-align: middle; border-right:4px solid #9CB3DD;">
+                    <div class="slds-truncate colourtxt" title="# of Confirmed Renewals Not Yet Sent to Incentive Comp">
+                        {eachdata.noOfProductsNotYetSent}
+                    </div>
+                </td>
+            </template>
+            <template if:false={isNotYetSentGreaterThanZero}>
+                <td data-label="# of Confirmed Renewals Not Yet Sent to Incentive Comp"
+                    style="vertical-align: middle; border-right:4px solid #9CB3DD;">
+                    <div class="slds-truncate" title="# of Confirmed Renewals Not Yet Sent to Incentive Comp">
+                        {eachdata.noOfProductsNotYetSent}
+                    </div>
+                </td>
+            </template>
+        </template>
+        <template if:false={iscmsceuser}>
+            <template if:true={ifGrowth}>
+                <td data-label="# of Products Not Yet Sent" style="vertical-align: middle;">
+                    <div class="slds-truncate colourtxt" title="# of Products Not Yet Sent">
+                        {eachdata.noOfProductsNotYetSent}
+                    </div>
+                </td>
+            </template>
+            <template if:false={ifGrowth}>
+                <td data-label="# of Confirmed Renewals Not Yet Sent to Incentive Comp" style="vertical-align: middle;">
+                    <div class="slds-truncate colourtxt" title="# of Confirmed Renewals Not Yet Sent to Incentive Comp">
+                        {eachdata.noOfProductsNotYetSent}
+                    </div>
+                </td>
+            </template>
+        </template>
+    </template>
+
+    <template if:true={iscmsceuser}>
+        <template if:true={ifNotSent}>
+            <td data-label="# of Confirmed Renewals Sent to Incentive Comp" style="vertical-align: middle;">
+                <div class="slds-truncate " title="# of Confirmed Renewals Sent to Incentive Comp">
+                    {eachdata.noOfProductsSent}</div>
+            </td>
+        </template>
+        <template if:true={ifSent}>
+            <td data-label="# of Confirmed Renewals Sent to Incentive Comp" style="vertical-align: middle;">
+                <div class="slds-truncate " title="# of Confirmed Renewals Sent to Incentive Comp">
+                    {eachdata.noOfProductsSent}</div>
+            </td>
+        </template>
+    </template>
+    <template if:false={iscmsceuser}>
+        <template if:true={ifGrowth}>
+            <td data-label="# of Products Sent" style="vertical-align: middle;">
+                <div class="slds-truncate " title="# of Products Sent">{eachdata.noOfProductsSent}</div>
+            </td>
+        </template>
+        <template if:false={ifGrowth}>
+            <template if:true={ifNotSent}>
+                <td data-label="# of Confirmed Renewals Sent to Incentive Comp" style="vertical-align: middle;">
+                    <div class="slds-truncate " title="# of Confirmed Renewals Sent to Incentive Comp">{eachdata.noOfProductsSent}
+                    </div>
+                </td>
+            </template>
+            <template if:true={ifSent}>
+                <td data-label="# of Confirmed Renewals Sent to Incentive Comp" style="vertical-align: middle;">
+                    <div class="slds-truncate " title="# of Confirmed Renewals Sent to Incentive Comp">
+                        {eachdata.noOfProductsSent}</div>
+                </td>
+            </template>
+        </template>
+    </template>
+
+    <template if:true={ifSent}>
+        <template if:true={redFlag}>
+            <td data-label="Has the Information Been Extracted by the Incentive Comp Team"
+                style="vertical-align: middle;">
+                <div class="slds-cell-wrap colourtxt" title="Has the Info Been Extracted by Incentive Comp">{eachdata.infoExtractedByICT}
+                </div>
+            </td>
+        </template>
+        <template if:false={redFlag}>
+            <td data-label="Has the Information Been Extracted by the Incentive Comp Team"
+                style="vertical-align: middle;">
+                <div class="slds-cell-wrap" title="Has the Info Been Extracted by Incentive Comp">{eachdata.infoExtractedByICT}</div>
+            </td>
+        </template>
+    </template>
+</template>

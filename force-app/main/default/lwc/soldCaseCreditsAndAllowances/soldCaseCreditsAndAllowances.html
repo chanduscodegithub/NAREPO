@@ -1,0 +1,720 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 09-30-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+    <template if:true={isTraditionalProductMed}>
+    <lightning-accordion-section class="section-header-sub" name="Credits and Allowances - Traditional"
+        label="Credits and Allowances - Traditional">
+        <template if:true={isDataReceived}>
+            <div class="slds-grid slds-wrap slds-grid--vertical-align-center slds-p-left_medium client-detail-sec-style"
+                style="font-size: 12px;">
+                <table class="slds-table slds-no-row-hover slds-table_fixed-layout">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th style="text-align: center;"><b>Year 1</b></th>
+                            <th style="text-align: center"><b>Year 2</b></th>
+                            <th style="text-align: center"><b>Year 3</b></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div
+                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                    <b>Communications/Wellness</b>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div
+                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4" style="min-height:2rem;">
+                                    <div class="slds-col slds-cell-wrap">
+                                        <span>
+                                            <template if:false={editmode}>
+                                                <template if:true={sccDataCredAndAll.Communications_Year_1__c}>
+                                                    {sccDataCredAndAll.Communications_Year_1__c}
+                                                </template>
+                                            </template>
+                                            <template if:true={editmode}>
+                                                <lightning-input type="text" variant="label-hidden"
+                                                    name="Sold_Case_Checklist__c.Communications_Year_1__c"
+                                                    value={sccDataCredAndAll.Communications_Year_1__c}
+                                                    onchange={FieldChangeHandler} max-length="25">
+                                                </lightning-input>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div
+                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4" style="min-height:2rem;">
+                                    <div class="slds-col slds-cell-wrap">
+                                        <span>
+                                            <template if:false={editmode}>
+                                                <template if:true={sccDataCredAndAll.Communications_Year_2__c}>
+                                                    {sccDataCredAndAll.Communications_Year_2__c}
+                                                </template>
+                                            </template>
+                                            <template if:true={editmode}>
+                                                <lightning-input type="text" variant="label-hidden"
+                                                    name="Sold_Case_Checklist__c.Communications_Year_2__c"
+                                                    value={sccDataCredAndAll.Communications_Year_2__c}
+                                                    onchange={FieldChangeHandler} max-length="25">
+                                                </lightning-input>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div
+                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4" style="min-height:2rem;">
+                                    <div class="slds-col slds-cell-wrap">
+                                        <span>
+                                            <template if:false={editmode}>
+                                                <template if:true={sccDataCredAndAll.Communications_Year_3__c}>
+                                                    {sccDataCredAndAll.Communications_Year_3__c}
+                                                </template>
+                                            </template>
+                                            <template if:true={editmode}>
+                                                <lightning-input type="text" variant="label-hidden"
+                                                    name="Sold_Case_Checklist__c.Communications_Year_3__c"
+                                                    value={sccDataCredAndAll.Communications_Year_3__c}
+                                                    onchange={FieldChangeHandler} max-length="25">
+                                                </lightning-input>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Pre-Implementation Audit</b></td>
+                            <td></td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <template if:false={editmode}>
+                                        <template if:true={sccDataCredAndAll.Implementation_Year_1__c}>
+                                            {sccDataCredAndAll.Implementation_Year_1__c}
+                                        </template>
+                                    </template>
+                                    <template if:true={editmode}>
+                                        <lightning-input type="text" variant="label-hidden"
+                                            name="Sold_Case_Checklist__c.Implementation_Year_1__c"
+                                            value={sccDataCredAndAll.Implementation_Year_1__c}
+                                            onchange={FieldChangeHandler} max-length="25">
+                                        </lightning-input>
+                                    </template>
+
+                                </div>
+                            </td>
+                            <td><span class='grayOut'></span></td>
+                            <td><span class='grayOut'></span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Transition</b></td>
+                            <td></td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={sccDataCredAndAll.Transition_Year_1__c}>
+                                                {sccDataCredAndAll.Transition_Year_1__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Transition_Year_1__c"
+                                                value={sccDataCredAndAll.Transition_Year_1__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td><span class='grayOut'></span></td>
+                            <td><span class='grayOut'></span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Annual Allowance </b></td>
+                            <td></td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Annual_Allowance_Year1__c}>
+                                                {soldCaseDataCopy.Annual_Allowance_Year1__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Annual_Allowance_Year1__c"
+                                                value={soldCaseDataCopy.Annual_Allowance_Year1__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Annual_Allowance_Year2__c}>
+                                                {soldCaseDataCopy.Annual_Allowance_Year2__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Annual_Allowance_Year2__c"
+                                                value={soldCaseDataCopy.Annual_Allowance_Year2__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Annual_Allowance_Year3__c}>
+                                                {soldCaseDataCopy.Annual_Allowance_Year3__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Annual_Allowance_Year3__c"
+                                                value={soldCaseDataCopy.Annual_Allowance_Year3__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td> <b>Annual Audit </b></td>
+                            <td></td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Annual_Audit_Year1__c}>
+                                                {soldCaseDataCopy.Annual_Audit_Year1__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Annual_Audit_Year1__c"
+                                                value={soldCaseDataCopy.Annual_Audit_Year1__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Annual_Audit_Year2__c}>
+                                                {soldCaseDataCopy.Annual_Audit_Year2__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Annual_Audit_Year2__c"
+                                                value={soldCaseDataCopy.Annual_Audit_Year2__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Annual_Audit_Year3__c}>
+                                                {soldCaseDataCopy.Annual_Audit_Year3__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Annual_Audit_Year3__c"
+                                                value={soldCaseDataCopy.Annual_Audit_Year3__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td></td>
+                        </tr>
+
+                        <template for:each={otherCreditsLst} for:item="otherCredits" for:index="index">
+                            <tr key={otherCredits.value}>
+                                <td><b>{otherCredits.rowHeading}</b></td>
+                                <td>
+                                    <div class="slds-col slds-cell-wrap border-bottom" style="min-height:22px;">
+                                        <template if:false={enableEdit}>
+                                            {otherCredits.writeIn}
+                                        </template>
+                                        <template if:true={enableEdit}>
+                                            <lightning-input type="text" variant="label-hidden" data-index={index}
+                                                data-fieldreference={otherCreditsWriteIn} value={otherCredits.writeIn}
+                                                class="writeInInpt" max-length="200" placeholder="Specify Credit">
+                                            </lightning-input>
+                                        </template>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    <div class="slds-col slds-cell-wrap border-bottom" style="min-height:22px;">
+                                        <template if:false={enableEdit}>
+                                            {otherCredits.year1}
+                                        </template>
+                                        <template if:true={enableEdit}>
+                                            <lightning-input type="text" variant="label-hidden" data-index={index}
+                                                data-fieldreference={otherCredits1} value={otherCredits.year1}
+                                                class="yearoneInpt" max-length="200" placeholder="Included">
+                                            </lightning-input>
+                                        </template>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-col slds-cell-wrap border-bottom" style="min-height:22px;">
+                                        <template if:false={enableEdit}>
+                                            {otherCredits.year2}
+                                        </template>
+                                        <template if:true={enableEdit}>
+                                            <lightning-input type="text" variant="label-hidden" data-index={index}
+                                                data-fieldreference={otherCredits2} value={otherCredits.year2}
+                                                class="yeartwoInpt" max-length="200" placeholder="Included">
+                                            </lightning-input>
+                                        </template>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-col slds-cell-wrap border-bottom" style="min-height:22px;">
+                                        <template if:false={enableEdit}>
+                                            {otherCredits.year3}
+                                        </template>
+                                        <template if:true={enableEdit}>
+                                            <lightning-input type="text" variant="label-hidden" data-index={index}
+                                                data-fieldreference={otherCredits3} value={otherCredits.year3}
+                                                class="yearthreeInpt" max-length="200" placeholder="Included">
+                                            </lightning-input>
+                                        </template>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-col slds-size_10-of-12">
+                                            <template if:true={otherCredits.showAddButton}>
+                                                <lightning-button variant="brand" label="Add Another Credit"
+                                                    data-buttonindex={index} onclick={addGuaranteeFunction}
+                                                    title="Add Another Credit" data-fieldreference={otherCredits1} 
+                                                    disabled={disableButtons}>
+                                                </lightning-button>
+                                            </template>
+                                        </div>
+                                        <div class="slds-col slds-size_2-of-12" style="float: left;">
+                                            <template if:true={otherCredits.showRemoveButton}>
+                                                <lightning-button-icon variant="destructive" icon-name="utility:delete"
+                                                    alternative-text="Delete" onclick={deleteGuaranteeFunction}
+                                                    data-buttonindex={index} data-fieldreference={otherCredits1}
+                                                    class="doNotDeleteVendor" title="Delete"
+                                                    disabled={disableButtons}>
+                                                </lightning-button-icon>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+
+                </table>
+
+
+
+            </div>
+        </template>
+    </lightning-accordion-section>
+    </template>
+    <template if:true={isSurestProductMed}>
+    <lightning-accordion-section class="section-header-sub" name="Credits and Allowances - Surest"
+        label="Credits and Allowances - Surest">
+        <template if:true={isDataReceived}>
+            <div class="slds-grid slds-wrap slds-grid--vertical-align-center slds-p-left_medium client-detail-sec-style"
+                style="font-size: 12px;">
+                <table class="slds-table slds-no-row-hover slds-table_fixed-layout">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th style="text-align: center;"><b>Year 1</b></th>
+                            <th style="text-align: center"><b>Year 2</b></th>
+                            <th style="text-align: center"><b>Year 3</b></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div
+                                    class="slds-grid slds-grid--vertical-align-center slds-col slds-size_4-of-4 slds-cell-wrap">
+                                    <b>Communications/Wellness</b>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div
+                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4" style="min-height:2rem;">
+                                    <div class="slds-col slds-cell-wrap">
+                                        <span>
+                                            <template if:false={editmode}>
+                                                <template if:true={sccDataCredAndAll.Surest_Communications_Wellness_Year_1__c}>
+                                                    {sccDataCredAndAll.Surest_Communications_Wellness_Year_1__c}
+                                                </template>
+                                            </template>
+                                            <template if:true={editmode}>
+                                                <lightning-input type="text" variant="label-hidden"
+                                                    name="Sold_Case_Checklist__c.Surest_Communications_Wellness_Year_1__c"
+                                                    value={sccDataCredAndAll.Surest_Communications_Wellness_Year_1__c}
+                                                    onchange={FieldChangeHandler} max-length="25">
+                                                </lightning-input>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div
+                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4" style="min-height:2rem;">
+                                    <div class="slds-col slds-cell-wrap">
+                                        <span>
+                                            <template if:false={editmode}>
+                                                <template if:true={sccDataCredAndAll.Surest_Communications_Wellness_Year_2__c}>
+                                                    {sccDataCredAndAll.Surest_Communications_Wellness_Year_2__c}
+                                                </template>
+                                            </template>
+                                            <template if:true={editmode}>
+                                                <lightning-input type="text" variant="label-hidden"
+                                                    name="Sold_Case_Checklist__c.Surest_Communications_Wellness_Year_2__c"
+                                                    value={sccDataCredAndAll.Surest_Communications_Wellness_Year_2__c}
+                                                    onchange={FieldChangeHandler} max-length="25">
+                                                </lightning-input>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div
+                                    class="slds-grid slds-grid--vertical-align-center border-bottom slds-col slds-size_1-of-4" style="min-height:2rem;">
+                                    <div class="slds-col slds-cell-wrap">
+                                        <span>
+                                            <template if:false={editmode}>
+                                                <template if:true={sccDataCredAndAll.Surest_Communications_Wellness_Year_3__c}>
+                                                    {sccDataCredAndAll.Surest_Communications_Wellness_Year_3__c}
+                                                </template>
+                                            </template>
+                                            <template if:true={editmode}>
+                                                <lightning-input type="text" variant="label-hidden"
+                                                    name="Sold_Case_Checklist__c.Surest_Communications_Wellness_Year_3__c"
+                                                    value={sccDataCredAndAll.Surest_Communications_Wellness_Year_3__c}
+                                                    onchange={FieldChangeHandler} max-length="25">
+                                                </lightning-input>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Pre-Implementation Audit</b></td>
+                            <td></td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <template if:false={editmode}>
+                                        <template if:true={sccDataCredAndAll.Surest_Pre_Implementation_Audit_Year_1__c}>
+                                            {sccDataCredAndAll.Surest_Pre_Implementation_Audit_Year_1__c}
+                                        </template>
+                                    </template>
+                                    <template if:true={editmode}>
+                                        <lightning-input type="text" variant="label-hidden"
+                                            name="Sold_Case_Checklist__c.Surest_Pre_Implementation_Audit_Year_1__c"
+                                            value={sccDataCredAndAll.Surest_Pre_Implementation_Audit_Year_1__c}
+                                            onchange={FieldChangeHandler} max-length="25">
+                                        </lightning-input>
+                                    </template>
+
+                                </div>
+                            </td>
+                            <td><span class='grayOut'></span></td>
+                            <td><span class='grayOut'></span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Transition</b></td>
+                            <td></td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={sccDataCredAndAll.Surest_Transition_Year_1__c}>
+                                                {sccDataCredAndAll.Surest_Transition_Year_1__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Surest_Transition_Year_1__c"
+                                                value={sccDataCredAndAll.Surest_Transition_Year_1__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td><span class='grayOut'></span></td>
+                            <td><span class='grayOut'></span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Annual Allowance </b></td>
+                            <td></td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Surest_Annual_Allowance_Year1__c}>
+                                                {soldCaseDataCopy.Surest_Annual_Allowance_Year1__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Surest_Annual_Allowance_Year1__c"
+                                                value={soldCaseDataCopy.Surest_Annual_Allowance_Year1__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Surest_Annual_Allowance_Year2__c}>
+                                                {soldCaseDataCopy.Surest_Annual_Allowance_Year2__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Surest_Annual_Allowance_Year2__c"
+                                                value={soldCaseDataCopy.Surest_Annual_Allowance_Year2__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Surest_Annual_Allowance_Year3__c}>
+                                                {soldCaseDataCopy.Surest_Annual_Allowance_Year3__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Surest_Annual_Allowance_Year3__c"
+                                                value={soldCaseDataCopy.Surest_Annual_Allowance_Year3__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td> <b>Annual Audit </b></td>
+                            <td></td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Surest_Annual_Audit_Year1__c}>
+                                                {soldCaseDataCopy.Surest_Annual_Audit_Year1__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Surest_Annual_Audit_Year1__c"
+                                                value={soldCaseDataCopy.Surest_Annual_Audit_Year1__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Surest_Annual_Audit_Year2__c}>
+                                                {soldCaseDataCopy.Surest_Annual_Audit_Year2__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Surest_Annual_Audit_Year2__c"
+                                                value={soldCaseDataCopy.Surest_Annual_Audit_Year2__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="slds-col slds-cell-wrap border-bottom">
+                                    <span>
+                                        <template if:false={editmode}>
+                                            <template if:true={soldCaseDataCopy.Surest_Annual_Audit_Year3__c}>
+                                                {soldCaseDataCopy.Surest_Annual_Audit_Year3__c}
+                                            </template>
+                                        </template>
+                                        <template if:true={editmode}>
+                                            <lightning-input type="text" variant="label-hidden"
+                                                name="Sold_Case_Checklist__c.Surest_Annual_Audit_Year3__c"
+                                                value={soldCaseDataCopy.Surest_Annual_Audit_Year3__c}
+                                                onchange={FieldChangeHandler} max-length="25">
+                                            </lightning-input>
+                                        </template>
+                                    </span>
+                                </div>
+
+                            </td>
+                            <td></td>
+                        </tr>
+
+                        <template for:each={otherCreditsSurestLst} for:item="otherCredits" for:index="index">
+                            <tr key={otherCredits.value}>
+                                <td><b>{otherCredits.rowHeading}</b></td>
+                                <td>
+                                    <div class="slds-col slds-cell-wrap border-bottom" style="min-height:22px;">
+                                        <template if:false={enableEdit}>
+                                            {otherCredits.writeIn}
+                                        </template>
+                                        <template if:true={enableEdit}>
+                                            <lightning-input type="text" variant="label-hidden" data-index={index}
+                                                data-fieldreference={otherSurestCreditsWriteIn} value={otherCredits.writeIn}
+                                                class="writeInSurestInpt" max-length="200" placeholder="Specify Credit">
+                                            </lightning-input>
+                                        </template>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    <div class="slds-col slds-cell-wrap border-bottom" style="min-height:22px;">
+                                        <template if:false={enableEdit}>
+                                            {otherCredits.year1}
+                                        </template>
+                                        <template if:true={enableEdit}>
+                                            <lightning-input type="text" variant="label-hidden" data-index={index}
+                                                data-fieldreference={otherSurestCredits1} value={otherCredits.year1}
+                                                class="yearoneSurestInpt" max-length="200" placeholder="Included">
+                                            </lightning-input>
+                                        </template>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-col slds-cell-wrap border-bottom" style="min-height:22px;">
+                                        <template if:false={enableEdit}>
+                                            {otherCredits.year2}
+                                        </template>
+                                        <template if:true={enableEdit}>
+                                            <lightning-input type="text" variant="label-hidden" data-index={index}
+                                                data-fieldreference={otherSurestCredits2} value={otherCredits.year2}
+                                                class="yeartwoSurestInpt" max-length="200" placeholder="Included">
+                                            </lightning-input>
+                                        </template>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-col slds-cell-wrap border-bottom" style="min-height:22px;">
+                                        <template if:false={enableEdit}>
+                                            {otherCredits.year3}
+                                        </template>
+                                        <template if:true={enableEdit}>
+                                            <lightning-input type="text" variant="label-hidden" data-index={index}
+                                                data-fieldreference={otherSurestCredits3} value={otherCredits.year3}
+                                                class="yearthreeSurestInpt" max-length="200" placeholder="Included">
+                                            </lightning-input>
+                                        </template>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-col slds-size_10-of-12">
+                                            <template if:true={otherCredits.showAddButton}>
+                                                <lightning-button variant="brand" label="Add Another Credit"
+                                                    data-buttonindex={index} onclick={addGuaranteeSurestFunction}
+                                                    title="Add Another Credit" data-fieldreference={otherSurestCredits1} 
+                                                    disabled={disableButtons}>
+                                                </lightning-button>
+                                            </template>
+                                        </div>
+                                        <div class="slds-col slds-size_2-of-12" style="float: left;">
+                                            <template if:true={otherCredits.showRemoveButton}>
+                                                <lightning-button-icon variant="destructive" icon-name="utility:delete"
+                                                    alternative-text="Delete" onclick={deleteGuaranteeSurestFunction}
+                                                    data-buttonindex={index} data-fieldreference={otherSurestCredits1}
+                                                    class="doNotDeleteVendor" title="Delete"
+                                                    disabled={disableButtons}>
+                                                </lightning-button-icon>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+
+                </table>
+            </div>
+        </template>
+    </lightning-accordion-section>
+    </template>
+</template>

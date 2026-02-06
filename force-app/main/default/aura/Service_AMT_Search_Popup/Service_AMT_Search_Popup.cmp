@@ -1,0 +1,375 @@
+<aura:component controller="Service_AMT_Class" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="userSearch" type="String[]"/>
+    <aura:attribute name="contactSearch" type="String[]"/>
+    <aura:attribute name="isSpinnertoLoad"  type="Boolean"  default="false"/>
+    <aura:attribute name="isGoButtonClicked" type="Boolean" default="false"/>
+    <aura:attribute name="ErrorMessage" type="String"/>
+    <aura:attribute name="existingServiceAmtRecords" type="String[]"/>
+    
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    
+    <aura:attribute name="Child_Data" type="Object"/>
+    
+    <aura:attribute name="isUserListDisplayed" type="boolean" default="true" />
+    <aura:attribute name="isContactListDisplayed" type="boolean" default="true" />
+    
+    <aura:attribute name="isUserssListEmpty" type="boolean" default="false" /> <!--changed default to true by samarth-->
+    <aura:attribute name="isContactsListEmpty" type="Boolean" default="true"/>
+    <aura:attribute name="hideSelect" type="boolean" default="false" />
+    <aura:attribute name="showSelect" type="boolean" default="false" />
+    
+    <!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth-->
+    <aura:attribute name="sortLastNameAsc" type="boolean" default="true" />
+    <aura:attribute name="sortFirstNameAsc" type="boolean" default="true" />
+    <aura:attribute name="sortTitleAsc" type="boolean" default="true" />
+    <aura:attribute name="sortEmailAsc" type="boolean" default="true" />
+    <aura:attribute name="sortOrder" type="boolean" default="true" />
+    <!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--> 
+    
+    <!--<aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modalGenericClose}" />-->
+    <aura:handler name="modalCmpCloseEvent1" event="c:Modal_Closing_RR_Event" action="{!c.modelCloseComponentEvent}"/>
+    <aura:handler name="pageChange" event="c:PageChange" action="{!c.pageChange}"/>
+    
+    <!-- Pagination Attributes -->
+    <aura:attribute name='page' type='Integer' />
+    <aura:attribute name='pages' type='Integer' />
+    <aura:attribute name='total' type='Integer' />
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="fieldDropDownVals" type="String[]" default="Last Name,First Name,Title,Email"/>
+    <aura:attribute name="fieldConditions" type="String[]" default="Begins With,Equals To,Contains"/>
+    
+    <aura:attribute name="Search_Select_DropDown" type="String[]" default="CRM Service/Non-CRM Users"/>
+    <aura:registerEvent name="accountConsultantSelectSearch" type="c:Account_Consultant_Select_Search_Event"/>
+    <aura:attribute name="promptMessageText" type="String" />
+    
+    <div class="slds-clearfix">
+    </div>
+    
+    
+    <div role="alertdialog" tabindex="-1" aura:id="promptMessageForDateFields" aria-labelledby="prompt-heading-id"
+         aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt slds-hide">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse"
+                        onclick="{!c.confirmCancelForPrompt}" title="Close">
+                    <lightning:icon class="slds-button__icon slds-button__icon--large" iconName="utility:close"
+                                    size="x-small" />
+                    <span class="slds-assistive-text">{!$Label.c.Close}</span>
+                </button>
+                <h2 id="header43" class="slds-text-heading--medium">Error</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <p class="slds-text-align--center">{!v.promptMessageText}</p>
+            </div>
+            <div class="slds-modal__footer slds-theme--default">
+                <button class="slds-button slds-button--neutral"
+                        onclick="{!c.confirmCancelForPrompt}">{!$Label.c.OK}</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open slds-hide" aura:id="promptMessageForDateFields"></div>
+    
+    
+    
+    
+    
+    <div class="slds-section ipadbottom container forceRelatedListSingleContainer">
+        <article class="slds-card userList">
+            <div style="padding-top:0px;position:relative;">
+                
+                <div class="slds-grid uiInputSelect slds-p-around--small">
+                    <div class="uiInputSelect uiMenuList">
+                        <form class="uiMenuList slds-form--inline slds-grid slds-grid--vertical-align-center account-team--popup">
+                            <div class=" slds-grid slds-grid_vertical">
+                                <div class="slds-col">
+                                    <div class=" slds-form-element search-align">
+                                        <div class="slds-form-element__control">
+                                            <span class="slds-truncate" title="Search Results Where">{!$Label.c.Search_Results_Where}</span>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element last-align">
+                                        <div class="slds-form-element__control nm-wdt">
+                                            <ui:inputSelect class="slds-form-control" aura:id="SearchFieldDropDown" multiple="false" change="{!c.clearSearchFilterField}">
+                                                <aura:iteration items="{!v.fieldDropDownVals}" var="fieldDropDownValsVar"> 
+                                                    <ui:inputSelectOption text="{!fieldDropDownValsVar}" label="{!fieldDropDownValsVar}"/> 
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element begin-align">
+                                        <div class="slds-form-element__control nm-wdt">
+                                            <ui:inputSelect class="slds-form-control" aura:id="SearchFilterDropDown" multiple="false" change="{!c.clearSearchField}">
+                                                <aura:iteration items="{!v.fieldConditions}" var="fieldConditionsVar"> 
+                                                    <ui:inputSelectOption text="{!fieldConditionsVar}"/> 
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </div>
+                                    <div class=" slds-form-element input-align mr-sm-0">
+                                        <div class="slds-form-element__control nm-wdt">
+                                            <div class="slds-hide">
+                                                <ui:inputText class="slds-form-control"></ui:inputText>
+                                            </div> 
+                                            <ui:inputText class="slds-form-control" updateOn="keyup" aura:id="searchKeywordForUsers" keyup="{!c.enableGoBtn}"></ui:inputText>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                </div>
+                                <div class="slds-col">
+                                    
+                                    
+                                    <div class="slds-p-left_xx-large slds-p-top_x-small"> 
+                                        <div class="slds-p-left_xx-large">
+                                            <div class="">  
+                                                <div class=" slds-form-element">
+                                                    <div class="slds-form-element__control">
+                                                        <span class="slds-truncate" style=" color: red; " title="AND">AND</span><!--Remove margin-left after summer update-->
+                                                    </div>
+                                                </div>
+                                                <div class="slds-form-element last-align">
+                                                    <div class="slds-form-element__control nm-wdt">
+                                                        <ui:inputSelect class="slds-form-control" aura:id="SearchFieldDropDownSec" multiple="false" change="{!c.clearSearchFilterFieldSec}">
+                                                            <aura:iteration items="{!v.fieldDropDownVals}" var="fieldDropDownValsVar"> 
+                                                                <ui:inputSelectOption text="{!fieldDropDownValsVar}" label="{!fieldDropDownValsVar}"/> 
+                                                            </aura:iteration>
+                                                        </ui:inputSelect>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-form-element begin-align">
+                                                    <div class="slds-form-element__control nm-wdt">
+                                                        <ui:inputSelect class="slds-form-control" aura:id="SearchFilterDropDownSec" multiple="false" change="{!c.clearSearchFieldSec}">
+                                                            <aura:iteration items="{!v.fieldConditions}" var="fieldConditionsVar"> 
+                                                                <ui:inputSelectOption text="{!fieldConditionsVar}"/> 
+                                                            </aura:iteration>
+                                                        </ui:inputSelect>
+                                                    </div>
+                                                </div>
+                                                <div class=" slds-form-element input-align mr-sm-0">
+                                                    <div class="slds-form-element__control nm-wdt">
+                                                        <div class="slds-hide">
+                                                            <ui:inputText class="slds-form-control"></ui:inputText>
+                                                        </div> 
+                                                        <ui:inputText class="slds-form-control" updateOn="keyup" aura:id="searchKeywordForUsersSec" keyup="{!c.enableGoBtn}"></ui:inputText>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="slds-form-element go-btn">
+                                                    <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="goBtn" disabled="true" press="{!c.searchConsultants}">{!$Label.c.Go}</ui:button>
+                                                </div>
+                                                <div class=" slds-form-element clr-btn">
+                                                    <div class="slds-p-right--small seperator-md">
+                                                        <ui:button class="slds-button slds-button--brand mt-md-0" aura:id="clrBtn" disabled="true" press="{!c.onClear}">{!$Label.c.Clear}</ui:button>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div>
+                                
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="slds-card__body fixed-body-height slds-m-bottom--none">
+                    <aura:if isTrue="{!v.isSpinnertoLoad}">
+                        <div class="slds-spinner_container slds-is-fixed spinner-desktop" aura:id="spinner">
+                            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-fixed spinner-desktop" role="status">
+                                <span class="slds-assistive-text">{!$Label.c.Loading}</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <ui:scrollerWrapper class="scrollerSize">
+                        <ui:inputSelect aura:id="focusInputField" class="slds-hide"/>
+                        <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    
+                                    <th class="slds-is-sortable slds-is-resizable" scope="col" width="70">
+                                        &nbsp;
+                                    </th>
+                                    
+                                    <!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth-->
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                        <aura:if isTrue="{!v.isUserssListEmpty}">
+                                            <div class="slds-truncate" tabindex="0">
+                                                <span class="slds-truncate" title="Last Name">{!$Label.c.Last_Name}</span>
+                                                <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <a onclick="{!c.searchConsultants}" class="slds-th__action slds-text-link--reset" data-recId="LastName__c" style="padding-left:0px;" tabindex="0">
+                                                    <span class="slds-truncate" title="Last Name">{!$Label.c.Last_Name}</span>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortLastNameAsc}">
+                                                            <lightning:icon
+                                                                            class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                                            iconName="utility:arrowup" size="xx-small"
+                                                                            alternativeText="Indicates approval" />
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon
+                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                                                iconName="utility:arrowdown" size="xx-small"
+                                                                                alternativeText="Indicates approval" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                    
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                    </th>
+                                    
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                        <aura:if isTrue="{!v.isUserssListEmpty}">
+                                            <div class="slds-truncate" tabindex="0">
+                                                <span class="slds-truncate" title="Last Name">{!$Label.c.First_Name}</span>
+                                                <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <a onclick="{!c.searchConsultants}" class="slds-th__action slds-text-link--reset" data-recId="FirstName__c" style="padding-left:0px;" tabindex="0">
+                                                    <span class="slds-truncate" title="First Name">{!$Label.c.First_Name}</span>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortFirstNameAsc}">
+                                                            <lightning:icon
+                                                                            class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                                            iconName="utility:arrowup" size="xx-small"
+                                                                            alternativeText="Indicates approval" />
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon
+                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                                                iconName="utility:arrowdown" size="xx-small"
+                                                                                alternativeText="Indicates approval" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                    </th>
+                                    
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                        <aura:if isTrue="{!v.isUserssListEmpty}">
+                                            <div class="slds-truncate" tabindex="0">
+                                                <span class="slds-truncate" title="Title">Title</span>
+                                                <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <a onclick="{!c.searchConsultants}" class="slds-th__action slds-text-link--reset" data-recId="Title__c" style="padding-left:0px;" tabindex="0">
+                                                    <span class="slds-truncate" title="Title">Title</span>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortTitleAsc}">
+                                                            <lightning:icon
+                                                                            class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                                            iconName="utility:arrowup" size="xx-small"
+                                                                            alternativeText="Indicates approval" />
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon
+                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                                                iconName="utility:arrowdown" size="xx-small"
+                                                                                alternativeText="Indicates approval" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                    </th>
+                                    
+                                    
+                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                        <aura:if isTrue="{!v.isUserssListEmpty}">
+                                            <div class="slds-truncate" tabindex="0">
+                                                <span class="slds-truncate" title="Email">E-mail</span>
+                                                <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <a onclick="{!c.searchConsultants}" class="slds-th__action slds-text-link--reset" data-recId="Email__c" style="padding-left:0px;" tabindex="0">
+                                                    <span class="slds-truncate" title="Email">E-mail</span>
+                                                    <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                    
+                                                    <div class="slds-icon_container">
+                                                        <aura:if isTrue="{!v.sortEmailAsc}">
+                                                            <lightning:icon
+                                                                            class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                                            iconName="utility:arrowup" size="xx-small"
+                                                                            alternativeText="Indicates approval" />
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon
+                                                                                class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon"
+                                                                                iconName="utility:arrowdown" size="xx-small"
+                                                                                alternativeText="Indicates approval" />
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </div>
+                                                </a>
+                                            </aura:set>
+                                        </aura:if>
+                                    </th>
+                                    <th></th>
+                                    <!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth--><!--Samarth-->
+                                    
+                                    <!--th class="bold" scope="col">
+                                        <div class="slds-truncate" tabindex="0">
+                                            <span class="slds-truncate" title="Last Name">{!$Label.c.Last_Name}</span>
+                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                        </div>
+                                    </th>
+                                    
+                                    <th class="bold" scope="col">
+                                        <div class="slds-truncate" tabindex="0">
+                                            <span class="slds-truncate" title="First Name">{!$Label.c.First_Name}</span>
+                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                        </div>
+                                    </th>
+                                    
+                                    <th class="bold" scope="col">
+                                        <div class="slds-truncate" tabindex="0">
+                                            <span class="slds-truncate" title="Title">Title</span>
+                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                        </div>
+                                    </th>
+                                    
+                                    <th class="bold" scope="col">
+                                        <div class="slds-truncate" tabindex="0">
+                                            <span class="slds-truncate" title="Email">E-mail</span>
+                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                        </div>
+                                    </th-->
+                                </tr>
+                            </thead>
+                            <tbody style="">
+                                <aura:if isTrue="{!v.isUserssListEmpty}">
+                                    <p></p>
+                                    <tr>
+                                        <th colspan="5">
+                                            <div class="slds-text-align--center">No Records Found</div>
+                                        </th>
+                                    </tr>
+                                    <aura:set attribute="else">
+                                        <p></p>
+                                        <aura:iteration items="{!v.userSearch}" var="userSearchobj" indexVar="index">
+                                            <c:Service_AMT_Search_Popup_Table userSearchArray="{!userSearchobj}" userSearchId="{!userSearchobj.Id}" isUser="{!v.isUserListDisplayed}" existingServiceRecords = "{!v.existingServiceAmtRecords}"/>
+                                        </aura:iteration>
+                                        
+                                    </aura:set>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </ui:scrollerWrapper>
+                    <div class="slds-p-horizontal--small ph-lg-0">
+                        <c:Pagination page="{!v.page}" pages="{!v.pages}" total="{!v.total}"/>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

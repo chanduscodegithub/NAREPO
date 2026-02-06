@@ -1,0 +1,89 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" Controller="Membership_QA_Controller">
+    
+    <aura:method name="modalClosing" action="{!c.modalClose}" access="PUBLIC">
+        <aura:attribute name="assistedMACreationVal" type="Boolean" default="false" />
+    </aura:method>
+    <aura:registerEvent name="modalQACmpCloseEvent" type="c:ModelClosingEvent_QA"/>
+    <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
+    <aura:handler name="QA_Event" action="{!c.getAccountData}" event="c:QA_Event" />
+    
+    <aura:attribute name="options" type="List" default="[{'label': 'Use the Guided Question Approach', 'value': 'Assisted MA Creation'},{'label': 'Enter Data Directly in the Fields', 'value': 'Create New Record'}]"/>
+    <!--<aura:attribute name="options1" type="List" default="[{'label': 'CM Membership Activity (Existing Client)', 'value': 'CM Membership Activity (Existing Client)'},{'label': 'CD Membership Activity (Prospect or Aggregator)', 'value': 'CD Membership Activity (Prospect or Aggregator)'}]"/>-->
+    <aura:attribute name="selectedOptionValue" type="String" default="" />
+    <aura:attribute name="selectedRecordTypeValue" type="String" default="" />
+    <aura:attribute name="dynamicComponentsByAuraId" type="Object" />
+    <aura:attribute name="dynamicComponentAuraId" type="String"/>
+    <aura:attribute name="ModalData" type="Object" />
+    <aura:attribute name="AccountData" type="Account" />
+    <aura:attribute name="isRecordType" type="Boolean" default="false" />
+    <aura:attribute name="isAggregatorsToBeShown" type="Boolean" default="true" />
+    
+    {!v.body}
+    
+    <div aura:id="QASelection_Modal" class="modal-glass slds-backdrop fadein slds-backdrop--open" tabindex="-1" style="opacity: 0.8;"></div>
+    <div aura:id="QASelection_Modal" class="panel slds-modal slds-fade-in-open slds-backdrop--open QAModal--Container" tabindex="-1" role="dialog" style="opacity: 1;z-index:9000;">
+        <div class="modal-container slds-modal__container modal-container--MA">
+            <span class="assistiveText">Start of Dialog</span>
+            <div class="modal-header slds-modal__header">            
+                <h2 class="title slds-text-heading--medium">New Membership Activity</h2>           
+                <button onclick="{!c.fireComponentEvent}" class="slds-button slds-modal__close closeIcon slds-button--icon-bare slds-button--icon-inverse close-btn-white" type="button" title="Close this window">
+                    <span class="lightningPrimitiveIcon">
+                        <lightning:icon class="slds-input__icon" iconName="utility:close" size="small"/>
+                    </span>
+                    <span class="slds-assistive-text">Close this window</span>
+                </button>
+            </div>
+            
+            
+            <div class="modal-body scrollable slds-modal__content slds-p-around--medium">            
+                <div class="">
+                    <div class="modal__content slds-p-vertical_medium">                    
+                        <div>
+                            <fieldset class="slds-form-element slds-no-space firefox-fieldset-bug-fix">
+                                <div class="slds-grid slds-wrap">
+                                    <!--<aura:if isTrue="{!v.isRecordType}">
+                                        <div class="slds-size_1-of-2 slds-medium-size_1-of-1 slds-large-size_1-of-2 slds-p-right_medium slds-text-align_right slds-m-bottom_medium">
+                                            <legend class="form-element__legend slds-form-element__label">Please select an Membership Activity Record Type<span class="slds-required">*</span> : </legend>
+                                        </div>
+                                        <div class="slds-form-element__control slds-size_1-of-2 slds-medium-size_1-of-1 slds-large-size_1-of-2 slds-m-bottom_medium">
+                                            <lightning:radioGroup aura:id="mygroup1" name="radioButtonGroup1" onchange="{!c.handleChange1}" options="{!v.options1}"/>  
+                                        </div>-->
+                                    <div class="slds-size_1-of-2 slds-medium-size_1-of-1 slds-large-size_1-of-2 slds-p-right_medium slds-text-align_right">
+                                        <legend class="form-element__legend slds-form-element__label">{!$Label.c.CompanyName}<span class="slds-required">*</span> : </legend>
+                                    </div>
+                                    <div class="slds-form-element__control slds-size_1-of-2 slds-medium-size_1-of-1 slds-large-size_1-of-2">
+                                        <div aura:id="AccountNameDiv" class="slds-form-element slds-m-bottom_medium">                                                
+                                            <div class="slds-form-element__control slds-is-relative">
+                                                <ui:inputText class="slds-input search-input" aura:id="AccountName" value="{!v.ModalData.AccountName}" required="true" disabled="true" />
+                                                <aura:if isTrue="{!v.isRecordType}">
+                                                    <ui:button aura:id="" class="slds-button slds-button-default search-btn"  press="{!c.selectAccount}">   
+                                                        <span class="search-icon"></span>
+                                                    </ui:button>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!--</aura:if>-->
+                                    <div class="slds-size_1-of-2 slds-medium-size_1-of-1 slds-large-size_1-of-2 slds-p-right_medium slds-text-align_right">
+                                        <legend class="form-element__legend slds-form-element__label">Please select an option<span class="slds-required">*</span> : </legend>
+                                    </div>
+                                    <div class="slds-form-element__control slds-size_1-of-2 slds-medium-size_1-of-1 slds-large-size_1-of-2">
+                                        <lightning:radioGroup aura:id="mygroup" name="radioButtonGroup" onchange="{!c.handleChange}" options="{!v.options}"/>  
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>         
+            <div class="modal-footer slds-modal__footer">
+                <div class="">
+                    <ui:button class="slds-button slds-button--neutral"  press="{!c.fireComponentEvent}">Cancel</ui:button>
+                    <ui:button aura:id="nextBtn" class="slds-button slds-button--brand"  press="{!c.nextPage}" disabled="true">Next</ui:button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</aura:component>

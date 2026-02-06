@@ -1,0 +1,640 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 05-24-2024
+  @last modified by  : Spoorthy
+-->
+<aura:component>
+    <aura:attribute name="fieldSetMap" type="Map"/>
+    <aura:attribute name="rcrdId" type="String"/>   
+    <aura:attribute name="accountKeyRenewalDateFieldNames" type="List" default="[]"/>
+    <aura:attribute name="isEditOfKeyRenewalDates" type="Boolean" default="false" />
+    <aura:attribute name="loggedInUserProfile" type="String"/>
+    
+    <aura:attribute name="accountRecord" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="accountKeyRenewalDateFieldNamesStr" type="String"/>
+    <aura:attribute name="accountKeyRenewalDateFieldNames1" type="List"
+                    default="['Current_Deal_Start_Date__c','Current_Deal_Next_Renewal_Date__c',
+                             'Proposed_New_Deal_Start_Date__c','Proposed_New_Deal_End_Date__c',
+                             'Pharmacy_Current_Deal_Next_Renewal_Date__c',
+                             'Dental_Current_Deal_Next_Renewal_Date__c',
+                             'Vision_Current_Deal_Next_Renewal_Date__c',
+                             'APP_CI_HI_Current_Deal_Next_Renewal_Date__c',
+                             'Stop_Loss_Next_Renewal_Date__c','Financial_Accounts_Next_Renewal_Date__c',
+                             'Group_Retiree_URS_Next_Renewal_Date__c','Life_Next_Renewal_Date__c',
+                             'Disability_Next_Renewal_Date__c',
+                             'Surest_Next_Renewal_Date__c','Surest_Current_Deal_Start_Date__c',
+                             'Surest_Med_Proposed_New_Deal_End_Date__c','Surest_Med_Proposed_New_Deal_Start_Date__c']"/>
+    
+    <aura:attribute name="keyRenewalDateUpdatedList" type="List" default="[]"/>
+    <aura:attribute name="isLoggedInUserAnAdmin" type="Boolean"/>
+    
+    <aura:attribute name="loggedInUserInfoObj" type="Object"/>
+    
+    
+    <div>
+        <div class="slds-spinner_container slds-hide" aura:id="keyRenewalDateSectionLoadingSpinner">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--medium slds-is-relative loading-Position" role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div aura:id="errorToastMessage" class="slds-hide slds-theme--error slds-size_12-of-12 slds-m-bottom_medium" style="padding:0.2rem">
+            <div class="general-notification slds-font-size">
+                <span>{!$Label.c.Date_format_Error_Message}</span>
+            </div>
+        </div>
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-start action-bar-mobile slds-theme_shade slds-p-horizontal_medium">
+            <div style="padding: 14px;"><b>{!$Label.c.Key_Renewal_Dates_Section_Header}</b></div>
+            <!--  <aura:if isTrue="{!v.loggedInUserProfile !='Compensation Team Profile'}"> -->
+            <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                <div class="slds-grid slds-grid_align-end">
+                    <div><ui:button class="slds-button slds-button--neutral slds-m-vertical_x-small" aura:id="keyRenewalDateEditBtn" disabled="false" press="{!c.editKeyRenewalDates}">{!$Label.c.Edit}</ui:button></div>
+                    <div><ui:button class="slds-button slds-button--neutral slds-hide slds-m-vertical_x-small" aura:id="keyRenewalDateSaveBtn" press="{!c.saveKeyRenewalDates}">{!$Label.c.Save}</ui:button></div>
+                    <div><ui:button class="slds-button slds-button--neutral slds-hide slds-m-vertical_x-small" aura:id="keyRenewalDateCancelBtn" press="{!c.cancelChangesOfKeyRenewalDates}">{!$Label.c.Cancel}</ui:button></div>                   
+                </div>
+            </aura:if>
+        </div>
+        <aura:if isTrue="{!v.loggedInUserInfoObj.isCompanyTypeSpecialityOnly}">
+            <div class="slds-grid slds-gutters slds-customclass">
+                <div class="slds-col slds-size_1-of-1">
+                    <div style="padding:0.8rem;padding-left: 26.8rem;">{!$Label.c.Current_Deal_Next_Renewal_Date_Header}</div>
+                </div>
+            </div>
+            
+            <aura:set attribute="else">
+                <div class="slds-grid slds-gutters slds-customclass">
+                    <div class="slds-col slds-size_1-of-3">
+                        <div style="padding:0.8rem">{!$Label.c.Medical_Renewal_Date_Header}</div>
+                    </div>
+                    <!--<span style="width:17.5rem"></span>-->
+                    <div class="slds-col slds-size_2-of-3" style = "padding-left: 7rem;">
+                        <div style="padding:0.8rem">{!$Label.c.Other_Product_Renewal_Date_Header}</div>
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.isEditOfKeyRenewalDates}">
+            <force:recordData aura:id="recordHandler"
+                              recordId="{!v.rcrdId}"
+                              fields="{!v.accountKeyRenewalDateFieldNames1}"
+                              targetFields="{!v.accountRecord}"
+                              targetError="{!v.recordError}"
+                              mode="EDIT" 
+                              />
+            <aura:if isTrue="{!v.loggedInUserInfoObj.isCompanyTypeSpecialityOnly}">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2" style="padding:0.5rem;">
+                        <div class="slds-grid">
+                            <div class="slds-form-element slds-form-element_stacked">
+                                <div class="slds-form-element__label">{!v.fieldSetMap.Dental_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                <div class="slds-form-element__control"><ui:inputDate aura:id="Dental_Current_Deal_Next_Renewal_Date__c" value="{!v.accountRecord.Dental_Current_Deal_Next_Renewal_Date__c}" 
+                                                                                      displayDatePicker="true" format="M/d/yyyy"
+                                                                                      change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-grid">
+                            <div class="slds-form-element slds-form-element_stacked">
+                                <div class="slds-form-element__label">{!v.fieldSetMap.Vision_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                <div class="slds-form-element__control"><ui:inputDate aura:id="Vision_Current_Deal_Next_Renewal_Date__c" value="{!v.accountRecord.Vision_Current_Deal_Next_Renewal_Date__c}" 
+                                                                                      displayDatePicker="true" format="M/d/yyyy"
+                                                                                      change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-grid">
+                            <div class="slds-form-element slds-form-element_stacked">
+                                <div class="slds-form-element__label">{!$Label.c.Financial_Protection_Renewal_Date_label}</div>
+                                <div class="slds-form-element__control"><ui:inputDate aura:id="APP_CI_HI_Current_Deal_Next_Renewal_Date__c" value="{!v.accountRecord.APP_CI_HI_Current_Deal_Next_Renewal_Date__c}" 
+                                                                                      displayDatePicker="true" format="M/d/yyyy"
+                                                                                      change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding:0.5rem;">
+                        <div class="slds-grid">
+                            <div class="slds-form-element slds-form-element_stacked">
+                                <div class="slds-form-element__label">{!v.fieldSetMap.Life_Next_Renewal_Date__c.label}</div>
+                                <div class="slds-form-element__control"><ui:inputDate aura:id="Life_Next_Renewal_Date__c" value="{!v.accountRecord.Life_Next_Renewal_Date__c}" 
+                                                                                      displayDatePicker="true" format="M/d/yyyy"
+                                                                                      change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-grid">
+                            <div class="slds-form-element slds-form-element_stacked">
+                                <div class="slds-form-element__label">{!v.fieldSetMap.Disability_Next_Renewal_Date__c.label}</div>
+                                <div class="slds-form-element__control"><ui:inputDate aura:id="Disability_Next_Renewal_Date__c" value="{!v.accountRecord.Disability_Next_Renewal_Date__c}" 
+                                                                                      displayDatePicker="true" format="M/d/yyyy"
+                                                                                      change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-grid">
+                            <div class="slds-form-element slds-form-element_stacked">
+                                <div class="slds-form-element__label">Traditional Medical Current Deal Next Renewal Date</div>
+                                <div class="slds-form-element__control"><ui:inputDate aura:id="Current_Deal_Next_Renewal_Date__c" value="{!v.accountRecord.Current_Deal_Next_Renewal_Date__c}" 
+                                                                                      displayDatePicker="true" format="M/d/yyyy"
+                                                                                      change="{!c.keyRenewalDateChangeHandler}"
+                                                                                      /></div>
+                            </div>
+                        </div>
+                        <div class="slds-grid">
+                            <div class="slds-form-element slds-form-element_stacked">
+                                <div class="slds-form-element__label">Surest Medical Current Deal Next Renewal Date</div>
+                                <div class="slds-form-element__control"><ui:inputDate aura:id="Surest_Next_Renewal_Date__c" value="{!v.accountRecord.Surest_Next_Renewal_Date__c}" 
+                                                                                      displayDatePicker="true" format="M/d/yyyy"
+                                                                                      change="{!c.keyRenewalDateChangeHandler}"
+                                                                                      /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-3" style="padding:0.5rem;">
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Traditional Medical Current Deal Start Date</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Current_Deal_Start_Date__c" value="{!v.accountRecord.Current_Deal_Start_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"
+                                                                                          disabled="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin==false}"/></div>
+                                </div>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Traditional Medical Current Deal Next Renewal Date</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Current_Deal_Next_Renewal_Date__c" value="{!v.accountRecord.Current_Deal_Next_Renewal_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"
+                                                                                          disabled="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin==false}"/></div>
+                                </div>
+                            </div>
+                            <!-- Added Surest_Next_Renewal_Date and Surest_Current_Deal_Start_Date__c fields - Spoorthy -->
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Surest Medical Current Deal Start Date</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Surest_Current_Deal_Start_Date__c" value="{!v.accountRecord.Surest_Current_Deal_Start_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"
+                                                                                          disabled="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin==false}"/></div>
+                                </div>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Surest Medical Current Deal Next Renewal Date</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Surest_Next_Renewal_Date__c" value="{!v.accountRecord.Surest_Next_Renewal_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"
+                                                                                          disabled="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin==false}"/></div>
+                                </div>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Traditional Medical Proposed New Deal Start Date</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Proposed_New_Deal_Start_Date__c" value="{!v.accountRecord.Proposed_New_Deal_Start_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"
+                                                                                          disabled="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin==false}"/></div>
+                                </div>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Traditional Medical Proposed New Deal End Date</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Proposed_New_Deal_End_Date__c" value="{!v.accountRecord.Proposed_New_Deal_End_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"
+                                                                                          disabled="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin==false}"/></div>
+                                </div>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Surest Medical Proposed New Deal Start Date</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Surest_Med_Proposed_New_Deal_Start_Date__c" value="{!v.accountRecord.Surest_Med_Proposed_New_Deal_Start_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"
+                                                                                          disabled="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin==false}"/></div>
+                                </div>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Surest Medical Proposed New Deal End Date</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Surest_Med_Proposed_New_Deal_End_Date__c" value="{!v.accountRecord.Surest_Med_Proposed_New_Deal_End_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"
+                                                                                          disabled="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin==false}"/></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3" style="padding:0.5rem;">
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!v.fieldSetMap.Pharmacy_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Pharmacy_Current_Deal_Next_Renewal_Date__c" value="{!v.accountRecord.Pharmacy_Current_Deal_Next_Renewal_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                </div>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!v.fieldSetMap.Dental_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Dental_Current_Deal_Next_Renewal_Date__c" value="{!v.accountRecord.Dental_Current_Deal_Next_Renewal_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                </div>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!v.fieldSetMap.Vision_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Vision_Current_Deal_Next_Renewal_Date__c" value="{!v.accountRecord.Vision_Current_Deal_Next_Renewal_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                </div>
+                            </div>
+                           <div class="slds-grid">
+                        <div class="slds-form-element slds-form-element_stacked">
+                            <div class="slds-form-element__label">{!$Label.c.Financial_Protection_Renewal_Date_label}</div>
+
+                            <div class="slds-form-element__control"><ui:inputDate aura:id="APP_CI_HI_Current_Deal_Next_Renewal_Date__c" value="{!v.accountRecord.APP_CI_HI_Current_Deal_Next_Renewal_Date__c}" 
+                                                                                  displayDatePicker="true" format="M/d/yyyy"
+                                                                                  change="{!c.keyRenewalDateChangeHandler}"/></div>
+                        </div>
+                    </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3" style="padding:0.5rem;">
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!v.fieldSetMap.Life_Next_Renewal_Date__c.label}</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Life_Next_Renewal_Date__c" value="{!v.accountRecord.Life_Next_Renewal_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                </div>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!v.fieldSetMap.Disability_Next_Renewal_Date__c.label}</div>
+                                    <div class="slds-form-element__control"><ui:inputDate aura:id="Disability_Next_Renewal_Date__c" value="{!v.accountRecord.Disability_Next_Renewal_Date__c}" 
+                                                                                          displayDatePicker="true" format="M/d/yyyy"
+                                                                                          change="{!c.keyRenewalDateChangeHandler}"/></div>
+                                </div>
+                            </div>
+                            
+                            <!--div class="slds-grid">
+                        <div class="slds-form-element slds-form-element_stacked">
+                            <div class="slds-form-element__label">{!v.fieldSetMap.Group_Retiree_URS_Next_Renewal_Date__c.label}</div>
+                            <div class="slds-form-element__control"><ui:inputDate  aura:id="Group_Retiree_URS_Next_Renewal_Date__c" value="{!v.accountRecord.Group_Retiree_URS_Next_Renewal_Date__c}" 
+                                                                                  displayDatePicker="true" format="M/d/yyyy"
+                                                                                  change="{!c.keyRenewalDateChangeHandler}"/></div>
+                        </div>
+                    </div-->
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>
+            <aura:set attribute="else">
+                <force:recordData aura:id="accountRecordLoader"
+                                  recordId="{!v.rcrdId}"
+                                  fields="{!v.accountKeyRenewalDateFieldNames1}"
+                                  targetFields="{!v.accountRecord}"
+                                  targetError="{!v.recordError}"
+                                  />  
+                <aura:if isTrue="{!v.loggedInUserInfoObj.isCompanyTypeSpecialityOnly}">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2" style="padding:0.5rem;">
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!v.fieldSetMap.Dental_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                    <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Dental_Current_Deal_Next_Renewal_Date__c}"/></div>
+                                </div>
+                                <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                    <div class="slds-m-right_medium icon-edit">
+                                        
+                                        <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                        alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                    </div>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!v.fieldSetMap.Vision_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                    <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Vision_Current_Deal_Next_Renewal_Date__c}"/></div>
+                                </div>
+                                <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                    <div class="slds-m-right_medium icon-edit">
+                                        
+                                        <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                        alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                    </div>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!$Label.c.Financial_Protection_Renewal_Date_label}</div>
+                                    <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.APP_CI_HI_Current_Deal_Next_Renewal_Date__c}"/></div>
+                                </div>
+                                <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                    <div class="slds-m-right_medium icon-edit">
+                                        
+                                        <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                        alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                    </div>
+                                </aura:if>
+                            </div>
+                            
+                        </div>
+                        <div class="slds-col slds-size_1-of-2" style="padding:0.5rem;">
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!v.fieldSetMap.Life_Next_Renewal_Date__c.label}</div>
+                                    <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Life_Next_Renewal_Date__c}"/></div>
+                                </div>
+                                <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                    <div class="slds-m-right_medium icon-edit">
+                                        
+                                        <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                        alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                    </div>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">{!v.fieldSetMap.Disability_Next_Renewal_Date__c.label}</div>
+                                    <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Disability_Next_Renewal_Date__c}"/></div>
+                                </div>
+                                <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                    <div class="slds-m-right_medium icon-edit">
+                                        
+                                        <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                        alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                    </div>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Traditional Medical Current Deal Next Renewal Date</div>
+                                    <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Current_Deal_Next_Renewal_Date__c}"/></div>
+                                </div>
+                                <!-- <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                    
+                                    <div class="slds-m-right_medium icon-edit">
+                                        
+                                        <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                        alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                    </div>
+                                </aura:if>
+                            </div>
+                            <div class="slds-grid">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <div class="slds-form-element__label">Surest Medical Current Deal Next Renewal Date</div>
+                                    <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Surest_Next_Renewal_Date__c}"/></div>
+                                </div>
+                                <!-- <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                    
+                                    <div class="slds-m-right_medium icon-edit">
+                                        
+                                        <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                        alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                    </div>
+                                </aura:if>
+                            </div>
+                        </div>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-grid">
+                            <div class="slds-col slds-size_1-of-3" style="padding:0.5rem;">
+                                <div class="slds-grid" >
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">Traditional Medical Current Deal Start Date</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Current_Deal_Start_Date__c}"/></div>
+                                    </div>
+                                    <!--  <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>   
+                                <div class="slds-grid">
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">Traditional Medical Current Deal Next Renewal Date</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Current_Deal_Next_Renewal_Date__c}"/></div>
+                                    </div>
+                                    <!-- <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <!-- Added Surest_Next_Renewal_Date and Surest_Current_Deal_Start_Date__c field - Spoorthy -->
+                                <div class="slds-grid" >
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">Surest Medical Current Deal Start Date</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Surest_Current_Deal_Start_Date__c}"/></div>
+                                    </div>
+                                    <!--  <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin}">
+                                    <div class="slds-m-right_medium icon-edit">
+                                        
+                                        <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                        alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                    </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid" >
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">Surest Medical Current Deal Next Renewal Date</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Surest_Next_Renewal_Date__c}"/></div>
+                                    </div>
+                                    <!--  <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin}">
+                                    <div class="slds-m-right_medium icon-edit">
+                                        
+                                        <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                        alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                    </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid">
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">Traditional Medical Proposed New Deal Start Date</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Proposed_New_Deal_Start_Date__c}"/></div>
+                                    </div>
+                                    <!-- <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid">
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">Traditional Medical Proposed New Deal End Date</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Proposed_New_Deal_End_Date__c}"/></div>
+                                    </div>
+                                    <!-- <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid">
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">Surest Medical Proposed New Deal Start Date</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Surest_Med_Proposed_New_Deal_Start_Date__c}"/></div>
+                                    </div>
+                                    <!-- <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid">
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">Surest Medical Proposed New Deal End Date</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Surest_Med_Proposed_New_Deal_End_Date__c}"/></div>
+                                    </div>
+                                    <!-- <aura:if isTrue="{!and(v.isLoggedInUserAnAdmin==true,v.loggedInUserProfile !='Compensation Team Profile')}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLoggedInUserAnAdmin}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3" style="padding:0.5rem;">
+                                <div class="slds-grid" >
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">{!v.fieldSetMap.Pharmacy_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Pharmacy_Current_Deal_Next_Renewal_Date__c}"/></div>
+                                    </div>
+                                    <!--  <aura:if isTrue="{!v.loggedInUserProfile !='Compensation Team Profile'}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid">
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">{!v.fieldSetMap.Dental_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Dental_Current_Deal_Next_Renewal_Date__c}"/></div>
+                                    </div>
+                                    <!--  <aura:if isTrue="{!v.loggedInUserProfile !='Compensation Team Profile'}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid">
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">{!v.fieldSetMap.Vision_Current_Deal_Next_Renewal_Date__c.label}</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Vision_Current_Deal_Next_Renewal_Date__c}"/></div>
+                                    </div>
+                                    <!--  <aura:if isTrue="{!v.loggedInUserProfile !='Compensation Team Profile'}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid">
+                            <div class="slds-form-element slds-form-element_stacked">
+                                <div class="slds-form-element__label">{!$Label.c.Financial_Protection_Renewal_Date_label}</div>
+
+                                <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.APP_CI_HI_Current_Deal_Next_Renewal_Date__c}"/></div>
+                            </div>
+
+                            <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                <div class="slds-m-right_medium icon-edit">
+                                    
+                                    <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                    alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                </div>
+                            </aura:if>
+                        </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3" style="padding:0.5rem;">
+                                <div class="slds-grid" >
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">{!v.fieldSetMap.Life_Next_Renewal_Date__c.label}</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Life_Next_Renewal_Date__c}"/></div>
+                                    </div>
+                                    <!-- <aura:if isTrue="{!v.loggedInUserProfile !='Compensation Team Profile'}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid">
+                                    <div class="slds-form-element slds-form-element_stacked">
+                                        <div class="slds-form-element__label">{!v.fieldSetMap.Disability_Next_Renewal_Date__c.label}</div>
+                                        <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Disability_Next_Renewal_Date__c}"/></div>
+                                    </div>
+                                    <!-- <aura:if isTrue="{!v.loggedInUserProfile !='Compensation Team Profile'}"> -->
+                                    <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                        <div class="slds-m-right_medium icon-edit">
+                                            
+                                            <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                            alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <!--div class="slds-grid">
+                            <div class="slds-form-element slds-form-element_stacked">
+                                <div class="slds-form-element__label">{!v.fieldSetMap.Group_Retiree_URS_Next_Renewal_Date__c.label}</div>
+                                <div class="slds-form-element__control"><ui:outputDate format="M/d/yyyy" value="{!v.accountRecord.Group_Retiree_URS_Next_Renewal_Date__c}"/></div>
+                            </div>
+                            <aura:if isTrue="{!v.loggedInUserInfoObj.isLggdInUsrHsEditAccessToKeyRnwlDtSctn}">
+                                <div class="slds-m-right_medium icon-edit">
+                                    
+                                    <lightning:icon class="iconEdit" iconName="utility:edit" size="xx-small"
+                                                    alternativeText="Indicates edit" onclick="{!c.editKeyRenewalDates}" />
+                                </div>
+                            </aura:if>
+                        </div-->
+                                
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </aura:set>
+        </aura:if>
+        
+        
+    </div>
+    
+</aura:component>

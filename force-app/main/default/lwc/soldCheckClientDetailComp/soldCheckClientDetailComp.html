@@ -1,0 +1,1196 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 10-18-2024
+  @last modified by  : Spoorthy
+-->
+<template>
+  <template if:true={cmType}>
+    <div style="text-align:center; font-size: 14px;"><b>Do NOT complete the Sold Case Checklist unless specifically requested to do so or IPM support is needed.</b></div>
+    <br/>
+  </template>
+  <div class="slds-p-bottom_medium">
+    <span class="section-header">Client Details</span>
+  </div>
+  <template if:true={isDataReceived}>
+    <div class="slds-grid slds-wrap client-detail-sec-style">
+      <table class="slds-table slds-no-row-hover" style="width:50%;">
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>{accountFieldLabels.Name.label}</b></span>
+                <c-tooltip-lwc help-text={companyNameHelpText}></c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <template if:true={recordDetail.Account}>
+                  <span>{recordDetail.Account.Name}</span>
+                </template>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <!-----------------------------------SAMARTH SCC NB UPGRADE 2023----------------------------------->
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-cell-wrap slds-size_1-of-2">
+                <span><b>Legal/Contractual Client Name (if different from Company Name)</b></span>
+                <!-- <c-tooltip-lwc
+                  help-text='Day to Day client contact(s)'>
+                </c-tooltip-lwc> -->
+              </div>
+              <div class="slds-col slds-cell-wrap slds-truncate">
+                <span style="white-space:break-spaces;word-break:break-word;">
+                  <template if:false={editmode}>
+                    <template if:true={soldCaseDataCopy.Legal_Client_Name__c}>
+                      {soldCaseDataCopy.Legal_Client_Name__c}
+                    </template>
+                  </template>
+                  <template if:true={editmode}>
+                    <lightning-input type="text" variant="label-hidden"
+                      name="Sold_Case_Checklist__c.Legal_Client_Name__c" value={soldCaseDataCopy.Legal_Client_Name__c}
+                      onchange={FieldChangeHandler} max-length="255">
+                    </lightning-input>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>EIN</b></span>
+                <!-- <c-tooltip-lwc
+                  help-text='Day to Day client contact(s)'>
+                </c-tooltip-lwc> -->
+              </div>
+              <div class="slds-col slds-cell-wrap slds-truncate">
+                <span style="white-space:break-spaces;word-break:break-word;">
+                  <template if:false={editmode}>
+                    <template if:true={soldCaseDataCopy.EIN__c}>
+                      {soldCaseDataCopy.EIN__c}
+                    </template>
+                  </template>
+                  <template if:true={editmode}>
+                    <lightning-input type="text" variant="label-hidden" name="Sold_Case_Checklist__c.EIN__c"
+                      value={soldCaseDataCopy.EIN__c} onchange={FieldChangeHandler} max-length="255">
+                    </lightning-input>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <!-----------------------------------SAMARTH SCC NB UPGRADE 2023----------------------------------->
+
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>Primary HR Implementation Contact</b></span>
+                <c-tooltip-lwc help-text={primaryHrHelpText}>
+                </c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap slds-truncate">
+                <span style="white-space:break-spaces;word-break:break-word;">
+                  <template if:false={editmode}>
+                    <template if:true={soldCaseDataCopy.Primary_HR_Implementation_Contact__c}>
+                      {soldCaseDataCopy.Primary_HR_Implementation_Contact__c}
+                    </template>
+                  </template>
+                  <template if:true={editmode}>
+                    <lightning-input type="text" variant="label-hidden"
+                      name="Sold_Case_Checklist__c.Primary_HR_Implementation_Contact__c"
+                      value={soldCaseDataCopy.Primary_HR_Implementation_Contact__c} onchange={FieldChangeHandler}
+                      max-length="255">
+                    </lightning-input>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom3">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>{accountFieldLabels.BillingAddress.label}</b></span>
+                <c-tooltip-lwc help-text={hqAddressHelpText}></c-tooltip-lwc>
+              </div>
+              <template if:true={recordDetail.Account.BillingAddress}>
+                <div class="slds-col slds-cell-wrap">
+                  <span>{companyAddress} </span>
+                </div>
+              </template>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>{opportunityFieldLabels.Primary_Situs_State__c.label}</b></span>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:false={editmode}>
+                    {recordDetail.Account.Primary_Situs_State__c}
+                  </template>
+                  <template if:true={editmode}>
+                    <template if:true={psspicklistvalue}>
+                      <lightning-combobox name="Account.Primary_Situs_State__c" variant="label-hidden"
+                        value={recordDetail.Account.Primary_Situs_State__c} placeholder="Select an Option"
+                        options={psspicklistvalue} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>{opportunityFieldLabels.EffectiveDate__c.label}</b></span>
+                <c-tooltip-lwc help-text={effectiveDateHelpText}></c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <lightning-formatted-date-time value={recordDetail.EffectiveDate__c} year="numeric" month="numeric"
+                    day="numeric" time-zone="UTC">
+                  </lightning-formatted-date-time>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>Anticipated/Actual Close Date (Medical)</b></span>
+                <c-tooltip-lwc help-text={actualCloseDateMedicalHelpText}>
+                </c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <!-- <span>{recordDetail.Anticipated_Actual_Close_Date_Medical__c}</span> -->
+                <lightning-formatted-date-time value={recordDetail.Anticipated_Actual_Close_Date_Medical__c}
+                  year="numeric" month="numeric" day="numeric" time-zone="UTC">
+                </lightning-formatted-date-time>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                <template if:true={cmType}>
+                  <span><b>Next Renewal Date</b></span>
+                  <c-tooltip-lwc help-text={nextRenewalHelpText}></c-tooltip-lwc>
+                </template>
+                <template if:false={cmType}>
+                  <span><b>First Renewal Date</b></span>
+                  <c-tooltip-lwc help-text={firstRenewalHelpText}></c-tooltip-lwc>
+                </template>
+
+              </div>
+              <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                <template if:false={editmode}>
+                  <span>
+                    <template if:true={isFirstRenewalDatePresent}>
+                      <lightning-formatted-date-time value={firstRenewalDate} year="numeric" month="numeric"
+                        day="numeric" time-zone="UTC">
+                      </lightning-formatted-date-time>
+                    </template>
+                  </span>
+                </template>
+                <template if:true={editmode}>
+                  <lightning-input type="date" variant="label-hidden" value={firstRenewalDate}
+                    name="Sold_Case_Checklist__c.First_Renewal_Date__c" onchange={FieldChangeHandler}
+                    date-style="short">
+                  </lightning-input>
+                </template>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <!-- <span><b>{opportunityFieldLabels.Sold_Retained_Members__c.label}</b></span> -->
+                <span><b>Sold Members</b></span>
+                <c-tooltip-lwc help-text={soldMembersHelpText}></c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <p>
+                  <lightning-formatted-number value={recordDetail.Sold_Retained_Members__c}>
+                  </lightning-formatted-number>
+                </p>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <!-- <span><b>Sold \ Retained Members - Employees Only</b></span> -->
+                <span><b>Sold Employees</b></span>
+                <c-tooltip-lwc help-text={soldEmployeesHelpText}></c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:false={editmode}>
+                    <!-- <p>
+                      {soldCaseDataCopy.Sold_Retained_Employees_Only__c}
+                    </p> -->
+                    <lightning-formatted-number value={soldCaseDataCopy.Sold_Retained_Employees_Only__c}>
+                    </lightning-formatted-number>
+
+                  </template>
+                  <template if:true={editmode}>
+                    <lightning-input variant="label-hidden"
+                      name="Sold_Case_Checklist__c.Sold_Retained_Employees_Only__c" max-length="18"
+                      value={soldCaseDataCopy.Sold_Retained_Employees_Only__c} onchange={FieldChangeHandler}>
+                    </lightning-input>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom2">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>Client Platform</b></span>
+              </div>
+              <div class="slds-col slds-cell-wrap textWrapStyle">
+                <span>
+                  <template if:false={editmode}>
+                    {UMR_Client_Platform__c}
+                  </template>
+                  <template if:true={editmode}>
+                    <template if:true={clientPlatformValues}>
+                      <!-- <lightning-combobox name="Account.UMR_Client_Platform__c" variant="label-hidden"
+                        value={recordDetail.Account.UMR_Client_Platform__c} placeholder="Select an Option"
+                        options={clientPlatformValues} onchange={FieldChangeHandler}>
+                      </lightning-combobox> -->
+                      <c-multi-pick-list-generic-component class="slds-text-align_left"
+                        received-pick-list-values={clientPlatformValues}
+                        onmultipicklistgenericevent={multipicklistgenericevent}
+                        selected-values={recordDetail.Account.UMR_Client_Platform__c}
+                        field-api-name="UMR_Client_Platform__c">
+                      </c-multi-pick-list-generic-component>
+                    </template>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom2">
+              <div class="slds-col slds-size_1-of-2">
+                <span>
+                  <b>Funding Type (Medical)</b></span>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:false={editmode}>
+                    {soldCaseDataCopy.Type_of_Funding_Medical__c}
+                  </template>
+                  <template if:true={editmode}>
+                    <!-- <lightning-combobox name="Sold_Case_Checklist__c.Type_of_Funding_Medical__c" label=" "
+                      variant="label-hidden" value={soldCaseDataCopy.Type_of_Funding_Medical__c} placeholder="Select an Option"
+                      options={typeOfFundingMedicalSccValues} onchange={FieldChangeHandler}>
+                    </lightning-combobox> -->
+                    <c-multi-pick-list-generic-component class="slds-text-align_left"
+                      received-pick-list-values={typeOfFundingMedicalSccValues}
+                      onmultipicklistgenericevent={multipicklistgenericeventMA}
+                      selected-values={soldCaseDataCopy.Type_of_Funding_Medical__c}
+                      field-api-name="Sold_Case_Checklist__c.Type_of_Funding_Medical__c">
+                    </c-multi-pick-list-generic-component>
+
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom2">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>Funding Type (Dental)</b></span>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:false={editmode}>
+                    {Funding_Type_Dental__c}
+                  </template>
+                  <template if:true={editmode}>
+                    <template if:true={fundingTypeDentalValues}>
+                      <!-- <lightning-combobox name="Funding_Type_Dental__c" variant="label-hidden"
+                        value={recordDetail.Funding_Type_Dental__c} placeholder="Select an Option"
+                        options={fundingTypeDentalValues} onchange={FieldChangeHandler}>
+                      </lightning-combobox> -->
+                      <c-multi-pick-list-generic-component class="slds-text-align_left"
+                        received-pick-list-values={fundingTypeDentalValues}
+                        onmultipicklistgenericevent={multipicklistgenericeventMA}
+                        selected-values={recordDetail.Funding_Type_Dental__c} field-api-name="Funding_Type_Dental__c">
+                      </c-multi-pick-list-generic-component>
+                    </template>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom2">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>Funding Type (Vision)</b></span>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:false={editmode}>
+                    {Funding_Type_Vision__c}
+                  </template>
+                  <template if:true={editmode}>
+                    <template if:true={fundingTypeVisionValues}>
+                      <!-- <lightning-combobox name="Funding_Type_Vision__c" variant="label-hidden"
+                        value={recordDetail.Funding_Type_Vision__c} placeholder="Select an Option"
+                        options={fundingTypeVisionValues} onchange={FieldChangeHandler}>
+                      </lightning-combobox> -->
+                      <c-multi-pick-list-generic-component class="slds-text-align_left"
+                        received-pick-list-values={fundingTypeVisionValues}
+                        onmultipicklistgenericevent={multipicklistgenericeventMA}
+                        selected-values={recordDetail.Funding_Type_Vision__c} field-api-name="Funding_Type_Vision__c">
+                      </c-multi-pick-list-generic-component>
+                    </template>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- <tr>
+          <td class="left">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>Funding Type (Vision)</b></span>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:false={editmode}>
+                    {recordDetail.Funding_Type_Vision__c}
+                  </template>
+                  <template if:true={editmode}>
+                    <template if:true={fundingTypeVisionValues}>
+                      <lightning-combobox name="Funding_Type_Vision__c" variant="label-hidden"
+                        value={recordDetail.Funding_Type_Vision__c} placeholder="Select an Option"
+                        options={fundingTypeVisionValues} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr> -->
+      </table>
+
+      <table class="slds-table slds-no-row-hover" style="width:50%;">
+        <tr>
+          <td class="right">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <!-- <span><b>{opportunityFieldLabels.OwnerId.label}</b></span> -->
+                <span><b>Owner</b></span>
+                <c-tooltip-lwc help-text={ownerHelpText}></c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:true={recordDetail.Owner.Name}>
+                    {recordDetail.Owner.Name}
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+
+        <tr>
+          <td class="right">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>Trust Involved</b></span>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:false={editmode}>
+                    {soldCaseDataCopy.Trust_Involved__c}</template>
+                  <template if:true={editmode}>
+                    <template if:true={trustinvolved}>
+                      <lightning-combobox name="Sold_Case_Checklist__c.Trust_Involved__c" label=" "
+                        variant="label-hidden" value={soldCaseDataCopy.Trust_Involved__c} placeholder="Select an Option"
+                        options={trustInvolvedSccValues} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </template>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="right">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom4">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>CVG Association</b></span>
+                <c-tooltip-lwc help-text={cvgAssociationHelpText}>
+                </c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap textWrapStyle">
+                <span>
+                  <template if:true={recordDetail.Account.CVGAccount__c}>
+                    <!--template if true Samarth SCC 2021-->
+                    {recordDetail.Account.CVGAccount__r.Name}
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="right">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>Implementation Lead (IPM/PIM)</b></span>
+                <c-tooltip-lwc help-text='Refer Company AMT section for Surest Account Partners, Surest Client Managers and Surest Benefit Strategists.'>
+                </c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:false={editmode}>
+                    <template if:true={getIpmData}>
+                      {soldCaseDataCopy.IPM__r.Name}
+                    </template>
+                  </template>
+                  <template if:true={editmode}>
+                    <c-cutomlookup onsearch={userhandleSearch} label="" selection={ipmName} variant="label-hidden"
+                      onselectionchange={userhandelselection} placeholder="IPM"></c-cutomlookup>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <template if:false={cmType}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>SCE</b></span>
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:false={editmode}>
+                      {soldCaseDataCopy.SCE__c}
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-input type="text" variant="label-hidden" name="Sold_Case_Checklist__c.SCE__c"
+                        value={soldCaseDataCopy.SCE__c} onchange={FieldChangeHandler} max-length="25">
+                      </lightning-input>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <template if:true={pharmSold}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>Rx SVP</b></span>
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Rx_SVP__c}>
+                        {soldCaseDataCopy.Rx_SVP__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-input type="text" variant="label-hidden" name="Sold_Case_Checklist__c.Rx_SVP__c"
+                        value={soldCaseDataCopy.Rx_SVP__c} onchange={FieldChangeHandler} max-length="25">
+                      </lightning-input>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <template if:true={showSpecialtyProd}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>Specialty Benefits SVP</b></span>
+                  <c-tooltip-lwc help-text={sbSvpHelpText}>
+                  </c-tooltip-lwc>
+
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    {recordDetail.Specialty_Benefits_SVP__c}
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <template if:true={showFinAccProd}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>Optum Financial SVP</b></span>
+                  <c-tooltip-lwc help-text={optumFinancialSvpHelpText}>
+                  </c-tooltip-lwc>
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Optum_Financial_SVP__c}>
+                        {soldCaseDataCopy.Optum_Financial_SVP__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-input type="text" variant="label-hidden"
+                        name="Sold_Case_Checklist__c.Optum_Financial_SVP__c"
+                        value={soldCaseDataCopy.Optum_Financial_SVP__c} onchange={FieldChangeHandler} max-length="25">
+                      </lightning-input>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <template if:true={showBehavioralProd}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>Optum Solution Sales Exec</b></span>
+                  <c-tooltip-lwc help-text={optSolSalesExecHelpText}>
+                  </c-tooltip-lwc>
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Optum_Solution_Sales_Exec__c}>
+                        {soldCaseDataCopy.Optum_Solution_Sales_Exec__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-input type="text" variant="label-hidden"
+                        name="Sold_Case_Checklist__c.Optum_Solution_Sales_Exec__c"
+                        value={soldCaseDataCopy.Optum_Solution_Sales_Exec__c} onchange={FieldChangeHandler}
+                        max-length="25">
+                      </lightning-input>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <tr>
+          <td class="right">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <template if:true={cmType}>
+                  <span><b>Medical Underwriter</b></span>
+                </template>
+                <template if:false={cmType}>
+                  <span><b>NB Medical Underwriter</b></span>
+                </template>
+              </div>
+              <div class="slds-col slds-cell-wrap">
+                <span>
+                  <template if:false={editmode}>
+                    {soldCaseDataCopy.Medical_Underwriter__c}
+                  </template>
+                  <template if:true={editmode}>
+                    <lightning-input type="text" variant="label-hidden"
+                      name="Sold_Case_Checklist__c.Medical_Underwriter__c"
+                      value={soldCaseDataCopy.Medical_Underwriter__c} onchange={FieldChangeHandler} max-length="25">
+                    </lightning-input>
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <template if:true={dentSold}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>Dental Underwriter</b></span>
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Dental_Underwriter__c}>
+                        {soldCaseDataCopy.Dental_Underwriter__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-input type="text" variant="label-hidden"
+                        name="Sold_Case_Checklist__c.Dental_Underwriter__c"
+                        value={soldCaseDataCopy.Dental_Underwriter__c} onchange={FieldChangeHandler} max-length="25">
+                      </lightning-input>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <template if:true={visSold}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>Vision Underwriter</b></span>
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.Vision_Underwriter__c}>
+                        {soldCaseDataCopy.Vision_Underwriter__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-input type="text" variant="label-hidden"
+                        name="Sold_Case_Checklist__c.Vision_Underwriter__c"
+                        value={soldCaseDataCopy.Vision_Underwriter__c} onchange={FieldChangeHandler} max-length="25">
+                      </lightning-input>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <template if:true={showCriticalIllnessOrAccidentProd}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>CI / Accident Underwriter</b></span>
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.CI_Accident_Underwriter__c}>
+                        {soldCaseDataCopy.CI_Accident_Underwriter__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-input type="text" variant="label-hidden"
+                        name="Sold_Case_Checklist__c.CI_Accident_Underwriter__c"
+                        value={soldCaseDataCopy.CI_Accident_Underwriter__c} onchange={FieldChangeHandler}
+                        max-length="25">
+                      </lightning-input>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <template if:true={pharmSold}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>OptumRx Underwriter</b></span>
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:false={editmode}>
+                      <template if:true={soldCaseDataCopy.OptumRx_Underwriter__c}>
+                        {soldCaseDataCopy.OptumRx_Underwriter__c}
+                      </template>
+                    </template>
+                    <template if:true={editmode}>
+                      <lightning-input type="text" variant="label-hidden"
+                        name="Sold_Case_Checklist__c.OptumRx_Underwriter__c"
+                        value={soldCaseDataCopy.OptumRx_Underwriter__c} onchange={FieldChangeHandler} max-length="25">
+                      </lightning-input>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <tr>
+          <td class="right">
+            <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+              <div class="slds-col slds-size_1-of-2">
+                <span><b>Incumbent Primary (Medical)</b></span>
+                <c-tooltip-lwc help-text={incumbentPrimaryMedicalHelpText}></c-tooltip-lwc>
+              </div>
+              <div class="slds-col slds-cell-wrap textWrapStyle">
+                <span>
+                  <template if:true={getIMData}>
+                    {recordDetail.Incumbent_Primary_Medical__r.Name}
+                  </template>
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <template if:true={pharmSold}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>Incumbent Primary (Pharmacy)</b></span>
+                  <c-tooltip-lwc help-text={incPrimaryPharmaHelpText}>
+                  </c-tooltip-lwc>
+
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:true={getIPData}>
+                      {recordDetail.Incumbent_Primary_Pharmacy__r.Name}
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <template if:true={dentSold}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>Incumbent Primary (Dental)</b></span>
+                  <c-tooltip-lwc help-text={incPrimaryDentalHelpText}>
+                  </c-tooltip-lwc>
+
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:true={getIDData}>
+                      {recordDetail.Incumbent_Primary_Dental__r.Name}
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+
+        <template if:true={visSold}>
+          <tr>
+            <td class="right">
+              <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                <div class="slds-col slds-size_1-of-2">
+                  <span><b>Incumbent Primary (Vision)</b></span>
+                  <c-tooltip-lwc help-text={incPrimaryVisionHelpText}>
+                  </c-tooltip-lwc>
+
+                </div>
+                <div class="slds-col slds-cell-wrap textWrapStyle">
+                  <span>
+                    <template if:true={getIVData}>
+                      {recordDetail.Incumbent_Primary_Vision__r.Name}
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
+      </table>
+
+      <template if:true={isTraditionalProduct}>
+        <lightning-accordion class="section-header-style" allow-multiple-sections-open
+          onsectiontoggle={handleSectionToggle} active-section-name={activeSections} style="width: 100%;">
+          <lightning-accordion-section class="section-header-sub" name={sectionLabel}
+            label={sectionLabel}>
+            <template if:true={isSurestProduct}>
+            <div style="width: 98%; margin: 0 auto; margin-bottom: 9px;">
+              <b style="color: black; font-size:12px;">Note: Applicable only for UNET/UMR, Surest manages via Virtual Sites.</b>
+            </div>
+            </template>
+            <div class="slds-grid slds-wrap border-bottomP slds-p-left_x-small slds-p-right_x-small">
+            
+              <template if:false={editmode}>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left slds-m-left_xx-small">
+                      <label>{accountFieldLabels.Call_Site_Type__c.label}</label>
+                    </p>
+                  </b>
+                  <div class="slds-col" style="text-align: left; word-break: break-word;">
+                    {recordDetail.Account.Call_Site_Type__c}
+                  </div>
+                </div>
+                <div style="width: 5%;"></div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left slds-m-left_xx-small">
+                      <label>{accountFieldLabels.Claim_Site_Type__c.label}</label>
+                    </p>
+                  </b>
+                  <div class="slds-col" style="text-align: left; word-break: break-word;">
+                    {recordDetail.Account.Claim_Site_Type__c}
+                  </div>
+                </div>
+                <div style="width: 5%;"></div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left slds-m-left_xx-small">
+                      <label>{accountFieldLabels.Clinical_Site_Type__c.label}</label>
+                    </p>
+                  </b>
+                  <div class="slds-col" style="text-align: left; word-break: break-word;">
+                    {recordDetail.Account.Clinical_Site_Type__c}
+                  </div>
+                </div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left slds-m-left_xx-small">
+                      <label>{accountFieldLabels.Call_Site__c.label}</label>
+                    </p>
+                  </b>
+                  <div class="slds-col" style="text-align: left; word-break: break-word;">
+                    {callSiteValues}
+                  </div>
+                </div>
+                <div style="width: 5%;"></div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left slds-m-left_xx-small">
+                      <label>{accountFieldLabels.Claim_Site__c.label}</label>
+                    </p>
+                  </b>
+                  <div class="slds-col" style="text-align: left; word-break: break-word;">
+                    {claimSiteValues}
+                  </div>
+                </div>
+                <div style="width: 5%;"></div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left slds-m-left_xx-small">
+                      <label>{accountFieldLabels.Clinical_Site__c.label}</label>
+                    </p>
+                  </b>
+                  <div class="slds-col" style="text-align: left; word-break: break-word;">
+                    {clinicalSiteValues}
+                  </div>
+                </div>
+              </template>
+
+              <template if:true={editmode}>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left">
+                      <label>{accountFieldLabels.Call_Site_Type__c.label}</label>
+                    </p>
+                  </b>
+                  <template if:true={callSiteTypeValues}>
+                    <span class="slds-text-align_left">
+                      <lightning-combobox name="Account.Call_Site_Type__c" label=" " variant="label-hidden"
+                        value={recordDetail.Account.Call_Site_Type__c} placeholder="Select an Option"
+                        options={callSiteTypeValues} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </span>
+                  </template>
+                </div>
+                <div style="width: 5%;"></div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left">
+                      <label>{accountFieldLabels.Claim_Site_Type__c.label}</label>
+                    </p>
+                  </b>
+                  <template if:true={claimSiteTypeValues}>
+                    <span class="slds-text-align_left">
+                      <lightning-combobox name="Account.Claim_Site_Type__c" label=" " variant="label-hidden"
+                        value={recordDetail.Account.Claim_Site_Type__c} placeholder="Select an Option"
+                        options={claimSiteTypeValues} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </span>
+                  </template>
+                </div>
+                <div style="width: 5%;"></div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left">
+                      <label>{accountFieldLabels.Clinical_Site_Type__c.label}</label>
+                    </p>
+                  </b>
+                  <template if:true={clinicalSiteTypeValues}>
+                    <span class="slds-text-align_left">
+                      <lightning-combobox name="Account.Clinical_Site_Type__c" label=" " variant="label-hidden"
+                        value={recordDetail.Account.Clinical_Site_Type__c} placeholder="Select an Option"
+                        options={clinicalSiteTypeValues} onchange={FieldChangeHandler}>
+                      </lightning-combobox>
+                    </span>
+                  </template>
+                </div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left">
+                      <label>{accountFieldLabels.Call_Site__c.label}</label>
+                    </p>
+                  </b>
+                  <template if:true={callsitevalue}>
+                    <c-multi-pick-list-generic-component class="slds-text-align_left"
+                      received-pick-list-values={callsitevalue} onmultipicklistgenericevent={multipicklistgenericevent}
+                      selected-values={recordDetail.Account.Call_Site__c} field-api-name="Call_Site__c">
+                    </c-multi-pick-list-generic-component>
+                  </template>
+                </div>
+                <div style="width: 5%;"></div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left">
+                      <label>{accountFieldLabels.Claim_Site__c.label}</label>
+                    </p>
+                  </b>
+                  <template if:true={claimstatevalue}>
+                    <c-multi-pick-list-generic-component class="slds-text-align_left"
+                      received-pick-list-values={claimstatevalue} onmultipicklistgenericevent={multipicklistgenericevent}
+                      selected-values={recordDetail.Account.Claim_Site__c} field-api-name="Claim_Site__c">
+                    </c-multi-pick-list-generic-component>
+                  </template>
+                </div>
+                <div style="width: 5%;"></div>
+                <div class="slds-col" style="width: 30%;">
+                  <b>
+                    <p class="slds-text-align_left">
+                      <label>{accountFieldLabels.Clinical_Site__c.label}</label>
+                    </p>
+                  </b>
+                  <template if:true={callsitevalue}>
+                    <template if:true={clinicalsitevalue}>
+                      <c-multi-pick-list-generic-component class="slds-text-align_left"
+                        received-pick-list-values={clinicalsitevalue}
+                        onmultipicklistgenericevent={multipicklistgenericevent}
+                        selected-values={recordDetail.Account.Clinical_Site__c} field-api-name="Clinical_Site__c">
+                      </c-multi-pick-list-generic-component>
+                    </template>
+                  </template>
+                </div>
+                <br />
+              </template>
+            </div>
+          </lightning-accordion-section>
+</lightning-accordion>
+</template>
+<lightning-accordion class="section-header-style" allow-multiple-sections-open
+onsectiontoggle={handleSectionToggle} active-section-name={activeSections} style="width: 100%;">
+          <lightning-accordion-section class="section-header-sub" name="Top Market Information"
+            label="Top Market Information">
+            <div class="slds-grid slds-wrap client-detail-sec-style">
+              <table class="slds-table slds-no-row-hover">
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 1</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <span>{recordDetail.Account.TopMarket1__c}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="right">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 4</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <span>{recordDetail.Account.TopMarket4__c}</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 1 # Records</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <lightning-formatted-number value={recordDetail.Account.TopMarket1Records__c}>
+                        </lightning-formatted-number>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="right">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 4 # Records</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <lightning-formatted-number value={recordDetail.Account.TopMarket4Records__c}>
+                        </lightning-formatted-number>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 2</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <span>{recordDetail.Account.TopMarket2__c}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="right">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 5</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <span>{recordDetail.Account.TopMarket5__c}</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 2 # Records</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <lightning-formatted-number value={recordDetail.Account.TopMarket2Records__c}>
+                        </lightning-formatted-number>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="right">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 5 # Records</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <lightning-formatted-number value={recordDetail.Account.TopMarket5Records__c}>
+                        </lightning-formatted-number>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 3</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <span>{recordDetail.Account.TopMarket3__c}</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="left">
+                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                      <div class="slds-col slds-size_1-of-2">
+                        <span><b>Top Market 3 # Records</b></span>
+                        <c-tooltip-lwc help-text={topMarketHelpText}>
+                        </c-tooltip-lwc>
+                      </div>
+                      <div class="slds-col slds-cell-wrap">
+                        <lightning-formatted-number value={recordDetail.Account.TopMarket3Records__c}>
+                        </lightning-formatted-number>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </lightning-accordion-section>
+        </lightning-accordion>
+     
+    </div>
+  </template>
+</template>

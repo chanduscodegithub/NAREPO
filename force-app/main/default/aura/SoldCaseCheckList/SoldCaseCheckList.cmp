@@ -1,0 +1,29 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="SoldCaseCheckListController">
+    <aura:attribute name="progress" type="Integer" default="0" />
+    
+    
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      layoutType=""
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.OpportunityData}"
+                      targetError="{!v.recordError}"
+                      fields="['Sales_Stage_Dental__c','Sales_Stage_Medical__c','Sales_Stage_Other__c','Sales_Stage_Pharmacy__c','Sales_Stage_Vision__c']"
+                      recordUpdated="{!c.handleRecordUpdated}"
+                      />
+    
+    
+    <aura:attribute name="OpportunityData" type="Object"/>
+    
+    <aura:attribute name="record" type="Object"/>
+    
+    <aura:attribute name="recordError" type="String"/>
+    
+    <div data-reactroot="" class="slds-progress-bar slds-progress-bar_medium slds-progress-bar_circular" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{!v.progress}" role="progressbar">
+        <span class="slds-progress-bar__value" style="{!'width:'+v.progress+'%'}">
+            <span class="slds-assistive-text">Progress: {!v.progress}%</span>
+        </span>
+    </div>
+    
+    
+</aura:component>

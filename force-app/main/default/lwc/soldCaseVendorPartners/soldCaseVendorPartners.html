@@ -1,0 +1,185 @@
+<template>
+    <lightning-accordion class="section-header-style" allow-multiple-sections-open onsectiontoggle={handleSectionToggle}
+        active-section-name={activeSections}>
+        <lightning-accordion-section class="section-header" name="Vendor Partners/Integrations"
+            label="Vendor Partners/Integrations">
+            <div class="slds-grid slds-grid--vertical-align-center slds-wrap slds-p-left_medium"
+                style="font-size:12px;">
+                <template if:true={isDataReceived}>
+                    <table class="slds-table slds-no-row-hover">
+                        <template for:each={eligibilityVendorLst} for:item="eligibilityVendor" for:index="index">
+                            <tr key={eligibilityVendor.value}>
+                                <td class="left">
+                                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                        <div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+                                            <span><b>{eligibilityVendor.rowHeading}</b></span>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small "
+                                            style="margin-left: 110px; width: 25%;">
+                                            <span style="white-space:break-spaces;word-break:break-word;">
+                                                <template if:false={editmode}>
+                                                    {eligibilityVendor.value}
+                                                </template>
+                                                <template if:true={editmode}>
+                                                    <lightning-input type="text" variant="label-hidden"
+                                                        value={eligibilityVendor.value} data-index={index}
+                                                        class="eligibleVendorCls"
+                                                        data-fieldreference='Eligibility_Vendor' max-length="100">
+                                                    </lightning-input>
+                                                </template>
+                                            </span>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small "
+                                            style="margin-left: -5px; width: 160px;">
+                                            <template if:true={eligibilityVendor.showAddButton}>
+
+                                                <lightning-button variant="brand" label="Add Another Vendor"
+                                                    data-buttonindex={index} onclick={addVendorFunction}
+                                                    data-fieldreference='Eligibility_Vendor' title="Add Another Vendor"
+                                                    class="slds-m-left_x-small" disabled={disableButtons}>
+                                                </lightning-button>
+
+                                            </template>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small "
+                                            style="margin-left: 77px; width: 50px;">
+                                            <template if:true={eligibilityVendor.showRemoveButton}>
+
+                                                <lightning-button-icon variant="destructive" icon-name="utility:delete"
+                                                    alternative-text="Delete" data-fieldreference='Eligibility_Vendor'
+                                                    onclick={deleteVendorFunction} data-buttonindex={index}
+                                                    class="slds-m-left_xx-small doNotDeleteVendor" title="Delete"
+                                                    disabled={disableButtons}>
+                                                </lightning-button-icon>
+
+                                            </template>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+
+                        <template for:each={externalVendorLst} for:item="externalVendor" for:index="index">
+                            <tr key={externalVendor.value}>
+                                <td class="left">
+                                    <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                        <div class="slds-col slds-size_2-of-5 slds-p-around_xx-small">
+                                            <span><b>{externalVendor.rowHeading}</b></span>
+                                            <template if:true={externalVendor.rowHeading}>
+                                                <c-tooltip-lwc help-text={externalVendor.extVendHelpText}>
+                                                </c-tooltip-lwc>
+                                            </template>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small "
+                                            style="margin-left: 110px; width: 25%;">
+                                            <span style="white-space:break-spaces;word-break:break-word;">
+                                                <template if:false={editmode}>
+                                                    {externalVendor.value}
+                                                </template>
+                                                <template if:true={editmode}>
+                                                   
+                                                    <lightning-textarea type="text" variant="label-hidden"
+                                                        value={externalVendor.value} class="externalVendorCls"
+                                                        data-fieldreference='External_Vendors_to_Integrate'
+                                                        max-length="500">
+                                                    </lightning-textarea>
+                                                </template>
+                                            </span>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small "
+                                            style="margin-left: -5px; width: 160px;">
+                                            <template if:true={externalVendor.showAddButton}>
+
+                                                <lightning-button variant="brand" label="Add Another Vendor"
+                                                    data-buttonindex={index} onclick={addVendorFunction}
+                                                    title="Add Another Vendor" class="slds-m-left_x-small"
+                                                    data-fieldreference='External_Vendors_to_Integrate'
+                                                    disabled={disableButtons}>
+                                                </lightning-button>
+
+                                            </template>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small "
+                                            style="margin-left: 77px; width: 50px;">
+                                            <template if:true={externalVendor.showRemoveButton}>
+
+                                                <lightning-button-icon variant="destructive" icon-name="utility:delete"
+                                                    alternative-text="Delete" onclick={deleteVendorFunction}
+                                                    data-buttonindex={index}
+                                                    data-fieldreference='External_Vendors_to_Integrate'
+                                                    class="slds-m-left_xx-small doNotDeleteVendor" title="Delete"
+                                                    disabled={disableButtons}>
+                                                </lightning-button-icon>
+
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </template>
+
+                        <tr>
+                            <td class="left">
+                                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                        <span><b>Historical Data</b></span>
+                                    </div>
+                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small ">
+                                        <span>
+                                            <template if:false={editmode}>
+                                                <template if:true={showHistoricDataMedicalOrRx}>
+                                                    <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small "
+                                                        style="float: left;text-align:left; padding-left: 0px;">
+                                                        {soldCaseDataCopy.Historic_Data__c}</div>
+                                                    <template if:true={showHistoricDataMedicalOrRx}>
+                                                        <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small "
+                                                            style="float: left;text-align:left">
+                                                            <span>&nbsp;&nbsp;{soldCaseDataCopy.Historic_Data_Medical_or_Rx__c}</span>
+                                                        </div>
+                                                    </template>
+                                                </template>
+                                                <template if:false={showHistoricDataMedicalOrRx}>
+                                                    <div class="slds-col slds-size_4-of-4 slds-p-around_xx-small "
+                                                        style="float: left;text-align:left">
+                                                        {soldCaseDataCopy.Historic_Data__c}</div>
+                                                </template>
+                                            </template>
+                                            <template if:true={editmode}>
+                                                <span>
+                                                    <template if:true={historicDataValues}>
+                                                        <lightning-combobox class='picklist1'
+                                                            name="Sold_Case_Checklist__c.Historic_Data__c"
+                                                            variant="label-hidden"
+                                                            value={soldCaseDataCopy.Historic_Data__c}
+                                                            placeholder="Select an Option" options={historicDataValues}
+                                                            onchange={FieldChangeHandler}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </span>
+                                                <span>
+                                                    <template if:true={showHistoricDataMedicalOrRx}>
+                                                        <template if:true={historicDataMedicalOrRxValues}>
+                                                            <lightning-combobox class='picklist2'
+                                                                name="Sold_Case_Checklist__c.Historic_Data_Medical_or_Rx__c"
+                                                                variant="label-hidden"
+                                                                value={soldCaseDataCopy.Historic_Data_Medical_or_Rx__c}
+                                                                placeholder="Select an Option"
+                                                                options={historicDataMedicalOrRxValues}
+                                                                onchange={FieldChangeHandler}>
+                                                            </lightning-combobox>
+                                                        </template>
+                                                    </template>
+                                                </span>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </template>
+            </div>
+        </lightning-accordion-section>
+    </lightning-accordion>
+</template>
