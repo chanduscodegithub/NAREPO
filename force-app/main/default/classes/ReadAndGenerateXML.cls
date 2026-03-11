@@ -1,6 +1,7 @@
 public with sharing class ReadAndGenerateXML {       
    
     public static TemplateWrapperClass readXMLfile(Set<String> parentObjIdList,String templateName,Template_Design__c templateObj){
+        templateName = string.escapeSingleQuotes(templateName);
             
         	TemplateWrapperClass templateWrapper = new TemplateWrapperClass();
         

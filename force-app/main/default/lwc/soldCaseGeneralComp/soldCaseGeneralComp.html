@@ -6,6 +6,9 @@
   @last modified by  : Spoorthy
 -->
 <template>
+  <template if:true={isLoading}>
+      <lightning-spinner variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
+  </template>
   <lightning-accordion class="section-header-style" allow-multiple-sections-open onsectiontoggle={handleSectionToggle}
     active-section-name={activeSections}>
     <template if:true={isDataReceived}>
@@ -851,6 +854,46 @@
           </table>
         </div>
       </lightning-accordion-section>
+
+       <div>
+            <template if:true={showEmailModal}>
+                <section role="dialog" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 class="slds-text-heading_medium">
+                                Select Recipients
+                            </h2>
+                        </header>
+
+                        <div class="slds-modal__content slds-p-around_medium">
+
+                            <lightning-checkbox-group
+                                    label="The SCE Validation notification will be sent to the Roles/Email addresses listed below
+                                         (Please deselect any Roles/Email addresses that should not receive this notification)."
+                                    options={emails}
+                                    value={selectedEmails}
+                                    onchange={handleSelection}>
+                            </lightning-checkbox-group>
+
+                        </div>
+
+                        <footer class="slds-modal__footer">
+                            <lightning-button label="Cancel"
+                                            onclick={closeModal}>
+                            </lightning-button>
+
+                            <lightning-button variant="brand" class="slds-m-left_small"
+                                            label="Send"
+                                            onclick={sendReport}>
+                            </lightning-button>
+                        </footer>
+
+                    </div>
+                </section>
+
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </div>
     </template>
   </lightning-accordion>
 </template>

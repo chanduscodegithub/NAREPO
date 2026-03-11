@@ -2,6 +2,8 @@ import { LightningElement, api, wire, track } from 'lwc';
 import Renewal_Checklist_Additional_Information_instruction from '@salesforce/label/c.Renewal_Checklist_Additional_Information_instruction';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import { getPicklistValues } from 'lightning/uiObjectInfoApi';
+import LightningConfirm from 'lightning/confirm';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import PccObject from '@salesforce/schema/Renewal_Checklist__c';
 import onePass from '@salesforce/schema/Renewal_Checklist__c.One_Pass_Subsidized__c';
 import saveRenewalData from '@salesforce/apex/renewalChecklistCls.saveRenewalData';
@@ -15,6 +17,7 @@ export default class PccClinicalProgramSection extends LightningElement {
     @api policyNames;
     @api existingProducts;
     @track renewalChecklistData;
+    @track lastYearChecklist;
     clinicalPrgmToBackend = {};
     isEdit = false;
     @api extraOnePassValues;
@@ -33,6 +36,14 @@ export default class PccClinicalProgramSection extends LightningElement {
     set renewalChecklistDataFromParent(value) {
         this.renewalChecklistData = JSON.parse(JSON.stringify(value));
         this.setDefaultPicklistValues();
+    }
+
+     @api
+    get lastYearRenewalChecklist() {
+        return this.lastYearChecklist;
+    }
+    set lastYearRenewalChecklist(value) {
+        this.lastYearChecklist = JSON.parse(JSON.stringify(value));
     }
 
     @track picklistValues = [
@@ -119,7 +130,9 @@ export default class PccClinicalProgramSection extends LightningElement {
                     this.displayConfig.push({
                         field: m.fieldApiName,
                         label: m.label,
-                        yesNoOnly: m.yesNoOnly
+                        yesNoOnly: m.yesNoOnly,
+                        restrictSurestOptions: m.restrictSurestOptions,
+                        restrictDirectContractOption: m.restrictDirectContractOption
                     });
                 });
         
@@ -159,6 +172,7 @@ export default class PccClinicalProgramSection extends LightningElement {
         const soldFields = new Set();
         const readOnlyFlags = {};
         const isDual = {};
+        const productFieldValues = {};
 
         this.existingProductscopy.forEach(item => {
             let dispositionValid = ['Sold', 'Transfer In', 'Spin-Off'].includes(item.Disposition_Other_Buy_Up_Programs__c);
@@ -188,6 +202,7 @@ export default class PccClinicalProgramSection extends LightningElement {
             if (surestVal === 'Available for Surest only with UNET') {
                 isDual[fieldName] = true;
             }
+            productFieldValues[fieldName] = product?.Surest_Implementation_Lead_Time__c ;
         
         });
     
@@ -200,16 +215,17 @@ export default class PccClinicalProgramSection extends LightningElement {
 
         this.readOnlyFlags = readOnlyFlags;
         this.isDual = isDual;
+        this.productFieldValues = productFieldValues;
 
         this.renewalChecklistData = {
             ...this.renewalChecklistData, 
-            Coronary_Artery_Disease_Management__c: this.renewalChecklistData?.Coronary_Artery_Disease_Management__c || 'No',
+            //Coronary_Artery_Disease_Management__c: this.renewalChecklistData?.Coronary_Artery_Disease_Management__c || 'No',
             Calm_Health__c: this.renewalChecklistData?.Calm_Health__c || 'Yes',
             CPW_2nd_MD__c: this.renewalChecklistData?.CPW_2nd_MD__c || ''
         };
         this.clinicalPrgmToBackend = {
             ...this.clinicalPrgmToBackend, 
-            Coronary_Artery_Disease_Management__c: this.clinicalPrgmToBackend?.Coronary_Artery_Disease_Management__c || 'No',
+            //Coronary_Artery_Disease_Management__c: this.clinicalPrgmToBackend?.Coronary_Artery_Disease_Management__c || 'No',
             Calm_Health__c: this.clinicalPrgmToBackend?.Calm_Health__c || 'Yes',
             CPW_2nd_MD__c: this.clinicalPrgmToBackend?.CPW_2nd_MD__c || ''
         };
@@ -244,13 +260,45 @@ export default class PccClinicalProgramSection extends LightningElement {
                 readonly: this.readOnlyFlags?.One_Pass_Subsidized__c || false
             } : null;
 
-            const options = item.yesNoOnly
-                ? [
+            // const options = item.yesNoOnly
+            //     ? [
+            //         { label: '', value: '' },
+            //         { label: 'Yes', value: 'Yes' },
+            //         { label: 'No', value: 'No' }
+            //     ]
+            //     : this.picklistValuesOP;
+
+            let options;
+
+            if (item.restrictSurestOptions) {
+                options = [
+                    { label: '', value: '' },
+                    { label: 'Yes - Direct with Surest', value: 'Yes - Direct with Surest' },
+                    { label: 'No', value: 'No' }
+                ];
+            }
+            else if (item.restrictDirectContractOption){
+                options =  [
+                    { label: '', value: '' },
+                    { label: 'Yes - Sold', value: 'Yes - Sold' },
+                    { label: 'Yes - Retained', value: 'Yes - Retained' },
+                    { label: 'Yes - Direct Contract', value: 'Yes - Direct Contract'},
+                    { label: 'No - N/A', value: 'No - N/A' },
+                    { label: 'No - Term', value: 'No - Term' }
+                ];
+            }
+            else if (item.yesNoOnly) {
+                options = [
                     { label: '', value: '' },
                     { label: 'Yes', value: 'Yes' },
                     { label: 'No', value: 'No' }
-                ]
-                : this.picklistValuesOP;
+                ];
+            }
+            else {
+                options = this.picklistValuesOP;
+            }
+            
+            const productValue = this.productFieldValues?.[item.field] || '';
 
             return {
                 label: item.label,
@@ -259,14 +307,52 @@ export default class PccClinicalProgramSection extends LightningElement {
                 readonly,
                 name: `${item.field}`,
                 relatedField,
+                lastYearValue: this.lastYearChecklist?.[item.field] || '',
                 isDual: this.isDual?.[item.field] || false,
                 options: options,
-                labelClass : isOnePass && (value === 'Yes - Sold' || value === 'Yes - Retained') ? 'slds-col slds-size_1-of-4 slds-p-around_xx-small' : 'slds-col slds-size_2-of-4 slds-p-around_xx-small',
-                mainClass : 'slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right'
+                productValue,
+                labelClass : isOnePass && (value === 'Yes - Sold' || value === 'Yes - Retained') ? 'slds-col slds-size_1-of-6 slds-p-around_xx-small' : 'slds-col slds-size_2-of-6 slds-p-around_xx-small',
+                mainClass : 'slds-col slds-size_1-of-6 slds-p-around_xx-small slds-text-align_center'
                 //labelClass: isOnePass ? 'slds-col slds-size_2-of-4 slds-p-around_xx-small' : 'slds-col slds-size_3-of-4 slds-p-around_xx-small'
             };
         });
         
+    }
+
+    showToast(title, message, variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant, // 'success', 'error', 'warning', 'info'
+            mode: 'dismissable'
+        });
+        this.dispatchEvent(event);
+    }
+
+    showCopyPopup = false;
+    handleCopyCPW() {
+        this.showCopyPopup = true;
+    }
+    confirmCopy(){
+        this.showCopyPopup = false;
+        
+        this.renewalChecklistData = {
+            ...this.renewalChecklistData,
+            ...this.lastYearChecklist
+        };
+
+        this.clinicalPrgmToBackend = {
+            ...this.clinicalPrgmToBackend,
+            ...this.lastYearChecklist
+        };
+
+        this.setPCCFieldValues();
+
+        this.showToast('Success', 'Last year data copied', 'success');
+    }
+
+    cancelCopy() {
+        this.showCopyPopup = false;
     }
 
     handleChange(event) {

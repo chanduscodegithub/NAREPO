@@ -19,6 +19,7 @@ import Renewal_Checklist_Exit_additional_info from '@salesforce/label/c.Renewal_
 import Renewal_Checklist_Additional_Information_instruction from '@salesforce/label/c.Renewal_Checklist_Additional_Information_instruction';
 import getAccountMembershipPolicyDetailsOnAppletLoad from '@salesforce/apex/Medical_Membership_History_PolicyDetail.getAccountMembershipPolicyDetailsOnAppletLoad';
 import getAccountMembershipPolicyDetailsOnAppletLoadSurest from '@salesforce/apex/Medical_Membership_History_Policy_Surest.getAccountMembershipPolicyDetailsOnAppletLoad';
+import getValidationEmails from '@salesforce/apex/renewalChecklistCls.getValidationEmails';
 //---------------------Payment Integrety-----------------------------------//
 import Supplemental_Compensation_Payee from '@salesforce/schema/Renewal_Checklist__c.Supplemental_Compensation_Payee__c';
 //---------------------Payment Integrety-----------------------------------//
@@ -138,7 +139,12 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
     capTypeOptions = [];
     capCategoryOptions = [];
     amountTypeOptions = [];
+
+    @track showEmailModal = false;
+    @track emails = [];
+    selectedEmails = [];
    
+    @track lastYearChecklist;
     //---------------------Payment Integrety-----------------------------------//
 
     label = {
@@ -178,6 +184,7 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
         window.addEventListener("beforeunload", this.beforeUnloadHandler);
 
         this.autoPopulateValue = {
+            Client_Specific_Programs__c: 'Yes',
             Calm_Health_app__c: 'Included',
             Case_Management__c: 'Included',
             National_Network_Outpatient_Inpatient_UM__c: 'Included',
@@ -341,7 +348,8 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
                 serviceAMT = data.serviceAmt.length > 0 ? data.serviceAmt : '';
                 openMembership = data.openMembership.length > 0 ? data.openMembership : '';
                 this.renewalChecklistData = data.renewalCheckListData.length > 0 ? Object.assign({}, data.renewalCheckListData[0]) : {};
-
+                this.lastYearChecklist = data.lastYearChecklist.length > 0 ? Object.assign({}, data.lastYearChecklist[0]) : {};
+                
                 if (data.detailExistingProductsList.length > 0) {
                     data.detailExistingProductsList.forEach(existing => {
                         tempExistingProducts.push(existing);
@@ -558,7 +566,7 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
     //common function for sce validation button and modal validation button.
     commonValidation() {
         this.isLoading = true;
-        sceValidation({ accId: this.accRecordData.accId, showAllData: this.showAllOpportunity, currentSS: this.selectedSalesSeason })
+        sceValidation({ accId: this.accRecordData.accId, selectedEmails: this.selectedEmails, showAllData: this.showAllOpportunity, currentSS: this.selectedSalesSeason })
             .then((results) => {
                 const event = new ShowToastEvent({
                     title: 'Success',
@@ -567,7 +575,7 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
                     mode: 'dismissable'
                 });
                 this.dispatchEvent(event);
-
+                //this.selectedEmails = [];
                 let sceData = {};
                 results != null ? sceData.validatedData = results : sceData = '';
                 this.existingProducts != null ? sceData.existingProducts = this.existingProducts : sceData = '';
@@ -1132,16 +1140,28 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
         }
     }
 
+
     handleValidation(event) {
+        
         if (this.termingProducts.length == 0 && this.existingProducts.length == 0) {
             this.showModal = true;
         }
         else {
-            this.commonValidation();
+            if(this.renewalChecklistData.CPW__c == true){
+                this.handleEmailPopUp();
+            }
+            else{
+                this.commonValidation();
+            }
         }
     }
     handleModalValidation() {
-        this.commonValidation();
+        if(this.renewalChecklistData.CPW__c == true){
+            this.handleEmailPopUp();
+        }
+        else{
+            this.commonValidation();
+        }
         this.showModal = false;
     }
     handleDialogClose() {
@@ -1169,6 +1189,43 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
                 actionName: 'view'
             }
         });
+    }
+
+    handleEmailPopUp(){
+        this.showEmailModal = true;
+
+        getValidationEmails({ accId: this.accRecordData.accId })
+            .then(result => {
+                this.emails = result;
+                this.selectedEmails = result.map(emailOption => emailOption.value);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+    closeModal() {
+        this.showEmailModal = false;
+    }
+
+    handleSelection(event) {
+        this.selectedEmails = event.detail.value;
+        // const email = event.target.value;
+
+        // if(event.target.checked){
+        //     this.selectedEmails.push(email);
+        // } else {
+        //     this.selectedEmails = this.selectedEmails.filter(e => e !== email);
+        // }
+    }
+    sendReport() {
+        console.log('Selected emails:', this.selectedEmails);
+        if (!this.selectedEmails || this.selectedEmails.length === 0) {
+            this.showToast('Error', 'Please select at least one email', 'error');
+            return;
+        }
+        this.closeModal(); 
+        this.commonValidation(); 
+       
     }
     createNewOpp() {
         this.isExitEdit = false;

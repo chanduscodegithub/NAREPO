@@ -156,11 +156,13 @@ public with Sharing class RenewalChecklistPdfController {
         public String fieldApiName { get; set; }
         public String fieldLabel { get; set; }
         public Boolean isDual { get; set; }
+        public String productValue { get; set; }
     
-        public FieldDisplayMapping(String api, String label, Boolean dual) {
+        public FieldDisplayMapping(String api, String label, Boolean dual, String productValue) {
             this.fieldApiName = api;
             this.fieldLabel = label;
             this.isDual = dual;
+            this.productValue = productValue;
         }
     }
 
@@ -177,7 +179,7 @@ public with Sharing class RenewalChecklistPdfController {
         }
 
         Map<String, Product2> productMap = new Map<String, Product2>();
-        for (Product2 p : [SELECT ProductCode, Surest_Applicable_Products__c FROM Product2 WHERE ProductCode IN :productCodes]) {
+        for (Product2 p : [SELECT ProductCode, Surest_Applicable_Products__c,Surest_Implementation_Lead_Time__c FROM Product2 WHERE ProductCode IN :productCodes]) {
             if (String.isNotBlank(p.ProductCode)) {
                 productMap.put(p.ProductCode, p);
             }
@@ -195,15 +197,18 @@ public with Sharing class RenewalChecklistPdfController {
             }
             
             Boolean Dual = false;
+            String productValue = '';
             if (productMap.containsKey(m.Product_Code__c)) {
                 Product2 prod = productMap.get(m.Product_Code__c);
                 Dual = (prod.Surest_Applicable_Products__c == 'Available for Surest only with UNET');
+                productValue = prod.Surest_Implementation_Lead_Time__c;
             }
     
             fields.add(new FieldDisplayMapping(
                 m.Field_API_Name__c,
                 m.Label__c,
-                Dual
+                Dual,
+                productValue
             ));
         }
     

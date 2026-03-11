@@ -43,6 +43,7 @@ export default class salesDebriefChildComp extends LightningElement {
     }
 
     onchangeHandler(event) {
+        this.dispatchEvent(new CustomEvent('notifychange', {bubbles: true, composed: true}));
         let eventData;
         let fieldApiName = event.target.dataset.fieldapi;
         let fieldValue;

@@ -1,0 +1,258 @@
+<template>
+    <!-- <lightning-quick-action-panel header={actionHeader}> -->
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading" size="medium">
+                </lightning-spinner>
+            </div>
+        </template>
+        <template if:false={isLoading}>
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">
+                    {actionHeader}
+                </h2>
+            </header>
+            <div class=" slds-style slds-p-around_medium">
+
+                <template if:true={pimStageRecord}>
+                    <p class="slds-p-around_medium"> A New Product has been detected through PIM Integration. Please
+                        review it. Once Published, the Product will be created in Merit.</p>
+                    <div class="section">
+                        <!-- <div class="Section-row">PIM Product Details (Stage)</div> -->
+                        <!-- <template if:false={isLoading}> -->
+                        <table class="slds-table  slds-table_fixed-layout full-border-table">
+                            <tbody>
+
+                                <!-- PIM DETAILS -->
+                                <tr class="section-row">
+                                    <td colspan="2">PIM Product Details (Stage)</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="label">PIM ID (Stage)</div>
+                                        <div class="value">{pimStageRecord.PIM_ID_Stage__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">PIM Parent ID (Stage)</div>
+                                        <div class="value">{pimStageRecord.PIM_Parent_ID_Stage__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">PIM Name (Stage)</div>
+                                        <div class="value">{pimStageRecord.PIM_Name_Stage__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">PIM Parent Name (Stage)</div>
+                                        <div class="value">{pimStageRecord.PIM_Parent_Name_Stage__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">PIM SME Name (Stage)</div>
+                                        <div class="value">{pimStageRecord.PIM_SME_Name_Stage__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Program Code (Stage)</div>
+                                        <div class="value">{pimStageRecord.Program_Code_Stage__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">PIM ID Composite (Stage)</div>
+                                        <div class="value">{pimStageRecord.PIM_ID_Composite_Stage__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Supplier Code (Stage)</div>
+                                        <div class="value">{pimStageRecord.Supplier_Code_Stage__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">PIM Availability (Stage)</div>
+                                        <div class="value">{pimStageRecord.PIM_Availability_Stage__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Standard Implementation Lead Time (Stage)</div>
+                                        <div class="value">{pimStageRecord.Standard_Implementation_LeadTime_Stage__c}
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="label">Surest Implementation Lead Time(Stage)</div>
+                                        <div class="value">{pimStageRecord.Surest_Implementation_Lead_Time_Stage__c}
+                                        </div>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+
+                                <!-- MERIT PRODUCT DETAILS -->
+                                <tr class="section-row">
+                                    <td colspan="2">Merit Product Details (Stage)</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">Funding Type (Stage)</div>
+                                        <div class="value">{pimStageRecord.Funding_Type_Stage__c}</div>
+                                        <!-- <template if:true={fieldErrors.Funding_Type__c}>
+                            <div class="error">{fieldErrors.Funding_Type__c}</div>
+                        </template> -->
+                                    </td>
+                                    <td>
+                                        <div class="label">Product Line (Stage)</div>
+                                        <div class="value">{pimStageRecord.Product_Line_Stage__c}</div>
+                                        <!-- <template if:true={fieldErrors.Product_Line__c}>
+                            <div class="error">{fieldErrors.Product_Line__c}</div>
+                        </template> -->
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">Product Code (Stage)</div>
+                                        <div class="value">{pimStageRecord.Product_Code_Stage__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Level 2 Options (Stage)</div>
+                                        <div class="value">{pimStageRecord.Level_2_Options_Stage__c}</div>
+                                        <!-- <template if:true={fieldErrors.Level_2_Options__c}>
+                            <div class="error">{fieldErrors.Level_2_Options__c}</div>
+                        </template> -->
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">Active (Stage)</div>
+                                        <div class="value">{pimStageRecord.IsActiveStage__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Surest Applicable Products (Stage)</div>
+                                        <div class="value">{pimStageRecord.Surest_Applicable_Products_Stage__c}</div>
+                                        <!-- <template if:true={fieldErrors.Surest_Applicable_Products__c}>
+                            <div class="error">{fieldErrors.Surest_Applicable_Products__c}</div>
+                        </template> -->
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">Product Family (Stage)</div>
+                                        <div class="value">{pimStageRecord.Product_Family_Stage__c}</div>
+                                        <!-- <template if:true={fieldErrors.Family}>
+                            <div class="error">{fieldErrors.Family}</div>
+                        </template> -->
+                                    </td>
+                                    <td>
+                                        <div class="label">CPW Applicable Product? (Stage)</div>
+                                        <div class="value">{pimStageRecord.CPW_Applicable_Product_Stage__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div class="label">SFGO Applicable Product? (Stage)</div>
+                                        <div class="value">{pimStageRecord.SFGO_Applicable_Product_Stage__c}</div>
+                                    </td>
+                                </tr>
+
+                                <!-- STEPWISE -->
+                                <tr class="section-row">
+                                    <td colspan="2">Merit Product Details (IC, StepWise)</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">Considered for StepWise</div>
+                                        <div class="value">{pimStageRecord.Considered_For_StepWise_Integration__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Do Not Include in Total</div>
+                                        <div class="value">{pimStageRecord.Do_Not_Include_in_Total__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">Distribution Type Flag</div>
+                                        <div class="value">{pimStageRecord.Distribution_Type_Flag__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Key Growth Drivers</div>
+                                        <div class="value">{pimStageRecord.Key_Growth_Drivers__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">StepWise Product Name</div>
+                                        <div class="value">{pimStageRecord.StepWise_Product_Name__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Eligible for Sales Incentives</div>
+                                        <div class="value">{pimStageRecord.Eligible_for_Sales_Incentives__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">StepWise Product RowID</div>
+                                        <div class="value">{pimStageRecord.StepWise_Product_RowID__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Enterprise Growth Product</div>
+                                        <div class="value">{pimStageRecord.Enterprise_Growth_Product__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">Underwriting Validation</div>
+                                        <div class="value">{pimStageRecord.Underwriting_Validation__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="label">Reporting Product Type</div>
+                                        <div class="value">{pimStageRecord.Reporting_Product_Type__c}</div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="label">Product Display Order (Stage)<span class="required">*</span>
+
+                                        </div>
+
+
+                                        <div class="value">{pimStageRecord.Product_Display_Order_Stage__c}</div>
+                                    </td>
+                                    <td></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <!-- </template> -->
+                    </div>
+                    <template if:true={pimStageRecord.Product_Display_Order_Stage__c}>
+                        <div class="sticky">Creating a new Product will trigger updates to the Product Display Order for
+                            all impacted products, starting from item
+                            {pimStageRecord.Product_Display_Order_Stage__c}</div>
+                    </template>
+                </template>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning-button class="slds-p-around_medium" variant="brand" label="Create" onclick={createProduct}>
+                </lightning-button>
+                <!-- <lightning-button variant="neutral" label="Cancel" onclick={handleCancel}></lightning-button> -->
+            </div>
+        </template>
+    <!-- </lightning-quick-action-panel> -->
+</template>

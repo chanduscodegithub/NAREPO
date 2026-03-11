@@ -929,7 +929,7 @@ export default class StrategyMemoPoc extends LightningElement {
                                 const richTextFields = ['Discussion_Points__c', 'Special_Notes_RFP__c', 'Notes_Taken_During_Call__c',
                                     'Business_Overview__c', 'Business_Pressures__c', 'Potential_Compelling_Event__c', 'Key_Risks_to_our_UBV__c',
                                     'Unique_Business_Value__c', 'Outcome_Drivers__c', 'Approach_Strategy__c', 'Surest_Approach_strategy__c', 'Notes_Taken_on_call_with_Consultant__c',
-                                    'Surest_Comments__c'];
+                                    'Surest_Comments__c','Bid_Strategy__c'];
                                 if (richTextFields.includes(key)) {
                                     value = this.convertToPlain(value);
                                 }
@@ -1620,5 +1620,26 @@ export default class StrategyMemoPoc extends LightningElement {
             return value;
         }
         return '';
+    }
+
+
+
+
+    //Added by Vignesh -- StrategyMemoPoc Doc
+    closeAction(){
+        this.dispatchEvent(new CloseActionScreenEvent());
+    }
+
+    importStrategyMemoInfo(){
+        console.log('inside word ');       
+        let vfPageUrl = '/apex/StrategyMemoPrintVfp?wordReport=word&Id=' + this.recordId;
+        console.log('inside wordid ',vfPageUrl); 
+        let a = document.createElement('a');
+        a.href = vfPageUrl;
+        document.body.appendChild(a);
+        a.click();
+        const evnt = new CustomEvent('loaded', {detail: this.loaded});
+        this.dispatchEvent(evnt);
+        this.closeAction();
     }
 }

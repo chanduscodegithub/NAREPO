@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldUpdates>
+        <fullName>Update_ADS_Name</fullName>
+        <field>Name</field>
+        <formula>FirstName__c+&quot; &quot;+ LastName__c</formula>
+        <name>Update ADS Name</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>ADS Name Concatenation</fullName>
+        <actions>
+            <name>Update_ADS_Name</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>ADS__c.FirstName__c</field>
+            <operation>notEqual</operation>
+            <value>Null</value>
+        </criteriaItems>
+        <description>Concatenate First Name and Last Name and Populating in Name Field</description>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+</Workflow>

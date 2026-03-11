@@ -42,7 +42,7 @@
                         component.set('v.accountTypeCommonValues',{'colSpan':9,'AppletName':$A.get("$Label.c.Account_Contacts_Heading")});
                         
                     }else if(AccountCategoryType.accountType == 'Client Development' || AccountCategoryType.accountType == 'Aggregator'){
-                        component.set('v.accountTypeCommonValues',{'colSpan':7,'AppletName':$A.get("$Label.c.Contacts_Applet_Name")});
+                        component.set('v.accountTypeCommonValues',{'colSpan':8,'AppletName':$A.get("$Label.c.Contacts_Applet_Name")});
                         component.set('v.cdAccountType',true); 
                         component.set('v.isLoggedInUserrole',AccountCategoryType.isLoggedInUserRole); 
                     }else if(AccountCategoryType.accountType == 'Consulting Firm'){
@@ -99,7 +99,7 @@
                 component.set('v.isLoggedInUserrole',loginUserRole);
                 component.set('v.accountTypeCommonValues',{'colSpan':9,'AppletName':$A.get("$Label.c.Account_Contacts_Heading")});
             }else if(accountType == 'Client Development' || accountType == 'Aggregator'){
-                component.set('v.accountTypeCommonValues',{'colSpan':7,'AppletName':$A.get("$Label.c.Contacts_Applet_Name")});
+                component.set('v.accountTypeCommonValues',{'colSpan':8,'AppletName':$A.get("$Label.c.Contacts_Applet_Name")});
                 component.set('v.cdAccountType',true); 
                 component.set('v.isLoggedInUserrole',loginUserRole);
             }else if(accountType == 'Consulting Firm'){
@@ -129,8 +129,8 @@
         $A.util.addClass(appletIcon, 'slds-hide');
         
         page = page || 1;
-        columnName = columnName || 'LastName';
-        sortType = sortType || 'Desc';
+        columnName = columnName || 'Direct_Marketing_Target_Contact__c';
+        sortType = sortType || 'DESC NULLS LAST';
         
         var cdAccountAction = component.get('c.getAccountContacts');	
         cdAccountAction.setParams({

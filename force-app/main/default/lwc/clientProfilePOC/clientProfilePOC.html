@@ -3,38 +3,51 @@
         <lightning-spinner variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
     </template>
     <div class="button-position">
-     
-      
-      <lightning-button
-      type="submit"
-      variant="brand"
-      label="Download Client Profile Files"
-      class="slds-m-left_x-small "
-      onclick={exportRecords}
-      disabled={clientloaded}
-      ></lightning-button>
 
-      <lightning-button
-      type="submit"
-      variant="brand"
-      label="Download Ebd Files"
-      class="slds-m-left_x-small "
-      onclick={exportEBD}
-      disabled={ebdloaded}
-      ></lightning-button>
-      </div>
-      <!-- <template if:true={ebdloaded}>
-      <div>
-          <p>
-            Please wait until download complete.
-          </p>
-      </div>
-      </template>
-      <template if:true={clientloaded}>
-        <div>
-            <p>
-                Please wait until download complete.
-            </p>
-        </div>
-        </template> -->
+
+        <lightning-button type="submit" variant="brand" label="Download Client Profile Files"
+            class="slds-m-left_x-small " onclick={exportRecords} disabled={clientloaded}></lightning-button>
+
+        <lightning-button type="submit" variant="brand" label={ebdyear} class="slds-m-left_x-small " onclick={openModal}
+            disabled={ebdloaded}></lightning-button>
+    </div>
+   
+    <template if:true={isModalOpen}>
+        <section role="dialog" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">Apply Filters</h2>
+                </header>
+
+                <!-- Body -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-combobox label="Select Business Line" placeholder="Choose an option" options={picklistOptions}
+                        value={selectedValue} onchange={handleChange}>
+                    </lightning-combobox>
+                </div>
+                <!-- <div class="slds-modal__content slds-p-around_medium">
+
+                    <lightning-record-picker label="Search SCE" object-api-name="User" value={selectedUserId} display-info={displayInfo}  filter={userRoleFilter}
+                        onchange={handleUserChange}>
+                    </lightning-record-picker>
+                </div> -->
+
+                <!-- Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeModal}>
+                    </lightning-button>
+                    &nbsp;&nbsp;
+                    <lightning-button label="Proceed" variant="brand" onclick={exportEBD} disabled={isProceedDisabled}><!--disabled={isProceedDisabled}-->
+                    </lightning-button>
+                </footer>
+
+            </div>
+        </section>
+
+        <!-- Backdrop -->
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
 </template>

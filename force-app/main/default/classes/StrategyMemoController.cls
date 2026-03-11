@@ -3,6 +3,69 @@
 **/
 public with sharing class StrategyMemoController {
     
+    //Added By Vignesh
+    public String ContentTypeValue{get;private set;}
+    public StrategyMemoInfoWrapper StrategyMemoInfoWrapper { get; set; }
+    public Boolean isPdf{get;private set;}
+    public Strategy_Memo__c memoRecord {get; set;}
+    public List<OpportunityContactRole> secondaryConsultants {get; set;}
+    public List<Opportunity> relatedOpportunities {get;set;}
+
+    
+    public StrategyMemoController(){
+        String membershipActivityId = ApexPages.currentPage().getParameters().get('Id');
+        System.debug('membershipActivityId: ' + membershipActivityId);
+        StrategyMemoInfoWrapper = new StrategyMemoInfoWrapper();
+        memoRecord = getStrategyMemo(membershipActivityId);
+        secondaryConsultants = getSecondaryConsultants(membershipActivityId);
+        
+        if(membershipActivityId != null){
+            relatedOpportunities = getRelatedOpportunities(membershipActivityId);
+        } else {
+            relatedOpportunities = new List<Opportunity>();
+        }
+
+        map<String,String> UrlParameterMap = ApexPages.currentPage().getParameters();
+        for(String str:UrlParameterMap.keySet()){
+            if(str =='wordReport'){
+                this.isPdf=true;
+            }
+        }
+        
+        if(this.isPdf == true){
+            this.ContentTypeValue = 'application/msword#';
+            this.ContentTypeValue += this.getWordFileName()+'.doc';
+        }
+    }
+    
+    
+    public String getWordFileName() {         
+        /*String sanitizedName = StrategyMemoInfoWrapper.getStrategyMemo.Name.replaceAll('[\\.,&\\+\\/\\-]', '_');
+        date datetoday = System.today();
+        String monthStr = String.valueOf(datetoday.month());
+        String dayStr = String.valueOf(datetoday.day());
+        String yearStr = String.valueOf(datetoday.year());         
+        String formattedDate = monthStr + '_' + dayStr + '_' + yearStr + '_';         
+        String docName = 'StrategyMemo_' + sanitizedName;
+        return docName;*/
+        String nameValue = 'StrategyMemo';       
+        if(memoRecord != null && memoRecord.Name != null){
+            nameValue = memoRecord.Name.replaceAll('[\\.,&\\+\\/\\-]', '_');
+        }        
+        Date datetoday = System.today();       
+        String formattedDate = 
+            datetoday.month() + '_' +
+            datetoday.day() + '_' +
+            datetoday.year();      
+        return 'StrategyMemo_' + nameValue + '_' + formattedDate;
+    }
+    
+    
+    
+    
+    
+    //
+    
     @AuraEnabled(cacheable=true)
     public static StrategyMemoInfoWrapper getStrategyInformation(String membershipActivityId){
         StrategyMemoInfoWrapper strategyMemoInfoWrapper = new StrategyMemoInfoWrapper();
@@ -37,6 +100,7 @@ public with sharing class StrategyMemoController {
                                           from Opportunity where id = :membershipActivityId With USER_MODE Limit 1];
             if(strategyMemoOppQueryResult!=null)
             {
+                //strategyMemoInfoWrapper.strategyMemoOppQueryResult = strategyMemoOppQueryResult;
                 system.debug('strategyMemoOppQueryResult'+strategyMemoOppQueryResult);
                 strategyMemoInfoWrapper.stageMedical= strategyMemoOppQueryResult.Sales_Stage_Medical__c != null ? strategyMemoOppQueryResult.Sales_Stage_Medical__c:'';
                 strategyMemoInfoWrapper.strategyCallDat  = strategyMemoOppQueryResult.Strategy_Call_Date__c!= null ? formatDate(strategyMemoOppQueryResult.Strategy_Call_Date__c) :'';
@@ -409,8 +473,8 @@ public with sharing class StrategyMemoController {
                                      FROM Strategy_Memo__c 
                                      WHERE Membership_Activity__c =: membershipActivityId With USER_MODE LIMIT 1 ];
                         System.debug('memo'+memo);
-
-            return memo;
+              
+               return memo;
         }
         catch (Exception e) {
             throw new AuraHandledException('Error retrieving Strategy Memo: ' + e.getMessage());
@@ -451,6 +515,9 @@ public with sharing class StrategyMemoController {
     }
     
     public class StrategyMemoInfoWrapper {
+      @AuraEnabled
+      public Strategy_Memo__c getStrategyMemo{get; set;}
+        
         @AuraEnabled   public String oppId { get; set; }   
         @AuraEnabled   public String strategyCallDat { get; set; } 
         @AuraEnabled   public String bidStrategy { get; set; } 
@@ -518,4 +585,8 @@ public with sharing class StrategyMemoController {
         @AuraEnabled
         public  Map<String,Set<String>> objectItags{ get;set; }
     }
+    
+    
+    
+    
 }

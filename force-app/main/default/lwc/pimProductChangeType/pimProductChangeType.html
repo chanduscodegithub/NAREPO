@@ -1,12 +1,58 @@
 <template>
-        <lightning-quick-action-panel header="Decision Support - Specialist Management Solution (SMS) - Change Review">
-            <p> Following product field changes have been detected from PIM Integration. Please review and publish the
-                updates
-                to MERIT Product.</p>
+    <template if:true={isLoading}>
+        <div class="slds-align_absolute-center slds-p-around_large">
+            <lightning-spinner alternative-text="Loading" size="medium">
+            </lightning-spinner>
+        </div>
+    </template>
+    <template if:false={isLoading}>
+        <lightning-quick-action-panel header={modalHeader}>
+            <p class="slds-p-top_medium slds-p-bottom_medium"> Following Product field changes have been identified
+                through the PIM Integration. Please review and publish the changes to update MERIT Product.</p>
             <!-- Differences of fields -->
             <template if:true={hasDifferences}>
-
-                <template for:each={differences} for:item="row">
+                <table
+                    class="slds-text-body_small slds-table slds-border_left slds-border_right slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout custom-table">
+                    <tbody>
+                        <tr>
+                            <th class="slds-border_right header-color"> PIM</th>
+                            <th class="header-color">Merit</th>
+                        </tr>
+                        <template for:each={differences} for:item="row">
+                            <tr key={row.stageField} class="row-divider">
+                                <td class="slds-border_right">
+                                    <div class="cell">
+                                        <div class="label">
+                                            <template if:true={row.stageLabel}>
+                                                {row.stageLabel}
+                                            </template>
+                                        </div>
+                                        <div class="value">
+                                            <template if:true={row.stageValue}>
+                                                {row.stageValue}
+                                            </template>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell">
+                                        <div class="label">
+                                            <template if:true={row.snapShotLabel}>
+                                                {row.snapShotLabel}
+                                            </template>
+                                        </div>
+                                        <div class="value">
+                                            <template if:true={row.prodValue}>
+                                                {row.prodValue}
+                                            </template>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                <!--<template for:each={differences} for:item="row">
                     <lightning-layout key={row.stageField} multiple-rows>
                         <lightning-layout-item padding="around-small" size="6">
                             <div class="header-column">
@@ -16,18 +62,24 @@
                         </lightning-layout-item>
                         <lightning-layout-item padding="around-small" size="6">
                             <div class="header-column">
-                                <p class="field-title slds-p-bottom_small" title="Field 1">{row.prodLabel}</p>
+                                <p class="field-title slds-p-bottom_small" title="Field 1">{row.snapShotLabel}</p>
                                 <p class="field-value with-border">{row.prodValue}</p>
                             </div>
                         </lightning-layout-item>
                     </lightning-layout>
 
-                </template>
+                </template>-->
             </template>
+            <div class="slds-p-top_medium">
+             <template if:true={hasDisplayOrderChange}>
+                <div class="sticky">Changing the Product Display Order will trigger updates for all affected products, starting from item <strong>{displayOrderValue}</strong></div>
+            </template>
+            </div>
             <div slot="footer">
                 <lightning-button variant="brand" class="slds-p-around_medium" label="Publish" onclick={handleUpdate}>
                 </lightning-button>
-                <!-- <lightning-button variant="neutral" label="Cancel" onclick={handleCancel}></lightning-button> -->
             </div>
         </lightning-quick-action-panel>
+    </template>
+
 </template>

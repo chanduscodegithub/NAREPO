@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <alerts>
+        <fullName>BCI_Review_Email_Alert</fullName>
+        <description>BCI Review Email Alert</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Requestor_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>benefit_data_mgmt_control@uhc.com</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>unfiled$public/BCI_Review_Custom_Template</template>
+    </alerts>
+    <alerts>
+        <fullName>Case_Closed_Email_Alert</fullName>
+        <description>Case Closed Email Alert</description>
+        <protected>false</protected>
+        <recipients>
+            <field>ContactId</field>
+            <type>contactLookup</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>UHG_Case_Templates/Case_Closed</template>
+    </alerts>
+    <alerts>
+        <fullName>Case_Created_Email_Alert</fullName>
+        <description>Case Created Email Alert</description>
+        <protected>false</protected>
+        <recipients>
+            <field>ContactId</field>
+            <type>contactLookup</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>UHG_Case_Templates/Case_Created</template>
+    </alerts>
+    <alerts>
+        <fullName>Email_Notification_to_SBS_Mailbox_Queue_Members</fullName>
+        <description>Email Notification to SBS Mailbox Queue Members</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>michelle_wolff@uhc.com.na</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>UHG_Case_Templates/SBS_Issue_Creation</template>
+    </alerts>
+    <alerts>
+        <fullName>IS_Queue_Notification_Alert</fullName>
+        <description>IS Queue Notification Alert</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>samantha_l_kraus@uhc.com.na</recipient>
+            <type>user</type>
+        </recipients>
+        <recipients>
+            <recipient>shelley_m_wilson@uhc.com.na</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>UHG_Case_Templates/IS_Queue_Notification</template>
+    </alerts>
+    <alerts>
+        <fullName>Training_Team_Knowledge_Alerts</fullName>
+        <description>Training Team Knowledge Alerts</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>brian_k_duvall@uhc.com.na</recipient>
+            <type>user</type>
+        </recipients>
+        <recipients>
+            <recipient>corey_j_femling@uhc.com.na</recipient>
+            <type>user</type>
+        </recipients>
+        <recipients>
+            <recipient>jacqueline_e_sullivan@uhc.com.na</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>UHG_Case_Templates/Training_Team_Notification</template>
+    </alerts>
+    <fieldUpdates>
+        <fullName>Set_the_Issue_Owner_to_IS_Queue</fullName>
+        <field>OwnerId</field>
+        <lookupValue>IS_Queue</lookupValue>
+        <lookupValueType>Queue</lookupValueType>
+        <name>Set the Issue Owner to IS Queue</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>LookupValue</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Set_the_Issue_Owner_to_SBS</fullName>
+        <field>OwnerId</field>
+        <lookupValue>Service_Mailbox_Queue</lookupValue>
+        <lookupValueType>Queue</lookupValueType>
+        <name>Set the Issue Owner to SBS</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>LookupValue</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Long_Term_Issue</fullName>
+        <field>Long_Term_Issue__c</field>
+        <literalValue>1</literalValue>
+        <name>Update Long Term Issue</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Rich_Text_Description</fullName>
+        <field>Extended_Description__c</field>
+        <formula>Description</formula>
+        <name>Update Rich Text Description</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>Assign to SBS Mailbox</fullName>
+        <actions>
+            <name>Set_the_Issue_Owner_to_SBS</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <booleanFilter>1 AND 2</booleanFilter>
+        <criteriaItems>
+            <field>User.ProfileId</field>
+            <operation>notEqual</operation>
+            <value>CSI Administrator</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Case.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>SBS Support</value>
+        </criteriaItems>
+        <description>Assign to SBS Mailbox queue for issues created by non-admin users</description>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+    <rules>
+        <fullName>IS Queue Notification</fullName>
+        <actions>
+            <name>IS_Queue_Notification_Alert</name>
+            <type>Alert</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Case.OwnerId</field>
+            <operation>equals</operation>
+            <value>IS Queue</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>Long Term Issue</fullName>
+        <actions>
+            <name>Update_Long_Term_Issue</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Case.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Quality</value>
+        </criteriaItems>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+    <rules>
+        <fullName>SBS Mailbox Issue Notification</fullName>
+        <actions>
+            <name>Email_Notification_to_SBS_Mailbox_Queue_Members</name>
+            <type>Alert</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Case.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>SBS Support</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Case.Queue_User_Check__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Case.Category__c</field>
+            <operation>notEqual</operation>
+            <value>ERM</value>
+        </criteriaItems>
+        <description>Whenever a new SBS Support Issue is created in the system, this workflow will trigger and send a notification to SBS Queue Members</description>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+    <rules>
+        <fullName>Training Team Notification</fullName>
+        <actions>
+            <name>Training_Team_Knowledge_Alerts</name>
+            <type>Alert</type>
+        </actions>
+        <active>false</active>
+        <criteriaItems>
+            <field>Case.OwnerId</field>
+            <operation>contains</operation>
+            <value>Training</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+</Workflow>

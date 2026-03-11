@@ -2,10 +2,7 @@ public class OLI_CPWHandler {
     public static void syncCPWFields(Set<Id> oppIds) {
          Map<String, CPW_Product_Checklist_Metadata__mdt> cpwMap = new Map<String, CPW_Product_Checklist_Metadata__mdt>();
 
-        for (CPW_Product_Checklist_Metadata__mdt record : [
-            SELECT Product_Code__c, Field_API_Name__c, Label__c, Is_Dual__c, Yes_No_Only__c, Display_Order__c, IsActive__c
-            FROM CPW_Product_Checklist_Metadata__mdt 
-        ]) {
+        for (CPW_Product_Checklist_Metadata__mdt record : [ SELECT Product_Code__c, Field_API_Name__c, Label__c, Is_Dual__c, Yes_No_Only__c, Restrict_Surest_Options__c, Display_Order__c, IsActive__c  FROM CPW_Product_Checklist_Metadata__mdt]) {
             if (record.Product_Code__c != null) {
                 cpwMap.put(record.Product_Code__c, record);
             }
@@ -13,13 +10,7 @@ public class OLI_CPWHandler {
 	
     // Query OLIs for these opps where product exists in metadata
     Map<Id, List<OpportunityLineItem>> oppToOliMap = new Map<Id, List<OpportunityLineItem>>();
-    for (OpportunityLineItem oli : [
-        SELECT Id, OpportunityId, Disposition_Other_Buy_Up_Programs__c, 
-               Buyup_Product_Selection__c, Product2.ProductCode
-        FROM OpportunityLineItem
-        WHERE OpportunityId IN :oppIds
-        AND Product2.ProductCode IN :cpwMap.keySet()
-    ]) {
+    for (OpportunityLineItem oli : [ SELECT Id, OpportunityId, Disposition_Other_Buy_Up_Programs__c, Buyup_Product_Selection__c, Product2.ProductCode  FROM OpportunityLineItem WHERE OpportunityId IN :oppIds AND Product2.ProductCode IN :cpwMap.keySet()]) {
             System.debug('>>>OliMap: ' + oli);
        if (!oppToOliMap.containsKey(oli.OpportunityId)) {
         oppToOliMap.put(oli.OpportunityId, new List<OpportunityLineItem>());
@@ -36,20 +27,20 @@ public class OLI_CPWHandler {
     
     Set<Id> acctIds = new Set<Id>();
     Map<Id, Id> oppToAccountMap = new Map<Id, Id>();
+    Set<String> seasons = new Set<String>();
         
-    for (Opportunity opp : [SELECT Id, AccountId FROM Opportunity WHERE Id IN :oppIds]) {
+    for (Opportunity opp : [SELECT Id, AccountId, Sales_Season1__c FROM Opportunity WHERE Id IN :oppIds]) {
         if (opp.AccountId != null){   
          acctIds.add(opp.AccountId);
          oppToAccountMap.put(opp.Id, opp.AccountId);
         }
+        if(opp.Sales_Season1__c != null){
+            seasons.add(opp.Sales_Season1__c);
+        }
     }
 
    	Map<Id, List<Renewal_Checklist__c>> acctToPccMap = new Map<Id, List<Renewal_Checklist__c>>();
-        for (Renewal_Checklist__c pcc : [
-            SELECT Id, Company__c
-            FROM Renewal_Checklist__c
-            WHERE Company__c IN :acctIds
-        ]) {
+        for (Renewal_Checklist__c pcc : [SELECT Id, Company__c,Sales_Season__c FROM Renewal_Checklist__c WHERE Company__c IN :acctIds AND Sales_Season__c IN :seasons]) {
             if (!acctToPccMap.containsKey(pcc.Company__c)) {
                 acctToPccMap.put(pcc.Company__c, new List<Renewal_Checklist__c>());
             }
@@ -61,7 +52,6 @@ public class OLI_CPWHandler {
     List<Sold_Case_Checklist__c> sccToUpdate = new List<Sold_Case_Checklist__c>();
     List<Renewal_Checklist__c> pccToUpdate = new List<Renewal_Checklist__c>();
 
-    //  Evaluate OLI dispositions against metadata mapping
     for (Id oppId : oppToOliMap.keySet()) {
         System.debug('>>> Processing Opp: ' + oppId);
         Sold_Case_Checklist__c scc = oppToSCC.get(oppId);
@@ -92,7 +82,6 @@ public class OLI_CPWHandler {
 
         }
 
-        // Apply updates to SCC and PCC dynamically
         if (!fieldUpdates.isEmpty()) {
             if (scc != null) {
                 Sold_Case_Checklist__c sccUpdate = new Sold_Case_Checklist__c(Id = scc.Id);

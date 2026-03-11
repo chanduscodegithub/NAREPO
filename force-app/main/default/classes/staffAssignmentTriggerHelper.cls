@@ -462,7 +462,7 @@ public class staffAssignmentTriggerHelper {
             Id staffId = (Id) ar.get('Staffing_Assignment__c');
             Decimal THC = (Decimal) ar.get('HoursComplexity');
             Decimal caseFtes = (Decimal) ar.get('caseFte');
-            //Added by Vignesh - Capacity Model 2025s
+            //Added Capacity Model 2025s
             Decimal TH = (Decimal) ar.get('TotalHours');
             Decimal MOI = (Decimal) ar.get('MonthImp');
             
@@ -470,7 +470,7 @@ public class staffAssignmentTriggerHelper {
             st.Id = staffId;
             st.Hours_Of_Complexity_Backend__c = THC;
             st.IPM_BOB_Case_FTE__c = caseFtes;
-            //Added by Vignesh - Capacity Model 2025s
+            //Added Capacity Model 2025s
             st.Total_of_hours_Backend__c = TH;
             st.Months_Implementing_Backend__c = MOI;
             
@@ -617,7 +617,7 @@ public class staffAssignmentTriggerHelper {
                     Staff__c st = new Staff__c();
                     st.Staff_Name__c=filteredStaffAssignment3.values()[i].Staff_User_Assignment__c;
                     st.RecordTypeId = recordTypeId;
-                    st.Primary_Role__c = 'IPM';
+                    st.Primary_Role__c = 'Implementation Project Manager';
                     staffinfoList2.add(st);
                 }               
             }

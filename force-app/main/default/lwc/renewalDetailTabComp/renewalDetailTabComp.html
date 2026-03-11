@@ -325,7 +325,7 @@
 										style="width:100%;">
 										<div class="slds-col slds-size_4-of-5 slds-p-around_xx-small slds-cell-wrap"
 											style="border-bottom: 1px solid hsla(219, 64%, 82%, 0.79); padding-bottom: 2px;">
-											<span>Cap Value</span>
+                                            <span>Cap Value</span>
 										</div>
 
 										<div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_left slds-cell-wrap">
@@ -396,7 +396,7 @@
 												<template if:true={isEditNaviguardProd}>
                                                     <lightning-input class="slds-text-align_left"
                                                         type="text" variant="label-hidden"
-                                                        data-api="Amount__c"
+                                                        data-api="Amount__c" 
                                                         value={renewalChecklistData.Amount__c}
                                                         onchange={handleNaviguardChange}>
                                                     </lightning-input>
@@ -1393,7 +1393,7 @@
                                         </td>
                                     </tr>
                                     <tr class="border-bottom">
-                                        <td class="slds-cell-wrap" scope="col">Client Specific Programs (HelloHeart, Kindbody, EdisonHealth, etc) that need to be featured in Surest app?</td>
+                                        <td class="slds-cell-wrap" scope="col">Client Specific Programs that need to featured in Surest App (not already included on the CPW form)</td>
                                         <td class="slds-cell-wrap" scope="col" style="text-align: center;">
                                             <p>
                                                 <lightning-formatted-text
@@ -1624,7 +1624,7 @@
                                         </td>
                                     </tr>
                                     <tr class="border-bottom">
-                                        <td class="slds-cell-wrap" scope="col">Client Specific Programs (HelloHeart, Kindbody, EdisonHealth, etc) that need to be featured in Surest app?</td>
+                                        <td class="slds-cell-wrap" scope="col">Client Specific Programs that need to featured in Surest App (not already included on the CPW form)</td>
                                         <td class="slds-cell-wrap" scope="col">
                                             <lightning-combobox value={renewalChecklistData.Client_Specific_Programs__c}
                                                 placeholder="---None---" options={comboboxOptions}
@@ -1668,7 +1668,7 @@
                     </template>
 
                     <template if:true={showCPWSection}>
-                        <c-pcc-clinical-program-section renewal-checklist-data-from-parent ={renewalChecklistData} hide-edit={isEditCPWSurest} policy-names={policyInfoNameSurest} policy-numbers={policyInfoNumberSurest} existing-products={existingProducts} acc-id={accRecordId} selected-sales-season={selectedSalesSeason} onclinicalprogramdata ={handlePaymentIntegrityData} oncanceledit ={handleCPWCancel} onhidevalidation ={handleHideValidationCPW} >
+                        <c-pcc-clinical-program-section renewal-checklist-data-from-parent ={renewalChecklistData} last-year-renewal-checklist={lastYearChecklist} hide-edit={isEditCPWSurest} policy-names={policyInfoNameSurest} policy-numbers={policyInfoNumberSurest} existing-products={existingProducts} acc-id={accRecordId} selected-sales-season={selectedSalesSeason} onclinicalprogramdata ={handlePaymentIntegrityData} oncanceledit ={handleCPWCancel} onhidevalidation ={handleHideValidationCPW} >
                         </c-pcc-clinical-program-section>  
                     </template>
                     <!-- Added by spoorthy - 3834 - end -->
@@ -1751,6 +1751,53 @@
                             </div>
                         </div>
                     </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+            </div>
+            <div>
+                <template if:true={showEmailModal}>
+                    <section role="dialog" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header">
+                                <h2 class="slds-text-heading_medium">
+                                    Select Recipients
+                                </h2>
+                            </header>
+
+                            <div class="slds-modal__content slds-p-around_medium">
+
+                                <!-- <template for:each={emails} for:item="email">
+                                    <lightning-input key={email}
+                                                    type="checkbox"
+                                                    label={email}
+                                                    value={selectedEmails}
+                                                    onchange={handleSelection}>
+                                    </lightning-input>
+                                </template> -->
+                                <lightning-checkbox-group
+                                        label="The SCE Validation notification will be sent to the Roles/Email addresses listed below
+                                         (Please deselect any Roles/Email addresses that should not receive this notification)."
+                                        options={emails}
+                                        value={selectedEmails}
+                                        onchange={handleSelection}>
+                                </lightning-checkbox-group>
+
+                            </div>
+
+                            <footer class="slds-modal__footer">
+                                <lightning-button label="Cancel"
+                                                onclick={closeModal}>
+                                </lightning-button>
+
+                                <lightning-button variant="brand" class="slds-m-left_small"
+                                                label="Send"
+                                                onclick={sendReport}>
+                                </lightning-button>
+                            </footer>
+
+                        </div>
+                    </section>
+
                     <div class="slds-backdrop slds-backdrop_open"></div>
                 </template>
             </div>

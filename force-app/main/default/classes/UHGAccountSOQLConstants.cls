@@ -15,14 +15,17 @@ public class UHGAccountSOQLConstants {
     public String queryStringForContactsTypeCmCd1 = 'SELECT Id,FirstName,LastName,Title,DecisionMakingRole__c, Role__c, UHGRelationshipwithExecutive__c, ReportsTo__c,Email FROM Contact Where AccountId =:accountId AND Status__c =:accountStatus AND RecordType.Id =:currentContactType ORDER BY ';
     public String queryStringForContactsTypeCmCd2 = ' LIMIT :pageSize OFFSET :offset';
     
+    //Added by Vignesh
+    public String queryForClientSurveyYear = 'SELECT Id, Name, LikelihoodtoRecommendScore__c, Year__c FROM ClientSurveyResults__c where type__c=\'Client Survey Results\' ORDER BY Year__c desc Limit 1';
+    public String queryLRTValues = 'SELECT Id, Name, LikelihoodtoRecommendScore__c, Account__r.Name,Account__c FROM ClientSurveyResults__c where Account__c IN:accountIdList and year__c=:CSR[0].Year__c';
     
     /* Common CD and CM Applet query start */
     
     //public String queryStringForTypeCmCdContacts = 'SELECT Id,FirstName,LastName,Title,ConsultantTier__c,MailingStreet,MailingState,MailingCity,MailingCountry,MailingPostalCode,MailingAddress,DecisionMakingRole__c, Role__c, UHGRelationshipwithExecutive__c, ReportsTo__c FROM Contact Where AccountId =:accountId AND Status__c =:accountStatus AND Type__c =:currentContactType ORDER BY ';
     //public String queryStringForTypeCmCd2Contacts = ' LIMIT :pageSize OFFSET :offset';
     
-    public String queryStringForTypeCmCdContacts = 'SELECT Id,FirstName,LastName,Title,AddressCFBackend__c,ConsultantTier__c,MailingStreet,MailingStateCode,MailingState,MailingCity,MailingCountry,MailingPostalCode,MailingAddress,DecisionMakingRole__c, Role__c, UHGRelationshipwithExecutive__c, ReportsTo__c, Key_Contact__c,Email,AMT_Log__c,Correspondence_Type__c,LastModifiedDate,LastModifiedBy.Name FROM Contact Where AccountId =:accountId AND Status__c =:accountStatus AND RecordType.Id =:currentContactType ORDER BY '; //LastModifiedDate added by Samarth
-    public String queryStringForTypeCmCd2Contacts = ' LIMIT :pageSize OFFSET :offset';
+    public String queryStringForTypeCmCdContacts = 'SELECT Id,FirstName,LastName,Title,AddressCFBackend__c,ConsultantTier__c,MailingStreet,MailingStateCode,MailingState,MailingCity,MailingCountry,MailingPostalCode,MailingAddress,DecisionMakingRole__c, Role__c, UHGRelationshipwithExecutive__c, ReportsTo__c, Key_Contact__c,Email,AMT_Log__c,Correspondence_Type__c,LastModifiedDate,LastModifiedBy.Name,Direct_Marketing_Target_Contact__c FROM Contact Where AccountId =:accountId AND Status__c =:accountStatus AND RecordType.Id =:currentContactType ORDER BY '; //LastModifiedDate added by Samarth
+    public String queryStringForTypeCmCd2Contacts = '';//' LIMIT :pageSize OFFSET :offset';
     
     /* Common CD and CM Applet query end */
     
@@ -134,9 +137,10 @@ public class UHGAccountSOQLConstants {
     /*
      * Accounts and Membership Activity - START
      */
-    public String QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS = 'SELECT Id, AccountFirm__c,AccountFirm__r.Name,AccountFirm__r.RecordType.Name,AccountFirm__r.Owner.Name FROM AccountCFJunction__c where ConsultingFirm__c =:accountId AND AccountFirm__c != null ORDER By';
+    public String QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS = 'SELECT Id, AccountFirm__c,AccountFirm__r.Name,AccountFirm__r.RecordType.Name,AccountFirm__r.Owner.Name,AccountFirm__r.RecordType.DeveloperName, AccountFirm__r.Client_Reference_Status__c FROM AccountCFJunction__c where ConsultingFirm__c =:accountId AND AccountFirm__c != null ORDER By';
     
-    public String QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS2 = 'SELECT Id, Account.Id, Account.Name, Account.Category__c,Account.RecordType.Name,Account.Owner.Name FROM AccountContactRelation where Contact.Account.Id =:accountId AND IsDirect = false AND Contact.Status__c=\'Active\' ORDER By';
+    public String QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS2 = 'SELECT Id, Account.Id, Account.Name, Account.Category__c,Account.RecordType.Name,Account.Owner.Name,Account.RecordType.DeveloperName, Account.Client_Reference_Status__c FROM AccountContactRelation where Contact.Account.Id =:accountId AND IsDirect = false AND Contact.Status__c=\'Active\' ORDER By';
+    
     
     //public String QUERY_MEMBERSHIP_ACTIVITIES = 'SELECT Opportunity.Name,Opportunity.Sales_Stage_Pharmacy__c,Opportunity.Sales_Stage_Vision__c,Opportunity.Sales_Stage_Other__c,Opportunity.Sales_Stage_Medical__c,Opportunity.Sales_Stage_Dental__c,Opportunity.EffectiveDate__c,Opportunity.EstimatedMedicalMembershipatRisk__c,Opportunity.ActualMedicalMembershipLoss__c,Opportunity.SoldMembers__c,Opportunity.Estimated_Additional_New_Members__c,Opportunity.Existing_Mbrs__c from OpportunityContactRole where Contact.Account.Id=:accountId ORDER By';
     

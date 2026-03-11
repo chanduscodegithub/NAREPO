@@ -52,7 +52,7 @@ public with sharing class SalesDebriefController {
         
         String [] typeOfQuestionsArray = new List<String>();
         
-        oppList = [SELECT id,name,Platforms_Quoted__c,Sales_Season1__c,EffectiveDate__c,Account.Name,RecordType.DeveloperName,Status__c,Account.Coveted_Account__c,
+        oppList = [SELECT id,name,Platforms_Quoted__c,Sales_Season1__c,EffectiveDate__c,Account.Name,RecordType.DeveloperName,Status__c,Quad4__c,
                    Closed_Reason_1_Medical__c,Closed_Reason_1_Pharmacy__c,Closed_Reason_1_Vision__c,Closed_Reason_1_Dental__c,Closed_Reason_1_Surest__c,
                    PrimaryConsultant__c,PrimaryConsultant__r.Name,Primary_Consulting_Firm__c,Primary_Consulting_Firm__r.Name,
                    Disposition_Medical__c,Disposition_Pharmacy__c,Disposition_Vision__c,Disposition_Dental__c,Surest_Stage__c,Offer_Nationally__c,

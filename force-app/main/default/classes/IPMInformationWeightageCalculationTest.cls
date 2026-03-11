@@ -25,6 +25,7 @@ public class IPMInformationWeightageCalculationTest {
                                                                      New_Product_1st_Year_1__c = 1,
                                                                      UMR_SBC__c = 5,
                                                                      Rental_Networks__c = 'Yes',
+                                                                     Policy_Type__c = 'Medical',
                                                                 	 Policy_Status__c = 'Active');
         insert policy;
         
@@ -73,7 +74,8 @@ public class IPMInformationWeightageCalculationTest {
                                                                             CERA__c, OptumHealth_Services__c, Optum_Disease_Management_Buy_Ups__c, Rally_Portal__c,Optum_Worksite_Wellness__c, Optum_Personal_Coaching__c, Optum_Behavioral_Health__c,
                                                                             Optum_Behavioral_Health_Buy_Ups__c, Optum_EAP__c, Cross_Carrier_Set_up__c, Advocate4Me__c, C3__c, Personal_Rewards__c, COBRA__c, FlexWork__c, Stop_Loss_by_UHC__c, 
                                                                             Incremental_Products_Services_Complexity__c, Administrative__c, Meetings__c, Travel_Time__c, Regulatory_for_FI__c, Portfolio_Grid_for_FI__c, 
-                                                                            OptumHealth_Services_Buy_Ups__c, Non_Standard_Network_Set_up__c, OptumHealth_Services_Buy_Ups_Score_2__c, Staff_Assignment__c
+                                                                            OptumHealth_Services_Buy_Ups__c, Non_Standard_Network_Set_up__c, OptumHealth_Services_Buy_Ups_Score_2__c, Staff_Assignment__c, OBM__c, UHC_Hub__c,
+                                                                            Rally__c, Surest__c,OBM_Score__c, UHC_Hub_Score__c, Rally_Score__c, Surest_Score__c, Total_of_hours__c, Months_implementing__c
                                                                             FROM IPM_Information__c]);
         Map<Id,IPM_Information__c> oldIpmMap = new Map<Id,IPM_Information__c>();
         System.assertEquals(2,ipmMap.values().size());

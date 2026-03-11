@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : Spoorthy
  * @group             : 
- * @last modified on  : 03-14-2024
- * @last modified by  : Spoorthy
+ * @last modified on  : 02-10-2026
+ * @last modified by  : Veera
 **/
 import {
     LightningElement,
@@ -15,10 +15,16 @@ import getClientProfileData from '@salesforce/apex/ClientProfileController.getCl
 import getTemplateInXML from '@salesforce/apex/ClientProfileEBDDownload.getTemplateInXML';
 import getAccountIdList from '@salesforce/apex/ClientProfileEBDDownload.getAccountIdList';
 import returnDocIds from '@salesforce/apex/ClientProfileEBDDownload.returnDocIds';
+import ebd_year from '@salesforce/label/c.ebd_year';
 
 
 import ClientPlan_Goal_DisplayOrder from '@salesforce/label/c.ClientPlan_Goal_DisplayOrder';
 import getClientPlanData from '@salesforce/apex/ClientProfilePrintController.getClientPlanData';
+
+import { getObjectInfo, getPicklistValues } from 'lightning/uiObjectInfoApi';
+import ACCOUNT_OBJECT from '@salesforce/schema/Account';
+import Business_Line from '@salesforce/schema/Account.Subtype__c';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 
 import {
@@ -26,7 +32,7 @@ import {
 } from '@salesforce/apex';
 
 export default class ClientProfilePOC extends LightningElement {
-
+    ebdyear = 'Download Ebd Files' + ' - ' + ebd_year;
     @api recordId;
     @track clientProfileData = {};
     isClientProfileDataEmpty = true;
@@ -136,33 +142,173 @@ export default class ClientProfilePOC extends LightningElement {
     // }   
     ebdloaded = false;
 
+    isModalOpen = false;
+    selectedValue;
+    selectedoptions = [];
+    selectedUserId;
+
+
+    get isProceedDisabled() {
+        return !this.selectedValue;
+    }
+
+    openModal() {
+        this.isModalOpen = true;
+    }
+
+    closeModal() {
+        this.isModalOpen = false;
+        this.selectedValue = null;
+    }
+
+    handleChange(event) {
+        this.selectedValue = event.detail.value;
+        if (this.selectedoptions.includes(this.selectedValue)) {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Warning',
+                    message: 'This option is already selected. Do you wish to continue? If not, please choose a different option.',
+                    variant: 'warning'
+                })
+            );
+            //alert('This option is already selected. Do you wish to continue? If not, please choose a different option.');
+        }
+
+    }
+
+
+    handleUserChange(event) {
+        this.selectedUserId = event.detail.recordId;
+    }
+
+    displayInfo = {
+        primaryField: 'Name',
+        additionalFields: ['UserRole.Name']
+    };
+
+    userRoleFilter = {
+        criteria: [
+            {
+                fieldPath: 'IsActive',
+                operator: 'eq',
+                value: true
+            },
+            {
+                fieldPath: 'UserRole.Name',
+                operator: 'eq',
+                value: 'CM SCE'
+            }
+        ]
+    };
+
+    picklistOptions = [];
+    selectedValue;
+
+    // Step 1: Get Object Info (Record Type Id)
+    @wire(getObjectInfo, { objectApiName: ACCOUNT_OBJECT })
+    objectInfo;
+
+    // Step 2: Get Picklist Values
+    @wire(getPicklistValues, {
+        recordTypeId: '$objectInfo.data.defaultRecordTypeId',
+        fieldApiName: Business_Line
+    })
+    picklistValues({ data, error }) {
+        if (data) {
+            this.picklistOptions = data.values.map(item => ({
+                label: item.label,
+                value: item.value
+            }));
+        } else if (error) {
+            console.error(error);
+        }
+    }
+
+
     exportEBD() {
+
+        let totalCalls = 0;
+        let completedCalls = 0;
+        let hasFiles = false;
+
+        // Get only matching accounts first
+        const matchingAccounts = this.accountIdList.filter(
+            acc => acc.Subtype__c === this.selectedValue
+        );
+
+        totalCalls = matchingAccounts.length;
+
+
+        if (matchingAccounts.length === 0) {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Warning',
+                    message: 'No files found for selected Business Line.',
+                    variant: 'warning'
+                })
+            );
+            return;
+        }
+
         for (var kk = 0; kk < this.accountIdList.length; kk++) {
-            this.ebdloaded = true;
-            this.loaded = false;
-            returnDocIds({
+            this.selectedoptions.push(this.selectedValue);
+
+            if (this.accountIdList[kk].Subtype__c == this.selectedValue) {
+
+                this.ebdloaded = true;
+                this.loaded = false;
+                returnDocIds({
                     accountId: this.accountIdList[kk].Id
                 })
-                .then(result => {
-                    // this.ebdloaded=false;
-                    // this.loaded=true;
-                    this.returnDocIdsList = result;
-                    if (this.returnDocIdsList != null || this.returnDocIdsList != undefined) { //SAMARTH
-                        //console.log('Entering EBD if');
-                        for (var i = 0; i < this.returnDocIdsList.length; i++) {
-                            //console.log('Entering EBD for');
-                            window.open(this.sfdcBaseURL + '/sfc/servlet.shepherd/document/download/' + this.returnDocIdsList[i].ContentDocumentId + '?operationContext=S1');
+                    .then(result => {
+
+                        // this.ebdloaded=false;
+                        // this.loaded=true;
+                        this.returnDocIdsList = result;
+                        if (this.returnDocIdsList.length > 0) { //SAMARTH
+                            hasFiles = true;
+                            //console.log('Entering EBD if');
+                            for (var i = 0; i < this.returnDocIdsList.length; i++) {
+                                //console.log('Entering EBD for');
+                                window.open(this.sfdcBaseURL + '/sfc/servlet.shepherd/document/download/' + this.returnDocIdsList[i].ContentDocumentId + '?operationContext=S1');
+                            }
                         }
-                    }
 
-                });
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    })
+                    .finally(() => {
 
-            setTimeout(() => {
-                this.ebdloaded = false;
-                this.loaded = true;
-            }, 60000);
+                        completedCalls++;
+
+                        if (completedCalls === totalCalls) {
+
+                            this.ebdloaded = false;
+                            this.loaded = true;
+
+                            if (!hasFiles) {
+                                this.dispatchEvent(
+                                    new ShowToastEvent({
+                                        title: 'Warning',
+                                        message: 'No files found for selected Business Line.',
+                                        variant: 'warning'
+                                    })
+                                );
+                            }
+                        }
+                    });;
+
+                setTimeout(() => {
+                    this.ebdloaded = false;
+                    this.loaded = true;
+                }, 5000);
+            }
+
 
         }
+
+
 
         // setTimeout(() => {
         //     this.loaded = true;
@@ -185,8 +331,8 @@ export default class ClientProfilePOC extends LightningElement {
             this.loaded = false;
             this.clientloaded = true;
             getTemplateInXML({
-                    accountId: this.accountIdList[kk].Id
-                })
+                accountId: this.accountIdList[kk].Id
+            })
                 .then(result => {
 
                     this.downloadFiles(result, kk);
@@ -338,12 +484,12 @@ export default class ClientProfilePOC extends LightningElement {
                                     }
 
                                 }
-                            else if (key == 'AnnualRevenue__c' || key == 'AnnualB2BSpend__c') {
-                                value = '$' + this.thousands_separators(clientData.getCorporationOverviewData[key].toFixed(2));
-                            } else if (key == 'Fortune_500_Ranking__c' || key == 'Eligible_US_EEs__c' || key == 'Worldwide_EEs__c') {
-                                value = this.thousands_separators(clientData.getCorporationOverviewData[key]);
-                            } else
-                                value = clientData.getCorporationOverviewData[key];
+                                else if (key == 'AnnualRevenue__c' || key == 'AnnualB2BSpend__c') {
+                                    value = '$' + this.thousands_separators(clientData.getCorporationOverviewData[key].toFixed(2));
+                                } else if (key == 'Fortune_500_Ranking__c' || key == 'Eligible_US_EEs__c' || key == 'Worldwide_EEs__c') {
+                                    value = this.thousands_separators(clientData.getCorporationOverviewData[key]);
+                                } else
+                                    value = clientData.getCorporationOverviewData[key];
 
                             if (key == 'bghData') {
                                 value = clientData[key];
@@ -774,7 +920,7 @@ export default class ClientProfilePOC extends LightningElement {
                         Year4V: '',
                     };
                     let yearlistSurest = {
-                        YearS1: '',YearS2: '',YearS3: '',YearS4: '',YearS1V: '',YearS2V: '',YearS3V: '',YearS4V: '',
+                        YearS1: '', YearS2: '', YearS3: '', YearS4: '', YearS1V: '', YearS2V: '', YearS3V: '', YearS4V: '',
                     };
                     if (medList != undefined)
                         for (var i = 0; i < medList.length; i++) {

@@ -74,7 +74,7 @@
             fieldItagsWithAuraAttrMap = '{"LastName":"sortLastNameAsc","FirstName":"sortFirstNameAsc","Title":"sortJobTitleAsc","Role__c":"sortRoleAsc","UHGRelationshipwithExecutive__c":"sortUhgRelationshipWithExecutiveAsc","ReportsTo__c":"sortReportsToAsc","Key_Contact__c":"sortKeyContact","AMT_Log__c":"sortAMTLog"}';
         }else if(component.get('v.cdAccountType')){
             // contactType = 'CD Contact';
-            fieldItagsWithAuraAttrMap = '{"LastName":"sortLastNameAsc","FirstName":"sortFirstNameAsc","Title":"sortJobTitleAsc","Email":"sortEmail","DecisionMakingRole__c":"sortDecisionMakingRole","LastModifiedDate":"sortLastModifiedDate"}';
+            fieldItagsWithAuraAttrMap = '{"Direct_Marketing_Target_Contact__c":"sortDirect_Marketing_Target_Contact__c","LastName":"sortLastNameAsc","FirstName":"sortFirstNameAsc","Title":"sortJobTitleAsc","Email":"sortEmail","DecisionMakingRole__c":"sortDecisionMakingRole","LastModifiedDate":"sortLastModifiedDate"}';
         }else if(component.get('v.cfAccountType')){
             //contactType = 'Consultant';
             fieldItagsWithAuraAttrMap = '{"ConsultantTier__c":"sortConsultantTierAsc","LastName":"sortLastNameAsc","FirstName":"sortFirstNameAsc","Title":"sortJobTitleAsc","Email":"sortEmail"}';
@@ -105,7 +105,7 @@
                 fieldItagsWithAuraAttrMap = '{"LastName":"sortLastNameAsc","FirstName":"sortFirstNameAsc","Title":"sortJobTitleAsc","Key_Contact__c":"sortKeyContact","Role__c":"sortRoleAsc","UHGRelationshipwithExecutive__c":"sortUhgRelationshipWithExecutiveAsc","ReportsTo__c":"sortReportsToAsc","AMT_Log__c":"sortAMTLog"}';
             }else if(component.get('v.cdAccountType')){
                 // contactType = 'CD Contact';
-                fieldItagsWithAuraAttrMap = '{"LastName":"sortLastNameAsc","FirstName":"sortFirstNameAsc","Title":"sortJobTitleAsc","Email":"sortEmail","DecisionMakingRole__c":"sortDecisionMakingRole","LastModifiedDate":"sortLastModifiedDate"}';
+                fieldItagsWithAuraAttrMap = '{"Direct_Marketing_Target_Contact__c":"sortDirect_Marketing_Target_Contact__c","LastName":"sortLastNameAsc","FirstName":"sortFirstNameAsc","Title":"sortJobTitleAsc","Email":"sortEmail","DecisionMakingRole__c":"sortDecisionMakingRole","LastModifiedDate":"sortLastModifiedDate"}';
             }else if(component.get('v.cfAccountType')){
                 //contactType = 'Consultant';
                 fieldItagsWithAuraAttrMap = '{"ConsultantTier__c":"sortConsultantTierAsc","LastName":"sortLastNameAsc","FirstName":"sortFirstNameAsc","Title":"sortJobTitleAsc"}';
@@ -149,6 +149,7 @@
                            ]; 
         }else if(component.get('v.cdAccountType')){
             fieldsToSort = [{"fieldName":"LastName","fieldDisplayName":"Last Name","fieldOrder":component.get("v.sortLastNameAsc")},
+                            {"fieldName":"Direct_Marketing_Target_Contact__c","fieldDisplayName":"Direct Marketing Target‑Contact","fieldOrder":component.get("v.sortDirect_Marketing_Target_Contact__c")},
                             {"fieldName":"FirstName","fieldDisplayName":"First Name","fieldOrder":component.get("v.sortFirstNameAsc")},
                             {"fieldName":"Title","fieldDisplayName":"Job Title","fieldOrder":component.get("v.sortJobTitleAsc")},
                             {"fieldName":"DecisionMakingRole__c","fieldDisplayName":"Decision Making Role","fieldOrder":component.get("v.sortDecisionMakingRole")},

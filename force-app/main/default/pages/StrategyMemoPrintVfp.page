@@ -1,0 +1,534 @@
+<apex:page showHeader="false" sidebar="false" applyBodyTag="false" applyHtmlTag="false" controller="StrategyMemoController" language="en-US"
+           contentType="{!ContentTypeValue}">
+    
+    <apex:includeLightning />
+    <div id="LightningComponentid"/>
+    <head>
+       <meta content="text/html;charset=UTF-8" />
+    </head>
+    
+    <body>
+        <!-- HEADER -->
+        <div style="background-color: #D3D3D3; padding: 15px; ">        
+            <table width="100%" style="border-collapse: collapse;">
+                <tr>
+                    <td style="font-size: 28px; font-weight: bold; color: #5A6F9E;"> Strategy Memo </td>
+                    <td style="font-size: 24px; text-align: right; color: #5A6F9E;"> {!memoRecord.Account_Name__c} </td>
+                </tr>
+            </table>
+            <table width="100%" style="border-collapse: collapse;">
+                <tr>
+                    <td style="height:3px; background-color:#B0B0B0; padding:0; margin-top: 2px"></td>
+                </tr>
+            </table>        
+        </div>  
+        
+         <br/>
+         <br/>
+        
+        <!-- STRATEGY DETAILS TABLE -->
+        <table width="100%" border="1" cellpadding="8" style="border-collapse: collapse; font-size:14px;">
+            <tr>
+                <td width="25%" style="font-weight:bold;">Strategy Call Date:</td>
+                <td width="25%">
+                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                        <apex:param value="{!memoRecord.Strategy_Call_Date__c}" />
+                    </apex:outputText>
+                </td>
+                <td width="25%" style="font-weight:bold;">Strategy Call Time:</td>
+                <td width="25%"> {!memoRecord.Strategy_Call_Time__c} </td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold;">Proposal Date Received:</td>
+                <td>
+                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                        <apex:param value="{!memoRecord.Proposal_Date_Received__c}" />
+                    </apex:outputText>
+                </td>
+                <td style="font-weight:bold;">Proposal Date Due:</td>
+                <td>
+                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                        <apex:param value="{!memoRecord.Proposal_Date_Due__c}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold;">Company Name as per RFP:</td>
+                <td> {!memoRecord.Company_Name_as_per_RFP__c} </td>
+                <td style="font-weight:bold;">Targeted people as per RFP:</td>
+                <td> {!memoRecord.People__c} </td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold;">RFP Strategy Question #'s:</td>
+                <td colspan="3"> {!memoRecord.Strategic_Question_No__c} </td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold;">Salesforce Opportunity ID:</td>
+                <td colspan="3"> {!memoRecord.Salesforce_Opportunity_ID__c} </td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold;">Reference Attributes:</td>
+                <td colspan="3"> {!memoRecord.Reference_Attributes__c}</td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold;">Spotlight RFP:</td>
+                <td colspan="3"> {!memoRecord.Spotlight_RFP__c} </td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold;">Health Plan Manager Industry:</td>
+                <td colspan="3"> {!memoRecord.Health_Plan_Manager_Industry__c}</td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold;">Annual Revenue:</td>
+                <td colspan="3">{!memoRecord.Annual_Revenue__c} </td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold;">File Passwords? If so, please provide:</td>
+                <td colspan="3">{!memoRecord.File_Passwords_If_so_please_provide__c}</td>
+            </tr>
+        </table>
+
+        <br/>
+        
+        <!-- CLIENT INFORMATION HEADER -->
+        <table width="100%" style="border-collapse: collapse; margin-top:15px;">
+            <tr>
+                <td style="font-weight:bold;color:#0B2E83;font-size:16px;padding:6px 0;">CLIENT INFORMATION:</td>
+            </tr>
+        </table>
+        
+        <table width="100%" border="1" cellpadding="8" style="border-collapse: collapse; font-size:14px;">          
+            <tr>
+                <td width="25%" style="font-weight:bold;">Headquarters City</td>
+                <td width="75%">{!memoRecord.Headquarters_City__c}</td>
+            </tr>           
+            <tr>
+                <td style="font-weight:bold;">Primary Situs State</td>
+                <td>{!memoRecord.Primary_Situs_State__c}</td>
+            </tr>           
+            <tr>
+                <td style="font-weight:bold;">Contact Name(s)</td>
+                <td>{!memoRecord.Contact_Names__c}</td>
+            </tr>            
+            <tr>
+                <td style="font-weight:bold;">Address</td>
+                <td>{!memoRecord.Address__c}</td>
+            </tr>           
+            <tr>
+                <td style="font-weight:bold;">Website URL</td>
+                <td>{!memoRecord.Website_URL__c}</td>
+            </tr>            
+        </table>
+        
+        <br/>
+        
+        <!-- PRIMARY CONSULTANT HEADER -->
+        <table width="100%" style="border-collapse: collapse; margin-top:15px;">
+            <tr>
+                <td style="font-weight:bold;color:#0B2E83;font-size:16px;padding:6px 0;">PRIMARY CONSULTANT:</td>
+            </tr>
+        </table>
+        
+        <table width="100%" border="1" cellpadding="8" style="border-collapse: collapse; font-size:14px;">           
+            <tr>
+                <td width="25%" style="font-weight:bold;">Consultant Firm-Loc</td>
+                <td width="75%">{!memoRecord.Consultant_Firm_Loc__c}</td>
+            </tr>           
+            <tr>
+                <td style="font-weight:bold;">RFP Primary Consultant(s)</td>
+                <td>{!memoRecord.RFP_Primary_Consultant_s__c}</td>
+            </tr>            
+            <tr>
+                <td style="font-weight:bold;">Address</td>
+                <td>{!memoRecord.Consultant_Address__c}</td>
+            </tr>            
+            <tr>
+                <td style="font-weight:bold;">Phone Number</td>
+                <td>{!memoRecord.Phone_Number__c}</td>
+            </tr>            
+            <tr>
+                <td style="font-weight:bold;">E-Mail</td>
+                <td>{!memoRecord.Consultant_Email__c}</td>
+            </tr>            
+        </table>
+
+        <br/>
+
+    <!-- SECONDARY CONSULTANTS HEADER -->       
+        <table width="100%" style="border-collapse: collapse; margin-top:15px;">
+            <tr>
+                <td style="font-weight:bold; color:#0B2E83; font-size:16px;">SECONDARY CONSULTANTS: </td>
+            </tr>
+        </table>
+        
+        <table width="100%" border="1" cellpadding="8" style="border-collapse: collapse; font-size:14px;">           
+            <tr style="font-weight:bold; color:#0B2E83;">
+                <td width="25%">Last Name</td>
+                <td width="25%">First Name</td>
+                <td width="30%">Consulting Firm</td>
+                <td width="20%">City</td>
+            </tr>           
+            <apex:outputPanel rendered="{!secondaryConsultants.size > 0}">
+                <apex:repeat value="{!secondaryConsultants}" var="sc">
+                    <tr>
+                        <td>{!sc.Contact.LastName}</td>
+                        <td>{!sc.Contact.FirstName}</td>
+                        <td>{!sc.Contact.Account.Name}</td>
+                        <td>{!sc.Contact.MailingCity}</td>
+                    </tr>
+                </apex:repeat>
+            </apex:outputPanel>           
+            <apex:outputPanel rendered="{!secondaryConsultants.size = 0}">
+                <tr>
+                    <td colspan="4">No Records Found.</td>
+                </tr>
+            </apex:outputPanel>           
+        </table>
+        
+        <br/>
+           
+        <!-- RFP TEAM CONTACTS SECTION -->
+        <div style="margin-top:20px;">            
+            <div style="font-weight:bold; color:#1F3A93; margin-bottom:5px;">RFP TEAM CONTACTS: </div>            
+            <table width="100%" border="1" cellpadding="6" style="border-collapse: collapse; font-size:14px;">                
+                <tr style="background-color:#1F3A93; color:white; font-weight:bold;">
+                    <td width="30%">Role</td>
+                    <td width="70%">Contacts</td>
+                </tr>              
+                <tr>
+                    <td style="font-weight:bold;">Sales Vice President – CD</td>
+                    <td>{!memoRecord.Sales_Vice_President_CD__c}</td>
+                </tr>                
+                <tr>
+                    <td style="font-weight:bold;">Coveted Account SVP</td>
+                    <td>{!memoRecord.Coveted_Account_SVP__c}</td>
+                </tr>                
+                <tr>
+                    <td style="font-weight:bold;">Surest SVP</td>
+                    <td>{!memoRecord.Surest_SVP__c}</td>
+                </tr>                
+                <tr>
+                    <td style="font-weight:bold;">Specialty SVP</td>
+                    <td>{!memoRecord.Specialty_SVP__c}</td>
+                </tr>                
+                <tr>
+                    <td style="font-weight:bold;">Financial Strategy Lead</td>
+                    <td>{!memoRecord.Financial_Strategy_Lead__c}</td>
+                </tr>               
+                <tr>
+                    <td style="font-weight:bold;">OPTUM Financial Sales</td>
+                    <td>{!memoRecord.Optum_Financial_Sales__c}</td>
+                </tr>               
+                <tr>
+                    <td style="font-weight:bold;">SCE Assignment – Traditional</td>
+                    <td>{!memoRecord.SCE_Assignment_Traditional__c}</td>
+                </tr>                
+                <tr>
+                    <td style="font-weight:bold;">SCE Assignment – Surest</td>
+                    <td>{!memoRecord.SCE_Assignment_Surest__c}</td>
+                </tr>                
+                <tr>
+                    <td style="font-weight:bold;">Client Manager – Traditional</td>
+                    <td>{!memoRecord.Client_Manager_Traditional__c}</td>
+                </tr>                 
+                <tr>
+                    <td style="font-weight:bold;">Client Manager – Surest</td>
+                    <td>{!memoRecord.Client_Manager_Surest__c}</td>
+                </tr>               
+                <tr>
+                    <td style="font-weight:bold;">Client Dev. Director</td>
+                    <td>{!memoRecord.Client_Dev_Director__c}</td>
+                </tr>                
+                <tr>
+                    <td style="font-weight:bold;">Strategic Coordinator – CD</td>
+                    <td>{!memoRecord.Strategic_Coordinator_CD__c}</td>
+                </tr>                
+                <tr>
+                    <td style="font-weight:bold;">NPS Business Dev Mgr. (BDM)</td>
+                    <td>{!memoRecord.NPS_Business_Dev_Mgr_BDM__c}</td>
+                </tr>
+                <tr>
+                    <td rowspan="4" style="font-weight:bold;">Proposal Writers</td>
+                    <td ><b>Med:</b> {!memoRecord.Proposal_Writers_Med__c}</td>
+                </tr>               
+                <tr>
+                    <td><b>Clin:</b> {!memoRecord.Proposal_Writers_Clin__c}</td>
+                </tr>                
+                <tr>
+                    <td><b>Rx:</b> {!memoRecord.Proposal_Writers_Rx__c}</td>
+                </tr>                
+                <tr>
+                    <td><b>Spec:</b> {!memoRecord.Proposal_Writers_Spec__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">NPS Quality Reviewer / SQC</td>
+                    <td>{!memoRecord.NPS_Quality_Reviewer_SQC__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Network Analysis Consultant</td>
+                    <td>{!memoRecord.Network_Analysis_Consultant__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">NA Network Solutions</td>
+                    <td>{!memoRecord.NA_Network_Solutions__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Actuarial Support</td>
+                    <td>{!memoRecord.Actuarial_Support__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Underwriter – Medical</td>
+                    <td>{!memoRecord.Underwriter_Medical__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Underwriter – Specialty</td>
+                    <td>{!memoRecord.Underwriter_Specialty__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Underwriter – Optum Health</td>
+                    <td>{!memoRecord.Underwriter_Optum_Health__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Underwriter – Optum Rx</td>
+                    <td>{!memoRecord.Underwriter_Optum_Rx__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">IT Data Security</td>
+                    <td>{!memoRecord.IT_Data_Security__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Optum CTO / BDC</td>
+                    <td>{!memoRecord.Optum_CTO_BDC__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Optum Surest SME</td>
+                    <td>{!memoRecord.Optum_Surest_SME__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Wellness Lead</td>
+                    <td>{!memoRecord.Wellness_Lead__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Behavioural Solutions Lead</td>
+                    <td>{!memoRecord.Behavioural_Solutions_Lead__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">2nd MD Sales Contact</td>
+                    <td>{!memoRecord.X2nd_MD_Sales_Contact__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Optum Rx Sales</td>
+                    <td>{!memoRecord.Optum_Rx_Sales__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Optum Financial Services and UHC CDH Product</td>
+                    <td>{!memoRecord.Optum_Financial_Services__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Implementation Manager - Traditional</td>
+                    <td>{!memoRecord.Implementation_Manager_Traditional__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Implementation Manager - Surest</td>
+                    <td>{!memoRecord.Implementation_Manager_Surest__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Executive Sponsor</td>
+                    <td>{!memoRecord.Executive_Sponsor__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Deal Sponsor</td>
+                    <td>{!memoRecord.Deal_Sponsor__c}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;">Other</td>
+                    <td>{!memoRecord.Other_Sponsor__c}</td>
+                </tr>               
+            </table>
+        </div>
+        
+       <br/>
+        
+       <!-- TIMELINE / DUE DATES -->
+        <div style="margin-top:25px;">            
+            <div style="font-weight:bold; color:#0B2E83; margin-bottom:5px;"> TIMELINE / DUE DATES:
+                <span style="font-weight:normal;">
+                    Deliverables will be managed to the internal due dates specified
+                </span>
+            </div>            
+            <table width="100%" border="1" cellpadding="6" style="border-collapse: collapse; font-size:14px;">               
+                <tr>
+                    <td width="40%">Intent to Bid Due</td>
+                    <td width="60%">
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.Intent_to_Bid_Due__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>                
+                <tr>
+                    <td>Bidder's Conference Call Date (if applicable)</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.Bidder_s_Conference_Call_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>               
+                <tr>
+                    <td>Questions to Consultant Due</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.Questions_to_Consultant_Due__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>                
+                <tr>
+                    <td>Q A Responses Due Back</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.Q_A_Responses_Due_Back__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>                
+                <tr>
+                    <td>NAC Deliverables Due to CD Dir.</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.NAC_Deliverables_Due_to_CD_Dir__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>                
+                <tr>
+                    <td>All Optum Pricing Due to NPS and Sales</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.All_Optum_Pricing_Due_to_NPS_and_Sales__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>              
+                <tr>
+                    <td>Executive Summary Cover Letter Due</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.Executive_Summary_Cover_Letter_Due__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>                
+                <tr>
+                    <td>E-Ship Date</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.E_Ship_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>               
+                <tr>
+                    <td>&nbsp;&nbsp;&nbsp;Internal E-Ship Recipients</td>
+                    <td>{!memoRecord.Internal_E_Ship_Recipients__c}</td>
+                </tr>                
+                <tr>
+                    <td>&nbsp;&nbsp;&nbsp;External E-Ship Recipients</td>
+                    <td>{!memoRecord.External_E_Ship_Recipients__c}</td>
+                </tr>                
+                <tr>
+                    <td>Submission Instructions</td>
+                    <td>{!memoRecord.Submission_Instructions__c}</td>
+                </tr>                
+                <tr>
+                    <td>Finalist Date</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.Finalist_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>  
+                <tr>
+                    <td>Anticipated/Actual Close Date</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.Anticipated_Actual_Close_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr> 
+                <tr>
+                    <td>Implementation Kick-Off Date</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.Implementation_Kick_Off_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr> 
+                <tr>
+                    <td>Effective Date</td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!memoRecord.Effective_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr> 
+                
+            </table>
+        </div>
+        
+        
+        <!-- MEMBERSHIP ACTIVITY LIST -->
+        <div style="margin-top:20px;">
+            
+            <div style="font-weight:bold; margin-bottom:8px;">
+                Membership Activity List
+            </div>
+            
+            <table width="100%" 
+                   style="border-collapse: collapse; font-size:14px; border:1px solid #999;">
+                
+                <tr style="background-color:#E6E6E6; font-weight:bold;">
+                    <td style="border:1px solid #999; padding:6px;">Name</td>
+                    <td style="border:1px solid #999; padding:6px;">Type</td>
+                    <td style="border:1px solid #999; padding:6px;">Effective Date</td>
+                    <td style="border:1px solid #999; padding:6px;">Status</td>
+                    <td style="border:1px solid #999; padding:6px;">Products Involved</td>
+                </tr>
+                
+                <apex:repeat value="{!relatedOpportunities}" var="opp">
+                    
+                    <tr>
+                        <td style="border:1px solid #999; padding:6px;">
+                            {!opp.Name}
+                        </td>
+                        
+                        <td style="border:1px solid #999; padding:6px;">
+                            {!opp.Membership_Activity_Type__c}
+                        </td>
+                        
+                        <td style="border:1px solid #999; padding:6px;">
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                <apex:param value="{!opp.EffectiveDate__c}" />
+                            </apex:outputText>
+                        </td>
+                        
+                        <td style="border:1px solid #999; padding:6px;">
+                            {!opp.Status__c}
+                        </td>
+                        
+                        <td style="border:1px solid #999; padding:6px;">
+                            {!opp.Product_Type_Involved_in_Opp__c}
+                        </td>
+                    </tr>
+                    
+                </apex:repeat>
+                
+            </table>
+            
+            <!-- If no records -->
+            <apex:outputPanel rendered="{!relatedOpportunities.size = 0}">
+                <div style="margin-top:5px; color:red;">
+                    No Related Opportunities Found
+                </div>
+            </apex:outputPanel>
+            
+        </div>
+        
+        
+    </body>
+    
+    
+</apex:page>

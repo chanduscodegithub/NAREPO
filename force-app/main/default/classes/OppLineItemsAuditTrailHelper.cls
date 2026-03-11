@@ -238,7 +238,9 @@ public class OppLineItemsAuditTrailHelper {
     
     
     //Get the product Name
-    public static Map<Id, OpportunityLineItem> getProductName(List<OpportunityLineItem> oppLineList){              
+    public static Map<Id, OpportunityLineItem> getProductName(List<OpportunityLineItem> oppLineList){  
+        
+        
         return new Map<Id, OpportunityLineItem>([
             SELECT Id, Product2.Name,Product2.Product_Line__c 
             FROM OpportunityLineItem

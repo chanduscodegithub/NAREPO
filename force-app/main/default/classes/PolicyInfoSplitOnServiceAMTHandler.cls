@@ -1,6 +1,6 @@
 public class PolicyInfoSplitOnServiceAMTHandler {
     
-    public static void policySplit(list<service_amt__c> saList,map<string,string> policyTypeMap){   //Added by Vignesh -- Capacity Model 2025s
+    public static void policySplit(list<service_amt__c> saList,map<string,string> policyTypeMap){   //Added Capacity Model 2025s
         list<string> policyTypes =new list<string>{'Medical','OptumRx','Dental','Vision','Accident Protection','Critical Illness','Hospital Indemnity','Life/Di','FSA','CERA','HRA','HRA Account','HRA Standalone','Ret / URS', 'Flexwork'};
         string otherPol ='';
         for(service_amt__c sa:saList){
@@ -19,141 +19,6 @@ public class PolicyInfoSplitOnServiceAMTHandler {
                     }
                 }
                 
-                /*
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('OptumRx')){
-policySet.add(policy);
-}
-}
-}
-
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('Dental')){
-policySet.add(policy);
-}
-}
-
-}
-
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('Vision')){
-policySet.add(policy);
-}
-}
-
-}
-
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('Accident Protection')){
-policySet.add(policy);
-}
-}
-
-}
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('Critical Illness')){
-policySet.add(policy);
-}
-}
-
-}
-
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('Hospital Indemnity')){
-policySet.add(policy);
-}
-}
-
-}
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('Life/Di')){
-policySet.add(policy);
-}
-}
-
-}
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('FSA')){
-policySet.add(policy);
-}
-}
-
-}
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('CERA')){
-policySet.add(policy);
-}
-}
-
-}
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('HRA')){
-policySet.add(policy);
-}
-}
-
-}
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('HRA Account')){
-policySet.add(policy);
-}
-}
-
-}
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('HRA Standalone')){
-policySet.add(policy);
-}
-}
-
-}
-if(policySet.size()<20)
-for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
-if(policySet.size()<20){
-if(policyTypeMap.get(policy)!=null)
-if(policyTypeMap.get(policy).contains('Ret / URS')){
-policySet.add(policy);
-}
-}
-
-}
-*/
                 if(policySet.size()<20){
                     for(String policy: sa.Policy_Information_MultiChecKlist__c.split(';')){
                         if(policyTypeMap.get(policy.trim())==null)
@@ -173,7 +38,6 @@ policySet.add(policy);
                     }
                 }
             }
-            // policySet.add(otherPol);
             
             list<string> policyList =new list<string>(policySet);
             if(policyList.size()<21)

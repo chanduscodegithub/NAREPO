@@ -142,8 +142,19 @@ public without sharing class SoldChecklistHandler {
                                           Surest_Case_Management_CM_CPSurest__c,Optum_Physical_Health_Network__c,Optum_Behavioral_Network__c,Ardynn_Surest_Cancer_Advocacy__c,Asthma_Disease_Management__c,Bariatric_Resource_Services__c,Calm_Health__c,Canary_Surest_Disease_Management__c,Cancer_Resource_Services__c,Cancer_Support_Program_CSP__c,
                                           Clinical_Prgm_2nd_MD__c,Comprehensive_Kidney_Solutions__c,COPD_Disease_Management__c,Coronary_Artery_Disease_Management__c,Diabetes_Disease_Management__c,Emotional_Wellbeing_Solutions__c,Family_Building_Dual_Clients_only__c,Fertility_Solutions__c,Fertility_Solutions_Plus_Dual_Clients__c,Heart_Failure_Disease_Management__c,
                                           Kaia_Optum__c,Level2_Assured_Value__c,Maternity_21_month_program__c,Maven_12_month_program__c,Menopause_Dual_Clients_Only_1K_EE_s__c,Neonatal_Resource_Services__c,One_Pass_Select__c,Optum_Engage__c,Pacify_Surest_Maternity__c,Parenting_Pediatrics__c,Pivot_Surest_Smoking_Cessation__c,Progyny_Surest_Fertility__c,Pump_Carry_Dual_Clients_only_1k_EE_s__c,
-                                          Pump_Check_Dual_Clients_only_1k_EE_s__c,Pump_Post_Dual_Clients_only_1k_EE_s__c,Quit_for_Life_Dual_Clients_Only__c,Real_Appeal_Optum__c,UHC_Rewards__c,Virta_Diabetes__c,Virta_Obesity__c,Virta_Pre_Diabetes__c,Wallet_Dual_Clients_Only_1K_EE_s__c,Congenital_Heart_Disease__c,Wellness_Wellos_ASO__c,One_Pass_Subsidized__c,CPW_2nd_MD__c,
-                                          Optum_Engage_Elite__c,Optum_Engage_Select__c,UHC_Rewards_Custom__c,UHC_Rewards_Premium__c,Total_Weight_Support_with_Real_Appeal_Rx__c,Doula_Benefit_Support__c,Wellness_Rally_Engage_Buy_Up__c,Wellness_Rally_Premium_Buy_Up__c,CPW__c,UHC_Rewards_Client_Fulfilled_Survey__c,UHC_Rewards_Client_Fulfilled_Custom__c,Cap_Value__c,Amount__c,Additional_Comments__c,Amount_Type__c,Cap_Type__c,Cap_Category__c
+                                          Pump_Check_Dual_Clients_only_1k_EE_s__c,Pump_Post_Dual_Clients_only_1k_EE_s__c,Quit_for_Life_Dual_Clients_Only__c,Real_Appeal_Optum__c,UHC_Rewards__c,Virta_Diabetes__c,Virta_Obesity__c,Virta_Pre_Diabetes__c,Wallet_Dual_Clients_Only_1K_EE_s__c,Congenital_Heart_Disease__c,Wellness_Wellos_ASO__c,One_Pass_Subsidized__c,Kindbody__c,Sword__c,
+                                          Optum_Engage_Elite__c,Optum_Engage_Select__c,UHC_Rewards_Custom__c,UHC_Rewards_Premium__c,Total_Weight_Support_with_Real_Appeal_Rx__c,Doula_Benefit_Support__c,Wellness_Rally_Engage_Buy_Up__c,Wellness_Rally_Premium_Buy_Up__c,CPW__c,UHC_Rewards_Client_Fulfilled_Survey__c,UHC_Rewards_Client_Fulfilled_Custom__c,Cap_Value__c,Amount__c,Additional_Comments__c,Amount_Type__c,Cap_Type__c,Cap_Category__c,
+                                          UHC_Hub_Access_Hope_APO_EAR__c,UHC_Hub_Access_Hope_APO_Only__c,UHC_Hub_Carrum_Health_Cancer_Care__c,UHC_Hub_Carrum_Health_General__c,UHC_Hub_Carrum_Health_Surgical_Care__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Plus__c,
+                                        UHC_Hub_Carrum_Substance_Use_Treatment__c,UHC_Hub_Cylinder_GIThrive__c,UHC_Hub_Hazelden_Recovery_Coaching__c,UHC_Hub_Hazelden_Workplace_Portal__c,UHC_Hub_Hello_Heart__c,UHC_Hub_Hinge_Health_Virtual_PT__c,UHC_Hub_Lantern_Employer_Direct_Care__c,
+                                        UHC_Hub_LGC_A1c_Fingerstick_Add_On__c,UHC_Hub_LGC_A1C_HomeKit_Buy_Up__c,UHC_Hub_LGC_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_LGC_A1c_Venipuncture_Add_On__c,UHC_Hub_LGC_Body_Fat__c,UHC_Hub_LGC_Colon_Cancer_Screening_Plus__c,UHC_Hub_LGC_Colon_Cancer_Screening_Prog__c,UHC_Hub_LGC_Diabetes_A1c__c,
+                                        UHC_Hub_LGC_FIT_At_Home_Kit__c,UHC_Hub_LGC_Flu_Shots__c,UHC_Hub_LGC_Health_Prvdr_Screen_Form__c,UHC_Hub_LGC_Heart_Health__c,UHC_Hub_LGC_HPSF_Prov_Med_PAAF__c,UHC_Hub_LGC_KYNS_Full_Lipid_Fingerstick__c,UHC_Hub_LGC_KYNS_Full_Lpd_Venipuncture__c,UHC_Hub_LGC_KYNS_Partl_Lpd_Fingerstick__c,
+                                        UHC_Hub_LGC_Lab_Visit_Full_Lipid_Ven__c,UHC_Hub_LGC_Measure_Waist__c,UHC_Hub_LGC_Waist_Hip_Ratio__c,UHC_Hub_Noom_Dual_Access__c,UHC_Hub_Noom_Dual_Access_DPP__c,UHC_Hub_Noom_Mood__c,UHC_Hub_Noom_Weight__c,UHC_Hub_Noom_Weight_DPP__c,UHC_Hub_Quest_A1c_Fingerstick_Add_On__c,
+                                        UHC_Hub_Quest_A1C_HomeKit_Buy_Up__c,UHC_Hub_Quest_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_Quest_A1c_Venipuncture_Add_On__c,UHC_Hub_Quest_Bilingual_Translator__c,UHC_Hub_Quest_Body_Fat__c,UHC_Hub_Quest_Cotinine_Fingerstick_Add__c,
+                                        UHC_Hub_Quest_Cotinine_HomeKit_Buy_Up__c,UHC_Hub_Quest_Cotinine_Lab_Visit_Full__c,UHC_Hub_Quest_Cotinine_Venipuncture_Ad__c,UHC_Hub_Quest_Diabetes_A1c_Home_Kit__c,UHC_Hub_Quest_eGFR_Fingerstick_AddOn__c,UHC_Hub_Quest_eGFR_HomeKit_Buy_Up__c,
+                                        UHC_Hub_Quest_eGFR_Venipuncture_AddOn__c,UHC_Hub_Quest_eGFR_Visit_Add_On__c,UHC_Hub_Quest_Fax_to_Physician__c,UHC_Hub_Quest_Flu_Shots__c,UHC_Hub_Quest_Heart_Health_Home_Kit__c,UHC_Hub_Quest_Hlth_Prvdr_Screening_Form__c,UHC_Hub_Quest_HPSF_Prov_Med_PA__c,
+                                        UHC_Hub_Quest_KYN_Plus_Fingerstick__c,UHC_Hub_Quest_KYNS_Comprehensive__c,UHC_Hub_Quest_KYNS_Full_Lipid_Venipctr__c,UHC_Hub_Quest_KYNS_Full_Lpd_Fingerstick__c,UHC_Hub_Quest_KYNS_Partial_Lpd_Fingerst__c,UHC_Hub_Quest_Lab_Visit_Comp_Veni__c,
+                                        UHC_Hub_Quest_Lab_Visit_Full_Lipid_Veni__c,UHC_Hub_Quest_Measure_Waist__c,UHC_Hub_Quest_Privacy_Screens__c,UHC_Hub_Quest_PSA_Fingerstick_Add_On__c,UHC_Hub_Quest_Waist_Hip_Ratio__c,UHC_Hub_Teladoc_Advanced_Weight_Mgmt__c,UHC_Hub_Teladoc_Chronic_Mgmt_Plus_Bundl__c,
+                                        UHC_Hub_Teladoc_Diabetes_Mgmt_Plus_Bund__c,UHC_Hub_Teladoc_Diabetes_Mgmt_Standalon__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Stand__c,UHC_Hub_Teladoc_Prediabetes_Mgmt_Plus__c,UHC_Hub_Weight_Watchers__c,UHC_Hub_Wellthy__c,UHC_Hub_Wondr_Health__c 
                                           from Sold_Case_Checklist__c where Membership_Activity__c =: string.escapesinglequotes(recId) WITH USER_MODE LIMIT 1];
             
             
@@ -188,7 +199,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
             
             /* Fetching Medical Products - START */
             if(OppDatarec.Sales_Stage_Medical__c != 'Notified' && OppDatarec.Sales_Stage_Medical__c != 'Spin-Off' && OppDatarec.Sales_Stage_Medical__c != 'Transfer In/Out') {
-                List<OpportunityLineItem> mediopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,Buyup_Product_Selection__c,
+                List<OpportunityLineItem> mediopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,Buyup_Product_Selection__c,Product2.Surest_Implementation_Lead_Time__c,
                                                             Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,MNRP__c,MNRP_DME__c,MNRP_Lab__c,MNRP_Default_of_Billed_Charges__c,
                                                             Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
                                                             MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c,
@@ -213,7 +224,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
                 system.debug('mediopplineitem if '+mediopplineitem);
             } 
             else if((OppDatarec.Sales_Stage_Medical__c == 'Notified' && OppDatarec.Disposition_Medical__c == 'Sold' )|| (OppDatarec.Sales_Stage_Medical__c == 'Spin-Off' && OppDatarec.Disposition_Medical__c == 'Spin-Off') || (OppDatarec.Sales_Stage_Medical__c == 'Transfer In/Out' && OppDatarec.Disposition_Medical__c == 'Transfer In')) {
-                List<OpportunityLineItem> mediopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product2.Surest_Applicable_Products__c,Product_Line__c,
+                List<OpportunityLineItem> mediopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product2.Surest_Applicable_Products__c,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
                                                             Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,MNRP__c,MNRP_DME__c,MNRP_Lab__c,MNRP_Default_of_Billed_Charges__c,
                                                             Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
                                                             MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,Opportunity.RecordTypeId,Buyup_Product_Selection__c,Opportunity.Disposition_Pharmacy__c,
@@ -257,7 +268,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
             
             /* Fetching Dental Products - START */
             if(OppDatarec.Sales_Stage_Dental__c != 'Notified' && OppDatarec.Sales_Stage_Dental__c != 'Spin-Off' && OppDatarec.Sales_Stage_Dental__c != 'Transfer In/Out') {
-                List<OpportunityLineItem> dentalopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product2.Surest_Applicable_Products__c,Product_Line__c,
+                List<OpportunityLineItem> dentalopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product2.Surest_Applicable_Products__c,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
                                                              Buyup_Product_Selection__c, Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem 
                                                               where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Dental' and Opportunity.Disposition_Dental__c !='Dead Pending Transfer' and Opportunity.Disposition_Dental__c!='Dead Spin-Off' WITH USER_MODE];
                 
@@ -290,7 +301,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
                 oppwrapper.isSurestSoldDental = isSurestSoldDental;
                
             } else if((OppDatarec.Sales_Stage_Dental__c == 'Notified' && OppDatarec.Disposition_Dental__c == 'Sold')|| (OppDatarec.Sales_Stage_Dental__c == 'Spin-Off' && OppDatarec.Disposition_Dental__c == 'Spin-Off') || (OppDatarec.Sales_Stage_Dental__c == 'Transfer In/Out' && OppDatarec.Disposition_Dental__c == 'Transfer In')) { 
-                List<OpportunityLineItem> dentalopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,
+                List<OpportunityLineItem> dentalopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
                                                               Disposition_Other_Buy_Up_Programs__c,Buyup_Product_Selection__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Dental' and ((Opportunity.Disposition_Dental__c = 'Sold' and Sold_Retained_Members__c!=0) Or Opportunity.Disposition_Dental__c = 'Transfer In' or Opportunity.Disposition_Dental__c = 'Spin-Off')  WITH USER_MODE];
                 
                 oppwrapper.dentallineitem = dentalopplineitem;
@@ -327,7 +338,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
             
             /* Fetching Vision Products - START */
             if(OppDatarec.Sales_Stage_Vision__c != 'Notified' && OppDatarec.Sales_Stage_Vision__c != 'Spin-Off' && OppDatarec.Sales_Stage_Vision__c != 'Transfer In/Out') {
-                List<OpportunityLineItem> visionOpplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,
+                List<OpportunityLineItem> visionOpplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
                                                               Disposition_Other_Buy_Up_Programs__c,Buyup_Product_Selection__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem 
                                                               where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Vision' and Opportunity.Disposition_Vision__c !='Dead Pending Transfer' and Opportunity.Disposition_Vision__c!='Dead Spin-Off' WITH USER_MODE];
                 
@@ -359,7 +370,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
                 oppwrapper.isTradSoldVision = isTradSoldVision;
                 oppwrapper.isSurestSoldVision = isSurestSoldVision;
             } else if((OppDatarec.Sales_Stage_Vision__c == 'Notified' && OppDatarec.Disposition_Vision__c == 'Sold')|| (OppDatarec.Sales_Stage_Vision__c == 'Spin-Off' && OppDatarec.Disposition_Vision__c == 'Spin-Off') || (OppDatarec.Sales_Stage_Vision__c == 'Transfer In/Out' && OppDatarec.Disposition_Vision__c == 'Transfer In')) {
-                List<OpportunityLineItem> visionOpplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,
+                List<OpportunityLineItem> visionOpplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
                                                               Disposition_Other_Buy_Up_Programs__c,Buyup_Product_Selection__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Vision' and ((Opportunity.Disposition_Vision__c = 'Sold' and Sold_Retained_Members__c!=0) Or Opportunity.Disposition_Vision__c = 'Transfer In' or Opportunity.Disposition_Vision__c = 'Spin-Off')  WITH USER_MODE];
                 
                 oppwrapper.visionlineitem = visionOpplineitem;
@@ -396,7 +407,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
             
             /* Fetching Pharmacy Products - START */
             if(OppDatarec.Sales_Stage_Pharmacy__c != 'Notified' && OppDatarec.Sales_Stage_Pharmacy__c != 'Spin-Off' && OppDatarec.Sales_Stage_Pharmacy__c != 'Transfer In/Out') {
-                List<OpportunityLineItem> pharmacyitem =[select id,Pharmacy_Carve_Out_DropDown__c,Level_2_Option__c,Level2_Info__c,ProductCode,toLabel(Product2.Level_2_Options__c),Product2.Family,Product2.Name,Product_Line__c,Product2.Product_Display_Order__c,Product2.Surest_Applicable_Products__c,
+                List<OpportunityLineItem> pharmacyitem =[select id,Pharmacy_Carve_Out_DropDown__c,Level_2_Option__c,Level2_Info__c,ProductCode,toLabel(Product2.Level_2_Options__c),Product2.Family,Product2.Name,Product_Line__c,Product2.Product_Display_Order__c,Product2.Surest_Applicable_Products__c,Product2.Surest_Implementation_Lead_Time__c,
                                                          Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c, ESP_Enhanced_Savings_Program_Opt_in__c, Vital_Medication_program_Opt_in_Opt_out__c, Price_Edge_Opt_in__c,Buyup_Product_Selection__c,
                                                          If_Fully_Insured_include_quoted_Rx_plan__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem 
                                                          where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Pharmacy' and Opportunity.Disposition_Pharmacy__c !='Dead Pending Transfer' and Opportunity.Disposition_Pharmacy__c!='Dead Spin-Off' WITH USER_MODE ORDER BY Product2.Product_Display_Order__c];
@@ -412,7 +423,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
                 }
                
             } else if((OppDatarec.Sales_Stage_Pharmacy__c == 'Notified' && OppDatarec.Disposition_Pharmacy__c == 'Sold')|| (OppDatarec.Sales_Stage_Pharmacy__c == 'Spin-Off' && OppDatarec.Disposition_Pharmacy__c == 'Spin-Off') || (OppDatarec.Sales_Stage_Pharmacy__c == 'Transfer In/Out' && OppDatarec.Disposition_Pharmacy__c == 'Transfer In')) {
-                List<OpportunityLineItem> pharmacyitem =[select id,Pharmacy_Carve_Out_DropDown__c,Level_2_Option__c,Level2_Info__c,ProductCode,toLabel(Product2.Level_2_Options__c),Product2.Family,Product2.Name,Product_Line__c,Product2.Product_Display_Order__c,Product2.Surest_Applicable_Products__c,
+                List<OpportunityLineItem> pharmacyitem =[select id,Pharmacy_Carve_Out_DropDown__c,Level_2_Option__c,Level2_Info__c,ProductCode,toLabel(Product2.Level_2_Options__c),Product2.Family,Product2.Name,Product_Line__c,Product2.Product_Display_Order__c,Product2.Surest_Applicable_Products__c,Product2.Surest_Implementation_Lead_Time__c,
                                                          Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c, ESP_Enhanced_Savings_Program_Opt_in__c, Vital_Medication_program_Opt_in_Opt_out__c, Price_Edge_Opt_in__c,Buyup_Product_Selection__c,
                                                          If_Fully_Insured_include_quoted_Rx_plan__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Pharmacy' and ((Opportunity.Disposition_Pharmacy__c = 'Sold' and Sold_Retained_Members__c!=0) Or Opportunity.Disposition_Pharmacy__c = 'Transfer In' or Opportunity.Disposition_Pharmacy__c = 'Spin-Off')  WITH USER_MODE ORDER BY Product2.Product_Display_Order__c];
                 
@@ -451,7 +462,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
             
             /* Fetching Other Products - START */
             if(OppDatarec.Sales_Stage_Other__c != 'Notified' && OppDatarec.Sales_Stage_Other__c != 'Spin-Off' && OppDatarec.Sales_Stage_Other__c != 'Transfer In/Out') {
-                OtherOpplineitemlist =[select id,Level_2_Option__c,Buyup_Product_Selection__c,ProductCode,toLabel(Product2.Level_2_Options__c),Level2_Info__c,Product2.Family,Product2.Name,Product_Line__c,
+                OtherOpplineitemlist =[select id,Level_2_Option__c,Buyup_Product_Selection__c,ProductCode,toLabel(Product2.Level_2_Options__c),Level2_Info__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
                                        Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Decision_Support__c,Maternity_Support__c,
                                        Congenital_Heart_Disease__c,Transplant_TRS_COE__c,Non_Extra_Contractual_Transplant__c,HealtheNote_Reminders__c,Physical_Health_Network__c,Physical_Health_Chiro_Clinical_Support__c,
                                        Asthma_VOM__c,Diabetes_VOM__c,Congestive_Heart_Failure_VOM__c,CAD_VOM__c,COPD_VOM__c,Cancer_Support_Program_VOM__c,Kidney_Solutions_VOM__c,
@@ -459,14 +470,18 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
                                        Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
                                        MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,
                                        MNRP_Lab_Nonstd_Percentage__c,MNRP_Default_Nonstd_Percentage__c,Physician_R_C_OON__c,Physician_R_C_OON_Percentage__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c,Flex_WriteIn__c,Flex_Options__c from OpportunityLineItem 
-                                       where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c ='Other' and Disposition_Other_Buy_Up_Programs__c !='Dead Pending Transfer' and Disposition_Other_Buy_Up_Programs__c!='Dead Spin-Off' and Disposition_Other_Buy_Up_Programs__c!='Transfer Out' WITH USER_MODE];
-                
+                                       where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c ='Other' and Disposition_Other_Buy_Up_Programs__c !='Dead Pending Transfer' and Disposition_Other_Buy_Up_Programs__c!='Dead Spin-Off' and Disposition_Other_Buy_Up_Programs__c!='Transfer Out' AND (NOT(product2.Family = 'Specialty Products' AND (Disposition_Other_Buy_Up_Programs__c != 'Sold' AND Disposition_Other_Buy_Up_Programs__c != 'Spin-Off' AND Disposition_Other_Buy_Up_Programs__c != 'Transfer In' AND Disposition_Other_Buy_Up_Programs__c != 'TBD (New Clients Only)' AND (Disposition_Other_Buy_Up_Programs__c != null OR Disposition_Other_Buy_Up_Programs__c != '')) )) WITH USER_MODE];
+                //Specialty Spilt-up Changes - updated Above Query for Specialty Products
                 oppwrapper.otheropplineitems = OtherOpplineitemlist;
                 OpplineItemList.addALL(oppwrapper.otheropplineitems);
                 oppwrapper.otherProductsStatus = 'TBD';
                 Boolean isTradSoldOther = false;
                 Boolean isSurestSoldOther = false;
                 for (OpportunityLineItem item : OtherOpplineitemlist) {
+                    //Specialty Spilt-up Changes
+                    if(item.Product2.Family == 'Specialty Products' && (item.Disposition_Other_Buy_Up_Programs__c =='Sold' || item.Disposition_Other_Buy_Up_Programs__c =='Transfer In' || item.Disposition_Other_Buy_Up_Programs__c =='Spin-Off' )){
+                        oppwrapper.otherProductsStatus = 'Sold';
+                    }//END
                     if (item.Buyup_Product_Selection__c == 'Surest & UNET') {
                         isTradSoldOther = true;
                         isSurestSoldOther = true;
@@ -484,7 +499,7 @@ oppwrapper.providePlanCodeList = providePlanCodeList;*/
                 oppwrapper.isSurestSoldOther = isSurestSoldOther;
             } 
             else if(OppDatarec.Sales_Stage_Other__c == 'Notified' || OppDatarec.Sales_Stage_Other__c == 'Spin-Off'  || OppDatarec.Sales_Stage_Other__c == 'Transfer In/Out' ) {
-                OtherOpplineitemlist =[select id,Level_2_Option__c,Buyup_Product_Selection__c,ProductCode,toLabel(Product2.Level_2_Options__c),Level2_Info__c,Product2.Family,Product2.Name,Product_Line__c,
+                OtherOpplineitemlist =[select id,Level_2_Option__c,Buyup_Product_Selection__c,ProductCode,toLabel(Product2.Level_2_Options__c),Level2_Info__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
                                        Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Decision_Support__c,Maternity_Support__c,
                                        Congenital_Heart_Disease__c,Transplant_TRS_COE__c,Non_Extra_Contractual_Transplant__c,HealtheNote_Reminders__c,Physical_Health_Network__c,Physical_Health_Chiro_Clinical_Support__c,
                                        Asthma_VOM__c,Diabetes_VOM__c,Congestive_Heart_Failure_VOM__c,CAD_VOM__c,COPD_VOM__c,Cancer_Support_Program_VOM__c,Kidney_Solutions_VOM__c,
@@ -1070,7 +1085,7 @@ system.debug('auditTrailListToInsert '+auditTrailListToInsert);*/
 
     @AuraEnabled(cacheable=true)
     public static List<Product2> getOtherBuyUpProducts() {
-        List<Product2> productList = [SELECT Id,Name,Surest_Applicable_Products__c,ProductCode,Product_Category__c,Product_Line__c FROM Product2 where Surest_Applicable_Products__c = 'Available for Surest only with UNET' WITH USER_MODE];
+        List<Product2> productList = [SELECT Id,Name,Surest_Applicable_Products__c,ProductCode,Product_Category__c,Product_Line__c,Surest_Implementation_Lead_Time__c FROM Product2 WITH USER_MODE];
         
         return productList;
     }

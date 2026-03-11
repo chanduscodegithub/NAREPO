@@ -3078,10 +3078,9 @@ ENRP Default Percentage of Billed Charges
                 </table>
             </apex:outputPanel>            
             
-            <apex:outputPanel layout="none" rendered="{!isSurestProductMed}">
+            <!-- <apex:outputPanel layout="none" rendered="{!isSurestProductMed}">
                 
                 <table cellspacing="0" cellpadding="0" class="detailTable">
-                    <!----------------------------- Base Program------------------------------------------------------>
                     <tr>
                         <td align="left" colspan="2" style="font-weight:bold;border:1px solid #000;color:#fff;background: #4F81BD;padding-left:15px;" >
                             Base Programs - Surest
@@ -3133,9 +3132,7 @@ ENRP Default Percentage of Billed Charges
                         <td align="left" style="border:1px solid #000;padding-left:35px;border-right:0;" >
                             <b><span>Optum programs:</span></b>
                         </td>
-                        <td align="right" style="border:1px solid #000;border-left:0">
-                            <!-- {!soldCaseDetails.sccData.Optum_Transplant_Resource_Services__c	} -->
-                            
+                        <td align="right" style="border:1px solid #000;border-left:0">                            
                             
                         </td>
                     </tr>
@@ -3189,21 +3186,22 @@ ENRP Default Percentage of Billed Charges
                             </td>
                         </tr>
                     </apex:variable>
-                    <!--------------------------------Base Program Ends here-------------------------------------------->
                 </table>
-            </apex:outputPanel>            
+            </apex:outputPanel>             -->
             <br/><br/>
 
             <apex:outputPanel layout="none" rendered="{!showCPWSection}">
-                <table  cellspacing="0" cellpadding="0" class="detailTable" style="width:100%;" >
+                <table  cellspacing="0" cellpadding="0" class="detailTable" style="width:100%;table-layout:fixed;" >
                     <tr>
-                        <td colspan="3" style="color:#fff;background: #4F81BD;padding: 5px;font-weight: bold;font-size: 16px;border:1px solid #000;">
-                            Clinical Programs - Surest
+                        <td colspan="5" style="color:#fff;background: #4F81BD;padding: 5px;font-weight: bold;font-size: 16px;border:1px solid #000;">
+                            Surest Sold Case Checklist
                         </td>
                     </tr>
                     <tr >
-                        <td align="left" style="border:1px solid #000;padding-left:10px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:10px;border-right:0;" colspan="2" >
                             <b><span>Account Information:</span></b>
+                        </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                         </td>
@@ -3212,11 +3210,13 @@ ENRP Default Percentage of Billed Charges
                     </tr>
                     <apex:variable rendered="true" value="" var="tempOuter">
                         <tr>
-                            <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                            <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                                 Policy Number
                             </td>
                             <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                            <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                             <td align="right" style="border:1px solid #000;border-left:0">
                                 {!IF(ISBLANK(policyNumbersSurest), '', policyNumbersSurest)}
                             </td>
@@ -3224,69 +3224,58 @@ ENRP Default Percentage of Billed Charges
                     </apex:variable>
                     <apex:variable rendered="true" value="" var="tempOuter">
                         <tr>
-                            <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                            <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                                 <span>Policy Name</span>
                             </td>
                             <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                            <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                             <td align="right" style="border:1px solid #000;border-left:0">
                                 {!IF(ISBLANK(policyNamesSurest), '', policyNamesSurest)}
                             </td>
                         </tr>
                     </apex:variable>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;width:50%;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;width:50%;" colspan="2">
                             <span>Pharmacy Benefit Administrator Name</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0;word-break:break-all;width:50%;">
                             <span>{!soldCaseDetails.sccData.Pharmacy_Benefit_Administrator_Name__c}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;width:50%;" >
-                            <span>Pharmacy Benefit Administrator Phone #</span>
-                        </td>
-                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
-                            </td>
-                        <td align="right" style="border:1px solid #000;border-left:0;word-break:break-all;width:50%;">
-                            {!soldCaseDetails.sccData.Pharmacy_Benefit_Administrator_Phone__c}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;word-break:break-all;width:50%;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;word-break:break-all;width:50%;" colspan="2">
                             <span>Employee Assistance Program Name</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0;word-break:break-all;width:50%;">
                             {!soldCaseDetails.sccData.Employee_Assistance_Program_Name__c}
                         </td>
                     </tr>
-                    <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;word-break:break-all;width:50%;" >
-                            <span>Employee Assistance Program Phone #</span>
-                        </td>
-                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
-                            </td>
-                        <td align="right" style="border:1px solid #000;border-left:0;word-break:break-all;width:50%;">
-                            {!soldCaseDetails.sccData.Employee_Assistance_Program_Phone__c}
-                        </td>
-                    </tr>
-
                     <tr >
-                        <td align="left" style="border:1px solid #000;padding-left:10px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:10px;border-right:0;" colspan="2">
                             <b><span>Standard Clinical Offering:</span></b>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                             <span>Transplant Resource Services</span>
+                        </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
@@ -3295,99 +3284,145 @@ ENRP Default Percentage of Billed Charges
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                             <span>Utilization Management</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
                             {!soldCaseDetails.sccData.Utilization_Management__c}
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                             <span>Specialty Guidance Program</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
                             {!soldCaseDetails.sccData.Specialty_Guidance_Program_CPSurest__c}
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                             <span>Cancer Guidance Program</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
                             {!soldCaseDetails.sccData.Cancer_Guidance_Program_CPSurest__c}
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                             <span>Behavioral Health Utilization Management, ABA UM</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
                             {!soldCaseDetails.sccData.BHU_Management_ABA_UM__c}
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                             <span>Surest Case Management (CM)</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
                             {!soldCaseDetails.sccData.Surest_Case_Management_CM_CPSurest__c}
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                             <span>Optum Behavioral Network</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
                             {!soldCaseDetails.sccData.Optum_Behavioral_Network__c}
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
                             <span>Optum Physical Health Network</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
                             {!soldCaseDetails.sccData.Optum_Physical_Health_Network__c}
                         </td>
                     </tr>
-                    <tr >
-                        <td align="left" style="border:1px solid #000;padding-left:10px;border-right:0;" >
-                            <b><span>Optional Programs:</span></b>
+                    <tr>
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
+                            <span>Standard Communications</span>
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                             </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
+                            Yes
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;" colspan="2">
+                            <span>Surest Member Services and Surest Clinical Advocacy</span>
+                        </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                            </td>
+                        <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
+                        </td>
+                        <td align="right" style="border:1px solid #000;border-left:0">
+                            Yes
+                        </td>
+                    </tr>
+                    <tr >
+                        <td align="left" style="border:1px solid #000;padding-left:10px;width:50%;" colspan="2">
+                            <b><span>Optional Programs:                 </span></b>
+                        </td>
+                        <td align="left" style="border:1px solid #000;width:16%;">
+                            <b><span>PIM Implementation Lead Time</span></b>
+                        </td>
+                        
+                        <td align="left" style="border:1px solid #000;width:16%;">
+                             <b><span>Dual Indicator</span></b>
+                        </td>
+                        <td align="left" style="border:1px solid #000;width:18%;">
+                             <b><span>Validation</span></b>
                         </td>
                     </tr>
                     <apex:repeat value="{!surestFields}" var="field">
                         <tr>
-                            <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0;">
+                            <td align="left" style="border:1px solid #000;padding-left:20px;width:50%;" colspan="2">
                                 <span>{!field.fieldLabel}</span>
                             </td>
-
-                            <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
-                                <apex:outputText rendered="{!field.isDual}" escape="false" value="&nbsp;&nbsp;&nbsp;Dual" />
+                            <td align="left" style="border:1px solid #000;width:16%;">
+                                <apex:outputText value="{!field.productValue}" />
+                            </td>
+                            <td align="left" style="border:1px solid #000;width:16%;">
+                                <apex:outputText rendered="{!field.isDual}" escape="false" value="Dual Product (Surest with UNET only)" />
                             </td>
 
-                            <td align="right" style="border:1px solid #000;border-left:0;">
+                            <td align="left" style="border:1px solid #000;width:18%;">
                                 <apex:outputPanel rendered="{!field.fieldApiName == 'One_Pass_Select__c'}">
                                     {!soldCaseDetails.sccData.One_Pass_Select__c}
                                     <apex:outputText rendered="{!NOT(ISBLANK(soldCaseDetails.sccData.One_Pass_Subsidized__c))}">
-                                        &nbsp;&nbsp;&nbsp;{!soldCaseDetails.sccData.One_Pass_Subsidized__c}
+                                        &nbsp;{!soldCaseDetails.sccData.One_Pass_Subsidized__c}
                                     </apex:outputText>
                                 </apex:outputPanel>
                                 <apex:outputPanel rendered="{!field.fieldApiName != 'One_Pass_Select__c'}">
@@ -4243,7 +4278,7 @@ ENRP Default Percentage of Billed Charges
                     </apex:outputPanel>
                     <apex:outputPanel layout="none" rendered="{!isDetanalSold}">
                     <tr >
-                        <td align="left" width="30%" colspan="2" style="border:1px solid #000;font-weight:bold;padding-left: 15px;" >
+                        <td align="left" width="30%" colspan="2" style="border:1px solid #000;font-weight:bold;padding-left: 15px;padding-right: 35px;" >
                             Specialty Integration Guarantees
                         </td>
                         
@@ -4261,7 +4296,7 @@ ENRP Default Percentage of Billed Charges
                     </apex:outputPanel>
                         <apex:outputPanel layout="none" rendered="{!IF(AND(otherProductsStatus,isOtherSold),true,false)}">
                             <tr >
-                                <td align="left" width="30%" colspan="2" style="border:1px solid #000;font-weight:bold;padding-left: 15px;" >
+                                <td align="left" width="30%" colspan="2" style="border:1px solid #000;font-weight:bold;padding-left: 15px;padding-right: 35px;" >
                                     Specialty Integration Guarantees
                                 </td>
                                 
@@ -4279,7 +4314,7 @@ ENRP Default Percentage of Billed Charges
                         </apex:outputPanel>
                         <apex:outputPanel layout="none" rendered="{!isVisionSold}">
                             <tr >
-                                <td align="left" width="30%" colspan="2" style="border:1px solid #000;font-weight:bold;padding-left: 15px;" >
+                                <td align="left" width="30%" colspan="2" style="border:1px solid #000;font-weight:bold;padding-left: 15px;padding-right: 35px;" >
                                     Specialty Integration Guarantees
                                 </td>
                                 

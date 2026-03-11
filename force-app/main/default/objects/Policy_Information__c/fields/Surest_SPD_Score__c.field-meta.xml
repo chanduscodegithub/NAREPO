@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Surest_SPD_Score__c</fullName>
+    <externalId>false</externalId>
+    <formula>(
+    IF(
+        Surest_SPD__c = 0, 0,
+        IF(
+            Surest_SPD__c = 1, 1,
+            IF(
+                Surest_SPD__c &lt;= 5, 2,
+                IF(
+                    Surest_SPD__c &lt;= 15, 3,
+                    4
+                )
+            )
+        )
+    )
+) * 0.15</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Surest SPD Score</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

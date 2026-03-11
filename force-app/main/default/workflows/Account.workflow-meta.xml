@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <alerts>
+        <fullName>Email_Alert_For_CVG_Association_Field_Update</fullName>
+        <description>Email Alert For CVG Association Field Update</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>automatedprocess@uhg.na</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>unfiled$public/CVG_Association_field_update</template>
+    </alerts>
+    <alerts>
+        <fullName>New_Account_Creation_Email_Notification</fullName>
+        <ccEmails>merit@uhc.com</ccEmails>
+        <description>New Account Creation Email Notification</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>automatedprocess@uhg.na</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>UHGEmailTemplates/AccountCreationEmailNotification</template>
+    </alerts>
+    <alerts>
+        <fullName>Primary_Incumbent_Change_Notification</fullName>
+        <ccEmails>merit@uhc.com</ccEmails>
+        <description>Primary Incumbent Change Notification</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>patricia.scholer@uhc.com.na</recipient>
+            <type>user</type>
+        </recipients>
+        <recipients>
+            <recipient>susan.valentine@uhc.com.na</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>unfiled$public/Primary_Incumbent_Field_Change_Notifications</template>
+    </alerts>
+    <alerts>
+        <fullName>When_account_changed_to_Existing_Customer_from_CM_by_Non_Admin_user</fullName>
+        <description>When account changed to Existing Customer from CD by Non Admin user</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>automatedprocess@uhg.na</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>UHGEmailTemplates/Type_Changed_to_Existing_Customer_Notification</template>
+    </alerts>
+    <alerts>
+        <fullName>When_the_Account_Name_Change</fullName>
+        <description>When the Account Name Change</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>automatedprocess@uhg.na</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>UHGEmailTemplates/Account_Name_Change</template>
+    </alerts>
+    <fieldUpdates>
+        <fullName>CVG_Association_backend_field_update</fullName>
+        <description>Based on case 1510</description>
+        <field>CVGBackendFieldforSharing__c</field>
+        <formula>CVGAccount__r.Name</formula>
+        <name>CVG Association backend field update</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Duplicate_CF_name_field_update</fullName>
+        <description>This action is used to update &quot;Duplicate CF name&quot; field with the default name</description>
+        <field>DuplicateCFname__c</field>
+        <formula>Name</formula>
+        <name>Duplicate CF name field update</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Reference_ST_filed_update</fullName>
+        <description>Reference ST field update with Client reference status</description>
+        <field>Reference_ST__c</field>
+        <formula>Text(Client_Reference_Status__c)</formula>
+        <name>Reference ST filed update</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Total_Ees_update_with_Worldwide_EE_s</fullName>
+        <description>Update Total Ees with world wide EE&apos;s</description>
+        <field>Total_Ees__c</field>
+        <formula>Worldwide_EEs__c</formula>
+        <name>Total Ees update with Worldwide EE&apos;s</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Sub_Type</fullName>
+        <field>Subtype__c</field>
+        <literalValue>Sold Client</literalValue>
+        <name>Update Sub Type</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>true</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>Account %22Duplicate CF name%22 Default value</fullName>
+        <actions>
+            <name>Duplicate_CF_name_field_update</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Account.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Consulting Firm</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Account.DuplicateCFname__c</field>
+            <operation>equals</operation>
+        </criteriaItems>
+        <description>Account &quot;Duplicate CF name&quot; default value</description>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+    <rules>
+        <fullName>Account %22Reference ST%22 Default Value</fullName>
+        <actions>
+            <name>Reference_ST_filed_update</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <criteriaItems>
+            <field>Account.Client_Reference_Status__c</field>
+            <operation>notEqual</operation>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Account.Reference_ST__c</field>
+            <operation>equals</operation>
+        </criteriaItems>
+        <description>Reference ST field default value</description>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+    <rules>
+        <fullName>Account %22Total Ees%22 field update</fullName>
+        <actions>
+            <name>Total_Ees_update_with_Worldwide_EE_s</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Account.Worldwide_EEs__c</field>
+            <operation>notEqual</operation>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Account.Total_Ees__c</field>
+            <operation>equals</operation>
+        </criteriaItems>
+        <description>Total Ees field to be updated with</description>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+    <rules>
+        <fullName>CVG Association backend field update</fullName>
+        <actions>
+            <name>CVG_Association_backend_field_update</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>Based on case 1510, this updates CVG back end field for CVG lookup field</description>
+        <formula>NOT(ISBLANK(CVGAccount__c)) || ISCHANGED(CVGAccount__c)</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>CVG Association update</fullName>
+        <actions>
+            <name>Email_Alert_For_CVG_Association_Field_Update</name>
+            <type>Alert</type>
+        </actions>
+        <active>false</active>
+        <formula>AND(OR(RecordType.Name = &apos;Pending Transfer In Client&apos;, RecordType.Name = &apos;Client Subsidiary&apos;, RecordType.Name = &apos;Existing Client&apos;, RecordType.Name = &apos;Sold Client&apos;), ISCHANGED(CVGAccount__c))</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>Update Business Line</fullName>
+        <actions>
+            <name>Update_Sub_Type</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Account.Type</field>
+            <operation>equals</operation>
+            <value>Sold Client</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+</Workflow>

@@ -879,7 +879,7 @@
                 <tr class="page-break">
                     <td scope="col">
                         <p>
-                            Client Specific Programs (HelloHeart, Kindbody, EdisonHealth, etc) that need to be featured in Surest app?
+                            Client Specific Programs that need to featured in Surest App (not already included on the CPW form)
                         </p>
                     </td>
                     <td scope="col" class="cell-padding">{!vfPrintData.renewalCheckListData[0].Client_Specific_Programs__c}</td>
@@ -902,7 +902,7 @@
 
     <apex:outputPanel rendered="{!showCPWSection}">
         <div class="sub-heading page-break">
-            Clinical Programs - Surest
+            Surest Product Change Checklist
         </div>
         <br/>
         <div>
@@ -930,16 +930,8 @@
                     <td scope="col">{!vfPrintData.renewalCheckListData[0].Pharmacy_Benefit_Administrator_Name__c}</td>
                 </tr>
                 <tr>
-                    <td scope="col">Pharmacy Benefit Administrator Phone #</td>
-                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Pharmacy_Benefit_Administrator_Phone__c}</td>
-                </tr>
-                <tr>
                     <td scope="col">Employee Assistance Program Name</td>
                     <td scope="col">{!vfPrintData.renewalCheckListData[0].Employee_Assistance_Program_Name__c}</td>
-                </tr>
-                <tr>
-                    <td scope="col">Employee Assistance Program Phone #</td>
-                    <td scope="col">{!vfPrintData.renewalCheckListData[0].Employee_Assistance_Program_Phone__c}</td>
                 </tr>
                 </tbody>
                 </table>
@@ -987,33 +979,73 @@
                     <td scope="col">Optum Physical Health Network</td>
                     <td scope="col">{!vfPrintData.renewalCheckListData[0].Optum_Physical_Health_Network__c}</td>
                 </tr>
+                <tr>
+                    <td scope="col">Standard Communications</td>
+                    <td scope="col">Yes</td>
+                </tr>
+                <tr>
+                    <td scope="col">Surest Member Services and Surest Clinical Advocacy</td>
+                    <td scope="col">Yes</td>
+                </tr>
                 </tbody>
                 </table>
-                <div class="page-break">
+               <!-- <div class="page-break">
                     <p style="margin-bottom:1%;">
                         <b>Optional Programs:</b>
                     </p>
-                </div>
+                </div> -->
                 <table style="width:100%" cellpadding="10" cellspacing="0" border="1" width="100%" >
                     <colgroup>
-                        <col style = "width:70%;height:30px;"/>
+                        <col style = "width:40%;height:30px;"/>
+                        <col style = "width:15%;height:30px;"/>
+                        <col style = "width:15%;height:30px;"/>
                         <col style = "width:15%;height:30px;"/>
                         <col style = "width:15%;height:30px;"/>
                     </colgroup>
+                 <thead>
+                     <tr class="page-break" style="background:#f6f4f4;">
+                         <th scope="col">
+                             Optional Programs:
+                         </th>
+                         <th scope="col" class="right-allign">
+                             PIM Implementation Lead Time
+                         </th>
+                         <th scope="col" class="right-allign">
+                             Dual Indicator
+                         </th>
+                         <th scope="col" class="right-allign">
+                             Last Year's Validation
+                         </th>
+                         <th scope="col" class="right-allign">
+                             Next Year's Validation
+                         </th>
+                     </tr>
+                    </thead>
                 <tbody>
                 <apex:repeat value="{!surestFields}" var="field">
                     <tr>
                         <td scope="col">{!field.fieldLabel}</td>
+                        <td scope="col" class="right-allign">{!field.productValue}</td>
 
-                        <td scope="col" style="padding-left:10px;">
-                            <apex:outputText rendered="{!field.isDual}" value="Dual" />
+                        <td scope="col" style="padding-left:10px;" class="right-allign">
+                            <apex:outputText rendered="{!field.isDual}" value="Dual Product (Surest with UNET only)" />
                         </td>
-
-                        <td scope="col">
+						<td scope="col" class="right-allign">
+                            <apex:outputPanel rendered="{!field.fieldApiName == 'One_Pass_Select__c'}">
+                                {!vfPrintData.lastYearChecklist[0].One_Pass_Select__c}
+                                <apex:outputText rendered="{!NOT(ISBLANK(vfPrintData.lastYearChecklist[0].One_Pass_Subsidized__c))}">
+                                    &nbsp;{!vfPrintData.lastYearChecklist[0].One_Pass_Subsidized__c}
+                                </apex:outputText>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!field.fieldApiName != 'One_Pass_Select__c'}">
+                                <apex:outputText value="{!vfPrintData.lastYearChecklist[0][field.fieldApiName]}" />
+                            </apex:outputPanel>
+                        </td>
+                        <td scope="col" class="right-allign">
                             <apex:outputPanel rendered="{!field.fieldApiName == 'One_Pass_Select__c'}">
                                 {!vfPrintData.renewalCheckListData[0].One_Pass_Select__c}
                                 <apex:outputText rendered="{!NOT(ISBLANK(vfPrintData.renewalCheckListData[0].One_Pass_Subsidized__c))}">
-                                    &nbsp;&nbsp;&nbsp;{!vfPrintData.renewalCheckListData[0].One_Pass_Subsidized__c}
+                                    &nbsp;{!vfPrintData.renewalCheckListData[0].One_Pass_Subsidized__c}
                                 </apex:outputText>
                             </apex:outputPanel>
                             <apex:outputPanel rendered="{!field.fieldApiName != 'One_Pass_Select__c'}">

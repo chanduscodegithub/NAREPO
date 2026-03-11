@@ -14,7 +14,7 @@ global without sharing class CapacityPlan_RollupToSaff implements Database.Batch
     
     global Database.QueryLocator start(Database.BatchableContext bc) {
         return Database.getQueryLocator(
-            'Select Name, CM_BOB_Weighting__c, CM_BOB_Weighting_Outlier__c, IPM_BOB_Case_FTE__c, Staff_Name__r.Current_Weighting1__c,(select Id,Name ,Medical_Policy_Number__c,Medical_Policy_Number__r.Policy_Status__c,CM_BOB_FTE_Based_on_Adj_Case_FTE1__c ,CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c,Assignment_Type__c, Case_FTE_s__c,End_Date__c from Staffing_Information__r) From Staff__c'
+            'Select Name, CM_BOB_Weighting__c, CM_BOB_Weighting_Outlier__c,Staff_Name__r.Current_Weighting1__c,(select Id,Name ,Medical_Policy_Number__c,Medical_Policy_Number__r.Policy_Status__c,CM_BOB_FTE_Based_on_Adj_Case_FTE1__c ,CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c,End_Date__c from Staffing_Information__r) From Staff__c'
         );
     }
     global void execute(Database.BatchableContext bc, List<Staff__c> scope){
@@ -22,7 +22,6 @@ global without sharing class CapacityPlan_RollupToSaff implements Database.Batch
         for(Staff__c st : scope){
             Decimal normal = 0.0;
             Decimal outliner = 0.0;
-            Decimal totalCaseFTE = 0.0;
             for(Staff_Assignment__c sa : st.Staffing_Information__r){
                 
                 if(sa.End_Date__c == null || sa.End_Date__c >= System.today()){
@@ -50,9 +49,6 @@ global without sharing class CapacityPlan_RollupToSaff implements Database.Batch
                             outliner+=tempOutliner;
                         }
                     } 
-                     if (sa.Assignment_Type__c != null) {
-                        totalCaseFTE += sa.Case_FTE_s__c != null ? sa.Case_FTE_s__c : 0;
-                    }
                 }
             }
             /**
@@ -65,10 +61,8 @@ global without sharing class CapacityPlan_RollupToSaff implements Database.Batch
             system.debug('normal=='+normal);
             system.debug('outliner=='+outliner);
             
-            Decimal fteRounded = normal.setScale(2,RoundingMode.HALF_UP);
-            Decimal fteoutlieRounded = outliner.setScale(2,RoundingMode.HALF_UP);
-            //Decimal caseFTERounded = totalCaseFTE.setScale(2, RoundingMode.HALF_UP);
-
+            Decimal fteRounded = normal.setScale(4,RoundingMode.HALF_UP);
+            Decimal fteoutlieRounded = outliner.setScale(4,RoundingMode.HALF_UP);
             system.debug('fteRounded=='+fteRounded);
             if(fteRounded<st.Staff_Name__r.Current_Weighting1__c){
                 st.Current__c=fteRounded;
@@ -77,8 +71,6 @@ global without sharing class CapacityPlan_RollupToSaff implements Database.Batch
             }
             st.CM_BOB_Weighting__c=fteRounded;
             st.CM_BOB_Weighting_Outlier__c=fteoutlieRounded;
-            //st.IPM_BOB_Case_FTE__c = caseFTERounded;
-            
             staffList.add(st);
         }
         if(!staffList.isempty() && staffList!=null){
@@ -93,7 +85,7 @@ global without sharing class CapacityPlan_RollupToSaff implements Database.Batch
         
     }    
     global void finish(Database.BatchableContext bc){
-        Database.executeBatch(new staffBatch());
+        // Database.executeBatch(new staffBatch());
     }    
     
 }

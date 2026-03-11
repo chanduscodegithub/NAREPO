@@ -4,8 +4,12 @@
     <externalId>false</externalId>
     <formula>IF(
     TEXT(Account_Type__c) = &quot;Existing&quot;,
-    Surest_Case_FTE__c + (Surest_Case_FTE__c * Surest_Status_Score__c) / Multiple_Policy_Factor__c,
-    0.1
+    Surest_Case_FTE__c +  (Surest_Case_FTE__c * Surest_Status_Score__c) / Multiple_Policy_Factor__c,
+    IF(
+        TEXT(Account_Type__c) = &quot;New&quot;,
+        0.1,
+        0
+    )
 )</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>Surest Adj Case FTE</label>

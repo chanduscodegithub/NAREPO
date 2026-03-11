@@ -2,7 +2,7 @@
         <div class="container">
             <div class="sub-heading slds-p-left_large slds-p-bottom_xx-small slds-p-top_xx-small slds-m-bottom_small">
                 <p>
-                    <strong>Clinical Programs - Surest </strong>
+                    <strong>Surest Product Change Checklist</strong>
                 </p>
             </div>
             <p class="slds-p-top_x-small slds-p-bottom_x-small slds-p-left_large slds-p-right_x-small"
@@ -14,6 +14,11 @@
                 <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleCancel}
                     icon-name="action:remove">
                 </lightning-button>
+                <template if:true={lastYearChecklist}>
+                    <lightning-button variant="brand" label="Copy last year’s data" class="slds-m-left_x-small"
+                        onclick={handleCopyCPW} icon-name="utility:file">
+                    </lightning-button>
+                    </template>
                 <lightning-button variant="brand" label="Save" class="slds-m-left_x-small" onclick={handleSave}
                     icon-name="utility:save">
                 </lightning-button>
@@ -99,31 +104,6 @@
                         <td class="left">
                           <div class="slds-grid slds-grid--vertical-align-center border-bottom">
                             <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
-                              <span>Pharmacy Benefit Administrator Phone #</span>
-                            </div>
-                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
-                              <template if:false={isEdit}>
-                                <template if:true={renewalChecklistData.Pharmacy_Benefit_Administrator_Phone__c}>
-                                  <span>{renewalChecklistData.Pharmacy_Benefit_Administrator_Phone__c}</span>
-                                </template>
-                              </template>
-                              <template if:true={isEdit}>
-                                    <span class="slds-text-align_left" style="padding-top: 5px;">
-                                        <lightning-input type="tel" variant="label-hidden" class="slds-p-top_xx-small"
-                                          data-api="Pharmacy_Benefit_Administrator_Phone__c"
-                                          value={renewalChecklistData.Pharmacy_Benefit_Administrator_Phone__c}
-                                          onchange={handleChange} maxlength="40">
-                                        </lightning-input>
-                                      </span>
-                              </template>
-                            </div>
-                          </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="left">
-                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
-                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
                               <span>Employee Assistance Program Name</span>
                             </div>
                             <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
@@ -145,53 +125,41 @@
                           </div>
                         </td>
                     </tr>
+                </table>
+                <div class="optional-wrapper">
+                <table class="slds-table slds-no-row-hover">
+
+                    <thead>
+                        <tr>
+                            <th style="width:35%">Products</th>
+                            <th style="width:18%">PIM Implementation Lead Time</th>
+                            <th style="width:16%">Dual Indicator</th>
+                            <th style="width:16%">Last Year’s Validation</th>
+                            <th style="width:16%">Next Year’s Validation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     <tr>
-                        <td class="left">
-                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
-                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
-                              <span>Employee Assistance Program Phone #</span>
-                            </div>
-                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
-                              <template if:false={isEdit}>
-                                <template if:true={renewalChecklistData.Employee_Assistance_Program_Phone__c}>
-                                  <span>{renewalChecklistData.Employee_Assistance_Program_Phone__c}</span>
-                                </template>
-                              </template>
-                              <template if:true={isEdit}>
-                                    <span class="slds-text-align_left" style="padding-top: 5px;">
-                                        <lightning-input type="tel" variant="label-hidden" class="slds-p-top_xx-small"
-                                          data-api="Employee_Assistance_Program_Phone__c"
-                                          value={renewalChecklistData.Employee_Assistance_Program_Phone__c}
-                                          onchange={handleChange} maxlength="40">
-                                        </lightning-input>
-                                      </span>
-                              </template>
-                            </div>
-                          </div>
+                        <td class="left">   
+                            <b><span>Standard Clinical Offering:</span></b>
                         </td>
-                    </tr>
-                    
-                    
-                    <tr>
-                        <td class="left">
-                            <div class="slds-grid slds-grid--vertical-align-center"
-                                style="width:100%;">
-                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
-                                    <b><span>Standard Clinical Offering:</span></b>
-                                </div>
-                                <div
-                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
-                                </div>
-                            </div>
-                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
                     </tr>
                     <tr>
-                        <td class="left">
-                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
-                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                        <td class="left">     
                               <span>Transplant Resource Services</span>
-                            </div>
-                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">
+                            <template if:true={lastYearChecklist.Transplant_Resource_Services__c}>
+                                <span>{lastYearChecklist.Transplant_Resource_Services__c}</span>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left">
                               <template if:false={isEdit}>
                                 <template if:true={renewalChecklistData.Transplant_Resource_Services__c}>
                                   <span>{renewalChecklistData.Transplant_Resource_Services__c}</span>
@@ -205,17 +173,21 @@
                                         </lightning-combobox>
                                     </span>
                               </template>
-                            </div>
-                          </div>
                         </td>
+                        
                     </tr>
                     <tr>
                         <td class="left">
-                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
-                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
                               <span>Utilization Management</span>
-                            </div>
-                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">
+                            <template if:true={lastYearChecklist.Utilization_Management__c}>
+                                <span>{lastYearChecklist.Utilization_Management__c}</span>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left">
                               <template if:false={isEdit}>
                                 <template if:true={renewalChecklistData.Utilization_Management__c}>
                                   <span>{renewalChecklistData.Utilization_Management__c}</span>
@@ -229,31 +201,31 @@
                                         </lightning-combobox>
                                     </span>
                               </template>
-                            </div>
-                          </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
-                                style="width:100%;">
-                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
                                     <span>Specialty Guidance Program</span>
-                                </div>
-                                <div
-                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">Yes</td>
+                        <td class="slds-text-align_left">
                                     Yes
-                                </div>
-                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
-                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
                               <span>Cancer Guidance Program</span>
-                            </div>
-                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">
+                            <template if:true={lastYearChecklist.Cancer_Guidance_Program_CPSurest__c}>
+                                <span>{lastYearChecklist.Cancer_Guidance_Program_CPSurest__c}</span>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left">
                               <template if:false={isEdit}>
                                 <template if:true={renewalChecklistData.Cancer_Guidance_Program_CPSurest__c}>
                                   <span>{renewalChecklistData.Cancer_Guidance_Program_CPSurest__c}</span>
@@ -267,17 +239,20 @@
                                         </lightning-combobox>
                                     </span>
                               </template>
-                            </div>
-                          </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
-                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
                               <span>Behavioral Health Utilization Management, ABA UM</span>
-                            </div>
-                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">
+                            <template if:true={lastYearChecklist.BHU_Management_ABA_UM__c}>
+                                <span>{lastYearChecklist.BHU_Management_ABA_UM__c}</span>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left">
                               <template if:false={isEdit}>
                                 <template if:true={renewalChecklistData.BHU_Management_ABA_UM__c}>
                                   <span>{renewalChecklistData.BHU_Management_ABA_UM__c}</span>
@@ -291,17 +266,20 @@
                                         </lightning-combobox>
                                     </span>
                               </template>
-                            </div>
-                          </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
-                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
                               <span>Surest Case Management (CM)</span>
-                            </div>
-                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">
+                            <template if:true={lastYearChecklist.Surest_Case_Management_CM_CPSurest__c}>
+                                <span>{lastYearChecklist.Surest_Case_Management_CM_CPSurest__c}</span>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left">
                               <template if:false={isEdit}>
                                 <template if:true={renewalChecklistData.Surest_Case_Management_CM_CPSurest__c}>
                                   <span>{renewalChecklistData.Surest_Case_Management_CM_CPSurest__c}</span>
@@ -315,102 +293,103 @@
                                         </lightning-combobox>
                                     </span>
                               </template>
-                            </div>
-                          </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
-                                style="width:100%;">
-                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
                                     <span>Optum Behavioral Network</span>
-                                </div>
-                                <div
-                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">Yes</td>
+                        <td class="slds-text-align_left">
                                     Yes
-                                </div>
-                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
-                                style="width:100%;">
-                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
                                     <span>Optum Physical Health Network</span>
-                                </div>
-                                <div
-                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">Yes</td>
+                        <td class="slds-text-align_left">
                                     Yes
-                                </div>
-                            </div>
                         </td>
                     </tr>
                     <tr>
+                      <td class="left">
+                                  <span>Standard Communications</span>
+                              </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">Yes</td>
+                        <td class="slds-text-align_left">
+                                  Yes
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="left">
+                                  <span>Surest Member Services and Surest Clinical Advocacy</span>
+                                </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">Yes</td>
+                        <td class="slds-text-align_left">
+                                  Yes
+                             
+                      </td>
+                    </tr>
+                    <!-- <tr>
                         <td class="left">
                             <div class="slds-grid slds-grid--vertical-align-center"
                                 style="width:100%;">
-                                <div class="slds-col slds-size_2-of-4 slds-p-around_xx-small">
+                                <div class="slds-col slds-size_2-of-6 slds-p-around_xx-small">
                                     <b><span>Optional Programs:</span></b>
                                 </div>
+                                <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small" style="text-align: center;">
+                                    <b><span> Implementation Lead Time</span></b>
+                                </div>
                                 <div
-                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    class="slds-col slds-size_1-of-6 slds-p-around_xx-small" style="text-align: center;">
+                                </div>
+                                <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small" style="text-align: center;">
+                                    <b><span>Last Year’s Validation</span></b>
+                                </div>
+                                <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small" style="text-align: center;">
+                                    <b><span>Next Year’s Validation</span></b>
                                 </div>
                             </div>
                         </td>
-                    </tr>
+                    </tr> -->
                         
+
                     <!-- <template for:each={checklistDisplayData} for:item="item">
-                        <tr key={item.label}>
-                            <td class="left">
-                                <div class="slds-grid slds-grid--vertical-align-center border-bottom">
-                                    <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
-                                        <span>{item.label}</span>
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-cell-wrap slds-text-align_right">
-                                        <template if:true={item.readonly}>
-                                        <template if:true={item.value}>
-                                            <span>{item.value}</span>
-                                        </template>
-                                        </template>
-                                        <template if:false={item.readonly}>
-                                        <template if:true={isEdit}>
-                                            <span class="slds-text-align_left" style="padding-top: 5px;">
-                                                <lightning-combobox data-api={item.name} variant="label-hidden"
-                                                     value={item.value} options={picklistValuesOP} onchange={handleChange}>
-                                                </lightning-combobox>
-                                            </span>
-                                        </template>
-                                        <template if:false={isEdit}>
-                                          <span>{item.value}</span>
-                                        </template>
-                                        </template>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </template>                    -->
-                    <template for:each={checklistDisplayData} for:item="item">
                       <tr key={item.label}>
                           <td class="left">
                               <div class="slds-grid slds-grid_vertical-align-center border-bottom">
                   
-                                  <!-- Label column -->
                                   <div class={item.labelClass}>
                                       <span>{item.label}</span>
                                   </div>
-
-                                  <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_left">
+                                  <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small slds-text-align_center">
+                                      <template if:true={item.productValue}>
+                                      <span class="slds-text-body_regular">{item.productValue}</span>
+                                      </template>
+                                  </div>
+                                  <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small slds-text-align_center">
                                     <template if:true={item.isDual}>
-                                        <span class="slds-text-body_regular">Dual</span>
+                                        <span class="slds-text-body_regular">Dual Product (Surest with UNET only)</span>
                                     </template>
                                     <template if:false={item.isDual}>
                                         <span></span>
                                     </template>
                                   </div>
-                  
-                                  <!-- Main combobox or value -->
+                                  <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small slds-text-align_center">
+                                      <span class="slds-text-body_regular">
+                                          {item.lastYearValue}
+                                      </span>
+                                  </div>
                                   <div class={item.mainClass}>
                                       <template if:false={isEdit}>
                                           <template if:true={item.value}>
@@ -430,9 +409,8 @@
                                       </template>
                                   </div>
                   
-                                  <!-- Extra combobox (only for One_Pass_Select__c) -->
                                   <template if:true={item.relatedField}>
-                                      <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                      <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small slds-text-align_right">
                                           <template if:false={isEdit}>
                                               <span>{item.relatedField.value}</span>
                                           </template>
@@ -453,8 +431,141 @@
                               </div>
                           </td>
                       </tr>
-                  </template>
-                  </table>
+                  </template> -->
+                <!-- </table> -->
+                  <!-- Scrollable Optional Programs Section -->
+                    <!-- <div class="optional-wrapper">
+                        <table class="slds-table slds-no-row-hover">
+
+                            <thead>
+                                <tr>
+                                    <th style="width:35%">Optional Programs:</th>
+                                    <th style="width:18%">PIM Implementation Lead Time</th>
+                                    <th style="width:16%">Dual Indicator</th>
+                                    <th style="width:16%">Last Year’s Validation</th>
+                                    <th style="width:16%">Next Year’s Validation</th>
+                                </tr>
+                            </thead> -->
+
+                            <!-- <tbody> -->
+                    <tr>
+                        <td class="left">   
+                            <b><span>Optional Programs:</span></b>
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                    </tr>
+                                <template for:each={checklistDisplayData} for:item="item">
+                                    <tr key={item.label}>
+
+                                        <td class="slds-text-align_left">
+                                            {item.label}
+                                        </td>
+
+                                        <td class="slds-text-align_left">
+                                            {item.productValue}
+                                        </td>
+
+                                        <td class="slds-text-align_left">
+                                            <template if:true={item.isDual}>
+                                                Dual Product (Surest with UNET only)
+                                            </template>
+                                        </td>
+
+                                        <td class="slds-text-align_left">
+                                            <template if:true={item.lastYearValue}>
+                                                {item.lastYearValue}
+                                            </template>
+                                        </td>
+
+                                        <td>
+                                            <template if:false={isEdit}>
+                                                {item.value}
+                                            </template>
+
+                                            <template if:true={isEdit}>
+                                                <template if:true={item.readonly}>
+                                                    {item.value}
+                                                </template>
+                                                <template if:false={item.readonly}>
+                                                    <lightning-combobox
+                                                        data-api={item.name}
+                                                        variant="label-hidden"
+                                                        value={item.value}
+                                                        options={item.options}
+                                                        onchange={handleChange}>
+                                                    </lightning-combobox>
+                                                </template>
+                                            </template>
+
+                                            <template if:true={item.relatedField}>
+                                                <div class="slds-m-top_x-small">
+                                                <template if:false={isEdit}>
+                                                    {item.relatedField.value}
+                                                </template>
+                                                <template if:true={isEdit}>
+                                                    <template if:true={item.relatedField.readonly}>
+                                                        {item.relatedField.value}
+                                                    </template>
+                                                    <template if:false={item.relatedField.readonly}>
+                                                        <lightning-combobox
+                                                            data-api={item.relatedField.name}
+                                                            variant="label-hidden"
+                                                            value={item.relatedField.value}
+                                                            options={extraOnePassValues}
+                                                            onchange={handleChange}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </template>
+                                                </div>
+                                            </template>
+                                        </td>
+
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
             </div>
         </div>
+        <template if:true={showCopyPopup}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">
+                            Confirm Copy from Last Year
+                        </h2>
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_medium">
+                        This action will copy last year’s values to the next year for Optional Products.
+                        If a product is sold or termed for the next year, the system will identify the
+                        existing MA and update it as Yes/No respectively during the copy process.
+                        You can manually edit all responses after copying.
+
+                        <br/><br/>
+                        Do you wish to continue?
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <lightning-button
+                            label="Cancel"
+                            onclick={cancelCopy}>
+                        </lightning-button>
+
+                        <lightning-button
+                            variant="brand" class="slds-m-left_small"
+                            label="Continue"
+                            onclick={confirmCopy}>
+                        </lightning-button>
+                    </footer>
+
+                </div>
+            </section>
+
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
 </template>

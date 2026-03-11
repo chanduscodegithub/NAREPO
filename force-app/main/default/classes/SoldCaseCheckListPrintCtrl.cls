@@ -634,19 +634,21 @@ public class SoldCaseCheckListPrintCtrl {
     public class FieldDisplayMapping {
         public String fieldApiName { get; set; }
         public String fieldLabel { get; set; }
+        public String productValue { get; set; }
         public Boolean isDual { get; set; }
     
-        public FieldDisplayMapping(String api, String label, Boolean dual) {
+        public FieldDisplayMapping(String api, String label, Boolean dual, String productValue) {
             this.fieldApiName = api;
             this.fieldLabel = label;
             this.isDual = dual;
+            this.productValue = productValue;
         }
     }
 
     public List<FieldDisplayMapping> getSurestFields() {
         List<FieldDisplayMapping> fields = new List<FieldDisplayMapping>();
     
-        List<CPW_Product_Checklist_Metadata__mdt> metadataList = [SELECT MasterLabel, Product_Code__c, Field_API_Name__c, Label__c, Is_Dual__c, Yes_No_Only__c, Display_Order__c,IsActive__c FROM CPW_Product_Checklist_Metadata__mdt ORDER BY Display_Order__c ASC];
+        List<CPW_Product_Checklist_Metadata__mdt> metadataList = [SELECT MasterLabel, Product_Code__c, Field_API_Name__c, Label__c, Is_Dual__c, Yes_No_Only__c, Restrict_Surest_Options__c, Display_Order__c,IsActive__c FROM CPW_Product_Checklist_Metadata__mdt ORDER BY Display_Order__c ASC];
         
         Set<String> productCodes = new Set<String>();
         for (CPW_Product_Checklist_Metadata__mdt m : metadataList) {
@@ -656,7 +658,7 @@ public class SoldCaseCheckListPrintCtrl {
         }
 
         Map<String, Product2> productMap = new Map<String, Product2>();
-        for (Product2 p : [SELECT ProductCode, Surest_Applicable_Products__c FROM Product2 WHERE ProductCode IN :productCodes]) {
+        for (Product2 p : [SELECT ProductCode, Surest_Applicable_Products__c,Surest_Implementation_Lead_Time__c FROM Product2 WHERE ProductCode IN :productCodes]) {
             if (String.isNotBlank(p.ProductCode)) {
                 productMap.put(p.ProductCode, p);
             }
@@ -676,15 +678,19 @@ public class SoldCaseCheckListPrintCtrl {
             }
             
             Boolean Dual = false;
+            String productValue = '';
+           
             if (productMap.containsKey(m.Product_Code__c)) {
                 Product2 prod = productMap.get(m.Product_Code__c);
                 Dual = (prod.Surest_Applicable_Products__c == 'Available for Surest only with UNET');
+                productValue = prod.Surest_Implementation_Lead_Time__c;
             }
     
             fields.add(new FieldDisplayMapping(
                 m.Field_API_Name__c,
                 m.Label__c,
-                Dual
+                Dual,
+                productValue
             ));
         }
     

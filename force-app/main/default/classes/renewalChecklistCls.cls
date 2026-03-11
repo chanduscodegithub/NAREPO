@@ -152,10 +152,44 @@ Returns: Wrapper Class.
                                                             Surest_Case_Management_CM_CPSurest__c,Optum_Physical_Health_Network__c,Optum_Behavioral_Network__c,Ardynn_Surest_Cancer_Advocacy__c,Asthma_Disease_Management__c,Bariatric_Resource_Services__c,Calm_Health__c,Canary_Surest_Disease_Management__c,Cancer_Resource_Services__c,Cancer_Support_Program_CSP__c,
                                                             Clinical_Prgm_2nd_MD__c,Comprehensive_Kidney_Solutions__c,COPD_Disease_Management__c,Coronary_Artery_Disease_Management__c,Diabetes_Disease_Management__c,Emotional_Wellbeing_Solutions__c,Family_Building_Dual_Clients_only__c,Fertility_Solutions__c,Fertility_Solutions_Plus_Dual_Clients__c,Heart_Failure_Disease_Management__c,
                                                             Kaia_Optum__c,Level2_Assured_Value__c,Maternity_21_month_program__c,Maven_12_month_program__c,Menopause_Dual_Clients_Only_1K_EE_s__c,Neonatal_Resource_Services__c,One_Pass_Select__c,Optum_Engage__c,Pacify_Surest_Maternity__c,Parenting_Pediatrics__c,Pivot_Surest_Smoking_Cessation__c,Progyny_Surest_Fertility__c,Pump_Carry_Dual_Clients_only_1k_EE_s__c,
-                                                            Pump_Check_Dual_Clients_only_1k_EE_s__c,Pump_Post_Dual_Clients_only_1k_EE_s__c,Quit_for_Life_Dual_Clients_Only__c,Real_Appeal_Optum__c,UHC_Rewards__c,Virta_Diabetes__c,Virta_Obesity__c,Virta_Pre_Diabetes__c,Wallet_Dual_Clients_Only_1K_EE_s__c,Congenital_Heart_Disease__c,Wellness_Wellos_ASO__c,One_Pass_Subsidized__c,CPW_2nd_MD__c,
-                                                            Optum_Engage_Elite__c,Optum_Engage_Select__c,UHC_Rewards_Custom__c,UHC_Rewards_Premium__c,Doula_Benefit_Support__c,Total_Weight_Support_with_Real_Appeal_Rx__c,Open_Enrollment_Date__c,UHC_Rewards_Client_Fulfilled_Survey__c,UHC_Rewards_Client_Fulfilled_Custom__c,Cap_Value__c,Amount__c,Additional_Comments_Naviguard__c,Amount_Type__c,Cap_Type__c,Cap_Category__c
+                                                            Pump_Check_Dual_Clients_only_1k_EE_s__c,Pump_Post_Dual_Clients_only_1k_EE_s__c,Quit_for_Life_Dual_Clients_Only__c,Real_Appeal_Optum__c,UHC_Rewards__c,Virta_Diabetes__c,Virta_Obesity__c,Virta_Pre_Diabetes__c,Wallet_Dual_Clients_Only_1K_EE_s__c,Congenital_Heart_Disease__c,Wellness_Wellos_ASO__c,One_Pass_Subsidized__c,CPW__c,Sword__c,Kindbody__c,
+                                                            Optum_Engage_Elite__c,Optum_Engage_Select__c,UHC_Rewards_Custom__c,UHC_Rewards_Premium__c,Doula_Benefit_Support__c,Total_Weight_Support_with_Real_Appeal_Rx__c,Open_Enrollment_Date__c,UHC_Rewards_Client_Fulfilled_Survey__c,UHC_Rewards_Client_Fulfilled_Custom__c,Cap_Value__c,Amount__c,Additional_Comments_Naviguard__c,Amount_Type__c,Cap_Type__c,Cap_Category__c,
+                                                            UHC_Hub_Access_Hope_APO_EAR__c,UHC_Hub_Access_Hope_APO_Only__c,UHC_Hub_Carrum_Health_Cancer_Care__c,UHC_Hub_Carrum_Health_General__c,UHC_Hub_Carrum_Health_Surgical_Care__c,
+                                                            UHC_Hub_Carrum_Substance_Use_Treatment__c,UHC_Hub_Cylinder_GIThrive__c,UHC_Hub_Hazelden_Recovery_Coaching__c,UHC_Hub_Hazelden_Workplace_Portal__c,UHC_Hub_Hello_Heart__c,UHC_Hub_Hinge_Health_Virtual_PT__c,UHC_Hub_Lantern_Employer_Direct_Care__c,
+                                                            UHC_Hub_LGC_A1c_Fingerstick_Add_On__c,UHC_Hub_LGC_A1C_HomeKit_Buy_Up__c,UHC_Hub_LGC_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_LGC_A1c_Venipuncture_Add_On__c,UHC_Hub_LGC_Body_Fat__c,UHC_Hub_LGC_Colon_Cancer_Screening_Plus__c,UHC_Hub_LGC_Colon_Cancer_Screening_Prog__c,UHC_Hub_LGC_Diabetes_A1c__c,
+                                                            UHC_Hub_LGC_FIT_At_Home_Kit__c,UHC_Hub_LGC_Flu_Shots__c,UHC_Hub_LGC_Health_Prvdr_Screen_Form__c,UHC_Hub_LGC_Heart_Health__c,UHC_Hub_LGC_HPSF_Prov_Med_PAAF__c,UHC_Hub_LGC_KYNS_Full_Lipid_Fingerstick__c,UHC_Hub_LGC_KYNS_Full_Lpd_Venipuncture__c,UHC_Hub_LGC_KYNS_Partl_Lpd_Fingerstick__c,
+                                                            UHC_Hub_LGC_Lab_Visit_Full_Lipid_Ven__c,UHC_Hub_LGC_Measure_Waist__c,UHC_Hub_LGC_Waist_Hip_Ratio__c,UHC_Hub_Noom_Dual_Access__c,UHC_Hub_Noom_Dual_Access_DPP__c,UHC_Hub_Noom_Mood__c,UHC_Hub_Noom_Weight__c,UHC_Hub_Noom_Weight_DPP__c,UHC_Hub_Quest_A1c_Fingerstick_Add_On__c,
+                                                            UHC_Hub_Quest_A1C_HomeKit_Buy_Up__c,UHC_Hub_Quest_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_Quest_A1c_Venipuncture_Add_On__c,UHC_Hub_Quest_Bilingual_Translator__c,UHC_Hub_Quest_Body_Fat__c,UHC_Hub_Quest_Cotinine_Fingerstick_Add__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Plus__c,
+                                                            UHC_Hub_Quest_Cotinine_HomeKit_Buy_Up__c,UHC_Hub_Quest_Cotinine_Lab_Visit_Full__c,UHC_Hub_Quest_Cotinine_Venipuncture_Ad__c,UHC_Hub_Quest_Diabetes_A1c_Home_Kit__c,UHC_Hub_Quest_eGFR_Fingerstick_AddOn__c,UHC_Hub_Quest_eGFR_HomeKit_Buy_Up__c,
+                                                            UHC_Hub_Quest_eGFR_Venipuncture_AddOn__c,UHC_Hub_Quest_eGFR_Visit_Add_On__c,UHC_Hub_Quest_Fax_to_Physician__c,UHC_Hub_Quest_Flu_Shots__c,UHC_Hub_Quest_Heart_Health_Home_Kit__c,UHC_Hub_Quest_Hlth_Prvdr_Screening_Form__c,UHC_Hub_Quest_HPSF_Prov_Med_PA__c,
+                                                            UHC_Hub_Quest_KYN_Plus_Fingerstick__c,UHC_Hub_Quest_KYNS_Comprehensive__c,UHC_Hub_Quest_KYNS_Full_Lipid_Venipctr__c,UHC_Hub_Quest_KYNS_Full_Lpd_Fingerstick__c,UHC_Hub_Quest_KYNS_Partial_Lpd_Fingerst__c,UHC_Hub_Quest_Lab_Visit_Comp_Veni__c,
+                                                            UHC_Hub_Quest_Lab_Visit_Full_Lipid_Veni__c,UHC_Hub_Quest_Measure_Waist__c,UHC_Hub_Quest_Privacy_Screens__c,UHC_Hub_Quest_PSA_Fingerstick_Add_On__c,UHC_Hub_Quest_Waist_Hip_Ratio__c,UHC_Hub_Teladoc_Advanced_Weight_Mgmt__c,UHC_Hub_Teladoc_Chronic_Mgmt_Plus_Bundl__c,
+                                                            UHC_Hub_Teladoc_Diabetes_Mgmt_Plus_Bund__c,UHC_Hub_Teladoc_Diabetes_Mgmt_Standalon__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Stand__c,UHC_Hub_Teladoc_Prediabetes_Mgmt_Plus__c,UHC_Hub_Weight_Watchers__c,UHC_Hub_Wellthy__c,UHC_Hub_Wondr_Health__c 
                                                             FROM Renewal_Checklist__c WHERE Company__c =: String.escapeSingleQuotes(accId) AND Sales_Season__c =:currentSS WITH USER_MODE ];
         system.debug('renewalCheckListData = '+renewalCheckListData);
+
+        String yearPart = currentSS.replace('SS ', '');
+        Integer yearValue = Integer.valueOf(yearPart);
+        String lastSS = 'SS ' + String.valueOf(yearValue - 1);
+
+        List<Renewal_Checklist__c> lastYearChecklist = [SELECT Id,Sales_Season__c, Name,Transplant_Resource_Services__c,Utilization_Management__c,BHU_Management_ABA_UM__c,Specialty_Guidance_Program_CPSurest__c,Cancer_Guidance_Program_CPSurest__c,
+                                                            Surest_Case_Management_CM_CPSurest__c,Optum_Physical_Health_Network__c,Optum_Behavioral_Network__c,Ardynn_Surest_Cancer_Advocacy__c,Asthma_Disease_Management__c,Bariatric_Resource_Services__c,Calm_Health__c,Canary_Surest_Disease_Management__c,Cancer_Resource_Services__c,Cancer_Support_Program_CSP__c,
+                                                            Clinical_Prgm_2nd_MD__c,Comprehensive_Kidney_Solutions__c,COPD_Disease_Management__c,Coronary_Artery_Disease_Management__c,Diabetes_Disease_Management__c,Emotional_Wellbeing_Solutions__c,Family_Building_Dual_Clients_only__c,Fertility_Solutions__c,Fertility_Solutions_Plus_Dual_Clients__c,Heart_Failure_Disease_Management__c,
+                                                            Kaia_Optum__c,Level2_Assured_Value__c,Maternity_21_month_program__c,Maven_12_month_program__c,Menopause_Dual_Clients_Only_1K_EE_s__c,Neonatal_Resource_Services__c,One_Pass_Select__c,Optum_Engage__c,Pacify_Surest_Maternity__c,Parenting_Pediatrics__c,Pivot_Surest_Smoking_Cessation__c,Progyny_Surest_Fertility__c,Pump_Carry_Dual_Clients_only_1k_EE_s__c,
+                                                            Pump_Check_Dual_Clients_only_1k_EE_s__c,Pump_Post_Dual_Clients_only_1k_EE_s__c,Quit_for_Life_Dual_Clients_Only__c,Real_Appeal_Optum__c,UHC_Rewards__c,Virta_Diabetes__c,Virta_Obesity__c,Virta_Pre_Diabetes__c,Wallet_Dual_Clients_Only_1K_EE_s__c,Congenital_Heart_Disease__c,Wellness_Wellos_ASO__c,One_Pass_Subsidized__c,CPW__c,Kindbody__c,Sword__c,
+                                                            Optum_Engage_Elite__c,Optum_Engage_Select__c,UHC_Rewards_Custom__c,UHC_Rewards_Premium__c,Doula_Benefit_Support__c,Total_Weight_Support_with_Real_Appeal_Rx__c,Open_Enrollment_Date__c,UHC_Rewards_Client_Fulfilled_Survey__c,UHC_Rewards_Client_Fulfilled_Custom__c,Cap_Value__c,Amount__c,Additional_Comments_Naviguard__c,Amount_Type__c,Cap_Type__c,Cap_Category__c,
+                                                            UHC_Hub_Access_Hope_APO_EAR__c,UHC_Hub_Access_Hope_APO_Only__c,UHC_Hub_Carrum_Health_Cancer_Care__c,UHC_Hub_Carrum_Health_General__c,UHC_Hub_Carrum_Health_Surgical_Care__c,
+                                                            UHC_Hub_Carrum_Substance_Use_Treatment__c,UHC_Hub_Cylinder_GIThrive__c,UHC_Hub_Hazelden_Recovery_Coaching__c,UHC_Hub_Hazelden_Workplace_Portal__c,UHC_Hub_Hello_Heart__c,UHC_Hub_Hinge_Health_Virtual_PT__c,UHC_Hub_Lantern_Employer_Direct_Care__c,
+                                                            UHC_Hub_LGC_A1c_Fingerstick_Add_On__c,UHC_Hub_LGC_A1C_HomeKit_Buy_Up__c,UHC_Hub_LGC_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_LGC_A1c_Venipuncture_Add_On__c,UHC_Hub_LGC_Body_Fat__c,UHC_Hub_LGC_Colon_Cancer_Screening_Plus__c,UHC_Hub_LGC_Colon_Cancer_Screening_Prog__c,UHC_Hub_LGC_Diabetes_A1c__c,
+                                                            UHC_Hub_LGC_FIT_At_Home_Kit__c,UHC_Hub_LGC_Flu_Shots__c,UHC_Hub_LGC_Health_Prvdr_Screen_Form__c,UHC_Hub_LGC_Heart_Health__c,UHC_Hub_LGC_HPSF_Prov_Med_PAAF__c,UHC_Hub_LGC_KYNS_Full_Lipid_Fingerstick__c,UHC_Hub_LGC_KYNS_Full_Lpd_Venipuncture__c,UHC_Hub_LGC_KYNS_Partl_Lpd_Fingerstick__c,
+                                                            UHC_Hub_LGC_Lab_Visit_Full_Lipid_Ven__c,UHC_Hub_LGC_Measure_Waist__c,UHC_Hub_LGC_Waist_Hip_Ratio__c,UHC_Hub_Noom_Dual_Access__c,UHC_Hub_Noom_Dual_Access_DPP__c,UHC_Hub_Noom_Mood__c,UHC_Hub_Noom_Weight__c,UHC_Hub_Noom_Weight_DPP__c,UHC_Hub_Quest_A1c_Fingerstick_Add_On__c,
+                                                            UHC_Hub_Quest_A1C_HomeKit_Buy_Up__c,UHC_Hub_Quest_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_Quest_A1c_Venipuncture_Add_On__c,UHC_Hub_Quest_Bilingual_Translator__c,UHC_Hub_Quest_Body_Fat__c,UHC_Hub_Quest_Cotinine_Fingerstick_Add__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Plus__c,
+                                                            UHC_Hub_Quest_Cotinine_HomeKit_Buy_Up__c,UHC_Hub_Quest_Cotinine_Lab_Visit_Full__c,UHC_Hub_Quest_Cotinine_Venipuncture_Ad__c,UHC_Hub_Quest_Diabetes_A1c_Home_Kit__c,UHC_Hub_Quest_eGFR_Fingerstick_AddOn__c,UHC_Hub_Quest_eGFR_HomeKit_Buy_Up__c,
+                                                            UHC_Hub_Quest_eGFR_Venipuncture_AddOn__c,UHC_Hub_Quest_eGFR_Visit_Add_On__c,UHC_Hub_Quest_Fax_to_Physician__c,UHC_Hub_Quest_Flu_Shots__c,UHC_Hub_Quest_Heart_Health_Home_Kit__c,UHC_Hub_Quest_Hlth_Prvdr_Screening_Form__c,UHC_Hub_Quest_HPSF_Prov_Med_PA__c,
+                                                            UHC_Hub_Quest_KYN_Plus_Fingerstick__c,UHC_Hub_Quest_KYNS_Comprehensive__c,UHC_Hub_Quest_KYNS_Full_Lipid_Venipctr__c,UHC_Hub_Quest_KYNS_Full_Lpd_Fingerstick__c,UHC_Hub_Quest_KYNS_Partial_Lpd_Fingerst__c,UHC_Hub_Quest_Lab_Visit_Comp_Veni__c,
+                                                            UHC_Hub_Quest_Lab_Visit_Full_Lipid_Veni__c,UHC_Hub_Quest_Measure_Waist__c,UHC_Hub_Quest_Privacy_Screens__c,UHC_Hub_Quest_PSA_Fingerstick_Add_On__c,UHC_Hub_Quest_Waist_Hip_Ratio__c,UHC_Hub_Teladoc_Advanced_Weight_Mgmt__c,UHC_Hub_Teladoc_Chronic_Mgmt_Plus_Bundl__c,
+                                                            UHC_Hub_Teladoc_Diabetes_Mgmt_Plus_Bund__c,UHC_Hub_Teladoc_Diabetes_Mgmt_Standalon__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Stand__c,UHC_Hub_Teladoc_Prediabetes_Mgmt_Plus__c,UHC_Hub_Weight_Watchers__c,UHC_Hub_Wellthy__c,UHC_Hub_Wondr_Health__c 
+                                                            FROM Renewal_Checklist__c WHERE Company__c =: String.escapeSingleQuotes(accId) AND Sales_Season__c =:lastSS WITH USER_MODE ];
         
         List<Service_AMT__c> amtList = [SELECT Id,Email__c,Contact_Role__c,Case_Management_End_Date__c,Name FROM Service_AMT__c WHERE Contact_Role__c IN ('Client Manager','Client Management Consultant') 
                                         AND Company__c =: accId AND (Case_Management_End_Date__c = null OR Case_Management_End_Date__c >= TODAY) WITH USER_MODE];
@@ -182,6 +216,39 @@ Returns: Wrapper Class.
 
         List<Product2> otherBuyUpProductList = [SELECT Id,Name,Surest_Applicable_Products__c,ProductCode,Product_Category__c,Product_Line__c FROM Product2 where Surest_Applicable_Products__c = 'Available for Surest only with UNET' WITH USER_MODE];
 
+        if(lastYearChecklist.isEmpty()){
+
+            Sold_Case_Checklist__c scc = [SELECT Id,Membership_Activity__r.Sales_Season1__c, Name,Membership_Activity__C,Membership_Activity__r.AccountId,Transplant_Resource_Services__c,Utilization_Management__c,BHU_Management_ABA_UM__c,Specialty_Guidance_Program_CPSurest__c,Cancer_Guidance_Program_CPSurest__c,
+                                    Surest_Case_Management_CM_CPSurest__c,Optum_Physical_Health_Network__c,Optum_Behavioral_Network__c,Ardynn_Surest_Cancer_Advocacy__c,Asthma_Disease_Management__c,Bariatric_Resource_Services__c,Calm_Health__c,Canary_Surest_Disease_Management__c,Cancer_Resource_Services__c,Cancer_Support_Program_CSP__c,
+                                    Clinical_Prgm_2nd_MD__c,Comprehensive_Kidney_Solutions__c,COPD_Disease_Management__c,Coronary_Artery_Disease_Management__c,Diabetes_Disease_Management__c,Emotional_Wellbeing_Solutions__c,Family_Building_Dual_Clients_only__c,Fertility_Solutions__c,Fertility_Solutions_Plus_Dual_Clients__c,Heart_Failure_Disease_Management__c,
+                                    Kaia_Optum__c,Level2_Assured_Value__c,Maternity_21_month_program__c,Maven_12_month_program__c,Menopause_Dual_Clients_Only_1K_EE_s__c,Neonatal_Resource_Services__c,One_Pass_Select__c,Optum_Engage__c,Pacify_Surest_Maternity__c,Parenting_Pediatrics__c,Pivot_Surest_Smoking_Cessation__c,Progyny_Surest_Fertility__c,Pump_Carry_Dual_Clients_only_1k_EE_s__c,
+                                    Pump_Check_Dual_Clients_only_1k_EE_s__c,Pump_Post_Dual_Clients_only_1k_EE_s__c,Quit_for_Life_Dual_Clients_Only__c,Real_Appeal_Optum__c,UHC_Rewards__c,Virta_Diabetes__c,Virta_Obesity__c,Virta_Pre_Diabetes__c,Wallet_Dual_Clients_Only_1K_EE_s__c,Congenital_Heart_Disease__c,Wellness_Wellos_ASO__c,One_Pass_Subsidized__c,Kindbody__c,Sword__c,
+                                    Optum_Engage_Elite__c,Optum_Engage_Select__c,UHC_Rewards_Custom__c,UHC_Rewards_Premium__c,Total_Weight_Support_with_Real_Appeal_Rx__c,Doula_Benefit_Support__c,Wellness_Rally_Engage_Buy_Up__c,Wellness_Rally_Premium_Buy_Up__c,CPW__c,UHC_Rewards_Client_Fulfilled_Survey__c,UHC_Rewards_Client_Fulfilled_Custom__c,Cap_Value__c,Amount__c,Additional_Comments__c,Amount_Type__c,Cap_Type__c,Cap_Category__c,
+                                    UHC_Hub_Carrum_Substance_Use_Treatment__c,UHC_Hub_Cylinder_GIThrive__c,UHC_Hub_Hazelden_Recovery_Coaching__c,UHC_Hub_Hazelden_Workplace_Portal__c,UHC_Hub_Hello_Heart__c,UHC_Hub_Hinge_Health_Virtual_PT__c,UHC_Hub_Lantern_Employer_Direct_Care__c,
+                                    UHC_Hub_LGC_A1c_Fingerstick_Add_On__c,UHC_Hub_LGC_A1C_HomeKit_Buy_Up__c,UHC_Hub_LGC_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_LGC_A1c_Venipuncture_Add_On__c,UHC_Hub_LGC_Body_Fat__c,UHC_Hub_LGC_Colon_Cancer_Screening_Plus__c,UHC_Hub_LGC_Colon_Cancer_Screening_Prog__c,UHC_Hub_LGC_Diabetes_A1c__c,
+                                    UHC_Hub_LGC_FIT_At_Home_Kit__c,UHC_Hub_LGC_Flu_Shots__c,UHC_Hub_LGC_Health_Prvdr_Screen_Form__c,UHC_Hub_LGC_Heart_Health__c,UHC_Hub_LGC_HPSF_Prov_Med_PAAF__c,UHC_Hub_LGC_KYNS_Full_Lipid_Fingerstick__c,UHC_Hub_LGC_KYNS_Full_Lpd_Venipuncture__c,UHC_Hub_LGC_KYNS_Partl_Lpd_Fingerstick__c,
+                                    UHC_Hub_LGC_Lab_Visit_Full_Lipid_Ven__c,UHC_Hub_LGC_Measure_Waist__c,UHC_Hub_LGC_Waist_Hip_Ratio__c,UHC_Hub_Noom_Dual_Access__c,UHC_Hub_Noom_Dual_Access_DPP__c,UHC_Hub_Noom_Mood__c,UHC_Hub_Noom_Weight__c,UHC_Hub_Noom_Weight_DPP__c,UHC_Hub_Quest_A1c_Fingerstick_Add_On__c,
+                                    UHC_Hub_Quest_A1C_HomeKit_Buy_Up__c,UHC_Hub_Quest_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_Quest_A1c_Venipuncture_Add_On__c,UHC_Hub_Quest_Bilingual_Translator__c,UHC_Hub_Quest_Body_Fat__c,UHC_Hub_Quest_Cotinine_Fingerstick_Add__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Plus__c,
+                                    UHC_Hub_Quest_Cotinine_HomeKit_Buy_Up__c,UHC_Hub_Quest_Cotinine_Lab_Visit_Full__c,UHC_Hub_Quest_Cotinine_Venipuncture_Ad__c,UHC_Hub_Quest_Diabetes_A1c_Home_Kit__c,UHC_Hub_Quest_eGFR_Fingerstick_AddOn__c,UHC_Hub_Quest_eGFR_HomeKit_Buy_Up__c,
+                                    UHC_Hub_Quest_eGFR_Venipuncture_AddOn__c,UHC_Hub_Quest_eGFR_Visit_Add_On__c,UHC_Hub_Quest_Fax_to_Physician__c,UHC_Hub_Quest_Flu_Shots__c,UHC_Hub_Quest_Heart_Health_Home_Kit__c,UHC_Hub_Quest_Hlth_Prvdr_Screening_Form__c,UHC_Hub_Quest_HPSF_Prov_Med_PA__c,
+                                    UHC_Hub_Quest_KYN_Plus_Fingerstick__c,UHC_Hub_Quest_KYNS_Comprehensive__c,UHC_Hub_Quest_KYNS_Full_Lipid_Venipctr__c,UHC_Hub_Quest_KYNS_Full_Lpd_Fingerstick__c,UHC_Hub_Quest_KYNS_Partial_Lpd_Fingerst__c,UHC_Hub_Quest_Lab_Visit_Comp_Veni__c,
+                                    UHC_Hub_Quest_Lab_Visit_Full_Lipid_Veni__c,UHC_Hub_Quest_Measure_Waist__c,UHC_Hub_Quest_Privacy_Screens__c,UHC_Hub_Quest_PSA_Fingerstick_Add_On__c,UHC_Hub_Quest_Waist_Hip_Ratio__c,UHC_Hub_Teladoc_Advanced_Weight_Mgmt__c,UHC_Hub_Teladoc_Chronic_Mgmt_Plus_Bundl__c,
+                                    UHC_Hub_Teladoc_Diabetes_Mgmt_Plus_Bund__c,UHC_Hub_Teladoc_Diabetes_Mgmt_Standalon__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Stand__c,UHC_Hub_Teladoc_Prediabetes_Mgmt_Plus__c,UHC_Hub_Weight_Watchers__c,UHC_Hub_Wellthy__c,UHC_Hub_Wondr_Health__c 
+                                    FROM  Sold_Case_Checklist__c WHERE Membership_Activity__r.Sales_Season1__c =:lastSS AND Membership_Activity__r.AccountId =: String.escapeSingleQuotes(accId) AND CPW__c = true WITH USER_MODE LIMIT 1];
+            
+            if(scc!=null){
+                Map<String, SObjectField> pccFields = Renewal_Checklist__c.SObjectType.getDescribe().fields.getMap();
+                Map<String, SObjectField> sccFields = Sold_Case_Checklist__c.SObjectType.getDescribe().fields.getMap();
+                Renewal_Checklist__c pccRecord = new Renewal_Checklist__c();
+                for(String fieldName : pccFields.keySet()){
+                   if(sccFields.containsKey(fieldName) && scc.get(fieldName) != null){
+                        pccRecord.put(fieldName, scc.get(fieldName));
+                    }
+                }
+                lastYearChecklist.add(pccRecord);
+            }
+        }
+
         if(!showAllData){
             system.debug('inside !showAllData');
             existingProductsList = filterJanuaryLineItemData(existingProductsList);
@@ -193,6 +260,7 @@ Returns: Wrapper Class.
         rrcp.detailTermingProductsList = sortProductsList(termingProductsList);
         rrcp.openMembership = openMembershipsList;
         rrcp.renewalCheckListData = renewalCheckListData;
+        rrcp.lastYearChecklist = lastYearChecklist;
         //rrcp.dentalVision = dentalVisionList;
         rrcp.serviceAmtList = amtList;
         rrcp.timeZone = userTimeZone;
@@ -280,7 +348,7 @@ Returns: List of renewal checklist.
 *******************************************************************
 */      
     @AuraEnabled
-    public static Boolean sceValidation(Id accId, Boolean showAllData, string currentSS){
+    public static Boolean sceValidation(Id accId, List<String> selectedEmails, Boolean showAllData, string currentSS){
         
         List<Renewal_Checklist__c> renewalList = [SELECT Id,Renewal_Checklist_Validated_By__c,Renewal_Checklist_Validated_Date__c FROM Renewal_Checklist__c WHERE Company__c =: accId AND Sales_Season__c=:currentSS WITH USER_MODE];
         List<Renewal_Checklist__c> newRenewalList = new List<Renewal_Checklist__c>();      
@@ -299,10 +367,57 @@ Returns: List of renewal checklist.
             newRenewalList.add(newRenewalRecord);
             insert as USER newRenewalList;
         }
-        renewalChecklistCls.generateAndSendRenewalChecklistPdf(accId, showAllData,currentSS); //SAMARTH
+        if(selectedEmails != null && !selectedEmails.isEmpty()){
+            renewalChecklistCls.sendChecklistToSelectedEmails(accId,selectedEmails,showAllData,currentSS);
+        }
+        else {
+            renewalChecklistCls.generateAndSendRenewalChecklistPdf(accId, showAllData,currentSS); //SAMARTH           
+        }
        
         return true;   
         
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<EmailOption> getValidationEmails(Id accId) {
+
+        List<EmailOption> options = new List<EmailOption>();
+
+        Account acc = [ SELECT Name, CM_SCE__r.Email, Surest_Members__c FROM Account WHERE Id = :accId WITH USER_MODE];
+
+        if(acc.CM_SCE__r != null && String.isNotBlank(acc.CM_SCE__r.Email)) {
+            options.add(new EmailOption('SCE', acc.CM_SCE__r.Email ));
+        }
+        
+        List<Service_AMT__c> emailList = [SELECT Email__c,Contact_Role__c,Name FROM Service_AMT__c WHERE Contact_Role__c IN ('Surest Client Manager','Client Manager', 'Client Management Consultant','UMR Client Manager','Underwriting Consultant') AND Company__c = :accId AND (Case_Management_End_Date__c = null OR Case_Management_End_Date__c >= TODAY) WITH USER_MODE];
+
+        for(Service_AMT__c amt : emailList){
+            options.add(new EmailOption(amt.Contact_Role__c, amt.Email__c ));
+        }
+
+        if(acc.Surest_Members__c != null && acc.Surest_Members__c > 0 && String.isNotBlank(Label.PharmacyOpsEmail)) {
+             options.add(new EmailOption(Label.PharmacyOpsEmail, Label.PharmacyOpsEmail ));
+        }
+
+         String labelEmails = System.Label.Surest_Fixed_Emails;
+         if(String.isNotBlank(labelEmails)) {
+            for(String email : labelEmails.split(';')) {
+                email = email.trim();
+                options.add(new EmailOption(email, email));
+            }
+         }
+
+        return options;
+    }
+
+    public class EmailOption {
+        @AuraEnabled public String label;
+        @AuraEnabled public String value;
+
+        public EmailOption(String label, String value){
+            this.label = label;
+            this.value = value;
+        }
     }
     
     @future(callout=true)
@@ -393,7 +508,63 @@ Returns: List of renewal checklist.
     }
     
     
-   
+    @AuraEnabled
+    public static void sendChecklistToSelectedEmails(String recordId, List<String> selectedEmails,  Boolean showAllData, String currentSS){
+        if(selectedEmails == null || selectedEmails.isEmpty()){
+            throw new AuraHandledException('No emails selected');
+        }
+        SavePoint sp;
+        EmailTemplate et = [SELECT Id, HtmlValue, Subject  FROM EmailTemplate WHERE DeveloperName = 'Renewal_Checklist_Validation_Email' LIMIT 1 ];
+
+        Account acc = [SELECT Id,Name,CM_SCE__c,CM_SCE__r.Name,CM_SCE__r.Email,Surest_Members__c FROM Account WHERE Id =: recordId WITH USER_MODE LIMIT 1 ];
+
+        PageReference pdf = Page.RenewalChecklistPdf;
+        pdf.getParameters().put('recordId', recordId);
+        pdf.getParameters().put('currentSS', currentSS);
+        pdf.getParameters().put('showAllData', String.valueOf(showAllData));
+        pdf.setRedirect(true);
+        Blob blobFile;
+        if(!Test.isRunningTest()){
+            blobFile = pdf.getContent();
+        } else {
+            blobFile = Blob.valueOf('Unit.Test');
+        }
+
+        String fileName = 'Product Change Checklist - ' + acc.Name +' - ' + System.now().format('MdYYYY') + '.pdf';
+        createContentVersion(blobFile, recordId, fileName);
+        sp = Database.setSavePoint();
+
+        String subject = et.Subject.replace('<CompanyName>', acc.Name);
+        String body = et.HtmlValue;
+        body = body.replace('<DateVlidated>', System.now().format('M/d/YYYY hh:mm a'));
+
+        Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+        Messaging.EmailFileAttachment attachment = new Messaging.EmailFileAttachment();
+
+        attachment.setFileName(fileName);
+        attachment.setBody(blobFile);
+
+        email.setToAddresses(selectedEmails);
+        email.setSubject(subject);
+        email.setHtmlBody(body);
+        email.setFileAttachments(new Messaging.EmailFileAttachment[] { attachment });
+        email.setWhatId(recordId);
+        email.setSaveAsActivity(true);
+
+        Messaging.SendEmailResult [] results = Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email});
+        for(Messaging.SendEmailResult result : results){
+            String errors = '';
+            if(!result.isSuccess()){
+                for(Messaging.SendEmailError err : result.getErrors()) {
+                    errors = errors + err.getStatusCode() + ': ' + err.getMessage();
+                }
+            }
+            if(errors !=''){
+                System.debug('Error ==>'+errors);
+            }
+        }
+    }
+
     
     
     public static void createContentVersion(Blob data, Id recordId, String fileName){
@@ -456,6 +627,9 @@ Returns: List of renewal checklist.
         
         @AuraEnabled
         public List<Renewal_Checklist__c> renewalCheckListData{get;set;}
+
+        @AuraEnabled
+        public List<Renewal_Checklist__c> lastYearChecklist{get;set;}
         
         /* @AuraEnabled
 public List<OpportunityLineItem> dentalVision{get;set;}

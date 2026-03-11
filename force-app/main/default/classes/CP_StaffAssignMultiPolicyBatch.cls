@@ -14,7 +14,7 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
     global static final Decimal ZERO = 0.0;
     global Database.QueryLocator start(Database.BatchableContext bc) {
         return Database.getQueryLocator(
-            'Select Id,Dedicated_to_case__c ,RecordTypeId, Staff_User_Assignment__r.Current_Weighting1__c ,Customer_Name__r.Capacity_Plan_Spclty_Outlier_Backend__c,Customer_Name__r.Capacity_Plan_Spl_Adj_Case_FTE_Backend__c,Customer_Name__r.Capacity_Plan_CMC_Adj_Case_FTE_Backend__c,Customer_Name__r.Capacity_Plan_UMR_Adj_Case_FTE_Backend__c,Customer_Name__r.Capacity_Plan_Surest_Outlier_Backend__c,Customer_Name__r.Capacity_Plan_SurestAdj_Case_FTE_Backend__c,Role_on_Case__c,of_case__c,CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c,CM_BOB_FTE_Based_on_Adj_Case_FTE1__c,Customer_Name__c, Medical_Policy_Number__c,   Customer_Name__r.Capacity_Planning_FTE__c, Customer_Name__r.Capacity_Planning_FTE_outlier_backend__c, End_Date__c,Medical_Policy_Number__r.CMC_ADJ_Case_FTE__c,Medical_Policy_Number__r.UMR_ADJ_Case_FTE__c, Customer_Name__r.Capacity_Plan_CMC_Outlier_Backend__c, Customer_Name__r.Capacity_Plan_UMR_Outlier_Backend__c,Staffing_Assignment__r.CMC_Override_Current_Weight__c, Staffing_Assignment__r.CMC_Current_Weight__c, Staffing_Assignment__r.Override_Current_Weight_User__c,Staffing_Assignment__r.SBC_Override_Current_Weighting__c,Staffing_Assignment__r.SBC_Current_Weighting__c From Staff_Assignment__c where Medical_Policy_Number__c = null and Customer_Name__c != null and Id = \'a0iVB000002xx1JYAQ\'',AccessLevel.USER_MODE
+            'Select Id,Dedicated_to_case__c ,RecordTypeId, Staff_User_Assignment__r.Current_Weighting1__c ,Customer_Name__r.Capacity_Plan_Spclty_Outlier_Backend__c,Customer_Name__r.Capacity_Plan_Spl_Adj_Case_FTE_Backend__c,Customer_Name__r.Capacity_Plan_CMC_Adj_Case_FTE_Backend__c,Customer_Name__r.Capacity_Plan_UMR_Adj_Case_FTE_Backend__c,Customer_Name__r.Capacity_Plan_Surest_Outlier_Backend__c,Customer_Name__r.Capacity_Plan_SurestAdj_Case_FTE_Backend__c,Role_on_Case__c,of_case__c,CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c,CM_BOB_FTE_Based_on_Adj_Case_FTE1__c,Customer_Name__c, Medical_Policy_Number__c,   Customer_Name__r.Capacity_Planning_FTE__c, Customer_Name__r.Capacity_Planning_FTE_outlier_backend__c, End_Date__c,Medical_Policy_Number__r.CMC_ADJ_Case_FTE__c,Medical_Policy_Number__r.UMR_ADJ_Case_FTE__c, Customer_Name__r.Capacity_Plan_CMC_Outlier_Backend__c, Customer_Name__r.Capacity_Plan_UMR_Outlier_Backend__c,Staffing_Assignment__r.CMC_Override_Current_Weight__c, Staffing_Assignment__r.CMC_Current_Weight__c, Staffing_Assignment__r.Override_Current_Weight_User__c,Staffing_Assignment__r.SBC_Override_Current_Weighting__c,Staffing_Assignment__r.SBC_Current_Weighting__c From Staff_Assignment__c where Medical_Policy_Number__c = null and Customer_Name__c != null',AccessLevel.USER_MODE
         );
     }
     
@@ -30,7 +30,7 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
         //***********************************varun*********************************************//
         Id ipmAssignmentId = Schema.SObjectType.Staff_Assignment__c.getRecordTypeInfosByName().get('IPM Assignment').getRecordTypeId();
         Set<Id> companyIds = new Set<Id>();
-  //      Map<Id,Decimal> hocMap = new Map<Id,Decimal>();
+        //Map<Id,Decimal> hocMap = new Map<Id,Decimal>();
         
         for(Staff_Assignment__c eachStaffAssign : scope){
             if(eachStaffAssign.RecordTypeId == ipmAssignmentId && eachStaffAssign.Customer_Name__c != null){
@@ -38,12 +38,11 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
             }
         }
         CP_StaffAssignMultiPolicyBatch.HocResultWrapper hocResult = calculateHOC(companyIds);
-                //Added by Vignesh
+        //Added Capacity Model 2025s
         Map<Id, Decimal> hocMap       = hocResult.hocRollupMap;
         Map<Id, Decimal> totalHoursMap = hocResult.totalHoursMap;
         Map<Id, Decimal> monthImpMap   = hocResult.monthImpMap;
-        
-        //Added New
+
         Set<Id> companyIdsall = new Set<Id>();
         for (Staff_Assignment__c mulitplePolicy : scope) {
             if (mulitplePolicy.Customer_Name__c != null) {
@@ -51,9 +50,9 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
             }
         }
         
-        System.debug('Company Ids => ' + companyIdsall);
         Map<Id, Decimal> companyToTotalPolicyAdjFte = new Map<Id, Decimal>();
-        List<Policy_Information__c> policyList = [SELECT Id, Company__c, Policy_Type__c, Adj_Case_FTE__c, UMR_ADJ_Case_FTE__c, Surest_Adj_Case_FTE__c, UMR__c,Surest__c,Adj_Case_FTE_for_outlierss__c,UMR_Adj_Case_FTE_for_Outliers__c, Surest_Adj_Case_FTE_for_Outlier__c FROM Policy_Information__c WHERE Company__c IN :companyIdsall and Policy_Status__c = 'Active'];
+        Map<Id, Decimal> companyToTotalPolicyAdjOutlierFte = new Map<Id, Decimal>();
+        List<Policy_Information__c> policyList = [SELECT Id, Company__c, Policy_Type__c, Adj_Case_FTE__c, UMR_ADJ_Case_FTE__c, Surest_Adj_Case_FTE__c, UMR__c,Surest__c,Adj_Case_FTE_for_outlierss__c,UMR_Adj_Case_FTE_for_Outliers__c, Surest_Adj_Case_FTE_for_Outlier__c FROM Policy_Information__c WHERE Company__c IN :companyIdsall and Policy_Status__c = 'Active' AND Policy_Type__c INCLUDES ('Medical')];
         Decimal totalAdjCaseFte = 0;
 		Decimal totalAdjOutlierCaseFte = 0;
         for (Policy_Information__c pi : policyList){
@@ -82,14 +81,8 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
     		totalAdjCaseFte = umrToAdd + surestToAdd + adjToAdd;
             totalAdjOutlierCaseFte = umrOutlierToAdd + surestOutlierToAdd + adjOutlierToAdd;
             companyToTotalPolicyAdjFte.put(pi.Company__c, (companyToTotalPolicyAdjFte.containsKey(pi.Company__c) ? companyToTotalPolicyAdjFte.get(pi.Company__c) : 0 ) + totalAdjCaseFte );
-            companyToTotalPolicyAdjFte.put(pi.Company__c, (companyToTotalPolicyAdjFte.containsKey(pi.Company__c) ? companyToTotalPolicyAdjFte.get(pi.Company__c) : 0 ) + totalAdjOutlierCaseFte );
-
-            System.debug('Company Total Adj FTE so far => ' + companyToTotalPolicyAdjFte.get(pi.Company__c));
-        }
-       
-        
-        
-        
+            companyToTotalPolicyAdjOutlierFte.put(pi.Company__c, (companyToTotalPolicyAdjOutlierFte.containsKey(pi.Company__c) ? companyToTotalPolicyAdjOutlierFte.get(pi.Company__c) : 0 ) + totalAdjOutlierCaseFte );
+		  }
         
         //***********************************varun*********************************************//
         
@@ -97,22 +90,9 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
             system.debug('Policy Info Id = '+eachStaffAssign.Id);
             Decimal ofCase = eachStaffAssign.of_case__c;
             eachStaffAssign.Hours_Of_Complexity_Backend__c = hocMap.get(eachStaffAssign.Customer_Name__c);
-            //Added by Vignesh
+            //Added Capacity Model 2025s
             eachStaffAssign.Total_of_hours_Backend__c = totalHoursMap.get(eachStaffAssign.Customer_Name__c);
             eachStaffAssign.Months_Implementing_Backend__c = monthImpMap.get(eachStaffAssign.Customer_Name__c);
-            
-            //Added New
-            Decimal totalPolicyAdjFte = companyToTotalPolicyAdjFte.containsKey(eachStaffAssign.Customer_Name__c) ? companyToTotalPolicyAdjFte.get(eachStaffAssign.Customer_Name__c) : 0;
-            System.debug('Final Total Policy Adj FTE for Customer ' + eachStaffAssign.Customer_Name__c + ' => ' + totalPolicyAdjFte);
-            System.debug('ofCase Value => ' + ofCase);
-            Decimal fteOfCasefinal = ofCase*totalPolicyAdjFte;
-            System.debug('Final FTE of Case => ' + fteOfCasefinal);
-            
-            Decimal totalPolicyAdjOutlierFte = companyToTotalPolicyAdjFte.containsKey(eachStaffAssign.Customer_Name__c) ? companyToTotalPolicyAdjFte.get(eachStaffAssign.Customer_Name__c) : 0;
-            System.debug('Final Total Policy Adj FTE for Customer ' + eachStaffAssign.Customer_Name__c + ' => ' + totalPolicyAdjFte);
-            System.debug('ofCase Value => ' + ofCase);
-            Decimal fteOfOutlierCasefinal = ofCase*totalPolicyAdjOutlierFte;
-            System.debug('Final FTE of Case => ' + fteOfCasefinal);
 
             
             if( eachStaffAssign.End_Date__c == null || eachStaffAssign.End_Date__c >= System.today() ){
@@ -125,7 +105,13 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
                 Decimal outlierOfCase           = ofCase* fteoutlieRounded;
                 Decimal currentUserWeightage    = eachStaffAssign.Staff_User_Assignment__r.Current_Weighting1__c;
                 
-                
+            //Added Capacity Model 2025s
+            Decimal totalPolicyAdjFte = companyToTotalPolicyAdjFte.containsKey(eachStaffAssign.Customer_Name__c) ? companyToTotalPolicyAdjFte.get(eachStaffAssign.Customer_Name__c) : 0;
+            Decimal fteOfCasefinal = ofCase*totalPolicyAdjFte;
+            
+            Decimal totalPolicyAdjOutlierFte = companyToTotalPolicyAdjOutlierFte.containsKey(eachStaffAssign.Customer_Name__c) ? companyToTotalPolicyAdjOutlierFte.get(eachStaffAssign.Customer_Name__c) : 0;
+            Decimal fteOfOutlierCasefinal = ofCase*totalPolicyAdjOutlierFte;
+                            
                 if(currentUserWeightage== null){
                     currentUserWeightage=CP_StaffAssignMultiPolicyBatch.ZERO;
                 }
@@ -156,30 +142,10 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
                 Decimal cmcBobFte = cmcFteRounded * ofCase;
                 Decimal umrBobFte = umrFteROunded * ofCase;
                 Decimal specialtyBobFte = specialtyFteROunded * ofCase;
-                system.debug('eachStaffAssign.Id = '+eachStaffAssign.Id);
-                system.debug('cmcFteRounded = '+cmcFteRounded);
-                system.debug('umrFteROunded = '+umrFteROunded);
-                system.debug('specialtyFteROunded = '+specialtyFteROunded);
-                system.debug('cmcBobFte = '+cmcBobFte);
-                system.debug('umrBobFte = '+umrBobFte);
-                system.debug('specialtyBobFte = '+specialtyBobFte);
-                system.debug('ofCase = '+ofCase);
-                system.debug('cmcBobFte = '+cmcBobFte);
-                //Added by Vignesh - Capacity Model 2025s
+              
                 Decimal surestFteROunded = eachStaffAssign.Customer_Name__r.Capacity_Plan_SurestAdj_Case_FTE_Backend__c.setScale(4,RoundingMode.HALF_UP);
                 Decimal surestBobFte = surestFteROunded * ofCase;
-                
-         /*       Decimal allTraditionalRounded = fteRounded + umrFteROunded +surestFteROunded;
-                Decimal allTraditionalBobFte = allTraditionalRounded * ofCase;
-                
-                System.debug('fteRounded = ' + fteRounded);
-                System.debug('umrFteROunded = ' + umrFteROunded);
-                System.debug('surestFteROunded = ' + surestFteROunded);
-                System.debug('allTraditionalRounded = ' + allTraditionalRounded);
-                System.debug('ofCase = ' + ofCase);
-				System.debug('allTraditionalBobFte = ' + allTraditionalBobFte); */
-                
-                
+                               
                 //---------------------------------------------------------SAMARTH---------------------------------------------------------
                 Decimal cmcOutlierRounded = eachStaffAssign.Customer_Name__r.Capacity_Plan_CMC_Outlier_Backend__c.setScale(4,RoundingMode.HALF_UP);
                 Decimal umrOutlierRounded = eachStaffAssign.Customer_Name__r.Capacity_Plan_UMR_Outlier_Backend__c.setScale(4,RoundingMode.HALF_UP);
@@ -187,32 +153,23 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
                 Decimal cmcAdjFteOutlier = cmcOutlierRounded * ofCase;
                 Decimal umrAdjFteOutlier = umrOutlierRounded * ofCase;
                 Decimal specialtyAdjFteOutlier = specialtyOutlierRounded * ofCase;
-                
-                system.debug('cmcOutlierRounded = '+cmcOutlierRounded);
-                system.debug('umrOutlierRounded = '+umrOutlierRounded);
-                system.debug('specialtyOutlierRounded = '+specialtyOutlierRounded);
-                system.debug('cmcAdjFteOutlier = '+cmcAdjFteOutlier);
-                system.debug('umrAdjFteOutlier = '+umrAdjFteOutlier);
-                system.debug('specialtyAdjFteOutlier = '+specialtyAdjFteOutlier);
-                //Added by Vignesh - Capacity Model 2025s
+ 
                 Decimal surestOutlierRounded = eachStaffAssign.Customer_Name__r.Capacity_Plan_Surest_Outlier_Backend__c.setScale(4,RoundingMode.HALF_UP);
                 Decimal surestAdjFteOutlier = surestOutlierRounded * ofCase;
+            
                 //---------------------------------------------------------SAMARTH---------------------------------------------------------
-
-               
-                
+          
                 Decimal cmcOverRideCurrentUserWeight = eachStaffAssign.Staffing_Assignment__r.CMC_Override_Current_Weight__c != null ? eachStaffAssign.Staffing_Assignment__r.CMC_Override_Current_Weight__c : null;
                 Decimal cmcCurrentUserWeight = eachStaffAssign.Staffing_Assignment__r.CMC_Current_Weight__c != null ? eachStaffAssign.Staffing_Assignment__r.CMC_Current_Weight__c : CP_StaffAssignMultiPolicyBatch.ZERO; 
                 Decimal overRideCurrentWeightUser = eachStaffAssign.Staffing_Assignment__r.Override_Current_Weight_User__c != null ? eachStaffAssign.Staffing_Assignment__r.Override_Current_Weight_User__c : null;
                 Decimal cmcResult = cmcOverRideCurrentUserWeight != null ? cmcOverRideCurrentUserWeight : cmcCurrentUserWeight;
                 Decimal specialtyResult = eachStaffAssign.Staffing_Assignment__r.SBC_Override_Current_Weighting__c != null ? eachStaffAssign.Staffing_Assignment__r.SBC_Override_Current_Weighting__c : eachStaffAssign.Staffing_Assignment__r.SBC_Current_Weighting__c;
                 Decimal userWeightFinal =  overRideCurrentWeightUser != null ? overRideCurrentWeightUser : currentUserWeightage;
-                
+              
                 if(eachStaffAssign.Medical_Policy_Number__c == null){
                     if(eachStaffAssign.Dedicated_to_case__c == 'Yes' && eachStaffAssign.Role_on_Case__c == 'Client Management Consultant'){
                         eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c = math.max(cmcBobFte, cmcResult);
                         eachStaffAssign.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c	= math.max(cmcAdjFteOutlier, cmcResult); //SAMARTH
-                        system.debug('eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c = '+eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c);
                     }
                     else if((eachStaffAssign.Dedicated_to_case__c == 'No' || eachStaffAssign.Dedicated_to_case__c == null) && eachStaffAssign.Role_on_Case__c == 'Client Management Consultant'){
                         eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c = cmcBobFte;
@@ -240,28 +197,26 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
                     if(eachStaffAssign.Dedicated_to_case__c == 'Yes' && (eachStaffAssign.Role_on_Case__c == 'Client Manager' || eachStaffAssign.Role_on_Case__c == 'Benefit Consultant')){
                         eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c = math.max(fteOfCasefinal, userWeightFinal);
                         eachStaffAssign.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c	= math.max(fteOfOutlierCasefinal, userWeightFinal);
-                    }
+                     }
                     else if((eachStaffAssign.Dedicated_to_case__c == 'No' || eachStaffAssign.Dedicated_to_case__c == null)  && (eachStaffAssign.Role_on_Case__c == 'Client Manager' || eachStaffAssign.Role_on_Case__c == 'Benefit Consultant')){
                         eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c = fteOfCasefinal;
                         eachStaffAssign.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c = fteOfOutlierCasefinal;
-                    }
+                     }
                     
-                    //Added by Vignesh -- Capacity Model 2025s
+                    //Added Capacity Model 2025s              
                     if(eachStaffAssign.Dedicated_to_case__c == 'Yes' && eachStaffAssign.Role_on_Case__c == 'Surest Client Manager'){
                         eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c = math.max(surestBobFte, userWeightFinal);
-                        eachStaffAssign.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c	= math.max(surestAdjFteOutlier, userWeightFinal); //SAMARTH
-                    }
+                        eachStaffAssign.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c	= math.max(surestAdjFteOutlier, userWeightFinal); 
+                      }
                     else if((eachStaffAssign.Dedicated_to_case__c == 'No' || eachStaffAssign.Dedicated_to_case__c == null)&& eachStaffAssign.Role_on_Case__c == 'Surest Client Manager'){
                         eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c = surestBobFte;
-                        eachStaffAssign.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c	= surestAdjFteOutlier; //SAMARTH                       
-                    }
+                        eachStaffAssign.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c	= surestAdjFteOutlier; 
+                         }
                 }
-                
                 
                 //--------------------------------------------------------------------- Varun ---------------------------------------------------------------------//
                 
             }
-            system.debug('eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c  outer= '+eachStaffAssign.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c);
             staffAssignmentUpdateDmlList.add(eachStaffAssign);
         }
         
@@ -293,15 +248,13 @@ global with sharing class CP_StaffAssignMultiPolicyBatch implements Schedulable,
         for (AggregateResult ar : results){
             Id companyId = (Id) ar.get('Company__c');
             Decimal totalComplexity = (Decimal) ar.get('totalComplexity');
-            //Added by Vignesh - Capacity Model
+            //Added Capacity Model
             Decimal totalHours = (Decimal) ar.get('TotalHours');
             Decimal totalMonthImp = (Decimal) ar.get('MonthImp');
             
-            hocRollupMap.put(companyId, totalComplexity);
-            
+            hocRollupMap.put(companyId, totalComplexity);           
             totalHoursMap.put(companyId, totalHours);
-      	 	monthImpMap.put(companyId, totalMonthImp);
-            
+      	 	monthImpMap.put(companyId, totalMonthImp);          
         }
         
         HocResultWrapper wrapper = new HocResultWrapper();

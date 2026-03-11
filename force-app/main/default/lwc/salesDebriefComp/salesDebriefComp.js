@@ -12,7 +12,6 @@ import sdFutureYear from '@salesforce/label/c.Sales_Debrief_Future_Year';
 import sdNotConfigured from '@salesforce/label/c.Sales_Debrief_Not_Configured';
 
 import { checkForAdvocacySolutionsAgainstUMR } from './helper';
-
 /****************Shruti*******************Start*/
 import sdOverridePicklistNoneCD from '@salesforce/label/c.Sales_Debrief_Override_None_For_CD';
 import sdOverridePicklistNoneCM from '@salesforce/label/c.Sales_Debrief_Override_None_For_CM';
@@ -115,6 +114,9 @@ export default class salesDebriefComp extends LightningElement {
     isSpecialtyProductsPresent = false;
     // isSpecialtyProductsPresentWithDisposition = false;
     salesDebriefType;
+//Added
+    hasUnsavedChanges = false;
+
 
     isPharmacyOpportunityPresent;
     pharmacySalesDebriefValue;
@@ -142,8 +144,9 @@ export default class salesDebriefComp extends LightningElement {
     /****************Shruti*******************End*/
 
     connectedCallback() {
-        this.getSalesDebriefRecords();
+        this.getSalesDebriefRecords();  
     }
+
 
     /*Data is returned from apex. 
     It is manipulated into properly structured JSON 
@@ -317,7 +320,7 @@ export default class salesDebriefComp extends LightningElement {
                 this.accountName = this.opportunityData.Account.Name;
                 this.membershipActivityName = this.opportunityData.Name;
                 this.oppRecType = this.opportunityData.RecordType.DeveloperName;
-                this.hasQuad4 = (this.opportunityData.Account.Coveted_Account__c != null || this.opportunityData.Account.Coveted_Account__c != undefined) ? true : false;
+                this.hasQuad4 = (this.opportunityData.Quad4__c != null || this.opportunityData.Quad4__c != undefined) ? true : false;
 
                 if (this.opportunityData.Platforms_Quoted__c != null && this.opportunityData.Platforms_Quoted__c != undefined) {
                     this.platformsQuoted = this.opportunityData.Platforms_Quoted__c;
@@ -1732,6 +1735,7 @@ export default class salesDebriefComp extends LightningElement {
     /*Called on change of any field in UI.
     Dependencies, Write In box, purging of data has been handled*/
     handleChange(event) {
+        this.dispatchEvent(new CustomEvent('notifychange'));
         let tempObj = {};
         let currentValue = event.target.value;
         let apiName = event.target.dataset.api;
@@ -2094,7 +2098,10 @@ export default class salesDebriefComp extends LightningElement {
 
     /*Called on click of Save button. Sends the data back to apex 
     for insertion or updation of records*/
+    @api
     handleSave() {
+        
+        this.hasUnsavedChanges = false;
         this.isLoad = true;
         this.isEditMode = false;
 
@@ -2119,6 +2126,8 @@ export default class salesDebriefComp extends LightningElement {
                     variant: 'success'
                 });
                 this.dispatchEvent(event);
+
+                this.dispatchEvent(new CustomEvent('notifysave'));
             })
             .catch((error) => {
                 console.log('error ' + JSON.stringify(error));

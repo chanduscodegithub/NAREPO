@@ -2,8 +2,53 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Surest_Active_ASO_Benefit_Sets_Score__c</fullName>
     <externalId>false</externalId>
-    <formula>SurestTotal_Active_Benefit_Sets_Count__c  *  Total_Active_Benefit_Set_Count_Weightage__c</formula>
+    <formula>IF(
+AND(
+    Surest_Plans__c &gt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_1_30.Start_Range__c,
+    Surest_Plans__c &lt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_1_30.End_Range__c
+),
+$CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_1_30.Weightage__c * Surest_Plans__c,
+
+IF(
+AND(
+    Surest_Plans__c &gt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_31_50.Start_Range__c,
+    Surest_Plans__c &lt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_31_50.End_Range__c
+),
+$CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_31_50.Weightage__c * Surest_Plans__c,
+
+IF(
+AND(
+    Surest_Plans__c &gt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_51_65.Start_Range__c,
+    Surest_Plans__c &lt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_51_65.End_Range__c
+),
+$CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_51_65.Weightage__c * Surest_Plans__c,
+
+IF(
+AND(
+    Surest_Plans__c &gt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_66_80.Start_Range__c,
+    Surest_Plans__c &lt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_66_80.End_Range__c
+),
+$CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_66_80.Weightage__c * Surest_Plans__c,
+
+IF(
+AND(
+    Surest_Plans__c &gt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_81_100.Start_Range__c,
+    Surest_Plans__c &lt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_81_100.End_Range__c
+),
+$CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_81_100.Weightage__c * Surest_Plans__c,
+
+IF(
+    Surest_Plans__c &gt;= $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_101_or_more.Start_Range__c,
+    $CustomMetadata.Capacity_Plan_Common_Metadata__mdt.Active_UMR_Plans_Range_101_or_more.Weightage__c * Surest_Plans__c,
+    0
+)
+)))))</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>An active benefit set is defined as a Benefit Plan Design with regular activity.  
+Regular activity is defined as requiring annual (or more frequent) updates as part of the renewal process. 
+Include Dental or Vision Benefit Set.
+Pulled from ACIS twice a year
+Any frozen ASO sets subtracted from this field</inlineHelpText>
     <label>Surest Active ASO Benefit Sets Score</label>
     <precision>18</precision>
     <required>false</required>

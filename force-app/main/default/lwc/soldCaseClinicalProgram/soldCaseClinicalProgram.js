@@ -11,7 +11,7 @@ import getOtherBuyUpProducts from '@salesforce/apex/SoldChecklistHandler.getOthe
 
 export default class SoldCaseClinicalProgram extends LightningElement {
 
-    @track activeSections = "Clinical Programs - Surest";
+    @track activeSections = "Surest Sold Case Checklist";
     @api editmode;
     @api opportunityFieldLabels;
     @api userTimeZone;
@@ -107,6 +107,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
         });     
     }
 
+
     getOtherBuyUpProductsInfo(){
         return getOtherBuyUpProducts({})
         .then(data => {
@@ -146,7 +147,9 @@ export default class SoldCaseClinicalProgram extends LightningElement {
                     field: m.fieldApiName,
                     label: m.label,
                     isActive: m.isActive,
-                    yesNoOnly: m.yesNoOnly
+                    yesNoOnly: m.yesNoOnly,
+                    restrictSurestOptions: m.restrictSurestOptions,
+                    restrictDirectContractOption: m.restrictDirectContractOption
                 });
             });
     
@@ -185,6 +188,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
         const updatedSoldCaseDataCopy = { ...this.soldCaseDataCopy };
         const readOnlyFlags = {};
         const isDual = {};
+        const productFieldValues = {};
 
         if (Array.isArray(this.opplineitemcopy)) {
             this.opplineitemcopy.forEach(item => {
@@ -213,20 +217,6 @@ export default class SoldCaseClinicalProgram extends LightningElement {
                     readOnlyFlags[fieldName] = false;
                 }
 
-                // const displayCfg = this.displayConfig.find(cfg => cfg.field === fieldName);
-                // const isActiveCMDT = displayCfg?.isActive;
-                // const existingValue = this.soldCaseDataCopy?.[fieldName];
-
-                // // If CMDT says product is inactive
-                // if (isActiveCMDT === false) {
-                //     if (existingValue && existingValue !== "") {
-                //         // Case 1: inactive + existing data → mark READ-ONLY
-                //         readOnlyFlags[fieldName] = true;
-                //     } else {
-                //         // Case 2: inactive + NO existing data → UI will filter it out
-                //         return; 
-                //     }
-                // }
             });
         }
 
@@ -236,12 +226,15 @@ export default class SoldCaseClinicalProgram extends LightningElement {
             }
         });
 
+         console.log('productInfoMap  ---> ' + JSON.stringify(this.productInfoMap));
+
         Object.entries(this.productCodeChecklistMap).forEach(([productCode, fieldName]) => {
             const product = this.productInfoMap?.[productCode];
             const surestVal = product?.Surest_Applicable_Products__c;
             if (surestVal === 'Available for Surest only with UNET') {
                 isDual[fieldName] = true;
             }
+            productFieldValues[fieldName] = product?.Surest_Implementation_Lead_Time__c ;
         
         });
 
@@ -265,7 +258,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
 
         this.readOnlyFlags = readOnlyFlags;
         this.isDual = isDual;
-
+        this.productFieldValues = productFieldValues;
         editfielddetails.forEach(item => {
             if (item.fieldedited.indexOf('Sold_Case_Checklist__c.') !== -1) {
                 let cloneLookupRecord = Object.assign({}, this.updatedSoldCaseData);
@@ -275,13 +268,13 @@ export default class SoldCaseClinicalProgram extends LightningElement {
         });
 
         setTimeout(() => {
-            this.handleDefaultValueSave();
+            //this.handleDefaultValueSave();
         }, 0);
 
-        const ClientDetailRecord = new CustomEvent("progressvaluechange", {
-            detail: editfielddetails
-        });
-        this.dispatchEvent(ClientDetailRecord);
+        // const ClientDetailRecord = new CustomEvent("progressvaluechange", {
+        //     detail: editfielddetails
+        // });
+        // this.dispatchEvent(ClientDetailRecord);
     }
 
     handleDefaultValueSave(){
@@ -323,11 +316,9 @@ export default class SoldCaseClinicalProgram extends LightningElement {
             const mainValue = this.soldCaseDataCopy?.[item.field];
             let finalReadOnly = false;
 
-            // 1️⃣ Inactive CMDT + existing data = READONLY
             if (item.isActive === false && mainValue !== "" && mainValue != null) {
                 finalReadOnly = true;
             }
-            // 2️⃣ Otherwise fall back to whatever setSCCFieldValues set
             else {
                 finalReadOnly = this.readOnlyFlags?.[item.field] || false;
             }
@@ -340,13 +331,45 @@ export default class SoldCaseClinicalProgram extends LightningElement {
                 readonly: this.readOnlyFlags?.One_Pass_Subsidized__c || false
             } : null;
 
-            const options = item.yesNoOnly
-                ? [
+            // const options = item.yesNoOnly
+            //     ? [
+            //         { label: '', value: '' },
+            //         { label: 'Yes', value: 'Yes' },
+            //         { label: 'No', value: 'No' }
+            //     ]
+            //     : this.picklistValuesOP;
+
+            let options;
+
+            if (item.restrictSurestOptions) {
+                options = [
+                    { label: '', value: '' },
+                    { label: 'Yes - Direct with Surest', value: 'Yes - Direct with Surest' },
+                    { label: 'No', value: 'No' }
+                ];
+            }
+            else if (item.restrictDirectContractOption){
+                options =  [
+                    { label: '', value: '' },
+                    { label: 'Yes - Sold', value: 'Yes - Sold' },
+                    { label: 'Yes - Retained', value: 'Yes - Retained' },
+                    { label: 'Yes - Direct Contract', value: 'Yes - Direct Contract'},
+                    { label: 'No - N/A', value: 'No - N/A' },
+                    { label: 'No - Term', value: 'No - Term' }
+                ];
+            }
+            else if (item.yesNoOnly) {
+                options = [
                     { label: '', value: '' },
                     { label: 'Yes', value: 'Yes' },
                     { label: 'No', value: 'No' }
-                ]
-                : this.picklistValuesOP;
+                ];
+            }
+            else {
+                options = this.picklistValuesOP;
+            }
+
+            const productValue = this.productFieldValues?.[item.field] || '';
 
             return {
                 label: item.label,
@@ -357,10 +380,11 @@ export default class SoldCaseClinicalProgram extends LightningElement {
                 relatedField,
                 options: options,
                 isDual: this.isDual?.[item.field] || false,
+                productValue,
                 labelClass: isOnePass && showRelatedField
-                    ? 'slds-col slds-size_1-of-4 slds-p-around_xx-small'
-                    : 'slds-col slds-size_2-of-4 slds-p-around_xx-small',
-                mainClass: 'slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right'
+                    ? 'slds-col slds-size_1-of-5 slds-p-around_xx-small'
+                    : 'slds-col slds-size_2-of-5 slds-p-around_xx-small',
+                mainClass: 'slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right'
             };
         });
         

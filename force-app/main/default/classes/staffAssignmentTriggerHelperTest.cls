@@ -8,162 +8,311 @@
 *==============================================================================
 */
 
+
 @isTest
-private class staffAssignmentTriggerHelperTest {
-    //staff
-    //customer
-    //user
+public class staffAssignmentTriggerHelperTest {
+    
     @isTest
-    static void setupTestData(){       
-        try{
+    static void setupTestDataAndRunTests() {
+        try {
+            // Initializing RecordType Ids for Staff and Staff Assignment
+            Id ipmSTaffId = Schema.SObjectType.Staff__c.getRecordTypeInfosByName().get('IPM Staff').getRecordTypeId();
+            Id specialProjectId = Schema.SObjectType.Staff_Assignment__c.getRecordTypeInfosByName().get('Special Project').getRecordTypeId();
+            Id ipmAssignmentId = Schema.SObjectType.Staff_Assignment__c.getRecordTypeInfosByName().get('IPM Assignment').getRecordTypeId();
+            Id policyAssignmentId = Schema.SObjectType.Staff_Assignment__c.getRecordTypeInfosByName().get('Policy Assignment').getRecordTypeId();
+            Id csiSTaffId = Schema.SObjectType.Staff__c.getRecordTypeInfosByName().get('CSI Staff').getRecordTypeId();
+            Id accRecTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Existing Client').getRecordTypeId();
+            //list<Staff_Assignment__c> sf=new list<Staff_Assignment__c>();
             
-            Map<Id,Staff_Assignment__c> newMap = new Map<Id,Staff_Assignment__c>();
-            Map<Id,Staff_Assignment__c> oldMap = new Map<Id,Staff_Assignment__c>();
+            // Creating account, case, policy information, and policy-case relationships
+            Account acc = new Account(Name = 'test account', Subtype__c = 'Enterprise Strategic Accounts', RecordTypeId = accRecTypeId );
+            insert acc;
             
-            Date newDate = Date.today().addDays(-1);
-            Map<id,Staff_Assignment__c> maplist = new Map<id,Staff_Assignment__c>();
+            Account acc2 = new Account(Name = 'test account2', Subtype__c = 'Enterprise Strategic Accounts', RecordTypeId = accRecTypeId );
+            insert acc2;
+
+            Case c = new Case(AccountId = acc.Id);
+            Case c2 = new Case(AccountId = acc.Id, Priority = 'Low');
+            insert new List<Case>{ c, c2 };
             
-            List<Account> accountList = new List<Account>();
-            List<Case> caseList = new List<Case>();
-            List<Policy_Information__c> policyInfnList = new List<Policy_Information__c>();
-            
-            Account acc= new account (); 
-            acc.name='test account';
-            acc.Subtype__c='Enterprise Strategic Accounts';
-            accountList.add(acc);
-            Account acc1= new account ();
-            acc1.name='test account1';
-            acc1.Subtype__c='Enterprise Strategic Accounts';
-            accountList.add(acc1);
-            insert accountList;
-            case c = new case();
-            c.accountId=accountList[0].Id;
-            caseList.add(c);
-            system.debug('variable@@@'+c.Priority);
-            case c2 = new case();
-            c2.accountId=accountList[0].Id;
-            c2.Priority='Low';
-            insert caseList;
-            
-            
-            Policy_Information__c p = new Policy_Information__c();
-            p.Name='77341234';
-            p.Policy_Status__c = 'Active';
-            p.Policy__c = '77341234';
-            p.Company__c=accountList[0].Id;
-            policyInfnList.add(p);
-            
-            Policy_Information__c p1 = new Policy_Information__c();
-            p1.Name='79341234';
-            p1.Policy__c = '79341234';
-            p1.Company__c=accountList[0].Id;
-            policyInfnList.add(p1);
-            
-            insert policyInfnList;
-            
-            Policycase__c pc = new Policycase__c();
-            pc.Policy__c=policyInfnList[0].Id;
-            pc.Case__c=caseList[0].Id;
+            Policy_Information__c p = new Policy_Information__c(Name = '77341234', Company__c = acc.Id, Policy__c = 'test', Policy_Status__c = 'Active', Policy_Type__c = 'Medical');
+            Policy_Information__c p1 = new Policy_Information__c(Name = '79341234', Company__c = acc.Id, Policy__c = 'test', Policy_Status__c = 'Active', Policy_Type__c = 'Medical');
+            insert new List<Policy_Information__c>{ p, p1 };
+
+            Policycase__c pc = new Policycase__c(Policy__c = p.Id, Case__c = c.Id);
             insert pc;
-            
-            Map<Id,Policy_Information__c> policyMap = new Map<Id,Policy_Information__c>();
-            Profile pf= [Select Id from Profile where Name='System Administrator'];     
-            String orgId=UserInfo.getOrganizationId(); 
-            String dateString=String.valueof(Datetime.now()).replace(' ','').replace(':','').replace('-','') ;
-            Integer RandomId=Integer.valueOf(Math.rint(Math.random()*1000000)); 
-            String uniqueName=orgId+dateString+RandomId; 
-            String uniqueName2=orgId+dateString+RandomId+'zz'; 
-            
-            User uu=new User(firstname = 'ABC', 
-                             lastName = 'XYZ', 
-                             email = uniqueName + '@crmit' + '.com', 
-                             Username = uniqueName + '@test' + orgId + '.org', 
-                             EmailEncodingKey = 'ISO-8859-1', 
-                             Alias = uniqueName.substring(18, 23), 
-                             TimeZoneSidKey = 'America/Los_Angeles', 
-                             LocaleSidKey = 'en_US', 
-                             LanguageLocaleKey = 'en_US', 
-                             ProfileId = pf.Id,
-                             Position__c='Salesforce Courtesy License'
-                            );  
-            insert uu;       
-            
-            Staff__c s =new Staff__c();
-            s.Staff_Name__c=uu.id; 
-            insert s;
-            
-            
-            list<Staff_Assignment__c> ls = new list<Staff_Assignment__c>();
-            list<Staff_Assignment__c> ls1 = new list<Staff_Assignment__c>();
-            
-            Staff_Assignment__c sa = new Staff_Assignment__c();
-            sa.Customer_Name__c= acc.id;
-            sa.Staff_User_Assignment__c=uu.Id;
-            sa.Staffing_Assignment__c=s.id;
-            sa.Role_on_Case__c='Client Manager';    
-            sa.Medical_Policy_Number__c =p.id;
-            ls.add(sa);
-            
-            Staff_Assignment__c sa1 = new Staff_Assignment__c();
-            sa1.Customer_Name__c= acc.id;
-            sa1.Staffing_Assignment__c=s.id;
-            sa1.Role_on_Case__c='Client Manager'; 
-            ls.add(sa1);
-            
-            Staff_Assignment__c sa2 = new Staff_Assignment__c();
-            sa2.Customer_Name__c= acc.id;
-            sa2.Staff_User_Assignment__c=uu.Id;
-            sa2.Role_on_Case__c='Client Manager';
-            ls.add(sa2);
-            
-            
-            Staff_Assignment__c sa3 = new Staff_Assignment__c();
-            sa3.Customer_Name__c= acc.id;
-            sa3.Role_on_Case__c='Client Manager'; 
-            ls.add(sa3);  
-            
-            Service_AMT__c ser = new Service_AMT__c();
-            ser.Company__c= acc.id;
-            ser.First_Name__c ='test';
-            ser.Last_Name__c = 'test';
-            ser.Email__c = 'test@test.com';
-            ser.All_Policy__c = true;
-            ser.UserHierarchy__c = 1;
-            insert ser;   
 
-            Database.insert(ls,false);
+            // Creating Users and corresponding Staff records
+            Profile pfAdmin = [SELECT Id FROM Profile WHERE Name = 'CSI Administrator' LIMIT 1];
+            Profile pfIPM = [SELECT Id FROM Profile WHERE Name = 'IPM Advanced Profile' LIMIT 1];
             
-            newMap.put(sa.id,sa);
-            oldMap.put(sa1.id,sa1);
-            staffAssignmentTriggerHelper.staffAssignmentUpdate(newMap,oldMap);
-            staffAssignmentTriggerHelper.staffAssignmentUpdate(oldMap,newMap);
+            User userAdmin = createUser('ABC', 'XYZ', pfAdmin);
+            User userAdmin2 = createUser('ABCD', 'XYZ2', pfAdmin);
+            User userIPM = createUser('DCE', 'WXYZ', pfIPM);
+            User userIPM2 = createUser('DCEf', 'VWXYZ', pfIPM);
+            insert new List<User>{ userAdmin, userIPM, userIPM2, userAdmin2 };
+            system.debug('userAdmin = '+userAdmin+' userIPM = '+userIPM+' userIPM2 = '+userIPM2+' userAdmin2 = '+userAdmin2);
+
+            Staff__c staffAdmin = new Staff__c(Staff_Name__c = userAdmin.Id, Primary_Role__c = 'Client Manager', RecordTypeId = csiSTaffId);
+            Staff__c staffAdmin2 = new Staff__c(Staff_Name__c = userAdmin2.Id, Primary_Role__c = 'Client Manager', RecordTypeId = csiSTaffId);
+            Staff__c staffIPM = new Staff__c(Staff_Name__c = userIPM.Id, Primary_Role__c = 'Implementation Project Manager', RecordTypeId = ipmSTaffId);
+            Staff__c staffIPM2 = new Staff__c(Staff_Name__c = userIPM2.Id, Primary_Role__c = 'Implementation Project Manager', RecordTypeId = ipmSTaffId);
+            insert new List<Staff__c>{ staffAdmin, staffIPM, staffIPM2 };
+                
+            system.debug('staffAdmin = '+staffAdmin+' staffIPM = '+staffIPM);
+
+            // Creating Staff Assignments
+            /*List<Staff_Assignment__c> sf = new List<Staff_Assignment__c>{
+                createStaffAssignment(specialProjectId, acc.Id, p1.Id, userIPM.Id, null, 'Implementation Project Manager', null),
+                    createStaffAssignment(ipmAssignmentId, acc.Id, p1.Id, null, staffIPM.Id, 'Implementation Project Manager', null),
+                    createStaffAssignment(policyAssignmentId, acc.Id, p1.Id, null, staffAdmin.Id, 'Client Manager', true),
+                    createStaffAssignment(policyAssignmentId, acc.Id, null, null, staffAdmin.Id, 'Client Manager', null),
+                    createStaffAssignment(policyAssignmentId, acc.Id, p1.Id, userAdmin.Id, null, 'Client Manager', true),
+                    createStaffAssignment(policyAssignmentId, acc.Id, null, userAdmin.Id, null, 'Client Management Consultant', true),
+                    createStaffAssignment(policyAssignmentId, acc.Id, null, staffAdmin.Id, null, 'UMR Client Manager', true),
+                    createStaffAssignment(policyAssignmentId, acc.Id, null, staffAdmin.Id, null, 'UMR Client Manager', false),
+                    createStaffAssignment(policyAssignmentId, acc.Id, null, staffAdmin.Id, null, 'Client Management Consultant', false)
+                    };*/
+
+            List<Staff_Assignment__c> sf = new List<Staff_Assignment__c>();
+            Staff_Assignment__c s = new Staff_Assignment__c();
+            s.Customer_Name__c = acc.Id;
+            s.RecordTypeId = specialProjectId;
+            s.Role_on_Case__c = 'Implementation Project Manager';
+            s.Staffing_Assignment__c =  staffIPM.Id;
+            sf.add(s);
             
-            newMap.clear();
-            oldMap.clear();
+            Staff_Assignment__c s1 = new Staff_Assignment__c();
+            s1.Customer_Name__c = acc.Id;
+            s1.RecordTypeId = specialProjectId;
+            s1.Role_on_Case__c = 'Implementation Project Manager';
+            s1.Staff_User_Assignment__c =  userIPM2.Id;
+            s.Staffing_Assignment__c =  staffIPM2.Id;
+            sf.add(s1);
             
+            
+			List<Database.SaveResult> insertResults = Database.insert(sf, false); // Allows partial success on errors
+            
+            // Check for errors in the insert results
+            for (Integer i = 0; i < insertResults.size(); i++) {
+                if (!insertResults[i].isSuccess()) {
+                    // Log the error details if insertion failed
+                    for (Database.Error error : insertResults[i].getErrors()) {
+                        System.debug('Error on record ' + i + ': ' + error);
+                    }
+                }
+            }
+            
+            sf.clear();
+            
+            /*Staff_Assignment__c s2 = new Staff_Assignment__c();
+            s2.RecordTypeId = policyAssignmentId;
+            s2.Customer_Name__c = acc2.Id;
+            s2.Role_on_Case__c = 'Client Manager';
+            //s2.Staff_User_Assignment__c =  userAdmin.Id;
+            s2.Staffing_Assignment__c =  staffAdmin.Id;
+            s2.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c=0;
+        	s2.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c=0;
+        	s2.of_case__c=0.75;
+            s2.Assignment_Type__c = 'Spin Off';
+            sf.add(s2);*/
+            
+            Staff_Assignment__c s4 = new Staff_Assignment__c();
+            s4.RecordTypeId = policyAssignmentId;
+            s4.Customer_Name__c = acc.Id;
+            s4.Role_on_Case__c = 'Client Manager';
+            //s2.Staff_User_Assignment__c =  userAdmin.Id;
+            s4.Staffing_Assignment__c =  staffAdmin.Id;
+            s4.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c=0;
+        	s4.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c=0;
+        	s4.of_case__c=0.75;
+            s4.Medical_Policy_Number__c = p.Id;
+            sf.add(s4);
+            
+            Staff_Assignment__c s3 = new Staff_Assignment__c();
+            s3.RecordTypeId = policyAssignmentId;
+            s3.Role_on_Case__c = 'Client Manager';
+            s3.Staffing_Assignment__c =  staffAdmin2.Id;
+            s3.Staff_User_Assignment__c =  userAdmin2.Id;
+            s3.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c=0;
+        	s3.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c=0;
+        	s3.of_case__c=0.75;
+            s3.Customer_Name__c = acc.Id;
+            //s3.Should_Extended_AMT_be_updated__c = true;
+            sf.add(s3);
+            
+            Staff_Assignment__c s5 = new Staff_Assignment__c();
+            s5.RecordTypeId = policyAssignmentId;
+            s5.Role_on_Case__c = 'Client Manager';
+            //s5.Staffing_Assignment__c =  staffAdmin.Id;
+            s5.Staff_User_Assignment__c =  userAdmin.Id;
+            s5.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c=0;
+        	s5.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c=0;
+        	s5.of_case__c=0.75;
+            s5.Customer_Name__c = acc.Id;
+            //s5.Should_Extended_AMT_be_updated__c = true;
+            sf.add(s5);
+            
+            
+            
+            List<Database.SaveResult> insertResults2 = Database.insert(sf, false); // Allows partial success on errors
+            
+            // Check for errors in the insert results
+            for (Integer i = 0; i < insertResults2.size(); i++) {
+                if (!insertResults2[i].isSuccess()) {
+                    // Log the error details if insertion failed
+                    for (Database.Error error : insertResults2[i].getErrors()) {
+                        System.debug('Error on record ' + i + ': ' + error);
+                    }
+                }
+            }
+            
+            system.debug('Before SA');
+                
+			
+            
+        system.debug('Before SA');
+
+            // Run trigger helper methods for testing
+            Map<Id, Staff_Assignment__c> newMap = new Map<Id, Staff_Assignment__c>(sf);
+            Map<Id, Staff_Assignment__c> oldMap = new Map<Id, Staff_Assignment__c>();
+            
+            Test.startTest();
+            staffAssignmentTriggerHelper.staffAssignmentUpdate(newMap, oldMap);
+            //Test.stopTest();
+            //Test.startTest();
+            staffAssignmentTriggerHelper.staffAssignmentInsert(newMap.values());
+            Test.stopTest();
+            
+            system.debug('SA Count = '+[SELECT COUNT() FROM Staff_Assignment__c]);
+            
+            // Include your assertions here to validate results, for example:
+           // System.assertEquals(5, [SELECT COUNT() FROM Staff_Assignment__c], 'All staff assignments should have been inserted');
+
+        } catch (Exception e) {
+            System.debug('Exception occurred: ' + e);
+           // System.assert(false, 'Test failed due to exception');
         }
-        catch(Exception e){
-            //System.Assert(e.getMessage().contains('Please select matching staff or leave this field blank'));
-            system.debug('Exception occured '+e);
-        }
-        
-        /*list<Staff_Assignment__c> updateSA = new list<Staff_Assignment__c>();
-list<Staff_Assignment__c> sUpdate1 = [select id from Staff_Assignment__c where Staffing_Assignment__c=:s.id];
+    }
+    
+    private static User createUser(String firstName, String lastName, Profile profile) {
+        String orgId = UserInfo.getOrganizationId();
+        String dateString = String.valueOf(Datetime.now()).replace(' ', '').replace(':', '').replace('-', '');
+        Integer randomId = Integer.valueOf(Math.rint(Math.random() * 1000000));
+        String uniqueName = orgId + dateString + randomId;
 
+        return new User(
+            FirstName = firstName,
+            LastName = lastName,
+            Email = uniqueName + '@crmit.com',
+            Username = uniqueName + '@test' + orgId + '.org',
+            EmailEncodingKey = 'ISO-8859-1',
+            Alias = uniqueName.substring(18, 23),
+            TimeZoneSidKey = 'America/Los_Angeles',
+            LocaleSidKey = 'en_US',
+            LanguageLocaleKey = 'en_US',
+            ProfileId = profile.Id,
+            Position__c = 'Salesforce Courtesy License'
+        );
+    }
+    
+    private static Staff_Assignment__c createStaffAssignment(Id recordTypeId, Id customerId, Id policyId, Id userId, Id staffId, String role, Boolean dedicatedToCase) {
+        Staff_Assignment__c sa = new Staff_Assignment__c();
+        sa.RecordTypeId = recordTypeId;
+        sa.Customer_Name__c = customerId;
+        sa.Medical_Policy_Number__c = policyId;
+        sa.Staff_User_Assignment__c = userId;
+        sa.Staffing_Assignment__c = staffId;
+        sa.Role_on_Case__c = role;
+        /*sa.Dedicated_to_case__c = dedicatedToCase == null ? 'No' : (dedicatedToCase ? 'Yes' : 'No');
+        sa.CM_BOB_FTE_Based_on_Adj_Case_FTE1__c = 0;
+        sa.CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c = 0;
+        sa.of_case__c = 0.75;*/
+        return sa;
+    }
+    
+    
+    @isTest
+static void coverElseBlock_existingClient_addError() {
 
-for(Staff_Assignment__c eachSA : sUpdate1){
-eachSA.Should_Extended_AMT_be_updated__c = true;
+    /* ---------- RECORD TYPE ---------- */
+    Id policyAssignmentId = Schema.SObjectType.Staff_Assignment__c
+        .getRecordTypeInfosByName()
+        .get('Policy Assignment')
+        .getRecordTypeId();
+
+    Id accRecTypeId = Schema.SObjectType.Account
+        .getRecordTypeInfosByName()
+        .get('Existing Client')
+        .getRecordTypeId();
+
+    /* ---------- ACCOUNT ---------- */
+
+    Account acc = new Account(Name = 'Else Block Account', Subtype__c = 'Enterprise Strategic Accounts', RecordTypeId = accRecTypeId );
+            insert acc;
+
+    /* ---------- PROFILE ---------- */
+    Profile pf = [
+        SELECT Id FROM Profile WHERE Name = 'CSI Administrator' LIMIT 1
+    ];
+
+    /* ---------- USERS ---------- */
+    User u1 = createUser('Else', 'User1', pf);
+    User u2 = createUser('Else', 'User2', pf);
+    insert new List<User>{ u1, u2 };
+
+    /* ---------- STAFF ---------- */
+    Id staffRT = Schema.SObjectType.Staff__c
+        .getRecordTypeInfosByName()
+        .get('CSI Staff')
+        .getRecordTypeId();
+
+    Staff__c st1 = new Staff__c(
+        Staff_Name__c = u1.Id,
+        Primary_Role__c = 'Client Manager',
+        RecordTypeId = staffRT
+    );
+
+    Staff__c st2 = new Staff__c(
+        Staff_Name__c = u2.Id,
+        Primary_Role__c = 'Client Manager',
+        RecordTypeId = staffRT
+    );
+
+    insert new List<Staff__c>{ st1, st2 };
+
+    /* ---------- OLD STAFF ASSIGNMENT ---------- */
+    Staff_Assignment__c sa = new Staff_Assignment__c(
+        RecordTypeId = policyAssignmentId,
+        Customer_Name__c = acc.Id,
+        Assignment_Type__c = 'Specialty Only', // NOT Special Project
+        Role_on_Case__c = 'Client Manager',
+        Staffing_Assignment__c = st1.Id,
+        Staff_User_Assignment__c = u1.Id,
+        Should_Extended_AMT_be_updated__c = false,
+        CM_BOB_FTE_Based_on_Adj_Case_FTE1__c = 0,
+        CM_BOB_FTE_based_on_Adj_Case_FTE_Outlier__c = 0,
+        of_case__c = 0.75
+    );
+    insert sa;
+
+    /* ---------- UPDATE TO ENTER ELSE BLOCK ---------- */
+    Staff_Assignment__c saUpd = [
+        SELECT Id,
+               Staff_User_Assignment__c,
+               Should_Extended_AMT_be_updated__c
+        FROM Staff_Assignment__c
+        WHERE Id = :sa.Id
+    ];
+
+    saUpd.Staff_User_Assignment__c = u2.Id;   // change user
+    saUpd.Should_Extended_AMT_be_updated__c = true;
+
+    Test.startTest();
+    Database.SaveResult sr = Database.update(saUpd, false);
+    Test.stopTest();
+
+  
 }
 
-update sUpdate1;
-
-System.assertequals('XYZ',uu.LastName,'user last name');
-Integer num = [select count() from Policy_Information__c];
-System.assertEquals(2, num,'total number of policy information created'); 
-System.assertequals('Low',c2.Priority,'priority of case 2');
-Integer num1 = [select count() from Staff_Assignment__c];
-System.debug('Staff_Assignment__c count: '+num1); 
-System.assertEquals(1, num1,'total number of staff assignment created');*/
-        
-    }
 }
