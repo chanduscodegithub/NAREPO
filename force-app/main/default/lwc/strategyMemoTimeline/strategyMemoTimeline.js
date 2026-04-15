@@ -14,6 +14,7 @@ export default class StrategyMemoTimeline extends LightningElement {
     @api formattedIntentToQa;
     @api formattedIntentToNac;
     @api formattedIntentToNps;
+    @api formattedIntentToDDNps;
     @api formattedIntentToExe;
     @api formattedIntentToEship;
     @api formattedIntentToImp;
@@ -45,6 +46,9 @@ export default class StrategyMemoTimeline extends LightningElement {
     }
     get formattedIntentToNps() {
         return this.formatDateMMDDYYYY(this.strategyMemo.All_Optum_Pricing_Due_to_NPS_and_Sales__c);
+    }
+    get formattedIntentToDDNps() {
+        return this.formatDateMMDDYYYY(this.strategyMemo.Draft_Due_from_NPS__c);
     }
     get formattedIntentToExe() {
         return this.formatDateMMDDYYYY(this.strategyMemo.Executive_Summary_Cover_Letter_Due__c);

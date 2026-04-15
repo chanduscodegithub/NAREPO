@@ -29,7 +29,7 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
     @track isLoading = false;
      @track filterOptions = [];
     recordTypeId;
-    selectedFilter = 'Change in Product';
+    selectedFilter = 'Deactivation';
 
     /*@wire(getProductPicklists)
     wiredPicklists({ data, error }) {
@@ -75,24 +75,45 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
         fieldApiName: CHANGE_TYPE_FIELD
     })
     wiredPicklistValues({ data, error }) {
-        if (data) {
+    if (data) {
 
-            const allowedValues = [
-                'Change in Product',
-                'New Product', 'Deactivation'
-            ];
+        const orderedValues = [
+            'Deactivation',
+            'Change in Product',
+            'New Product'
+        ];
 
-            this.filterOptions = data.values
-                .filter(v => allowedValues.includes(v.value))
-                .map(v => ({
-                    label: v.label,
-                    value: v.value
-                }));
+        this.filterOptions = orderedValues
+            .map(val => data.values.find(v => v.value === val))
+            .filter(v => v) // removes undefined if not found
+            .map(v => ({
+                label: v.label,
+                value: v.value
+            }));
 
-        } else if (error) {
-            console.error(error);
-        }
+    } else if (error) {
+        console.error(error);
     }
+}
+    // wiredPicklistValues({ data, error }) {
+    //     if (data) {
+
+    //         const allowedValues = [
+    //             'Change in Product',
+    //             'New Product', 'Deactivation'
+    //         ];
+
+    //         this.filterOptions = data.values
+    //             .filter(v => allowedValues.includes(v.value))
+    //             .map(v => ({
+    //                 label: v.label,
+    //                 value: v.value
+    //             }));
+
+    //     } else if (error) {
+    //         console.error(error);
+    //     }
+    // }
     handleFilterMenuSelect(event) {
         this.selectedFilter = event.detail.value;
         this.loadProducts();
@@ -303,8 +324,9 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
             return;
         }
         this.isLoading = true;
-        bulkCreateProducts({ stageIds: this.selectedRowIds,isListView: true})
+        bulkCreateProducts({ stageIds: this.selectedRowIds,isListView: true,selectedFilter:this.selectedFilter})
             .then(result => {
+                if(result.successCount>0){
                 const message =
                     `${result.successCount} / ${result.totalCount} ` +
                     `have been successfully published. ` +
@@ -315,6 +337,14 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
                     message,
                     result.errorCount > 0 ? 'warning' : 'success'
                 );
+                }
+                else{
+                    this.showToast(
+                    'Quick Publish Summary',
+                    result.message,
+                    result.errorCount > 0 ? 'error' : 'success'
+                );
+                }
             })
             .catch(err => {
                 this.showToast(
@@ -330,8 +360,9 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
     }
     updateProducts() {
         this.isLoading = true;
-        updateProductsBulk({ stageIds: this.selectedRowIds,isListView: true})
+        updateProductsBulk({ stageIds: this.selectedRowIds,isListView: true,selectedFilter:this.selectedFilter})
             .then(result => {
+                if(result.successCount>0){
                 const message =
                     `${result.successCount} / ${result.totalCount} ` +
                     `have been successfully published. ` +
@@ -342,6 +373,13 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
                     message,
                     result.errorCount > 0 ? 'warning' : 'success'
                 );
+                }else{
+                    this.showToast(
+                    'Quick Publish Summary',
+                    result.message,
+                    result.errorCount > 0 ? 'error' : 'success'
+                );
+                }
             })
             .catch(err => {
                 this.showToast(
@@ -399,6 +437,22 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
             const rec = this.selectedProducts[this.currentIndex];
             this.fieldWarnings = this.productWarnings[rec.Id] || {};
         }
+        if(this.hasDisplayOrderChangeBulk){
+            // this.showToast(
+            //     'Error',
+            //     "Changes to ‘Product Display Order’ are not allowed in bulk for existing products. Please remove these updates and process them individually at the staging table record level, or contact your administrator for assistance",    
+            //     'error'
+            // );
+
+        const event = new ShowToastEvent({
+            title: 'Error',
+            message:"Changes to ‘Product Display Order’ are not allowed in bulk for existing products. Please remove these updates and process them individually at the staging table record level, or contact your administrator for assistance",    
+            variant: 'Error',
+            mode: 'pester' 
+        });
+        this.dispatchEvent(event);
+    
+        }
     }
 
     handlePrevious() {
@@ -406,6 +460,15 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
             this.currentIndex--;
             const rec = this.selectedProducts[this.currentIndex];
             this.fieldWarnings = this.productWarnings[rec.Id] || {};
+        }
+        if (this.hasDisplayOrderChangeBulk) {
+            const event = new ShowToastEvent({
+                title: 'Error',
+                message: "Changes to ‘Product Display Order’ are not allowed in bulk for existing products. Please remove these updates and process them individually at the staging table record level, or contact your administrator for assistance",
+                variant: 'Error',
+                mode: 'pester'
+            });
+            this.dispatchEvent(event);
         }
     }
     get totalProducts() {

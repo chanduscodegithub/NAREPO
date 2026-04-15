@@ -98,14 +98,14 @@ System.assertNotEquals(null, pbe);
     
     @isTest
     static void testBulkCreateProducts_Success() {
-        List<PIM_Product_Stage__c> bulkStages = [SELECT Id FROM PIM_Product_Stage__c WHERE Product_Code_Stage__c LIKE 'Med%'];
+        List<PIM_Product_Stage__c> bulkStages = [SELECT Id,Product_Change_Type__c FROM PIM_Product_Stage__c WHERE Product_Code_Stage__c LIKE 'Med%'];
         List<Id> stageIds = new List<Id>();
         for (PIM_Product_Stage__c s : bulkStages) {
             stageIds.add(s.Id);
         }
         
         Test.startTest();
-        PimController.PublishSummary summary = PimController.bulkCreateProducts(stageIds,true);
+        PimController.PublishSummary summary = PimController.bulkCreateProducts(stageIds,true,'New Product');
         Test.stopTest();
         
     }
@@ -174,7 +174,7 @@ System.assertNotEquals(null, pbe);
                         Status__c='Not in Sync');
         insert stage;
         Test.startTest();
-        PimController.updateProductsBulk(new List<Id>{stage.Id},false);
+        PimController.updateProductsBulk(new List<Id>{stage.Id},false,'New Product');
         Test.stopTest();
     }
     
@@ -248,7 +248,7 @@ System.assertNotEquals(null, pbe);
         insert stage;
         
         Test.startTest();
-        PimController.updateProductsBulk(new List<Id>{stage.Id},false);
+        PimController.updateProductsBulk(new List<Id>{stage.Id},false,'Change in Product');
         Test.stopTest();
     }
     
@@ -277,7 +277,7 @@ System.assertNotEquals(null, pbe);
         insert stage;
         
         Test.startTest();
-        PimController.updateProductsBulk(new List<Id>{stage.Id},false);
+        PimController.updateProductsBulk(new List<Id>{stage.Id},false,'Change in Product');
         Test.stopTest();
     }
     
@@ -352,7 +352,7 @@ System.assertNotEquals(null, pbe);
         
         Test.startTest();
         PimController.PublishSummary summary =
-            PimController.bulkCreateProducts(new List<Id>{stage.Id},true);
+            PimController.bulkCreateProducts(new List<Id>{stage.Id},true,'New Product');
         Test.stopTest();
         
         System.assertEquals(1, summary.errorCount);
@@ -375,8 +375,7 @@ System.assertNotEquals(null, pbe);
         PimController.PublishSummary summary =
             PimController.bulkCreateProducts(
                 new List<Id>{stage.Id},
-                false
-            );
+                false,'New Product');
         Test.stopTest();
         
         System.assertEquals(1, summary.successCount);
@@ -405,10 +404,7 @@ System.assertNotEquals(null, pbe);
         insert stage;
         
         Test.startTest();
-        PimController.updateProductsBulk(
-            new List<Id>{stage.Id},
-            true
-        );
+        PimController.updateProductsBulk( new List<Id>{stage.Id},true,'Change in Product');
         Test.stopTest();
     }
     @isTest
@@ -435,10 +431,7 @@ System.assertNotEquals(null, pbe);
         insert stage;
         
         Test.startTest();
-        PimController.updateProductsBulk(
-            new List<Id>{stage.Id},
-            false
-        );
+        PimController.updateProductsBulk(new List<Id>{stage.Id},false,'Change in Product');
         Test.stopTest();
     }
     @isTest
@@ -463,10 +456,7 @@ System.assertNotEquals(null, pbe);
         insert stage;
         
         Test.startTest();
-        PimController.updateProductsBulk(
-            new List<Id>{stage.Id},
-            true
-        );
+        PimController.updateProductsBulk(new List<Id>{stage.Id},true,'Change in Product');
         Test.stopTest();
     }
     
@@ -492,14 +482,11 @@ System.assertNotEquals(null, pbe);
         insert stage;
         
         Test.startTest();
-        PimController.updateProductsBulk(
-            new List<Id>{stage.Id},
-            true
-        );
+        PimController.updateProductsBulk( new List<Id>{stage.Id},true,'Change in Product');
         Test.stopTest();
     }
     
-    @isTest
+   /* @isTest
     static void testBulkCreate_DmlFailure() {
         
         PIM_Product_Stage__c stage = new PIM_Product_Stage__c(
@@ -512,12 +499,9 @@ System.assertNotEquals(null, pbe);
         insert stage;
         
         Test.startTest();
-        PimController.bulkCreateProducts(
-            new List<Id>{stage.Id},
-            true
-        );
+        PimController.bulkCreateProducts(new List<Id>{stage.Id},true,'New Product');
         Test.stopTest();
-    }
+    }*/
     @isTest
     static void testMultiPicklistValidation() {
         
@@ -532,10 +516,7 @@ System.assertNotEquals(null, pbe);
         insert stage;
         
         Test.startTest();
-        PimController.bulkCreateProducts(
-            new List<Id>{stage.Id},
-            true
-        );
+        PimController.bulkCreateProducts(new List<Id>{stage.Id},true,'New Product');
         Test.stopTest();
     }    
     

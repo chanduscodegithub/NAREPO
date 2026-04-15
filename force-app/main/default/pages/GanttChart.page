@@ -2959,7 +2959,20 @@
                     },
                     {name:"RowNum",label:"Row #", width: 50,min_width: 50, align: "center",resize: true,template:gantt.getTaskNumber},
                     {name: "wbs", label: "WBS", width: 60,min_width: 60,resize: true, align: "center", template: gantt.getWBSCode},
-                    
+                    /*{name: "axis", label: "Axis", width: 60,min_width: 60,resize: true, align: "center", template: gantt.getWBSCode},*/
+                    /*** Added Axis Row */
+                     {name:"checked", label:"AXIS <input class='ext-selectAll' type='checkbox' onClick='selectAllExt();' "+isAllExtChecked+" />" ,width: 50,min_width: 50,
+                    resize: true, 
+                    template:function(task){
+                    var boolVal = false;
+                    if(task.checked == 'true'){
+                    boolVal = true
+                    }
+                    var checked = !!boolVal ? " checked" : "";
+                    return "<input onclick='checkbox_check("+task.id+")'  data-taskId='"+task.id+"'  class='gantt-checkbox-column extCheck' type='checkbox' " +checked+ "/>";
+                    }
+                    },
+
                     {name: "text", label: "Task Name", tree: true, width: 150,min_width: 150, align: "left",editor: editors.text, resize: true},        
                     {name: "start_date", label: "Start",  width: 120,min_width: 120,editor: editors.start_date, align: "center",  resize: true},      
                     {name: "end_date", label: "Projected Finish",width: 120,min_width: 120, editor: editors.end_date, align: "center", template:formatEndDate, resize: true},
@@ -3134,6 +3147,18 @@
                 },
                 {name:"RowNum",label:"Row #",  width: 50,min_width: 50, align: "center",resize: true,template:gantt.getTaskNumber},
                 {name: "wbs", label: "WBS",width: 60,min_width: 60,align: "center",resize: true, template: gantt.getWBSCode},
+                /* {name: "axis", label: "AXIS",width: 60,min_width: 60,align: "center",resize: true, template: gantt.getWBSCode},*/
+                {name:"checked", label:"AXIS <input class='ext-selectAll' type='checkbox' onClick='selectAllExt();' name='test' id='test' value='1' "+isAllExtChecked+" />", width: 50, min_width: 50, resize: true,
+                template:function(task){
+                var boolVal = false;
+                if(task.checked == 'true'){
+                boolVal = true
+                }
+                var checked = !!boolVal ? " checked" : "";
+                return "<input onclick='checkbox_check("+task.id+")' data-taskId='"+task.id+"' class='gantt-checkbox-column extCheck' type='checkbox'  " +checked+ "/>";
+                }
+                },
+
                 
                 {name: "text", label: "Task Name", tree: true, width: 150,min_width: 150,align: "left", editor: editors.text, resize: true},        
                 {name: "start_date", label: "Start",  width: 120,min_width: 120,editor: editors.start_date, align: "center",  resize: true},      

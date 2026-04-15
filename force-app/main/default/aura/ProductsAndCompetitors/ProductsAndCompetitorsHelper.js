@@ -968,12 +968,13 @@
                         var allProducts = [...opportunityList, ...opportunitySpecialityList];
                       
                         allProducts.forEach(function(prod) {
-                           
-                           var rptType = prod.Product2.Reporting_Product_Type__c;
-
-                            if (rptType && allowedProductTypes.has(rptType)) {
-                                productTypesPresent.add(rptType);
-                                                        
+                            if(prod.Existing_Members_Involved_in_the_Bid__c >0){
+                                var rptType = prod.Product2.Reporting_Product_Type__c;
+                                
+                                if (rptType && allowedProductTypes.has(rptType)) {
+                                    productTypesPresent.add(rptType);
+                                    
+                                }
                             }
                         });
                         var riskOutcomeMap = {
@@ -995,9 +996,10 @@
                             if (fieldVal === null || fieldVal === undefined || (typeof fieldVal === 'string' && fieldVal.trim().length === 0)) {
                                 this.showAlert(
                                     component,
-                                    'Existing Members Risk Outcome (' + productType +
-                                    ') must be entered when ' + productType +
-                                    ' products are part of the Opportunity and Sales Stage is Notified.',
+                                    'Please enter Existing Member Risk Outcome ('
+                                    +productType+"), as the Sales Stage is 'Notified' and "
+                                    +productType+' products are included with existing members involved (> 0).'
+                                   ,
                                     alertType
                                 );
                                 return false;

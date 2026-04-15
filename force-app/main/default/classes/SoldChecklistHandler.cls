@@ -17,21 +17,51 @@ VERSION      AUTHOR              	DATE                DETAIL   	 				FEATURES/CS
 public without sharing class SoldChecklistHandler {
     
     //public static final String OPT_OUT_TXT = 'Opt Out';
+  
     @AuraEnabled(cacheable=true)
-    public static oppwrapperclass getClientData(string recId){
-        oppwrapperclass oppwrapper = new oppwrapperclass();
+    public static oppwrapperclass getClientData(String recId) {
+
+         oppwrapperclass ow = new oppwrapperclass();
+        if (recId == null) return ow;
+
+        /* =====================================================
+           INITIALIZE DEFAULTS (unchanged)
+        ===================================================== */
+        ow.Net_Results_Not_Zero = false;
+        ow.showCPWSection = false;
+
+        ow.isSurestProductMed = false;
+        ow.isTraditionalProductMed = false;
+        ow.isSurestProductPharmacy = false;
+        ow.isTraditionalProductPharmacy = false;
+
+        ow.isTradSoldDental = false;
+        ow.isSurestSoldDental = false;
+        ow.isTradSoldVision = false;
+        ow.isSurestSoldVision = false;
+        ow.isTradSoldOther = false;
+        ow.isSurestSoldOther = false;
+
+        ow.medilineitem = new List<OpportunityLineItem>();
+        ow.dentallineitem = new List<OpportunityLineItem>();
+        ow.visionlineitem = new List<OpportunityLineItem>();
+        ow.pharmacylineitem = new List<OpportunityLineItem>();
+        ow.otheropplineitems = new List<OpportunityLineItem>();
+
+        /* =====================================================
+           RECORD TYPE
+        ===================================================== */
+        ow.cmRecTypeId =
+            Schema.SObjectType.Opportunity
+                .getRecordTypeInfosByName()
+                .get('CM Membership Activity (Existing Client)')
+                .getRecordTypeId();
         
-        if(recId != null){
-            List<OpportunityLineItem> OtherOpplineitemlist = new List<OpportunityLineItem>();
-            Boolean hasEditAccess = false;
-            Boolean readOnlyUser = false;
-            Boolean medicalEditAccess = false;
-            Boolean pharmacyEditAccess = false;
-            Boolean dentalEditAccess = false;
-            Boolean visionEditAccess = false;
-            Boolean otherProductsEditAccess = false;
-            Boolean isSCCEditable =false;
-            Id cmRT = Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get('CM Membership Activity (Existing Client)').getRecordTypeId();
+        Id recordId = recId;
+        
+        /* =====================================================
+           OPPORTUNITY
+        ===================================================== */
             Opportunity OppDatarec = [SELECT Id,BusinessType__c, Disposition_Dental__c, Disposition_Medical__c, Disposition_Pharmacy__c, Disposition_Vision__c, Name, Owner.Name,
                                       Anticipated_Actual_Close_Date_Medical__c, Proactive_Renewal_Underwriter__c, SCE_Assignment__c, Incumbent_Primary_Medical__r.Name,
                                       Account.Name,Account.BillingCountry, Account.BillingAddress, Account.BillingPostalCode, Account.BillingState,
@@ -49,123 +79,471 @@ public without sharing class SoldChecklistHandler {
                                       Account.TopMarket1__c, Account.TopMarket1Records__c, Account.TopMarket2__c, Account.TopMarket2Records__c, Account.TopMarket3__c, Account.TopMarket3Records__c,
                                       Account.TopMarket4__c, Account.TopMarket4Records__c, Account.TopMarket5__c, Account.TopMarket5Records__c, Account.UMR_Client_Platform__c, Account.CVGAccount__r.Name 
                                       FROM Opportunity 
-                                      WHERE Id=: string.escapesinglequotes(recId) WITH USER_MODE]; 
-            
-            
-            
-            Account accrecvalue = [ SELECT Id, Name, Claim_Site__c, Call_Site__c, Clinical_Site__c, Current_Deal_Next_Renewal_Date__c,
+                                      WHERE Id=: recordId WITH USER_MODE]; 
+        ow.oppdata = OppDatarec;
+
+        /* =====================================================
+           ACCOUNT (SINGLE QUERY)
+        ===================================================== */
+        ow.accrec =[ SELECT Id, Name, Claim_Site__c, Call_Site__c, Clinical_Site__c, Current_Deal_Next_Renewal_Date__c,
                                    Primary_Situs_State__c, Call_Site_Type__c, Claim_Site_Type__c, Clinical_Site_Type__c,
                                    TopMarket1__c, TopMarket1Records__c, TopMarket2__c, TopMarket2Records__c, TopMarket3__c,
                                    TopMarket3Records__c, TopMarket4__c, TopMarket4Records__c, TopMarket5__c,TopMarket5Records__c,
                                    UMR_Client_Platform__c, CVGAccount__r.Name 
                                    FROM Account 
                                    WHERE Id =: OppDatarec.AccountId WITH USER_MODE];
-            
-            List<OpportunityLineItem> OpplineItemList = new List<OpportunityLineItem>();
-            oppwrapper.Net_Results_Not_Zero =false;
-            oppwrapper.showCPWSection = false;
-            oppwrapper.isSurestProductMed = false;
-            oppwrapper.isTraditionalProductMed = false;
-            oppwrapper.isSurestProductPharmacy = false;
-            oppwrapper.isTraditionalProductPharmacy = false;
-            
-            //------------------------------------SAMARTH------------------------------------
-            
-            Sold_Case_Checklist__c scc = [Select id,Name,Primary_HR_Implementation_Contact__c,Rx_SVP__c,Optum_Financial_SVP__c,Optum_Solution_Sales_Exec__c,
-                                          Dental_Underwriter__c,Vision_Underwriter__c,OptumRx_Underwriter__c,CI_Accident_Underwriter__c,Eligibility_Vendor__c,
-                                          If_Rx_is_not_sold_add_Rx_Vendor__c,Niche_Vendors_to_Integrate__c,Historic_Data__c,Leased_Network__c,Medical_Performance_Guarantee__c,
-                                          Other_Custom_Guarantee__c,Discount_Guarantee__c,Claim_Trend_Guarantee__c,Total_Cost_of_Care_Guarantee__c,Clinical_Performance_Guarantee__c,
-                                          Pharmacy_Performance_Guarantee__c,Dental_Performance_Guarantees__c,Dental_Ntwk_Recruitment_Guarantees__c,
-                                          Dental_In_Network_Utilization_Guarantee__c,Vision_Performance_Guarantees__c,Vision_Ntwk_Recruitment_Guarantees__c,
-                                          Vision_In_Network_Utilization_Guarantee__c,Acc_Ci_Hi_Guarantee__c,Life_Guarantee__c,STD_Guarantee__c,LTD_Guarantee__c,
-                                          FMLA_Guarantee__c,Dental_Guarantee__c,Vision_Guarantee__c,Communications_Year_1__c,Communications_Year_2__c,Communications_Year_3__c,
-                                          Implementation_Year_1__c,Transition_Year_1__c,Dental_Implementation_Year_1__c,
-                                          Dental_Cross_Sell_Year_1__c,Dental_Cross_Sell_Year_2__c,Dental_Cross_Sell_Year_3__c,Vision_Implementation_Year_1__c,
-                                          Vision_Cross_Sell_Year_1__c,Vision_Cross_Sell_Year_2__c,Vision_Cross_Sell_Year_3__c,Acc_Ci_HI_Implementation_Year_1__c,Acc_CI_Hi_Cross_Sell_Year_1__c,
-                                          Acc_CI_Hi_Cross_Sell_Year_2__c,Acc_CI_Hi_Cross_Sell_Year_3__c,Acc_Ci_Hi_Tech_Year_1__c,Acc_Ci_Hi_Tech_Year_2__c,Acc_Ci_Hi_Tech_Year_3__c,
-                                          Life_DI_Implementation_Year_1__c,Life_Di_Cross_Sell_Year_1__c,Life_Di_Cross_Sell_Year_2__c,Life_Di_Cross_Sell_Year_3__c,
-                                          Other_Custom_Credit_Year_1__c,Other_Custom_Credit_Year_2__c,Other_Custom_Credit_Year_3__c,Specialty_Savings_Credits_Year_1__c,
-                                          Specialty_Savings_Credits_Year_2__c,Specialty_Savings_Credits_Year_3__c,Specialty_Implementation_Year_1__c,
-                                          Specialty_Technology_Credits_Year_1__c,Specialty_Technology_Credits_Year_2__c,Specialty_Technology_Credits_Year_3__c,Additional_Sold_Case_Checklist_Details__c,
-                                          Historic_Data_Medical_or_Rx__c,Pre_Implementation_Audit__c,Expanded_Online_Customer_Reporting_Sys__c,Offshore_Provisions__c,Stop_Loss__c,
-                                          Rx_Coalition__c,Claim_Fiduciary__c,CAA_IDR_Service_Fees__c,Disabled_Dependent_Verification__c,Pre_Implementation_Audit_Level_2__c,Claim_Fiduciary_Other__c,
-                                          Rx_Coalition_Other__c,Offshore_Provisions_Level_0__c,Offshore_Provisions_Level_7__c,CAA_Service_Fees_Write_In__c,CAA_EMT_Approval__c,IPM__c,IPM__r.Name,SCE__c,Medical_Underwriter__c,
-                                          Sold_Retained_Employees_Only__c,Trust_Involved__c,PPO_Network_Access_and_Discounts__c,Type_of_Funding_Medical__c,
-                                          Customer_Sponsored_CSP_Network__c,Group_Specific_Provider_GSP_Network__c,Passport_Connect_with_Harvard_Pilgrim__c,HP_Sold_Retained_Members__c,Other_Custom_Guarantee_Medical__c,STD_Guarantee_B2H__c,
-                                          Standard_Communications__c,Rally_Base__c,A4Me_Core__c,eServices_Select__c,Virtual_Visits__c,Genetic_Testing_Prior_Authorization__c,
-                                          Inflammatory_Medication_Site_of_Care__c,Functional_Endoscopic_Sinus_Surgery_FESS__c,Hysterectomy__c,Sinuplasty__c,
-                                          Payment_Integrity__c,Payment_Policy_Prospective_Payment_Revi__c,Coordination_of_Benefits__c,Prospective_Fraud_Abuse__c,Retrospective_Fraud_Abuse__c,
-                                          Enhanced_Fraud_Abuse_CCD__c,Itemized_Bill_Review__c,Focused_Claim_Review__c,Hospital_Bill_Audit_Optum__c,Hospital_Bill_Audit_Vendor__c,Credit_Balance_Recovery_Services__c,Hospital_Bill_Audit__c,
-                                          Third_Party_Liability_Recovery_Subro__c,Third_Party_Liability_Recovery_ICC__c,Annual_Allowance_Year1__c,Annual_Allowance_Year2__c,
-                                          Annual_Allowance_Year3__c,Annual_Audit_Year1__c,Annual_Audit_Year2__c,Annual_Audit_Year3__c,
-                                          Physical_Health_Solutions_Network_Only__c,Extended_Network_Access__c,Extended_Network_Access_Level2__c,Able_To__c,Tiered_Benefits_Excluding_Nexus__c,
-                                          Credits_and_Allowances_Other_Year_1__c, Credits_and_Allowances_Other_Year_2__c, Credits_and_Allowances_Other_Year_3__c,
-                                          Advanced_Analytics_and_Recovery__c, COB_Vendor_Recoveries__c, Hospital_Audit_Program__c, Claims_Tracking_and_Validation_Audit__c, 
-                                          Third_Party_Liability_Subrogation__c, Injury_Coverage_Coordination__c,Rx_rebates_under_medical__c,
-                                          Payment_Policy_Percentage__c,Coordination_of_Benefits_Percentage__c,Prospective_Fraud_Abuse_Percentage__c,Retrospective_Fraud_Abuse_Percentage__c,
-                                          Enhanced_Fraud_Abuse_CCD_Percentage__c,Itemized_Bill_Review_Percentage__c,Focused_Claim_Review_Percentage__c,Hospital_Bill_Audit_Optum_Percentage__c,Hospital_Bill_Audit_Percentage__c,
-                                          Hospital_Bill_Audit_Vendor_Percentage__c,Credit_Blnce_Recvry_Services_Percentage__c,Third_Party_Liability_Subro_Percentage__c,Third_Party_ICC_Percentage__c,
-                                          Advanced_Analytics_and_Recvry_Percentage__c,COB_Vendor_Recoveries_Percentage__c,Hospital_Audit_Program_Percentage__c,Claim_Trcking_Validation_Audt_Percentage__c,
-                                          Thrd_Prty_Liability_Subrgatin_Percentage__c,Injury_Coverage_Coordination_Percentage__c, Do_non_pref_New_Business_Rates_apply__c,Eligibility_Vendor_2__c,
-                                          Eligibility_Vendor_3__c, Eligibility_Vendor_4__c, Eligibility_Vendor_5__c, External_Vendors_to_Integrate_2__c, External_Vendors_to_Integrate_3__c,
-                                          External_Vendors_to_Integrate_4__c, External_Vendors_to_Integrate_5__c, External_Vendors_to_Integrate_6__c, External_Vendors_to_Integrate_7__c,
-                                          External_Vendors_to_Integrate_8__c, External_Vendors_to_Integrate_9__c, External_Vendors_to_Integrate_10__c, Other_Custom_Medical_Guarantee_2__c, Other_Custom_Medical_Guarantee_3__c,
-                                          Other_Custom_Medical_Guarantee_4__c, Other_Custom_Medical_Guarantee_5__c, Other_Specialty_Custom_Guarantee_2__c, Other_Specialty_Custom_Guarantee_3__c,
-                                          Other_Specialty_Custom_Guarantee_4__c, Other_Specialty_Custom_Guarantee_5__c, HP_Alliance__c, Preferred_HP__c, Will_Consultant_Participate_in_Impln__c,
-                                          Are_SSO_Technology_required__c, Pre_Implementation_Audit_Write_In__c, Third_Party_Stop_Loss_Reporting_Write_In__c, UHC_Virtual_Visits_Write_In__c,
-                                          Medical_Necessity__c, Claims_Tracking__c, Claims_Tracking_Percentage__c, Validation_Audit__c, Validation_Audit_Percentage__c,
-                                          Other_Custom_Guarantee_Write_In__c, Other_Custom_Guarantee_Write_In_2__c, Other_Custom_Guarantee_Write_In_3__c, Other_Custom_Guarantee_Write_In_4__c, Other_Custom_Guarantee_Write_In_5__c,
-                                          Othr_Spclty_Custm_Guarantee_Write_In__c, Othr_Spclty_Custm_Guarantee_Write_In_2__c, Othr_Spclty_Custm_Guarantee_Write_In_3__c, Othr_Spclty_Custm_Guarantee_Write_In_4__c, Othr_Spclty_Custm_Guarantee_Write_In_5__c,
-                                          Credits_and_Allowances_Other_Write_In__c,Credits_and_Allowances_Other_Write_In_2__c,Credits_and_Allowances_Other_Write_In_3__c,Credits_and_Allowances_Other_Write_In_4__c,Credits_and_Allowances_Other_Write_In_5__c,
-                                          Credits_and_Allowances_Other_Year_1_2__c,Credits_and_Allowances_Other_Year_1_3__c,Credits_and_Allowances_Other_Year_1_4__c,Credits_and_Allowances_Other_Year_1_5__c,Credits_and_Allowances_Other_Year_2_2__c,
-                                          Credits_and_Allowances_Other_Year_2_3__c,Credits_and_Allowances_Other_Year_2_4__c,Credits_and_Allowances_Other_Year_2_5__c,Credits_and_Allowances_Other_Year_3_2__c,Credits_and_Allowances_Other_Year_3_3__c,
-                                          Credits_and_Allowances_Other_Year_3_4__c,Credits_and_Allowances_Other_Year_3_5__c,Other_Custom_Credit_Year_1_2__c,Other_Custom_Credit_Year_1_3__c,Other_Custom_Credit_Year_1_4__c,Other_Custom_Credit_Year_1_5__c,
-                                          Other_Custom_Credit_Year_2_2__c,Other_Custom_Credit_Year_2_3__c,Other_Custom_Credit_Year_2_4__c,Other_Custom_Credit_Year_2_5__c,Other_Custom_Credit_Year_3_2__c,Other_Custom_Credit_Year_3_3__c,Other_Custom_Credit_Year_3_4__c,
-                                          Other_Custom_Credit_Year_3_5__c,Other_Custom_Credit_Write_In__c,Other_Custom_Credit_Write_In_2__c,Other_Custom_Credit_Write_In_3__c,Other_Custom_Credit_Write_In_4__c,Other_Custom_Credit_Write_In_5__c, Legal_Client_Name__c,
-                                          EIN__c, First_Renewal_Date__c,Surest_Medical_Performance_Guarantee__c,Surest_Claim_Trend_Guarantee__c,Surest_Clinical_Performance_Guarantee__c,Surest_Total_Cost_of_Care_Guarantee__c,Surest_Discount_Guarantee__c,
-                                          Surest_Other_Custom_Guarantee_1__c,Surest_Other_Custom_Guarantee_2__c,Surest_Other_Custom_Guarantee_3__c,Surest_Other_Custom_Guarantee_4__c,Surest_Other_Custom_Guarantee_5__c,Surest_Other_Custom_Guarantee_Write_In_1__c,
-                                          Surest_Other_Custom_Guarantee_Write_In_2__c,Surest_Other_Custom_Guarantee_Write_In_3__c,Surest_Other_Custom_Guarantee_Write_In_4__c,Surest_Other_Custom_Guarantee_Write_In_5__c,Surest_Communications_Wellness_Year_1__c,
-                                          Surest_Communications_Wellness_Year_2__c,Surest_Communications_Wellness_Year_3__c,Surest_Credits_n_Allowance_OtherWriteIn2__c,Surest_Credits_n_Allowance_OtherWriteIn3__c,Surest_Credits_n_Allowance_OtherWriteIn4__c,
-                                          Surest_Credits_n_Allowance_OtherWriteIn5__c,Surest_Credits_n_Allowances_OtherWriteIn__c,Surest_Credits_n_Allowances_OtherYear1__c,Surest_Credits_n_Allowances_OtherYear1_2__c,Surest_Credits_n_Allowances_OtherYear1_3__c,
-                                          Surest_Credits_n_Allowances_OtherYear1_4__c,Surest_Credits_n_Allowances_OtherYear1_5__c,Surest_Credits_n_Allowances_OtherYear2__c,Surest_Credits_n_Allowances_OtherYear2_2__c,Surest_Credits_n_Allowances_OtherYear2_3__c,
-                                          Surest_Credits_n_Allowances_OtherYear2_4__c,Surest_Credits_n_Allowances_OtherYear2_5__c,Surest_Credits_n_Allowances_OtherYear3__c,Surest_Credits_n_Allowances_OtherYear3_2__c,Surest_Credits_n_Allowances_OtherYear3_3__c,
-                                          Surest_Credits_n_Allowances_OtherYear3_4__c,Surest_Credits_n_Allowances_OtherYear3_5__c,Surest_Annual_Allowance_Year1__c,Surest_Annual_Allowance_Year2__c,Surest_Annual_Allowance_Year3__c,Surest_Annual_Audit_Year1__c,
-                                          Surest_Annual_Audit_Year2__c,Surest_Annual_Audit_Year3__c,Surest_Pharmacy_Performance_Guarantee__c,Surest_Payment_Integrity__c,
-                                          Surest_Pre_Implementation_Audit_Year_1__c,Surest_Transition_Year_1__c,Surest_Disabled_Dependent_Verification__c,Surest_Pre_Implementation_Audit__c,Surest_Pre_Implementation_Audit_Level_2__c,
-                                          Surest_Pre_Implementation_Audit_Write_In__c,Surest_Offshore_Provisions__c,Surest_Offshore_Provisions_Level_0__c,Surest_Offshore_Provisions_Level_7__c,Surest_Third_Party_Stop_Loss_Write_In__c,
-                                          Surest_Third_Party_Stop_Loss_Reporting__c,Surest_CAA_IDR_Service_Fees__c,Surest_CAA_IDR_Service_Fees_Write_In__c,Surest_Do_non_pref_New_Business_Rates__c,Surest_Will_Consultant_Participate__c,Surest_Are_SSO_Technology_required__c,
-                                          Surest_STD_Guarantee__c,Surest_Vision_Guarantee__c,Surest_Dental_Guarantee__c,Surest_Standard_Communications__c,Surest_Member_Services__c,Surest_Clinical__c,Optum_Transplant_Resource_Services__c,Surest_Supplemental_Compensation_Payee__c,Supplemental_Compensation_Payee__c,
-                                          Pre_Pay__c,Pre_Pay_Percentage__c,Post_Pay__c,Post_Pay_Percentage__c,Subrogation__c,Subrogation_Percentage__c,EDC_Analyzer__c,EDC_Analyzer_Percentage__c,Surest_Pre_Pay__c,Surest_Pre_Pay_Percentage__c,Surest_Post_Pay__c,Surest_Post_Pay_Percentage__c,Surest_Subrogation__c,
-                                          Surest_Subrogation_Percentage__c,Surest_Coordination_of_Benefits__c,Surest_Coordination_of_Benefit_Percent__c,Surest_CTV_Audit__c,Surest_CTV_Audit_Percentage__c,Surest_Fraud_Waste_and_Abuse_Mgmt_prgrm__c,Surest_Credit_Balance_Rcvry_Prgrm_Prcnt__c,Surest_Subrogation_Services_Percentage__c,Enhanced_Case_Management__c,
-                                          Calm_Health_app__c,Case_Management__c,National_Network_Outpatient_Inpatient_UM__c,Behavioral_Health_Virtual_Visits__c,Substance_Use_Disorder_Helpline__c,Care_Explorer__c,Virtual_Behavioral_Coaching_for_adults__c,Child_and_Family_Behavioral_Coaching__c,Family_Support__c,X24_7_in_the_moment_and_crisis_support__c,Behavioral_Care_Connect_5_Day_Access__c,
-                                          Employee_Assistance_Program_Name__c,Pharmacy_Benefit_Administrator_Name__c,Pharmacy_Benefit_Administrator_Phone__c,Employee_Assistance_Program_Phone__c,Transplant_Resource_Services__c,Utilization_Management__c,BHU_Management_ABA_UM__c,Specialty_Guidance_Program_CPSurest__c,Cancer_Guidance_Program_CPSurest__c,
-                                          Surest_Case_Management_CM_CPSurest__c,Optum_Physical_Health_Network__c,Optum_Behavioral_Network__c,Ardynn_Surest_Cancer_Advocacy__c,Asthma_Disease_Management__c,Bariatric_Resource_Services__c,Calm_Health__c,Canary_Surest_Disease_Management__c,Cancer_Resource_Services__c,Cancer_Support_Program_CSP__c,
-                                          Clinical_Prgm_2nd_MD__c,Comprehensive_Kidney_Solutions__c,COPD_Disease_Management__c,Coronary_Artery_Disease_Management__c,Diabetes_Disease_Management__c,Emotional_Wellbeing_Solutions__c,Family_Building_Dual_Clients_only__c,Fertility_Solutions__c,Fertility_Solutions_Plus_Dual_Clients__c,Heart_Failure_Disease_Management__c,
-                                          Kaia_Optum__c,Level2_Assured_Value__c,Maternity_21_month_program__c,Maven_12_month_program__c,Menopause_Dual_Clients_Only_1K_EE_s__c,Neonatal_Resource_Services__c,One_Pass_Select__c,Optum_Engage__c,Pacify_Surest_Maternity__c,Parenting_Pediatrics__c,Pivot_Surest_Smoking_Cessation__c,Progyny_Surest_Fertility__c,Pump_Carry_Dual_Clients_only_1k_EE_s__c,
-                                          Pump_Check_Dual_Clients_only_1k_EE_s__c,Pump_Post_Dual_Clients_only_1k_EE_s__c,Quit_for_Life_Dual_Clients_Only__c,Real_Appeal_Optum__c,UHC_Rewards__c,Virta_Diabetes__c,Virta_Obesity__c,Virta_Pre_Diabetes__c,Wallet_Dual_Clients_Only_1K_EE_s__c,Congenital_Heart_Disease__c,Wellness_Wellos_ASO__c,One_Pass_Subsidized__c,Kindbody__c,Sword__c,
-                                          Optum_Engage_Elite__c,Optum_Engage_Select__c,UHC_Rewards_Custom__c,UHC_Rewards_Premium__c,Total_Weight_Support_with_Real_Appeal_Rx__c,Doula_Benefit_Support__c,Wellness_Rally_Engage_Buy_Up__c,Wellness_Rally_Premium_Buy_Up__c,CPW__c,UHC_Rewards_Client_Fulfilled_Survey__c,UHC_Rewards_Client_Fulfilled_Custom__c,Cap_Value__c,Amount__c,Additional_Comments__c,Amount_Type__c,Cap_Type__c,Cap_Category__c,
-                                          UHC_Hub_Access_Hope_APO_EAR__c,UHC_Hub_Access_Hope_APO_Only__c,UHC_Hub_Carrum_Health_Cancer_Care__c,UHC_Hub_Carrum_Health_General__c,UHC_Hub_Carrum_Health_Surgical_Care__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Plus__c,
-                                        UHC_Hub_Carrum_Substance_Use_Treatment__c,UHC_Hub_Cylinder_GIThrive__c,UHC_Hub_Hazelden_Recovery_Coaching__c,UHC_Hub_Hazelden_Workplace_Portal__c,UHC_Hub_Hello_Heart__c,UHC_Hub_Hinge_Health_Virtual_PT__c,UHC_Hub_Lantern_Employer_Direct_Care__c,
-                                        UHC_Hub_LGC_A1c_Fingerstick_Add_On__c,UHC_Hub_LGC_A1C_HomeKit_Buy_Up__c,UHC_Hub_LGC_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_LGC_A1c_Venipuncture_Add_On__c,UHC_Hub_LGC_Body_Fat__c,UHC_Hub_LGC_Colon_Cancer_Screening_Plus__c,UHC_Hub_LGC_Colon_Cancer_Screening_Prog__c,UHC_Hub_LGC_Diabetes_A1c__c,
-                                        UHC_Hub_LGC_FIT_At_Home_Kit__c,UHC_Hub_LGC_Flu_Shots__c,UHC_Hub_LGC_Health_Prvdr_Screen_Form__c,UHC_Hub_LGC_Heart_Health__c,UHC_Hub_LGC_HPSF_Prov_Med_PAAF__c,UHC_Hub_LGC_KYNS_Full_Lipid_Fingerstick__c,UHC_Hub_LGC_KYNS_Full_Lpd_Venipuncture__c,UHC_Hub_LGC_KYNS_Partl_Lpd_Fingerstick__c,
-                                        UHC_Hub_LGC_Lab_Visit_Full_Lipid_Ven__c,UHC_Hub_LGC_Measure_Waist__c,UHC_Hub_LGC_Waist_Hip_Ratio__c,UHC_Hub_Noom_Dual_Access__c,UHC_Hub_Noom_Dual_Access_DPP__c,UHC_Hub_Noom_Mood__c,UHC_Hub_Noom_Weight__c,UHC_Hub_Noom_Weight_DPP__c,UHC_Hub_Quest_A1c_Fingerstick_Add_On__c,
-                                        UHC_Hub_Quest_A1C_HomeKit_Buy_Up__c,UHC_Hub_Quest_A1C_Lab_Visit_Buy_Up__c,UHC_Hub_Quest_A1c_Venipuncture_Add_On__c,UHC_Hub_Quest_Bilingual_Translator__c,UHC_Hub_Quest_Body_Fat__c,UHC_Hub_Quest_Cotinine_Fingerstick_Add__c,
-                                        UHC_Hub_Quest_Cotinine_HomeKit_Buy_Up__c,UHC_Hub_Quest_Cotinine_Lab_Visit_Full__c,UHC_Hub_Quest_Cotinine_Venipuncture_Ad__c,UHC_Hub_Quest_Diabetes_A1c_Home_Kit__c,UHC_Hub_Quest_eGFR_Fingerstick_AddOn__c,UHC_Hub_Quest_eGFR_HomeKit_Buy_Up__c,
-                                        UHC_Hub_Quest_eGFR_Venipuncture_AddOn__c,UHC_Hub_Quest_eGFR_Visit_Add_On__c,UHC_Hub_Quest_Fax_to_Physician__c,UHC_Hub_Quest_Flu_Shots__c,UHC_Hub_Quest_Heart_Health_Home_Kit__c,UHC_Hub_Quest_Hlth_Prvdr_Screening_Form__c,UHC_Hub_Quest_HPSF_Prov_Med_PA__c,
-                                        UHC_Hub_Quest_KYN_Plus_Fingerstick__c,UHC_Hub_Quest_KYNS_Comprehensive__c,UHC_Hub_Quest_KYNS_Full_Lipid_Venipctr__c,UHC_Hub_Quest_KYNS_Full_Lpd_Fingerstick__c,UHC_Hub_Quest_KYNS_Partial_Lpd_Fingerst__c,UHC_Hub_Quest_Lab_Visit_Comp_Veni__c,
-                                        UHC_Hub_Quest_Lab_Visit_Full_Lipid_Veni__c,UHC_Hub_Quest_Measure_Waist__c,UHC_Hub_Quest_Privacy_Screens__c,UHC_Hub_Quest_PSA_Fingerstick_Add_On__c,UHC_Hub_Quest_Waist_Hip_Ratio__c,UHC_Hub_Teladoc_Advanced_Weight_Mgmt__c,UHC_Hub_Teladoc_Chronic_Mgmt_Plus_Bundl__c,
-                                        UHC_Hub_Teladoc_Diabetes_Mgmt_Plus_Bund__c,UHC_Hub_Teladoc_Diabetes_Mgmt_Standalon__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Stand__c,UHC_Hub_Teladoc_Prediabetes_Mgmt_Plus__c,UHC_Hub_Weight_Watchers__c,UHC_Hub_Wellthy__c,UHC_Hub_Wondr_Health__c 
-                                          from Sold_Case_Checklist__c where Membership_Activity__c =: string.escapesinglequotes(recId) WITH USER_MODE LIMIT 1];
-            
-            
-            String[] specifyBankAdminList = new List<String>();
+        /* =====================================================
+           SOLD CASE CHECKLIST (SINGLE QUERY)
+===================================================== */
+        
+        
+        Map<String, Schema.SObjectField> fieldMap =
+            Sold_Case_Checklist__c.SObjectType.getDescribe().fields.getMap();
+        
+        Set<String> systemFields = new Set<String>{
+            'CreatedById','CreatedDate','LastModifiedById','LastModifiedDate',
+                'SystemModstamp','LastViewedDate','LastReferencedDate','IsDeleted'
+                };
+                    
+                    List<String> fieldList = new List<String>();
+        
+        for(String fieldName : fieldMap.keySet()){
+            if(!systemFields.contains(fieldName)){
+                fieldList.add(fieldName);
+            }
+        }
+        
+        String soql = 'SELECT ' + String.join(fieldList, ',') +
+            ' ,IPM__r.Name FROM Sold_Case_Checklist__c' +
+            ' WHERE Membership_Activity__c = :recordId' +
+            ' LIMIT 1';
+        
+        Sold_Case_Checklist__c scc =
+            (Sold_Case_Checklist__c)Database.query(soql);
+        ow.sccData = scc;
+
+          /* =====================================================
+           OPPORTUNITY LINE ITEMS – SINGLE QUERY (ALL FIELDS)
+        ===================================================== */
+        List<OpportunityLineItem> allOLIs = [
+          SELECT
+        Id, Name, ProductCode, Product_Line__c,
+        Level_2_Option__c, Level2_Info__c,
+        Buyup_Product_Selection__c,
+        Disposition_Other_Buy_Up_Programs__c,
+        Sold_Retained_Members__c,
+        Net_Results__c,
+        
+        /* Financial */
+        R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Decision_Support__c,Maternity_Support__c,
+        Congenital_Heart_Disease__c,Transplant_TRS_COE__c,Non_Extra_Contractual_Transplant__c,HealtheNote_Reminders__c,Physical_Health_Network__c,Physical_Health_Chiro_Clinical_Support__c,
+        Asthma_VOM__c,Diabetes_VOM__c,Congestive_Heart_Failure_VOM__c,CAD_VOM__c,COPD_VOM__c,Cancer_Support_Program_VOM__c,Kidney_Solutions_VOM__c,
+        Kidney_Resource_Services_VOM__c,MNRP__c,MNRP_DME__c,MNRP_Lab__c,MNRP_Default_of_Billed_Charges__c,
+                                                            Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
+        MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,
+        MNRP_Lab_Nonstd_Percentage__c,MNRP_Default_Nonstd_Percentage__c,Physician_R_C_OON__c,Physician_R_C_OON_Percentage__c,
+        
+        /* Pharmacy */
+        ESP_Enhanced_Savings_Program_Opt_in__c,
+        Vital_Medication_program_Opt_in_Opt_out__c,
+        Price_Edge_Opt_in__c,
+        If_Fully_Insured_include_quoted_Rx_plan__c,
+        
+        /* Flex */
+        Flex_WriteIn__c, Flex_Options__c,
+        
+        /* Product */
+        Product2.Name,
+        Product2.Family,
+        Product2.Level_2_Options__c,
+        Product2.Product_Display_Order__c,
+        Product2.Surest_Applicable_Products__c,
+        
+        /* Opportunity */
+        Opportunity.RecordTypeId,
+        Opportunity.Disposition_Medical__c,
+        Opportunity.Disposition_Dental__c,
+        Opportunity.Disposition_Pharmacy__c,
+        Opportunity.Disposition_Vision__c,
+        Opportunity.Sales_Stage_Medical__c,
+        Opportunity.Sales_Stage_Dental__c,
+        Opportunity.Sales_Stage_Vision__c,
+        Opportunity.Sales_Stage_Pharmacy__c,
+        Opportunity.Sales_Stage_Other__c
+        
+        FROM OpportunityLineItem
+        WHERE OpportunityId = :recId
+            AND ProductCode != 'Total'
+            AND Product_Line__c IN ('Medical','Dental','Vision','Pharmacy','Other')
+            WITH USER_MODE
+            ORDER BY Product2.Product_Display_Order__c
+        ];
+        ow.OppolineItemsList = allOLIs;
+ /* =====================================================
+           PROCESS PRODUCTS (ALL CONDITIONS PRESERVED)
+        ===================================================== */
+        Boolean medicalEditAccess = false;
+        Boolean dentalEditAccess = false;
+        Boolean visionEditAccess = false;
+        Boolean pharmacyEditAccess = false;
+        Boolean otherEditAccess = false;
+
+        for (OpportunityLineItem oli : allOLIs) {
+
+            if (oli.Net_Results__c > 0) {
+                ow.Net_Results_Not_Zero = true;
+                    }
+
+            /* ---------------- MEDICAL ---------------- */
+            if (oli.Product_Line__c == 'Medical') {
+
+                if (
+                    OppDatarec.Sales_Stage_Medical__c != 'Notified'
+                    && OppDatarec.Sales_Stage_Medical__c != 'Spin-Off'
+                    && OppDatarec.Sales_Stage_Medical__c != 'Transfer In/Out'
+                    && OppDatarec.Disposition_Medical__c != 'Dead Pending Transfer'
+                    && OppDatarec.Disposition_Medical__c != 'Dead Spin-Off'
+                ) {
+                    ow.medilineitem.add(oli);
+                }
+                else if (
+                    (OppDatarec.Sales_Stage_Medical__c == 'Notified'
+                     && OppDatarec.Disposition_Medical__c == 'Sold'
+                     && oli.Sold_Retained_Members__c != 0)
+                    || (OppDatarec.Sales_Stage_Medical__c == 'Spin-Off'
+                        && OppDatarec.Disposition_Medical__c == 'Spin-Off')
+                    || (OppDatarec.Sales_Stage_Medical__c == 'Transfer In/Out'
+                        && OppDatarec.Disposition_Medical__c == 'Transfer In')
+                ) {
+                    ow.medilineitem.add(oli);
+                    medicalEditAccess = true;
+                    if (
+                        oli.Buyup_Product_Selection__c == 'Surest Only'
+                        || oli.Buyup_Product_Selection__c == 'Surest & UNET'
+                    ) {
+                        ow.showCPWSection = true;
+                    }
+                    
+                    
+                    if (oli.Product2.Surest_Applicable_Products__c == 'Not Available for Surest') {
+                        ow.isTraditionalProductMed = true;
+                    }
+                    if (oli.Product2.Surest_Applicable_Products__c == 'Available for Surest only') {
+                        ow.isSurestProductMed = true;
+                    }
+                }
+
+                /*if (
+                    oli.Buyup_Product_Selection__c == 'Surest Only'
+                    || oli.Buyup_Product_Selection__c == 'Surest & UNET'
+                ) {
+                    ow.showCPWSection = true;
+                }*/
+            }
+
+            /* ---------------- DENTAL ---------------- */
+            else if (oli.Product_Line__c == 'Dental') {
+
+                if (
+                    OppDatarec.Sales_Stage_Dental__c != 'Notified'
+                    && OppDatarec.Sales_Stage_Dental__c != 'Spin-Off'
+                    && OppDatarec.Sales_Stage_Dental__c != 'Transfer In/Out'
+                    && OppDatarec.Disposition_Dental__c != 'Dead Pending Transfer'
+                    && OppDatarec.Disposition_Dental__c != 'Dead Spin-Off'
+                ) {
+                    ow.dentallineitem.add(oli);
+                }
+                else if (
+                    (OppDatarec.Sales_Stage_Dental__c == 'Notified'
+                        && OppDatarec.Disposition_Dental__c == 'Sold'
+                        && oli.Sold_Retained_Members__c != 0)
+                    || (OppDatarec.Sales_Stage_Dental__c == 'Spin-Off'
+                        && OppDatarec.Disposition_Dental__c == 'Spin-Off')
+                    || (OppDatarec.Sales_Stage_Dental__c == 'Transfer In/Out'
+                        && OppDatarec.Disposition_Dental__c == 'Transfer In')
+                ) {
+                    ow.dentallineitem.add(oli);
+                dentalEditAccess = true;
+                }
+
+                if (oli.Buyup_Product_Selection__c == 'Surest & UNET') {
+                    ow.isTradSoldDental = true;
+                    ow.isSurestSoldDental = true;
+                    }
+                else if (oli.Buyup_Product_Selection__c == 'UNET or UMR Only') {
+                    ow.isTradSoldDental = true;
+                    }
+                else if (oli.Buyup_Product_Selection__c == 'Surest only') {
+                    ow.isSurestSoldDental = true;
+                    }
+                }
+
+            /* ---------------- VISION ---------------- */
+            else if (oli.Product_Line__c == 'Vision') {
+
+                if (
+                    OppDatarec.Sales_Stage_Vision__c != 'Notified'
+                    && OppDatarec.Sales_Stage_Vision__c != 'Spin-Off'
+                    && OppDatarec.Sales_Stage_Vision__c != 'Transfer In/Out'
+                    && OppDatarec.Disposition_Vision__c != 'Dead Pending Transfer'
+                    && OppDatarec.Disposition_Vision__c != 'Dead Spin-Off'
+                ) {
+                    ow.visionlineitem.add(oli);
+                }
+                else if (
+                    (OppDatarec.Sales_Stage_Vision__c == 'Notified'
+                        && OppDatarec.Disposition_Vision__c == 'Sold'
+                        && oli.Sold_Retained_Members__c != 0)
+                    || (OppDatarec.Sales_Stage_Vision__c == 'Spin-Off'
+                        && OppDatarec.Disposition_Vision__c == 'Spin-Off')
+                    || (OppDatarec.Sales_Stage_Vision__c == 'Transfer In/Out'
+                        && OppDatarec.Disposition_Vision__c == 'Transfer In')
+                ) {
+                    ow.visionlineitem.add(oli);
+                    visionEditAccess = true;
+                }
+
+                if (oli.Buyup_Product_Selection__c == 'Surest & UNET') {
+                    ow.isTradSoldVision = true;
+                    ow.isSurestSoldVision = true;
+                    }
+                else if (oli.Buyup_Product_Selection__c == 'UNET or UMR Only') {
+                    ow.isTradSoldVision = true;
+                    }
+                else if (oli.Buyup_Product_Selection__c == 'Surest only') {
+                    ow.isSurestSoldVision = true;
+                    }
+                }
+
+            /* ---------------- PHARMACY ---------------- */
+            else if (oli.Product_Line__c == 'Pharmacy') {
+
+                if (
+                    OppDatarec.Sales_Stage_Pharmacy__c != 'Notified'
+                    && OppDatarec.Sales_Stage_Pharmacy__c != 'Spin-Off'
+                    && OppDatarec.Sales_Stage_Pharmacy__c != 'Transfer In/Out'
+                    && OppDatarec.Disposition_Pharmacy__c != 'Dead Pending Transfer'
+                    && OppDatarec.Disposition_Pharmacy__c != 'Dead Spin-Off'
+                ) {
+                    ow.pharmacylineitem.add(oli);
+                }
+                else if (
+                    (OppDatarec.Sales_Stage_Pharmacy__c == 'Notified'
+                        && OppDatarec.Disposition_Pharmacy__c == 'Sold'
+                        && oli.Sold_Retained_Members__c != 0)
+                    || (OppDatarec.Sales_Stage_Pharmacy__c == 'Spin-Off'
+                        && OppDatarec.Disposition_Pharmacy__c == 'Spin-Off')
+                    || (OppDatarec.Sales_Stage_Pharmacy__c == 'Transfer In/Out'
+                        && OppDatarec.Disposition_Pharmacy__c == 'Transfer In')
+                ) {
+                    ow.pharmacylineitem.add(oli);
+                pharmacyEditAccess = true;
+                }
+
+                if (oli.Product2.Surest_Applicable_Products__c == 'Not Available for Surest') {
+                    ow.isTraditionalProductPharmacy = true;
+                    }
+                if (oli.Product2.Surest_Applicable_Products__c == 'Available for Surest only') {
+                    ow.isSurestProductPharmacy = true;
+            }
+            }
+
+            /* ---------------- OTHER ---------------- */
+            else if (oli.Product_Line__c == 'Other') {
+                
+                // 🔹 First handle dead exclusions
+                if (
+                    oli.Disposition_Other_Buy_Up_Programs__c == 'Dead Pending Transfer'
+                    || oli.Disposition_Other_Buy_Up_Programs__c == 'Dead Spin-Off'
+                    || oli.Disposition_Other_Buy_Up_Programs__c == 'Transfer Out'
+                ) {
+                    continue;
+                }
+                
+                // 🔹 Sales Stage Dependent Filtering
+                if (OppDatarec.Sales_Stage_Other__c == 'Notified'
+                    || OppDatarec.Sales_Stage_Other__c == 'Spin-Off'
+                    || OppDatarec.Sales_Stage_Other__c == 'Transfer In/Out') {
+                        
+                        if (
+                            (oli.Disposition_Other_Buy_Up_Programs__c == 'Sold'
+                             && oli.Sold_Retained_Members__c != 0)
+                            || oli.Disposition_Other_Buy_Up_Programs__c == 'Transfer In'
+                            || oli.Disposition_Other_Buy_Up_Programs__c == 'Spin-Off'
+                            || oli.Disposition_Other_Buy_Up_Programs__c == 'TBD (New Clients Only)'
+                        ) {
+                            ow.otheropplineitems.add(oli);
+                        }
+                        
+                        ow.otherProductsStatus = 'Sold';
+                    }
+                else {
+                    // Pre-notified branch
+                    ow.otheropplineitems.add(oli);
+                    ow.otherProductsStatus = 'TBD';
+                }
+                
+                // 🔹 Specialty Products Rule
+                if (oli.Product2.Family == 'Specialty Products'
+                    && (oli.Disposition_Other_Buy_Up_Programs__c == 'Sold'
+                        || oli.Disposition_Other_Buy_Up_Programs__c == 'Transfer In'
+                        || oli.Disposition_Other_Buy_Up_Programs__c == 'Spin-Off')) {
+                            
+                            ow.otherProductsStatus = 'Sold';
+                        }
+                
+                // 🔹 Edit Access Rule
+                if (oli.Disposition_Other_Buy_Up_Programs__c == 'Sold') {
+                    otherEditAccess = true;
+                }
+                
+                // 🔹 Buyup Product Selection Logic
+                if (oli.Buyup_Product_Selection__c == 'Surest & UNET') {
+                    ow.isTradSoldOther = true;
+                    ow.isSurestSoldOther = true;
+                    }
+                else if (oli.Buyup_Product_Selection__c == 'UNET or UMR Only') {
+                    ow.isTradSoldOther = true;
+                    }
+                else if (oli.Buyup_Product_Selection__c == 'Surest only') {
+                    ow.isSurestSoldOther = true;
+                    }
+                }
+        }
+
+        /* =====================================================
+           STATUS VALUES (TBD / SOLD / SPIN-OFF / TRANSFER)
+        ===================================================== */
+
+        // MEDICAL
+        ow.MedidiscValue = 'TBD';
+        if (OppDatarec.Sales_Stage_Medical__c == 'Spin-Off' && OppDatarec.Disposition_Medical__c == 'Spin-Off') {
+            ow.MedidiscValue = 'Spin-Off';
+        }
+        if (
+            OppDatarec.Sales_Stage_Medical__c == 'Transfer In/Out'
+            && OppDatarec.Disposition_Medical__c == 'Transfer In'
+        ) {
+            ow.MedidiscValue = 'Transfer In';
+        }
+        if (
+            OppDatarec.Sales_Stage_Medical__c == 'Notified'
+            && OppDatarec.Disposition_Medical__c == 'Sold'
+        ) {
+            ow.MedidiscValue = 'Sold';
+        }
+
+        // DENTAL
+        ow.dentdiscvalue = 'TBD';
+        if (OppDatarec.Sales_Stage_Dental__c == 'Spin-Off' && OppDatarec.Disposition_Dental__c == 'Spin-Off') {
+            ow.dentdiscvalue = 'Spin-Off';
+        }
+        if (
+            OppDatarec.Sales_Stage_Dental__c == 'Transfer In/Out'
+            && OppDatarec.Disposition_Dental__c == 'Transfer In'
+        ) {
+            ow.dentdiscvalue = 'Transfer In';
+        }
+        if (
+            OppDatarec.Sales_Stage_Dental__c == 'Notified'
+            && OppDatarec.Disposition_Dental__c == 'Sold'
+        ) {
+            ow.dentdiscvalue = 'Sold';
+        }
+
+        // VISION
+        ow.visiondiscvalue = 'TBD';
+        if (OppDatarec.Sales_Stage_Vision__c == 'Spin-Off' && OppDatarec.Disposition_Vision__c == 'Spin-Off') {
+            ow.visiondiscvalue = 'Spin-Off';
+        }
+        if (
+            OppDatarec.Sales_Stage_Vision__c == 'Transfer In/Out'
+            && OppDatarec.Disposition_Vision__c == 'Transfer In'
+        ) {
+            ow.visiondiscvalue = 'Transfer In';
+                    }
+        if (
+            OppDatarec.Sales_Stage_Vision__c == 'Notified'
+            && OppDatarec.Disposition_Vision__c == 'Sold'
+        ) {
+            ow.visiondiscvalue = 'Sold';
+                    }
+
+        // PHARMACY
+        ow.pharmdiscvalue = 'TBD';
+        if (OppDatarec.Sales_Stage_Pharmacy__c == 'Spin-Off' && OppDatarec.Disposition_Pharmacy__c == 'Spin-Off') {
+            ow.pharmdiscvalue = 'Spin-Off';
+                }
+        if (
+            OppDatarec.Sales_Stage_Pharmacy__c == 'Transfer In/Out'
+            && OppDatarec.Disposition_Pharmacy__c == 'Transfer In'
+        ) {
+            ow.pharmdiscvalue = 'Transfer In';
+                }
+        if (
+            OppDatarec.Sales_Stage_Pharmacy__c == 'Notified'
+            && OppDatarec.Disposition_Pharmacy__c == 'Sold'
+        ) {
+            ow.pharmdiscvalue = 'Sold';
+        }
+
+        // OTHER
+        ow.otherProductsStatus = 'TBD';
+        if (
+            OppDatarec.Sales_Stage_Other__c == 'Notified'
+            || OppDatarec.Sales_Stage_Other__c == 'Spin-Off'
+            || OppDatarec.Sales_Stage_Other__c == 'Transfer In/Out'
+        ) {
+            ow.otherProductsStatus = 'Sold';
+                }
+        for (OpportunityLineItem oli : ow.otheropplineitems) {
+            if (
+                oli.Product2.Family == 'Specialty Products'
+                && (
+                    oli.Disposition_Other_Buy_Up_Programs__c == 'Sold'
+                    || oli.Disposition_Other_Buy_Up_Programs__c == 'Spin-Off'
+                    || oli.Disposition_Other_Buy_Up_Programs__c == 'Transfer In'
+					|| oli.Disposition_Other_Buy_Up_Programs__c == 'TBD (New Clients Only)'
+                )
+            ) {
+                ow.otherProductsStatus = 'Sold';
+                break;
+            }
+        }
+
+        /* =====================================================
+           EDIT ACCESS
+        ===================================================== */
+        ow.hasEditAccess =
+            medicalEditAccess
+            || dentalEditAccess
+            || visionEditAccess
+            || pharmacyEditAccess
+            || otherEditAccess;
+
+        String profileName =
+            [SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId()]
+                .Profile.Name;
+
+        if (
+            profileName == 'General Executives'
+            || profileName == 'Senior Executives'
+            || profileName == 'Benefit Strategist'
+        ) {
+            ow.hasEditAccess = false;
+        }
+
+        /* =====================================================
+           METADATA + FINALIZE
+        ===================================================== */
+        String[] specifyBankAdminList = new List<String>();
             String[] listAppliCustomList = new List<String>();
             String[] indicateVendorList = new List<String>();
             String[] providePlanCodeList = new List<String>();
             SCC_Level_2_Hover_Help__mdt[] sccHoverHelpMdt = [Select DeveloperName,Indicate_Vendor__c,List_any_applicable_customization__c,
                                                              Provide_plan_code_in_text_box__c,Specify_Bank_Administrator__c from SCC_Level_2_Hover_Help__mdt 
                                                              LIMIT: Limits.getLimitQueryRows()-Limits.getQueryRows()];
-            oppwrapper.sccHoverHelp = sccHoverHelpMdt;
+            ow.sccHoverHelp = sccHoverHelpMdt;
             
             if(sccHoverHelpMdt != null){
                 for(SCC_Level_2_Hover_Help__mdt sccMdt : sccHoverHelpMdt){
@@ -179,498 +557,98 @@ public without sharing class SoldChecklistHandler {
                             }
                             if(sccMdt.Provide_plan_code_in_text_box__c != null){
                                 providePlanCodeList = sccMdt.Provide_plan_code_in_text_box__c.split(';');
-                            }
+            }
                             if(sccMdt.Specify_Bank_Administrator__c != null){
                                 specifyBankAdminList = sccMdt.Specify_Bank_Administrator__c.split(';');
                             }
                         }
                     }
                 } 
-                
-                /*oppwrapper.specifyBankAdminList = specifyBankAdminList;
-oppwrapper.listAppliCustomList = listAppliCustomList;
-oppwrapper.indicateVendorList = indicateVendorList;
-oppwrapper.providePlanCodeList = providePlanCodeList;*/
-            }
-            
-            //------------------------------------SAMARTH------------------------------------
-            
-            /* Logic to provide edit Access & fetch Products based on Desposition value for each product when Sales Stage is set to notified - START*/
-            
-            /* Fetching Medical Products - START */
-            if(OppDatarec.Sales_Stage_Medical__c != 'Notified' && OppDatarec.Sales_Stage_Medical__c != 'Spin-Off' && OppDatarec.Sales_Stage_Medical__c != 'Transfer In/Out') {
-                List<OpportunityLineItem> mediopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,Buyup_Product_Selection__c,Product2.Surest_Implementation_Lead_Time__c,
-                                                            Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,MNRP__c,MNRP_DME__c,MNRP_Lab__c,MNRP_Default_of_Billed_Charges__c,
-                                                            Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
-                                                            MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c,
-                                                            MNRP_Lab_Nonstd_Percentage__c,MNRP_Default_Nonstd_Percentage__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Medical' and Opportunity.Disposition_Medical__c !='Dead Pending Transfer' and Opportunity.Disposition_Medical__c!='Dead Spin-Off' WITH USER_MODE];
-                
-                oppwrapper.medilineitem = mediopplineitem;
-                OpplineItemList.addALL(mediopplineitem);
-                oppwrapper.MedidiscValue = 'TBD';
-                if(OppDatarec.Sales_Stage_Medical__c == 'Spin-Off') {
-                    oppwrapper.MedidiscValue = 'Spin-Off';
-                }
-                if(OppDatarec.Sales_Stage_Medical__c == 'Transfer In/Out' && OppDatarec.Disposition_Medical__c == 'Transfer In') {
-                    oppwrapper.MedidiscValue = 'Transfer In';
-                }
-                Boolean showCPWSection = false;
-                for (OpportunityLineItem item : mediopplineitem) {
-                if((oppwrapper.MedidiscValue == 'Spin-Off' || oppwrapper.MedidiscValue == 'Transfer In') && (item.Buyup_Product_Selection__c == 'Surest & UNET' || item.Buyup_Product_Selection__c == 'Surest Only')){
-                    showCPWSection = true;
-                }
-                }
-                oppwrapper.showCPWSection = showCPWSection;
-                system.debug('mediopplineitem if '+mediopplineitem);
-            } 
-            else if((OppDatarec.Sales_Stage_Medical__c == 'Notified' && OppDatarec.Disposition_Medical__c == 'Sold' )|| (OppDatarec.Sales_Stage_Medical__c == 'Spin-Off' && OppDatarec.Disposition_Medical__c == 'Spin-Off') || (OppDatarec.Sales_Stage_Medical__c == 'Transfer In/Out' && OppDatarec.Disposition_Medical__c == 'Transfer In')) {
-                List<OpportunityLineItem> mediopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product2.Surest_Applicable_Products__c,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
-                                                            Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,MNRP__c,MNRP_DME__c,MNRP_Lab__c,MNRP_Default_of_Billed_Charges__c,
-                                                            Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
-                                                            MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,Opportunity.RecordTypeId,Buyup_Product_Selection__c,Opportunity.Disposition_Pharmacy__c,
-                                                            MNRP_Lab_Nonstd_Percentage__c,MNRP_Default_Nonstd_Percentage__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Medical' and ((Opportunity.Disposition_Medical__c = 'Sold' and Sold_Retained_Members__c!=0) Or Opportunity.Disposition_Medical__c = 'Transfer In' or Opportunity.Disposition_Medical__c = 'Spin-Off')  WITH USER_MODE];
-                
-                oppwrapper.medilineitem = mediopplineitem;
-                OpplineItemList.addALL(mediopplineitem);
-                system.debug(mediopplineitem.size());
-                oppwrapper.MedidiscValue = 'Sold';
-                if(OppDatarec.Sales_Stage_Medical__c == 'Spin-Off') {
-                    oppwrapper.MedidiscValue = 'Spin-Off';
-                }
-                if(OppDatarec.Sales_Stage_Medical__c == 'Transfer In/Out' && OppDatarec.Disposition_Medical__c == 'Transfer In') {
-                    oppwrapper.MedidiscValue = 'Transfer In';
-                }
-                medicalEditAccess = true;
+				}
 
-                Boolean isTraditionalProductMed = false;
-                Boolean isSurestProductMed = false;
-                Boolean showCPWSection = false;
-                for (OpportunityLineItem item : mediopplineitem) {
-                    if (item.Product2.Surest_Applicable_Products__c == 'Not Available for Surest') {
-                        isTraditionalProductMed = true;
-                    }
-                    else if(item.Product2.Surest_Applicable_Products__c == 'Available for Surest only') {
-                        isSurestProductMed = true;
-                    }
-                    if(item.Buyup_Product_Selection__c == 'Surest & UNET' || item.Buyup_Product_Selection__c == 'Surest Only'){
-                        showCPWSection = true;
-                        
-                    }
-                }
-                oppwrapper.isTraditionalProductMed = isTraditionalProductMed;
-                oppwrapper.isSurestProductMed = isSurestProductMed;
-                oppwrapper.showCPWSection = showCPWSection;
-                
-                
-                system.debug('mediopplineitem else '+mediopplineitem);
-            }
-            /* Fetching Medical Products - END */
-            
-            /* Fetching Dental Products - START */
-            if(OppDatarec.Sales_Stage_Dental__c != 'Notified' && OppDatarec.Sales_Stage_Dental__c != 'Spin-Off' && OppDatarec.Sales_Stage_Dental__c != 'Transfer In/Out') {
-                List<OpportunityLineItem> dentalopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product2.Surest_Applicable_Products__c,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
-                                                             Buyup_Product_Selection__c, Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem 
-                                                              where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Dental' and Opportunity.Disposition_Dental__c !='Dead Pending Transfer' and Opportunity.Disposition_Dental__c!='Dead Spin-Off' WITH USER_MODE];
-                
-                oppwrapper.dentallineitem = dentalopplineitem;
-                OpplineItemList.addALL(dentalopplineitem);
-                oppwrapper.dentdiscvalue = 'TBD';
-                if(OppDatarec.Sales_Stage_Dental__c == 'Spin-Off') {
-                    oppwrapper.dentdiscvalue = 'Spin-Off';
-                }
-                if(OppDatarec.Sales_Stage_Dental__c == 'Transfer In/Out' && OppDatarec.Disposition_Dental__c == 'Transfer In') {
-                    oppwrapper.dentdiscvalue = 'Transfer In';
-                }
-                Boolean isTradSoldDental = false;
-                Boolean isSurestSoldDental = false;
-                for (OpportunityLineItem item : dentalopplineitem) {
-                    if (item.Buyup_Product_Selection__c == 'Surest & UNET') {
-                        isTradSoldDental = true;
-                        isSurestSoldDental = true;
-                    }
-                    else if(item.Buyup_Product_Selection__c == 'UNET or UMR Only') {
-                        isTradSoldDental = true;
-                        //isSurestSoldDental = false;                    
-                    }
-                    else if (item.Buyup_Product_Selection__c == 'Surest only') {
-                        //isTradSoldDental = false;
-                        isSurestSoldDental = true;
-                    }
-                }
-                oppwrapper.isTradSoldDental = isTradSoldDental;
-                oppwrapper.isSurestSoldDental = isSurestSoldDental;
-               
-            } else if((OppDatarec.Sales_Stage_Dental__c == 'Notified' && OppDatarec.Disposition_Dental__c == 'Sold')|| (OppDatarec.Sales_Stage_Dental__c == 'Spin-Off' && OppDatarec.Disposition_Dental__c == 'Spin-Off') || (OppDatarec.Sales_Stage_Dental__c == 'Transfer In/Out' && OppDatarec.Disposition_Dental__c == 'Transfer In')) { 
-                List<OpportunityLineItem> dentalopplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
-                                                              Disposition_Other_Buy_Up_Programs__c,Buyup_Product_Selection__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Dental' and ((Opportunity.Disposition_Dental__c = 'Sold' and Sold_Retained_Members__c!=0) Or Opportunity.Disposition_Dental__c = 'Transfer In' or Opportunity.Disposition_Dental__c = 'Spin-Off')  WITH USER_MODE];
-                
-                oppwrapper.dentallineitem = dentalopplineitem;
-                OpplineItemList.addALL(dentalopplineitem);
-                oppwrapper.dentdiscvalue = 'Sold';
-                 if(OppDatarec.Sales_Stage_Dental__c == 'Spin-Off') {
-                    oppwrapper.dentdiscvalue = 'Spin-Off';
-                }
-                if(OppDatarec.Sales_Stage_Dental__c == 'Transfer In/Out' && OppDatarec.Disposition_Dental__c == 'Transfer In') {
-                    oppwrapper.dentdiscvalue = 'Transfer In';
-                }
-                dentalEditAccess = true;
-                //oppwrapper.Net_Results_Not_Zero =true;
-                Boolean isTradSoldDental = false;
-                Boolean isSurestSoldDental = false;
-                for (OpportunityLineItem item : dentalopplineitem) {
-                    if (item.Buyup_Product_Selection__c == 'Surest & UNET') {
-                        isTradSoldDental = true;
-                        isSurestSoldDental = true;
-                    }
-                    else if(item.Buyup_Product_Selection__c == 'UNET or UMR Only') {
-                        isTradSoldDental = true;
-                        //isSurestSoldDental = false;                    
-                    }
-                    else if (item.Buyup_Product_Selection__c == 'Surest only') {
-                        //isTradSoldDental = false;
-                        isSurestSoldDental = true;
-                    }
-                }
-                oppwrapper.isTradSoldDental = isTradSoldDental;
-                oppwrapper.isSurestSoldDental = isSurestSoldDental;
-            }
-            /* Fetching Dental Products - END */
-            
-            /* Fetching Vision Products - START */
-            if(OppDatarec.Sales_Stage_Vision__c != 'Notified' && OppDatarec.Sales_Stage_Vision__c != 'Spin-Off' && OppDatarec.Sales_Stage_Vision__c != 'Transfer In/Out') {
-                List<OpportunityLineItem> visionOpplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
-                                                              Disposition_Other_Buy_Up_Programs__c,Buyup_Product_Selection__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem 
-                                                              where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Vision' and Opportunity.Disposition_Vision__c !='Dead Pending Transfer' and Opportunity.Disposition_Vision__c!='Dead Spin-Off' WITH USER_MODE];
-                
-                oppwrapper.visionlineitem = visionOpplineitem;
-                OpplineItemList.addALL(visionOpplineitem);
-                oppwrapper.visiondiscvalue = 'TBD';
-                if(OppDatarec.Sales_Stage_Vision__c == 'Spin-Off') {
-                    oppwrapper.visiondiscvalue = 'Spin-Off';
-                }
-                if(OppDatarec.Sales_Stage_Vision__c == 'Transfer In/Out' && OppDatarec.Disposition_Vision__c == 'Transfer In') {
-                    oppwrapper.visiondiscvalue = 'Transfer In';
-                }
-                Boolean isTradSoldVision = false;
-                Boolean isSurestSoldVision = false;
-                for (OpportunityLineItem item : visionOpplineitem) {
-                    if (item.Buyup_Product_Selection__c == 'Surest & UNET') {
-                        isTradSoldVision = true;
-                        isSurestSoldVision = true;
-                    }
-                    else if(item.Buyup_Product_Selection__c == 'UNET or UMR Only') {
-                        isTradSoldVision = true;
-                        //isSurestSoldVision = false;                    
-                    }
-                    else if (item.Buyup_Product_Selection__c == 'Surest only') {
-                        //isTradSoldVision = false;
-                        isSurestSoldVision = true;
-                    }
-                }
-                oppwrapper.isTradSoldVision = isTradSoldVision;
-                oppwrapper.isSurestSoldVision = isSurestSoldVision;
-            } else if((OppDatarec.Sales_Stage_Vision__c == 'Notified' && OppDatarec.Disposition_Vision__c == 'Sold')|| (OppDatarec.Sales_Stage_Vision__c == 'Spin-Off' && OppDatarec.Disposition_Vision__c == 'Spin-Off') || (OppDatarec.Sales_Stage_Vision__c == 'Transfer In/Out' && OppDatarec.Disposition_Vision__c == 'Transfer In')) {
-                List<OpportunityLineItem> visionOpplineitem =[select id,Level_2_Option__c,Level2_Info__c,ProductCode,Product2.Level_2_Options__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
-                                                              Disposition_Other_Buy_Up_Programs__c,Buyup_Product_Selection__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Vision' and ((Opportunity.Disposition_Vision__c = 'Sold' and Sold_Retained_Members__c!=0) Or Opportunity.Disposition_Vision__c = 'Transfer In' or Opportunity.Disposition_Vision__c = 'Spin-Off')  WITH USER_MODE];
-                
-                oppwrapper.visionlineitem = visionOpplineitem;
-                OpplineItemList.addALL(visionOpplineitem);
-                oppwrapper.visiondiscvalue = 'Sold';
-                 if(OppDatarec.Sales_Stage_Vision__c == 'Spin-Off') {
-                    oppwrapper.visiondiscvalue = 'Spin-Off';
-                }
-                if(OppDatarec.Sales_Stage_Vision__c == 'Transfer In/Out' && OppDatarec.Disposition_Vision__c == 'Transfer In') {
-                    oppwrapper.visiondiscvalue = 'Transfer In';
-                }
-                visionEditAccess = true;
-                Boolean isTradSoldVision = false;
-                Boolean isSurestSoldVision = false;
-                for (OpportunityLineItem item : visionOpplineitem) {
-                    if (item.Buyup_Product_Selection__c == 'Surest & UNET') {
-                        isTradSoldVision = true;
-                        isSurestSoldVision = true;
-                    }
-                    else if(item.Buyup_Product_Selection__c == 'UNET or UMR Only') {
-                        isTradSoldVision = true;
-                        //isSurestSoldVision = false;                    
-                    }
-                    else if (item.Buyup_Product_Selection__c == 'Surest only') {
-                        //isTradSoldVision = false;
-                        isSurestSoldVision = true;
-                    }
-                }
-                oppwrapper.isTradSoldVision = isTradSoldVision;
-                oppwrapper.isSurestSoldVision = isSurestSoldVision;
-                //oppwrapper.Net_Results_Not_Zero =true;
-            }
-            /* Fetching Vision Products - END */
-            
-            /* Fetching Pharmacy Products - START */
-            if(OppDatarec.Sales_Stage_Pharmacy__c != 'Notified' && OppDatarec.Sales_Stage_Pharmacy__c != 'Spin-Off' && OppDatarec.Sales_Stage_Pharmacy__c != 'Transfer In/Out') {
-                List<OpportunityLineItem> pharmacyitem =[select id,Pharmacy_Carve_Out_DropDown__c,Level_2_Option__c,Level2_Info__c,ProductCode,toLabel(Product2.Level_2_Options__c),Product2.Family,Product2.Name,Product_Line__c,Product2.Product_Display_Order__c,Product2.Surest_Applicable_Products__c,Product2.Surest_Implementation_Lead_Time__c,
-                                                         Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c, ESP_Enhanced_Savings_Program_Opt_in__c, Vital_Medication_program_Opt_in_Opt_out__c, Price_Edge_Opt_in__c,Buyup_Product_Selection__c,
-                                                         If_Fully_Insured_include_quoted_Rx_plan__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem 
-                                                         where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Pharmacy' and Opportunity.Disposition_Pharmacy__c !='Dead Pending Transfer' and Opportunity.Disposition_Pharmacy__c!='Dead Spin-Off' WITH USER_MODE ORDER BY Product2.Product_Display_Order__c];
-                
-                oppwrapper.pharmacylineitem = pharmacyitem;
-                OpplineItemList.addALL(pharmacyitem);
-                oppwrapper.pharmdiscvalue = 'TBD';
-                if(OppDatarec.Sales_Stage_Pharmacy__c == 'Spin-Off') {
-                    oppwrapper.pharmdiscvalue = 'Spin-Off';
-                }
-                 if(OppDatarec.Sales_Stage_Pharmacy__c == 'Transfer In/Out' && OppDatarec.Disposition_Pharmacy__c == 'Transfer In') {
-                    oppwrapper.pharmdiscvalue = 'Transfer In';
-                }
-               
-            } else if((OppDatarec.Sales_Stage_Pharmacy__c == 'Notified' && OppDatarec.Disposition_Pharmacy__c == 'Sold')|| (OppDatarec.Sales_Stage_Pharmacy__c == 'Spin-Off' && OppDatarec.Disposition_Pharmacy__c == 'Spin-Off') || (OppDatarec.Sales_Stage_Pharmacy__c == 'Transfer In/Out' && OppDatarec.Disposition_Pharmacy__c == 'Transfer In')) {
-                List<OpportunityLineItem> pharmacyitem =[select id,Pharmacy_Carve_Out_DropDown__c,Level_2_Option__c,Level2_Info__c,ProductCode,toLabel(Product2.Level_2_Options__c),Product2.Family,Product2.Name,Product_Line__c,Product2.Product_Display_Order__c,Product2.Surest_Applicable_Products__c,Product2.Surest_Implementation_Lead_Time__c,
-                                                         Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c, ESP_Enhanced_Savings_Program_Opt_in__c, Vital_Medication_program_Opt_in_Opt_out__c, Price_Edge_Opt_in__c,Buyup_Product_Selection__c,
-                                                         If_Fully_Insured_include_quoted_Rx_plan__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c='Pharmacy' and ((Opportunity.Disposition_Pharmacy__c = 'Sold' and Sold_Retained_Members__c!=0) Or Opportunity.Disposition_Pharmacy__c = 'Transfer In' or Opportunity.Disposition_Pharmacy__c = 'Spin-Off')  WITH USER_MODE ORDER BY Product2.Product_Display_Order__c];
-                
-                oppwrapper.pharmacylineitem = pharmacyitem;
-                OpplineItemList.addALL(pharmacyitem);
-                oppwrapper.pharmdiscvalue = 'Sold';
-                  if(OppDatarec.Sales_Stage_Pharmacy__c == 'Spin-Off') {
-                    oppwrapper.pharmdiscvalue = 'Spin-Off';
-                }
-                 if(OppDatarec.Sales_Stage_Pharmacy__c == 'Transfer In/Out' && OppDatarec.Disposition_Pharmacy__c == 'Transfer In') {
-                    oppwrapper.pharmdiscvalue = 'Transfer In';
-                }
-                pharmacyEditAccess = true;
-                Boolean isTraditionalProductPharmacy = false;
-                Boolean isSurestProductPharmacy = false;
-                for (OpportunityLineItem item : pharmacyitem) {
-                    /*if (item.Buyup_Product_Selection__c == 'UNET or UMR Only' || item.Buyup_Product_Selection__c == 'Surest & UNET') {
-                        isTraditionalProductPharmacy = true;
-                    }
-                    if (item.Buyup_Product_Selection__c == 'Surest only') {
-                        isSurestProductPharmacy = true;
-                    }*/
-                    if (item.Product2.Surest_Applicable_Products__c == 'Not Available for Surest') {
-                        isTraditionalProductPharmacy = true;
-                    }
-                    else if(item.Product2.Surest_Applicable_Products__c == 'Available for Surest only') {
-                        isSurestProductPharmacy = true;
-                    }
-                }
-                system.debug('Veera +'+isSurestProductPharmacy);
-                oppwrapper.isTraditionalProductPharmacy = isTraditionalProductPharmacy;
-                oppwrapper.isSurestProductPharmacy = isSurestProductPharmacy;
-                //oppwrapper.Net_Results_Not_Zero =true;
-            }
-            /* Fetching Pharmacy Products - END */
-            
-            /* Fetching Other Products - START */
-            if(OppDatarec.Sales_Stage_Other__c != 'Notified' && OppDatarec.Sales_Stage_Other__c != 'Spin-Off' && OppDatarec.Sales_Stage_Other__c != 'Transfer In/Out') {
-                OtherOpplineitemlist =[select id,Level_2_Option__c,Buyup_Product_Selection__c,ProductCode,toLabel(Product2.Level_2_Options__c),Level2_Info__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
-                                       Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Decision_Support__c,Maternity_Support__c,
-                                       Congenital_Heart_Disease__c,Transplant_TRS_COE__c,Non_Extra_Contractual_Transplant__c,HealtheNote_Reminders__c,Physical_Health_Network__c,Physical_Health_Chiro_Clinical_Support__c,
-                                       Asthma_VOM__c,Diabetes_VOM__c,Congestive_Heart_Failure_VOM__c,CAD_VOM__c,COPD_VOM__c,Cancer_Support_Program_VOM__c,Kidney_Solutions_VOM__c,
-                                       Kidney_Resource_Services_VOM__c,MNRP__c,MNRP_DME__c,MNRP_Lab__c,MNRP_Default_of_Billed_Charges__c,
-                                       Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
-                                       MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,
-                                       MNRP_Lab_Nonstd_Percentage__c,MNRP_Default_Nonstd_Percentage__c,Physician_R_C_OON__c,Physician_R_C_OON_Percentage__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c,Flex_WriteIn__c,Flex_Options__c from OpportunityLineItem 
-                                       where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c ='Other' and Disposition_Other_Buy_Up_Programs__c !='Dead Pending Transfer' and Disposition_Other_Buy_Up_Programs__c!='Dead Spin-Off' and Disposition_Other_Buy_Up_Programs__c!='Transfer Out' AND (NOT(product2.Family = 'Specialty Products' AND (Disposition_Other_Buy_Up_Programs__c != 'Sold' AND Disposition_Other_Buy_Up_Programs__c != 'Spin-Off' AND Disposition_Other_Buy_Up_Programs__c != 'Transfer In' AND Disposition_Other_Buy_Up_Programs__c != 'TBD (New Clients Only)' AND (Disposition_Other_Buy_Up_Programs__c != null OR Disposition_Other_Buy_Up_Programs__c != '')) )) WITH USER_MODE];
-                //Specialty Spilt-up Changes - updated Above Query for Specialty Products
-                oppwrapper.otheropplineitems = OtherOpplineitemlist;
-                OpplineItemList.addALL(oppwrapper.otheropplineitems);
-                oppwrapper.otherProductsStatus = 'TBD';
-                Boolean isTradSoldOther = false;
-                Boolean isSurestSoldOther = false;
-                for (OpportunityLineItem item : OtherOpplineitemlist) {
-                    //Specialty Spilt-up Changes
-                    if(item.Product2.Family == 'Specialty Products' && (item.Disposition_Other_Buy_Up_Programs__c =='Sold' || item.Disposition_Other_Buy_Up_Programs__c =='Transfer In' || item.Disposition_Other_Buy_Up_Programs__c =='Spin-Off' )){
-                        oppwrapper.otherProductsStatus = 'Sold';
-                    }//END
-                    if (item.Buyup_Product_Selection__c == 'Surest & UNET') {
-                        isTradSoldOther = true;
-                        isSurestSoldOther = true;
-                    }
-                    else if(item.Buyup_Product_Selection__c == 'UNET or UMR Only') {
-                        isTradSoldOther = true;
-                        //isSurestSoldOther = false;                    
-                    }
-                    else if (item.Buyup_Product_Selection__c == 'Surest only') {
-                        //isTradSoldOther = false;
-                        isSurestSoldOther = true;
-                    }
-                }
-                oppwrapper.isTradSoldOther = isTradSoldOther;
-                oppwrapper.isSurestSoldOther = isSurestSoldOther;
-            } 
-            else if(OppDatarec.Sales_Stage_Other__c == 'Notified' || OppDatarec.Sales_Stage_Other__c == 'Spin-Off'  || OppDatarec.Sales_Stage_Other__c == 'Transfer In/Out' ) {
-                OtherOpplineitemlist =[select id,Level_2_Option__c,Buyup_Product_Selection__c,ProductCode,toLabel(Product2.Level_2_Options__c),Level2_Info__c,Product2.Family,Product2.Name,Product_Line__c,Product2.Surest_Implementation_Lead_Time__c,
-                                       Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Decision_Support__c,Maternity_Support__c,
-                                       Congenital_Heart_Disease__c,Transplant_TRS_COE__c,Non_Extra_Contractual_Transplant__c,HealtheNote_Reminders__c,Physical_Health_Network__c,Physical_Health_Chiro_Clinical_Support__c,
-                                       Asthma_VOM__c,Diabetes_VOM__c,Congestive_Heart_Failure_VOM__c,CAD_VOM__c,COPD_VOM__c,Cancer_Support_Program_VOM__c,Kidney_Solutions_VOM__c,
-                                       Kidney_Resource_Services_VOM__c,MNRP__c,MNRP_DME__c,MNRP_Lab__c,MNRP_Default_of_Billed_Charges__c,
-                                       Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
-                                       MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,Flex_WriteIn__c,Flex_Options__c,
-                                       MNRP_Lab_Nonstd_Percentage__c,MNRP_Default_Nonstd_Percentage__c,Physician_R_C_OON__c,Physician_R_C_OON_Percentage__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c ='Other' AND ((Disposition_Other_Buy_Up_Programs__c = 'Sold'  and Sold_Retained_Members__c!=0) OR Disposition_Other_Buy_Up_Programs__c = 'TBD (New Clients Only)' OR Disposition_Other_Buy_Up_Programs__c ='Transfer In' OR Disposition_Other_Buy_Up_Programs__c ='Spin-Off') WITH USER_MODE];
-                oppwrapper.otherProductsStatus = 'Sold';
-                oppwrapper.otheropplineitems = OtherOpplineitemlist;
-                OpplineItemList.addALL(oppwrapper.otheropplineitems);
-                Boolean isTradSoldOther = false;
-                Boolean isSurestSoldOther = false;
-                for (OpportunityLineItem item : OtherOpplineitemlist) {
-                    if (item.Buyup_Product_Selection__c == 'Surest & UNET') {
-                        isTradSoldOther = true;
-                        isSurestSoldOther = true;
-                    }
-                    else if(item.Buyup_Product_Selection__c == 'UNET or UMR Only') {
-                        isTradSoldOther = true;
-                        //isSurestSoldOther = false;                    
-                    }
-                    else if (item.Buyup_Product_Selection__c == 'Surest only') {
-                        //isTradSoldOther = false;
-                        isSurestSoldOther = true;
-                    }
-                }
-                oppwrapper.isTradSoldOther = isTradSoldOther;
-                oppwrapper.isSurestSoldOther = isSurestSoldOther;
-            }
-            
-            //Looping Other products to provide edit access based on Disposition_Other_Buy_Up_Programs__c field if it is sold give edit access to the Sold case checklist form
-            for(Integer i = 0 ; i < OtherOpplineitemlist.size() ; i++) {
-                if(OtherOpplineitemlist[i].Disposition_Other_Buy_Up_Programs__c == 'Sold') {
-                    otherProductsEditAccess = true;
-                    break;
-                }
-            }
-            
-            /* Fetching Other Products - END */
-            
-            /* Check if the user has Read only Access - START */
-            Boolean isLoggedInUserRoleToBeEnabled = UserInformationClass.hasEditAccessToRecord(recId);
-            Boolean isIpmUser = false;
-            //Query to get the current user profile name and provide edit access if it is IPM profile
-            Id userProfileId = UserInfo.getProfileId();
-            String userProfileName = [SELECT Id, Name, ProfileId, Profile.Name FROM User WHERE ProfileId =: userProfileId LIMIT 1].Profile.Name;
-           /* if(userProfileName == 'IPM Standard Profile' && userProfileName == 'IPM Advanced Profile') {
-                isIpmUser = true;
-            }
-            
-            if(isLoggedInUserRoleToBeEnabled == false){
-                if(isIpmUser) {
-                    readOnlyUser = false;
-                } else {
-                    readOnlyUser = false;
-                }
-            }*/
-            /* Check if the user has Read only Access - END */
-            
-            
-            //Check all products Individual Edit Access and provide edit accessbility.
-            
-            List<OpportunityLineItem> cmOppLines =[SELECT Name, ProductCode, Id, Sales_Stage__c, Net_Results__c, Product2.Family, Product_Line__c,Opportunity.RecordTypeId,Buyup_Product_Selection__c,Opportunity.Disposition_Pharmacy__c FROM OpportunityLineItem where Product_Line__c IN ('Medical', 'Dental', 'Vision', 'Pharmacy', 'Other') and ((Sales_Stage__c ='Sold' or Sales_Stage__c ='Spin-Off' or Sales_Stage__c ='Transfer In') and OpportunityId =:recId) WITH USER_MODE];
-             
-           
-            if(cmOppLines.size()>0){
-                isSCCEditable =true;
-                Boolean isTraditionalProdAll = false;
-                Boolean isSurestProdAll = false;    
-                if(cmOppLines[0].Net_Results__c > 0){
-                    oppwrapper.Net_Results_Not_Zero =true;
-                }
-                for (OpportunityLineItem item : cmOppLines) {
-                    if (item.Buyup_Product_Selection__c == 'UNET or UMR Only' || item.Buyup_Product_Selection__c == 'Surest & UNET' || oppwrapper.isTraditionalProductMed || oppwrapper.isTraditionalProductPharmacy) {
-                        isTraditionalProdAll = true;
-                    }
-                    if (item.Buyup_Product_Selection__c == 'Surest only' || item.Buyup_Product_Selection__c == 'Surest & UNET' || oppwrapper.isSurestProductMed || oppwrapper.isSurestProductPharmacy) {
-                        isSurestProdAll = true;
-                    }
-                }
-                 
-                oppwrapper.isTraditionalProdAll = isTraditionalProdAll;
-                oppwrapper.isSurestProdAll = isSurestProdAll;
-                // system.debug('isTraditionalProdAll>>'+isTraditionalProdAll);
-                // system.debug('isSurestProdAll>>'+isSurestProdAll);
-            
-            }
-            else{
-                isSCCEditable =false;
-            }
-            
-            
-            
-            if(isSCCEditable ==true) {
-                if(medicalEditAccess == true || pharmacyEditAccess == true || dentalEditAccess == true || visionEditAccess == true || otherProductsEditAccess == true) {
-                    hasEditAccess = true;
-                    oppwrapper.Net_Results_Not_Zero =true;
-                } 
-                else {
-                    hasEditAccess = false;
-                    oppwrapper.Net_Results_Not_Zero =false;
-                }
-            }else{
-                hasEditAccess = false;
-                oppwrapper.Net_Results_Not_Zero =false;
-            }
-            if(OppDatarec.Sales_Stage_Other__c == 'Spin-Off' || OppDatarec.Sales_Stage_Other__c == 'Transfer In/Out'){
-                list<opportunitylineitem> OtherOpplineitemlistSpinoff =[select id,Level_2_Option__c,Buyup_Product_Selection__c,ProductCode,toLabel(Product2.Level_2_Options__c),Level2_Info__c,Product2.Family,Product2.Name,Product_Line__c,
-                                                                        Disposition_Other_Buy_Up_Programs__c, R_C_Percentage__c, Physician_R_C__c, Tolerance_Level__c,Decision_Support__c,Maternity_Support__c,
-                                                                        Congenital_Heart_Disease__c,Transplant_TRS_COE__c,Non_Extra_Contractual_Transplant__c,HealtheNote_Reminders__c,Physical_Health_Network__c,Physical_Health_Chiro_Clinical_Support__c,
-                                                                        Asthma_VOM__c,Diabetes_VOM__c,Congestive_Heart_Failure_VOM__c,CAD_VOM__c,COPD_VOM__c,Cancer_Support_Program_VOM__c,Kidney_Solutions_VOM__c,
-                                                                        Kidney_Resource_Services_VOM__c,MNRP__c,MNRP_DME__c,MNRP_Lab__c,MNRP_Default_of_Billed_Charges__c,
-                                                                        Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
-                                                                        MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,
-                                                                        MNRP_Lab_Nonstd_Percentage__c,MNRP_Default_Nonstd_Percentage__c,Physician_R_C_OON__c,Physician_R_C_OON_Percentage__c,Opportunity.RecordTypeId,Opportunity.Disposition_Pharmacy__c from OpportunityLineItem where OpportunityId =:recId and ProductCode != 'Total' and Product_Line__c ='Other' AND ((Disposition_Other_Buy_Up_Programs__c = 'Spin-Off'  Or Disposition_Other_Buy_Up_Programs__c='Transfer In')) WITH USER_MODE];
-                if(OtherOpplineitemlistSpinoff.size()>0){
-                    otherProductsEditAccess =true;
-                }
-                
-            }
-               
-            if(otherProductsEditAccess || OppDatarec.Disposition_Medical__c=='Spin-Off'  || OppDatarec.Disposition_Medical__c=='Transfer In' || OppDatarec.Disposition_Dental__c =='Spin-Off'  || OppDatarec.Disposition_Dental__c=='Transfer In' || OppDatarec.Disposition_Pharmacy__c=='Spin-Off'  || OppDatarec.Disposition_Pharmacy__c=='Transfer In' || OppDatarec.Disposition_Vision__c=='Spin-Off'  || OppDatarec.Disposition_Vision__c=='Transfer In'){
-                hasEditAccess =true;
-                oppwrapper.Net_Results_Not_Zero =true;
-            }
-            
-            //Only Read Access
-            if (userProfileName == 'General Executives' || userProfileName == 'Senior Executives' || userProfileName == 'Benefit Strategist') {
-                hasEditAccess = false;
-            }
-            
-            /* Logic to provide edit Access & fetch Products based on Desposition value for each product when Sales Stage is set to notified - END */
-            
-            /* Query to get Help icon Instructions During on Load */
-            List<Sold_Case_Check_List_Help_Texts__mdt> soldCaseInstructions = [ SELECT Field_Api_Name__c, Help_Text_Value__c 
+        ow.soldCaseInstructions = [
+            SELECT Field_Api_Name__c, Help_Text_Value__c
                                                                                FROM Sold_Case_Check_List_Help_Texts__mdt 
-                                                                               LIMIT: Limits.getLimitQueryRows()-Limits.getQueryRows()
-                                                                              ];
-            scc.CPW__c =oppwrapper.showCPWSection;
-            oppwrapper.sccData = scc;
+        ];
 
-            oppwrapper.OppolineItemsList = OpplineItemList;
-            oppwrapper.oppdata = OppDatarec;
-            oppwrapper.accrec = accrecvalue;
-            oppwrapper.soldCaseInstructions = soldCaseInstructions;
-            oppwrapper.hasEditAccess = hasEditAccess;
-            // oppwrapper.Net_Results_Not_Zero = hasEditAccess;
-            oppwrapper.cmRecTypeId = cmRT;           
-            
-            //--------- code added for SoldCase Audit Trail - start -----------
-            
-            oppwrapper.loggedInUserId=UserInfo.getUserId();
-            List<String> lst=new List<String>();
-            lst.add('Opportunity_ObjPrprtyFldApiName_Mapping');
-            lst.add('Account_ObjPrprtyFldApiName_Mapping');
-            lst.add('OppLineItem_ObjPrprtyFldApiName_Mapping');
-            
-            
-            
-            List<Sold_Case_Checklist_Audit_Trail_Setting__mdt> auditTrailSettingList=[Select DeveloperName,Value__c 
-                                                                                      from Sold_Case_Checklist_Audit_Trail_Setting__mdt 
-                                                                                      where DeveloperName in: lst ];
-            oppwrapper.auditTrailSettingList=auditTrailSettingList;
-            
-            
+        ow.auditTrailSettingList = [
+            SELECT DeveloperName, Value__c
+            FROM Sold_Case_Checklist_Audit_Trail_Setting__mdt
+            WHERE DeveloperName IN (
+                'Opportunity_ObjPrprtyFldApiName_Mapping',
+                'Account_ObjPrprtyFldApiName_Mapping',
+                'OppLineItem_ObjPrprtyFldApiName_Mapping'
+            )
+        ];
+
+        scc.CPW__c = ow.showCPWSection;
+        ow.loggedInUserId = UserInfo.getUserId();
+        ow.pickListValuesList = getOppItemPickListValues('Flex_Options__c');
+		
+		/* =====================================================
+   GLOBAL TRADITIONAL / SUREST FLAGS (RESTORED)
+===================================================== */
+
+Boolean isTraditionalProdAll =
+    ow.isTraditionalProductMed
+    || ow.isTraditionalProductPharmacy
+    || ow.isTradSoldDental
+    || ow.isTradSoldVision
+    || ow.isTradSoldOther;
+
+Boolean isSurestProdAll =
+    ow.isSurestProductMed
+    || ow.isSurestProductPharmacy
+    || ow.isSurestSoldDental
+    || ow.isSurestSoldVision
+    || ow.isSurestSoldOther;
+
+ow.isTraditionalProdAll = isTraditionalProdAll;
+ow.isSurestProdAll = isSurestProdAll;
+
+        return ow;
+    }
+
+
+    /* =====================================================
+       HELPERS
+    ===================================================== */
+
+    private static void updateSurestFlags(
+        OpportunityLineItem oli,
+        oppwrapperclass ow,
+        String type
+    ) {
+        if (oli.Buyup_Product_Selection__c == 'Surest & UNET') {
+            setFlags(ow, type, true, true);
         }
-        oppwrapper.pickListValuesList = getOppItemPickListValues('Flex_Options__c');
+        else if (oli.Buyup_Product_Selection__c == 'Surest only') {
+            setFlags(ow, type, false, true);
+        }
+        else if (oli.Buyup_Product_Selection__c == 'UNET or UMR Only') {
+            setFlags(ow, type, true, false);
+        }
+    }
 
-        return oppwrapper;
+    private static void setFlags(
+        oppwrapperclass ow,
+        String type,
+        Boolean trad,
+        Boolean surest
+    ) {
+        if (type == 'Dental') {
+            ow.isTradSoldDental |= trad;
+            ow.isSurestSoldDental |= surest;
+        }
+        else if (type == 'Vision') {
+            ow.isTradSoldVision |= trad;
+            ow.isSurestSoldVision |= surest;
+        }
+        else if (type == 'Other') {
+            ow.isTradSoldOther |= trad;
+            ow.isSurestSoldOther |= surest;
+        }
     } 
-    
     
     //-------------------------------------------SAMARTH SCC 2021-------------------------------------------
     /*@AuraEnabled

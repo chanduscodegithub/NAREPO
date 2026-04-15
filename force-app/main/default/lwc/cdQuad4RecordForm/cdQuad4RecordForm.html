@@ -1,0 +1,51 @@
+<template>
+     <template if:true={isLoading}>
+        <div class="spinner-center">
+            <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+        </div>
+    </template>
+
+        <lightning-quick-action-panel header={accountName}>
+             
+
+
+            <lightning-record-edit-form object-api-name="Contact" record-id={recordId} onsuccess={handleSuccess}
+                onerror={handleError} onsubmit={handleSubmit}  onload={handleLoad} >
+
+                <lightning-messages></lightning-messages>
+
+                <div>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input-field field-name="FirstName"></lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input-field field-name="Email"></lightning-input-field>
+
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input-field field-name="LastName"></lightning-input-field>
+
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input-field field-name="Phone"></lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input-field field-name="MobilePhone"></lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-input-field field-name="MailingAddress"></lightning-input-field>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning-button type="submit" variant="brand" label="Update">
+                    </lightning-button>
+                </div>
+            </lightning-record-edit-form>
+        </lightning-quick-action-panel>
+
+</template>

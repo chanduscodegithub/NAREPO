@@ -58,325 +58,6 @@ Fields :
         @AuraEnabled public String productName;
     }
     
-    /***********************************************************************
-Method Name : createProduct2
-Purpose :Creates a new Product2 record from a single PIM_Product_Stage__c record.
-Also:
-• Creates PricebookEntry
-• Creates Audit Trail record
-• Handles display order reordering
-• Updates Stage status to 'In Sync'
-Input :
-• stageRecordId (Id)
-→ Id of PIM_Product_Stage__c record
-Output :
-• Map<String, String>
-→ productId   : Created Product2 Id
-→ productName : Created Product Name
-Throws :
-• AuraHandledException if DML fails
-***********************************************************************/
-    /*@AuraEnabled
-    public static Map<String, String> createProduct2(Id stageRecordId){
-        if (stageRecordId == null) {
-            throw new AuraHandledException('Stage Record Id is required');
-        }
-        PIM_Product_Stage__c pim = [
-            SELECT PIM_ID_Stage__c,PIM_Name_Stage__c,PIM_Name_Prod__c,PIM_ID_Prod__c,Product_Family_Stage__c,PIM_Parent_ID_Stage__c,PIM_Parent_Name_Stage__c, PIM_SME_Name_Stage__c,
-            PIM_ID_Composite_Stage__c, PIM_Availability_Stage__c,Program_Code_Stage__c,Supplier_Code_Stage__c, Id_Stage__c,
-            Product_Name_Stage__c,Product_Code_Stage__c,IsActiveStage__c,Funding_Type_Stage__c,Product_Line_Stage__c,
-            Level_2_Options_Stage__c, Surest_Applicable_Products_Stage__c, CPW_Applicable_Product_Stage__c,  SFGO_Applicable_Product_Stage__c,
-            Considered_For_StepWise_Integration__c, Distribution_Type_Flag__c,StepWise_Product_Name__c,StepWise_Product_RowID__c,Underwriting_Validation__c,
-            Do_Not_Include_in_Total__c,Key_Growth_Drivers__c, Eligible_for_Sales_Incentives__c, Enterprise_Growth_Product__c,Product_Display_Order_Stage__c,Reporting_Product_Type__c,
-            Surest_Implementation_Lead_Time_Stage__c,Standard_Implementation_LeadTime_Stage__c 
-            FROM PIM_Product_Stage__c  WHERE Id = :stageRecordId With USER_MODE LIMIT 1];
-        Id standardPricebookId = [SELECT Id FROM Pricebook2 WHERE IsStandard = true With USER_MODE  LIMIT 1].Id;
-        Product2 prod = new Product2();
-        if (pim.Product_Code_Stage__c != null) {
-            prod.ProductCode = pim.Product_Code_Stage__c;
-        }
-        if (pim.PIM_ID_Stage__c != null) {
-            prod.PIM_ID__c = pim.PIM_ID_Stage__c;
-        }
-        if (pim.Product_Name_Stage__c != null) {
-            prod.Name = pim.Product_Name_Stage__c;
-        }
-        
-        if (pim.IsActiveStage__c != null) {
-            prod.IsActive = pim.IsActiveStage__c;
-        }
-        if (pim.PIM_Name_Stage__c != null) {
-            prod.PIM_Name__c = pim.PIM_Name_Stage__c;
-        }
-        
-        if (pim.PIM_Parent_ID_Stage__c != null) {
-            prod.PIM_PARENT_ID__c = pim.PIM_Parent_ID_Stage__c;
-        }
-        
-        if (pim.PIM_Parent_Name_Stage__c != null) {
-            prod.PIM_PARENT_NAME__c = pim.PIM_Parent_Name_Stage__c;
-        }
-        
-        if (pim.PIM_SME_Name_Stage__c != null) {
-            prod.PIM_SME_NAME__c = pim.PIM_SME_Name_Stage__c;
-        }
-        
-        if (pim.PIM_ID_Composite_Stage__c != null) {
-            prod.PIM_ID_COMPOSITE__c = pim.PIM_ID_Composite_Stage__c;
-        }
-        
-        if (pim.PIM_Availability_Stage__c != null) {
-            prod.PIM_AVAILABILITY__c = pim.PIM_Availability_Stage__c;
-        }
-        
-        if (pim.Program_Code_Stage__c != null) {
-            prod.PIM_PROGRAM_CODE__c = pim.Program_Code_Stage__c;
-        }
-        
-        if (pim.Supplier_Code_Stage__c != null) {
-            prod.PIM_SUPPLIER_CODE__c = pim.Supplier_Code_Stage__c;
-        }
-        
-        if (pim.Funding_Type_Stage__c != null) {
-            prod.Funding_Type__c = pim.Funding_Type_Stage__c;
-        }
-        
-        if (pim.Product_Line_Stage__c != null) {
-            prod.Product_Line__c = pim.Product_Line_Stage__c;
-        }
-        
-        if (pim.Level_2_Options_Stage__c != null) {
-            prod.Level_2_Options__c = pim.Level_2_Options_Stage__c;
-        }
-        
-        if (pim.Surest_Applicable_Products_Stage__c != null) {
-            prod.Surest_Applicable_Products__c = pim.Surest_Applicable_Products_Stage__c;
-        }
-        
-        if (pim.CPW_Applicable_Product_Stage__c != null) {
-            prod.CPW_Applicable_Product__c = pim.CPW_Applicable_Product_Stage__c;
-        }
-        
-        if (pim.SFGO_Applicable_Product_Stage__c != null) {
-            prod.SFGO_Applicable_Product__c =  pim.SFGO_Applicable_Product_Stage__c;
-        }
-        
-        if (pim.Distribution_Type_Flag__c != null) {
-            prod.Distribution_Type_Flag__c =  pim.Distribution_Type_Flag__c;
-        }
-        
-        if (pim.Do_Not_Include_in_Total__c != null) {
-            prod.Do_Not_Include_in_Total__c = pim.Do_Not_Include_in_Total__c;
-        }
-        
-        if (pim.Enterprise_Growth_Product__c != null) {
-            prod.Enterprise_Growth_Product__c = pim.Enterprise_Growth_Product__c;
-        }
-        
-        if (pim.StepWise_Product_Name__c != null) {
-            prod.StepWise_Product_Name__c =   pim.StepWise_Product_Name__c;
-        }
-        
-        if (pim.StepWise_Product_RowID__c != null) {
-            prod.StepWise_Product_RowID__c = pim.StepWise_Product_RowID__c;
-        }
-        
-        if (pim.Considered_For_StepWise_Integration__c != null) {
-            prod.Considered_For_StepWise_Integration__c =
-                pim.Considered_For_StepWise_Integration__c;
-        }
-        
-        if (pim.Underwriting_Validation__c != null) {
-            prod.Underwriting_Validation__c =
-                pim.Underwriting_Validation__c;
-        }
-        if (pim.Product_Family_Stage__c != null) {
-            validateProductFamily(pim.Product_Family_Stage__c);
-            prod.Family = pim.Product_Family_Stage__c;
-        }
-        if (pim.Surest_Implementation_Lead_Time_Stage__c != null) {
-            prod.Surest_Implementation_Lead_Time__c = pim.Surest_Implementation_Lead_Time_Stage__c;
-        }
-        if (pim.Standard_Implementation_LeadTime_Stage__c != null) {
-            prod.Standard_Implementation_Lead_Time__c = pim.Standard_Implementation_LeadTime_Stage__c;
-        }
-        
-        
-        if (pim.Eligible_for_Sales_Incentives__c != null) {
-            prod.Eligible_for_Sales_Incentives__c =
-                pim.Eligible_for_Sales_Incentives__c;
-        }
-        
-        
-        /*if (pim.Product_Display_Order_Stage__c != null) {
-prod.Product_Display_Order__c = pim.Product_Display_Order_Stage__c;
-// PimController.reorderOnInsert(prod.Id,  pim.Product_Display_Order_Stage__c, pim.Product_Line_Stage__c );
-}*/
-        
-       /* if (pim.Reporting_Product_Type__c != null) {
-            prod.Reporting_Product_Type__c =  pim.Reporting_Product_Type__c;
-        }
-        /* if (pim.Surest_Implementation_Lead_Time_Stage__c != null) {
-prod.Surest_Implementation_Lead_Time__c =  pim.Surest_Implementation_Lead_Time_Stage__c;
-}
-if (pim.Standard_Implementation_LeadTime_Stage__c != null) {
-prod.Standard_Implementation_Lead_Time__c =  pim.Standard_Implementation_LeadTime_Stage__c;
-}*/
-        
-       /* if (pim.Key_Growth_Drivers__c != null) {
-            prod.TCOC_Hit_List__c =
-                pim.Key_Growth_Drivers__c;
-        }
-        try {
-            prod.Product_Display_Order__c = pim.Product_Display_Order_Stage__c;
-            Database.insert(prod, false,AccessLevel.USER_MODE);
-            //insert as user prod;
-            String auditDesc = buildCreateAuditDescription(pim);
-            if (!String.isBlank(auditDesc)) {
-                PIM_Audit_Trail__c auditRecord1 = new PIM_Audit_Trail__c(
-                    //insert as user  new PIM_Audit_Trail__c(
-                    Product__c           = prod.Id,
-                    PIM_Product_Stage__c = pim.Id,
-                    Action_Type__c       = 'Create',
-                    Source_of_Action__c = 'Individual Publish',
-                    Description__c       = auditDesc
-                );
-                Database.insert(auditRecord1, true, AccessLevel.USER_MODE);
-                
-            }
-            
-            if (pim.Product_Display_Order_Stage__c != null &&  pim.Product_Line_Stage__c != null) {
-                PimController.reorderOnInsert(prod.Id,pim.Product_Display_Order_Stage__c,pim.Product_Line_Stage__c );
-                prod.Product_Display_Order__c = pim.Product_Display_Order_Stage__c;
-                //update as user prod;
-                Database.update(prod, false, AccessLevel.USER_MODE);
-                
-            }
-            pim.Product_Name_Prod__c = prod.Id;                
-            pim.Status__c = 'In Sync';
-            pim.Product_Change_Type__c = 'No Change';
-            pim.Change_Tracker__c  = '';
-            pim.Product_Display_Order_Stage__c = prod.Product_Display_Order__c;
-            Database.update(pim, false,AccessLevel.USER_MODE);
-            //update as user pim;
-            System.debug('New Product created with ID: ' + prod.Id);
-            PricebookEntry standardEntry = new PricebookEntry(Pricebook2Id = standardPricebookId,Product2Id = prod.Id, UnitPrice = 1,IsActive = true);
-            Database.insert(standardEntry, false,AccessLevel.USER_MODE);
-            //insert as user standardEntry;
-            System.debug('Standard PricebookEntry created with ID: ' + standardEntry.Id);
-            Map<String, String> result = new Map<String, String>();
-            result.put('productId', prod.Id);
-            result.put('productName', prod.Name);
-            return result;
-        } catch (DmlException e) {
-            throw new AuraHandledException(
-                'Product creation failed: ' + e.getMessage()
-            );
-        }
-        
-    }*/
-    
-    /***********************************************************************
-Method Name : updateProductOnPublish
-Purpose : Updates an existing Product2 record using Stage values.
-• Compares Stage vs Snapshot values
-• Updates only changed fields
-• Handles display order shift logic
-• Creates Audit Trail record
-• Updates Stage status to 'In Sync'
-Input :
-• stageRecordId (Id) → Id of PIM_Product_Stage__c record
-Output :
-• Map<String, String> → productId   : Updated Product2 Id
-→ productName : Product NameThrows :
-• AuraHandledException for picklist validation or DML errors
-***********************************************************************/
-   /* @AuraEnabled
-    public static Map<String, String> updateProductOnPublish(Id stageRecordId) {
-        // if (stageRecordId == null) return;
-        Map<String, String> result = new Map<String, String>();
-        if (stageRecordId == null) {
-            result.put('status', 'error');
-            result.put('message', 'Stage Record Id cannot be null.');
-            return result;
-        }
-        Savepoint sp = Database.setSavepoint();
-        try {
-            PIM_Product_Stage__c s = [SELECT Product_Name_Prod__c,Product_Name_Stage__c,Product_Name__c,Product_Line_Prod__c,Product_Line_Stage__c,Active_Prod__c,IsActiveStage__c,Product_Display_Order_Prod__c, Product_Display_Order_Stage__c,
-                                      PIM_ID_Stage__c,PIM_Name_Stage__c,PIM_Parent_ID_Stage__c,PIM_Parent_Name_Stage__c,PIM_SME_Name_Stage__c,PIM_ID_Composite_Stage__c, PIM_Availability_Stage__c,Program_Code_Stage__c,Supplier_Code_Stage__c,Product_Code_Stage__c,Product_Family_Stage__c,Funding_Type_Stage__c, Level_2_Options_Stage__c,Surest_Applicable_Products_Stage__c,CPW_Applicable_Product_Stage__c,
-                                      SFGO_Applicable_Product_Stage__c,PIM_ID_Prod__c,PIM_Name_Prod__c, PIM_Parent_ID_Prod__c,PIM_Parent_Name_Prod__c,PIM_SME_Name_Prod__c,PIM_ID_Composite_Prod__c,PIM_Availability_Prod__c,Program_Code_Prod__c,Supplier_Code_Prod__c,Product_Code_Prod__c,Product_Family_Prod__c,Funding_Type_Prod__c,Level2_Options_Prod__c,Surest_Applicable_Products_Prod__c, CPW_Applicable_Product_Prod__c, SFGO_Applicable_Product_Prod__c,
-                                      Surest_Implementation_Lead_Time_Stage__c,Surest_Implementation_Lead_Time_Prod__c,Standard_Implementation_LeadTime_Stage__c,Standard_Implementation_Lead_Time_Prod__c 
-                                      FROM PIM_Product_Stage__c WHERE Id = :stageRecordId With USER_MODE];
-            Id productId = s.Product_Name_Prod__c;
-            Integer oldOrder = toInt(s.Product_Display_Order_Prod__c);
-            Integer newOrder = toInt(s.Product_Display_Order_Stage__c);
-            if (s.Active_Prod__c != s.IsActiveStage__c || s.Product_Line_Prod__c != s.Product_Line_Stage__c || oldOrder != newOrder) {
-                handleDisplayOrderShift(productId,s.Product_Line_Prod__c,s.Product_Line_Stage__c,s.Active_Prod__c,s.IsActiveStage__c,oldOrder,newOrder);
-            }
-            Product2 p = new Product2(Id = productId);
-            for (String stageField : FIELD_CONFIG.keySet()) {
-                Map<String, String> cfg = FIELD_CONFIG.get(stageField);
-                Object stageVal = s.get(stageField);
-                Object prodVal  = s.get(cfg.get('snapshot'));
-                if ((stageVal == null && prodVal == null) ||
-                    (stageVal != null && prodVal != null &&
-                     String.valueOf(stageVal) == String.valueOf(prodVal))) {
-                         continue;
-                     }
-                if (cfg.get('product') == 'Family') {
-                    validateProductFamily(String.valueOf(stageVal));   
-                }
-                p.put(cfg.get('product'), stageVal);
-            }
-            //update as user p;
-            Database.update(p, true,AccessLevel.USER_MODE);
-            // ---------- AUDIT TRAIL (UPDATE) ----------
-            String auditDesc = buildAuditDescription(s);
-            if (!String.isBlank(auditDesc)) {
-                PIM_Audit_Trail__c auditRecord = new PIM_Audit_Trail__c(
-                    //insert as user new PIM_Audit_Trail__c(
-                    Product__c           = productId,
-                    PIM_Product_Stage__c = s.Id,
-                    Action_Type__c       = 'Update',
-                    Source_of_Action__c = 'Individual Publish',
-                    Description__c       = auditDesc);
-                Database.insert(auditRecord, false, AccessLevel.USER_MODE);
-                
-            }
-            s.Status__c = 'In Sync';
-            s.Change_Tracker__c ='';
-            s.Product_Change_Type__c = 'No Change';
-            Database.update(s, false,AccessLevel.USER_MODE);
-            //update as user s;
-            result.put('productId', productId);
-            result.put('productName', s.Product_Name_Stage__c);
-            return result;
-            
-        } /*catch (Exception e) {
-Database.rollback(sp);
-throw new AuraHandledException(e.getMessage());
-}*/
-/*        catch (DmlException e) {
-            Database.rollback(sp);
-            
-            if (e.getMessage().contains('INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST')) {
-                String fieldLabel = 'Picklist field';
-                String badValue   = '';
-                // Try to extract value (best-effort)
-                if (e.getMessage().contains(':')) {
-                    badValue = e.getMessage().substringAfter(':').substringBefore('[').trim();
-                }
-                
-                throw new AuraHandledException(
-                    'Invalid picklist value "' + badValue +
-                    '". Please select a valid value before publishing.'
-                );
-            }
-            
-            throw new AuraHandledException('Update failed'+e.getMessage());
-        }
-        
-    } */
     
     /***********************************************************************
 Method Name : getStageValues
@@ -392,7 +73,7 @@ Output :
                                                      Id_Stage__c,Program_Code_Stage__c,Supplier_Code_Stage__c,Product_Name_Stage__c,IsActiveStage__c, Funding_Type_Stage__c, Product_Line_Stage__c, Level_2_Options_Stage__c,
                                                      Surest_Applicable_Products_Stage__c,Product_Code_Stage__c,
                                                      CPW_Applicable_Product_Stage__c, SFGO_Applicable_Product_Stage__c,
-                                                     Considered_For_StepWise_Integration__c, Distribution_Type_Flag__c, 
+                                                     Considered_For_StepWise_Integration__c, Distribution_Type_Flag__c, NAStandardImplementationLeadTime_Stage__c,
                                                      StepWise_Product_Name__c,StepWise_Product_RowID__c,Underwriting_Validation__c,Product_Family_Stage__c,
                                                      Do_Not_Include_in_Total__c, Key_Growth_Drivers__c, Eligible_for_Sales_Incentives__c,Enterprise_Growth_Product__c,
                                                      Product_Display_Order_Stage__c,Reporting_Product_Type__c,Surest_Implementation_Lead_Time_Stage__c,Standard_Implementation_LeadTime_Stage__c
@@ -400,7 +81,6 @@ Output :
         if (!pimProductList.isEmpty()) {
             PIM_Product_Stage__c pim = pimProductList[0];
         } else {
-            System.debug('No record Found') ;
         }
         return pimProductList;
     }
@@ -454,10 +134,16 @@ Output :List<DiffWrapper>
                 diffs.add(dw);
                 continue;
             }
-            
+            if (sVal == null && pVal == null) {
+                continue;
+            }
             String sStr = String.valueOf(sVal);
             String pStr = String.valueOf(pVal);
-            if (sStr == pStr) 
+           // if (sStr == pStr) 
+           // if (sStr != null && sStr.equals(pStr))
+               // if (sStr.equals(pStr))
+                    if (sStr != null && sStr.equals(pStr)) 
+    
                 //if (valuesAreEqual(sVal, pVal))
                 continue;
             DiffWrapper dw = buildDiff(
@@ -478,49 +164,6 @@ Output :List<DiffWrapper>
         return diffs;
     }
     /***********************************************************************
-Method Name : reorderOnInsert
-Purpose :Adjusts Product_Display_Order__c when inserting for single record(record page)a new product within the same Product Line.
-Input :
-• newProductId (Id)
-• newOrderStr  (String) – New display order
-• productLine  (String)
-Output :• void
-***********************************************************************/
-    /*@AuraEnabled
-    public static void reorderOnInsert(Id newProductId,String newOrderStr,String productLine) {
-        if (String.isBlank(newOrderStr) || String.isBlank(productLine))
-            return;
-        Integer newOrder;
-        try {
-            newOrder = Integer.valueOf(newOrderStr);
-        } catch (Exception e) {
-            return;
-        }
-        // Determine grouping (Medical separate, others shared)
-        String groupKey = orderGroup(productLine);
-        // Query all active products
-        List<Product2> existingProducts = [SELECT Id, Product_Display_Order__c, Product_Line__c
-                                           FROM Product2 WHERE IsActive = true AND Product_Display_Order__c != null AND Name != 'Total'AND Id != :newProductId WITH USER_MODE];
-        List<Product2> toShift = new List<Product2>();
-        for (Product2 p : existingProducts) {
-            // Apply grouping logic
-            if (orderGroup(p.Product_Line__c) != groupKey)
-                continue;
-            Integer curr = Integer.valueOf(p.Product_Display_Order__c);
-            if (curr >= newOrder) {
-                p.Product_Display_Order__c =
-                    String.valueOf(curr + 1).leftPad(4, '0');
-                
-                toShift.add(p);
-            }
-        }
-        
-        if (!toShift.isEmpty()) {
-            //update as user toShift;
-            Database.update(toShift, false,AccessLevel.USER_MODE);
-        }
-    }*/
-    /***********************************************************************
 Method Name : getProducts
 Purpose :Fetches Stage records filtered by Product_Change_Type__c for Bulk Publish.
 Input :filterType (String)
@@ -539,13 +182,12 @@ Output : List<PIM_Product_Stage__c>
                            Key_Growth_Drivers__c, Active_Prod__c, Enterprise_Growth_Product__c, Product_Family_Prod__c, Underwriting_Validation__c, Funding_Type_Prod__c,
                            Product_Line_Prod__c, Level2_Options_Prod__c, Distribution_Type_Flag__c, StepWise_Product_Name__c, Product_Display_Order_Prod__c, StepWise_Product_RowID__c,
                            Surest_Applicable_Products_Prod__c, CPW_Applicable_Product_Prod__c, SFGO_Applicable_Product_Prod__c, Product_Name_Prod__c, Considered_For_StepWise_Integration__c, Surest_Implementation_Lead_Time_Stage__c,
-                           Standard_Implementation_LeadTime_Stage__c,Reporting_Product_Type__c 
+                           Standard_Implementation_LeadTime_Stage__c,Reporting_Product_Type__c,NAStandardImplementationLeadTime_Stage__c,
+                           Underwriting_Validation_Prod__c,Eligible_for_Sales_Incentives_Prod__c
                            FROM PIM_Product_Stage__c where Product_Change_Type__c =:filterType  AND Product_Line_Stage__c!=NULL With USER_MODE Order by Product_Line_Stage__c ASC,Product_Display_Order_Prod__c];
         }
         catch(Exception e){
-            System.debug('No Records  Found');
         }
-        System.debug('allProducts'+ allProducts);
         return allProducts;
     }
     /***********************************************************************
@@ -563,7 +205,13 @@ Output : PublishSummary
 → totalCount
 ***********************************************************************/
     @AuraEnabled
-    public static PublishSummary bulkCreateProducts(List<Id> stageIds,Boolean isListView) {
+    public static PublishSummary bulkCreateProducts(List<Id> stageIds,Boolean isListView,string selectedFilter) {
+        if(selectedFilter!='Deactivation'){
+        List<PIM_Product_Stage__c> getProducts =getProducts('Deactivation');
+        if(getProducts.size()>0){
+            throw new AuraHandledException('Deactivated products must be published before new products can be published.');
+        }
+        }
         Boolean isRecordPage = !isListView;
         PublishSummary summary = new PublishSummary();
         if (stageIds == null || stageIds.isEmpty()) {
@@ -586,8 +234,9 @@ Output : PublishSummary
                                              PIM_ID_Composite_Prod__c,PIM_Availability_Prod__c,Eligible_for_Sales_Incentives__c,Program_Code_Prod__c,Supplier_Code_Prod__c,
                                              Product_Code_Prod__c,Do_Not_Include_in_Total__c,Key_Growth_Drivers__c,Active_Prod__c,Enterprise_Growth_Product__c, Product_Family_Prod__c,Underwriting_Validation__c,Funding_Type_Prod__c, Product_Line_Prod__c,Level2_Options_Prod__c,Distribution_Type_Flag__c,StepWise_Product_Name__c,
                                              Product_Display_Order_Prod__c,StepWise_Product_RowID__c,Surest_Applicable_Products_Prod__c,CPW_Applicable_Product_Prod__c,SFGO_Applicable_Product_Prod__c,Product_Name_Prod__c,Considered_For_StepWise_Integration__c,
-                                             Surest_Implementation_Lead_Time_Stage__c,Standard_Implementation_LeadTime_Stage__c,Reporting_Product_Type__c 
-                                             FROM PIM_Product_Stage__c WHERE Id IN :stageIds With USER_MODE];
+                                             Surest_Implementation_Lead_Time_Stage__c,Standard_Implementation_LeadTime_Stage__c,Reporting_Product_Type__c,NAStandardImplementationLeadTime_Stage__c,
+                                             Underwriting_Validation_Prod__c,Eligible_for_Sales_Incentives_Prod__c
+                                             FROM PIM_Product_Stage__c WHERE Id IN :stageIds With USER_MODE ORDER BY Product_Display_Order_Stage__c];
         List<Product2> productsToInsert = new List<Product2>();
         for (PIM_Product_Stage__c s : stages) {
             //Integer orderVal = toInt(s.Product_Display_Order_Stage__c);
@@ -604,6 +253,8 @@ Output : PublishSummary
             p.Name                     = s.Product_Name_Stage__c;
             p.ProductCode              = s.Product_Code_Stage__c;
             p.IsActive                 = s.IsActiveStage__c;
+            p.UHC_NA_Standard_Implementation_Lead_Time__c = s.NAStandardImplementationLeadTime_Stage__c;
+            
             // ---- Validate ALL picklists first ----
             List<String> picklistErrors = validatePicklists(s);
             
@@ -625,26 +276,11 @@ Output : PublishSummary
                 
                 continue; 
             }
-            /* String pfError = validateProductFamilyBulk(s.Product_Family_Stage__c);
-
-            if (pfError != null) {
-                errorCount++;
-                errorRows.add(
-                    '<tr>' +
-                    '<td>' + s.Product_Name_Stage__c + '</td>' +
-                    '<td>' + s.Product_Code_Stage__c + '</td>' +
-                    '<td><a href="' + baseUrl + '/' + s.Id + '">' +
-                    s.Product_Name_Stage__c + '</a></td>' +
-                    '<td>' + s.Product_Change_Type__c + '</td>' +
-                    // '<td>' + s.Change_Tracker__c  + '</td>' +
-                    '<td>' + pfError + '</td>' +
-                    '</tr>'
-                );
-                continue;  
-            }*/
+          
             
             
             p.Family = s.Product_Family_Stage__c;
+             p.Underwriting_Validation__c = s.Underwriting_Validation__c;
             //validateProductFamily(s.Product_Family_Stage__c);   
             //p.Family                   = s.Product_Family_Stage__c;
             p.Funding_Type__c          = s.Funding_Type_Stage__c;
@@ -657,9 +293,11 @@ Output : PublishSummary
             p.Distribution_Type_Flag__c = s.Distribution_Type_Flag__c;
             p.StepWise_Product_RowID__c = s.StepWise_Product_RowID__c;
             p.StepWise_Product_Name__c = s.StepWise_Product_Name__c;
-            p.Underwriting_Validation__c =s.Underwriting_Validation__c;
+           // p.Underwriting_Validation__c =s.Underwriting_Validation__c;
             p.Do_Not_Include_in_Total__c = s.Do_Not_Include_in_Total__c;
             p.TCOC_Hit_List__c =s.Key_Growth_Drivers__c;
+           // p.Eligible_for_Sales_Incentives__c = s.Eligible_for_Sales_Incentives__c;
+          
             p.Eligible_for_Sales_Incentives__c = s.Eligible_for_Sales_Incentives__c;
             p.Enterprise_Growth_Product__c =s.Enterprise_Growth_Product__c;
             p.Surest_Implementation_Lead_Time__c = s.Surest_Implementation_Lead_Time_Stage__c;
@@ -669,12 +307,27 @@ Output : PublishSummary
             p.Product_Display_Order__c = orderVal == null ? null : padOrder(orderVal);
             productsToInsert.add(p);            
         }
+        
+        if(errorRows.size()>0){
+            if(isListView){
+                sendQuickPublishEmail(successCount,errorCount,totalCount,successRows,errorRows,true);
+                summary.successCount = 0;
+                summary.errorCount = errorRows.size();
+                summary.totalCount = totalCount;
+                summary.message = 'Product insertion failed. All changes rolled back. Please check your email for more details.';
+                return summary;
+            }
+            
+            //return 'Failed';
+            //throw new AuraHandledException('Product update failed. All changes rolled back.');
+        }
+        
         handleBulkDisplayOrderInsert(productsToInsert);
         
         if (!Schema.sObjectType.Product2.isCreateable()) {
             throw new AuraHandledException('You do not have permission to create Products.');
         }
-        Database.SaveResult[] productResults = Database.insert(productsToInsert, false,AccessLevel.USER_MODE);
+        Database.SaveResult[] productResults = Database.insert(productsToInsert, true,AccessLevel.USER_MODE);
         Id standardPricebookId =[SELECT Id FROM Pricebook2 WHERE IsStandard = true With USER_MODE LIMIT 1].Id;
         List<PricebookEntry> pricebookEntries = new List<PricebookEntry>();
         List<PIM_Product_Stage__c> stageUpdates = new List<PIM_Product_Stage__c>();
@@ -722,8 +375,8 @@ Output : PublishSummary
                         Status__c = 'In Sync',
                         Change_Tracker__c ='',
                         Product_Change_Type__c = 'No Change',
-                        Level2_Options_Prod__c = s.Level_2_Options_Stage__c,
-                        Product_Display_Order_Stage__c = p.Product_Display_Order__c
+                        Level2_Options_Prod__c = s.Level_2_Options_Stage__c
+                        //Product_Display_Order_Stage__c = p.Product_Display_Order__c
                     )
                 );
                 
@@ -748,21 +401,21 @@ Output : PublishSummary
             }
         }
         
-        
+         
         
         if (!pricebookEntries.isEmpty()) {
             if (!Schema.sObjectType.PricebookEntry.isCreateable()) {
                 throw new AuraHandledException('You do not have permission to create Pricebook Entries.');
             }
-            Database.insert(pricebookEntries, false,AccessLevel.USER_MODE);
+            Database.insert(pricebookEntries, true,AccessLevel.USER_MODE);
         }
         if (!stageUpdates.isEmpty()) {
             // update as user stageUpdates;
-            Database.update(stageUpdates, false,AccessLevel.USER_MODE);
+            Database.update(stageUpdates, true,AccessLevel.USER_MODE);
             
         }
         if (!auditRecords.isEmpty()) {
-            Database.insert(auditRecords, false,AccessLevel.USER_MODE);
+            Database.insert(auditRecords, true,AccessLevel.USER_MODE);
             //insert as user auditRecords;
         }
         if(isListView)
@@ -854,7 +507,7 @@ Output : PublishSummary
         // STEP 7: Single bulk update
         if (!productsToUpdate.isEmpty()) {
             //update as user productsToUpdate;
-            Database.update(productsToUpdate, false,AccessLevel.USER_MODE);
+            Database.update(productsToUpdate, true,AccessLevel.USER_MODE);
         }
     }
     private static List<DiffWrapper> buildDiffs(PIM_Product_Stage__c stage,Map<String, Schema.SObjectField> stageDescribe) {
@@ -865,7 +518,8 @@ Output : PublishSummary
             String productField  = cfg.get('product');
             String stageVal =stage.get(stageField) == null ? '' : String.valueOf(stage.get(stageField));
             String snapVal =stage.get(snapshotField) == null ? '' :String.valueOf(stage.get(snapshotField));
-            if (stageVal == snapVal) 
+           // if (stageVal == snapVal) 
+                if (stageVal != null && stageVal.equals(snapVal)) //newly added
                 continue;
             DiffWrapper dw = new DiffWrapper();
             dw.stageField = stageField;
@@ -942,7 +596,13 @@ Input :stageIds (List<Id>)
 Output : PublishSummary
 ***********************************************************************/
     @AuraEnabled
-    public static PublishSummary updateProductsBulk(List<Id> stageIds,Boolean isListView) {
+    public static PublishSummary updateProductsBulk(List<Id> stageIds,Boolean isListView,string selectedFilter) {
+        if(selectedFilter!='Deactivation'){
+            List<PIM_Product_Stage__c> getProducts =getProducts('Deactivation');
+            if(getProducts.size()>0){
+                throw new AuraHandledException('Deactivated products must be published before Change in Products can be published.');
+            }
+        }
         PublishSummary summary = new PublishSummary();
         if (stageIds == null || stageIds.isEmpty()) {
             summary.successCount = 0;
@@ -959,11 +619,13 @@ Output : PublishSummary
         List<PIM_Audit_Trail__c> auditRecords = new List<PIM_Audit_Trail__c>();
         String baseUrl = URL.getOrgDomainUrl().toExternalForm();
         List<PIM_Product_Stage__c> stages = [SELECT Id, PIM_ID_Stage__c, Product_Name_Stage__c, Product_Name__c, PIM_Name_Stage__c, PIM_Parent_ID_Stage__c, PIM_Parent_Name_Stage__c, Enterprise_Growth_Product__c, PIM_SME_Name_Stage__c, PIM_ID_Composite_Stage__c, PIM_Availability_Stage__c, Program_Code_Stage__c, Supplier_Code_Stage__c, Product_Code_Stage__c, IsActiveStage__c, Change_Tracker__c, Product_Family_Stage__c, Key_Growth_Drivers__c,
-                                             Eligible_for_Sales_Incentives__c, Funding_Type_Stage__c, Product_Line_Stage__c, Level_2_Options_Stage__c, Product_Display_Order_Stage__c, Surest_Applicable_Products_Stage__c, CPW_Applicable_Product_Stage__c, SFGO_Applicable_Product_Stage__c,
+                                            
+                                              Funding_Type_Stage__c, Product_Line_Stage__c, Level_2_Options_Stage__c, Product_Display_Order_Stage__c, Surest_Applicable_Products_Stage__c, CPW_Applicable_Product_Stage__c, SFGO_Applicable_Product_Stage__c,
                                              PIM_ID_Prod__c, Product_Change_Type__c, Underwriting_Validation__c, PIM_Name_Prod__c, PIM_Parent_ID_Prod__c, Do_Not_Include_in_Total__c, PIM_Parent_Name_Prod__c, PIM_SME_Name_Prod__c, PIM_ID_Composite_Prod__c, PIM_Availability_Prod__c, Program_Code_Prod__c, Supplier_Code_Prod__c,
                                              Product_Code_Prod__c, Active_Prod__c, Product_Family_Prod__c, Funding_Type_Prod__c, Product_Line_Prod__c, Level2_Options_Prod__c, Product_Display_Order_Prod__c,
                                              Surest_Applicable_Products_Prod__c, CPW_Applicable_Product_Prod__c, StepWise_Product_RowID__c, StepWise_Product_Name__c, SFGO_Applicable_Product_Prod__c, Distribution_Type_Flag__c, Product_Name_Prod__c, Considered_For_StepWise_Integration__c,
-                                             Surest_Implementation_Lead_Time_Stage__c,Standard_Implementation_LeadTime_Stage__c,Surest_Implementation_Lead_Time_Prod__c,Standard_Implementation_Lead_Time_Prod__c 
+                                             Surest_Implementation_Lead_Time_Stage__c,Standard_Implementation_LeadTime_Stage__c,Surest_Implementation_Lead_Time_Prod__c,Standard_Implementation_Lead_Time_Prod__c,UHC_NA_Standard_Impl_Lead_Time_Prod__c,NAStandardImplementationLeadTime_Stage__c,
+                                             Underwriting_Validation_Prod__c,Eligible_for_Sales_Incentives_Prod__c,Eligible_for_Sales_Incentives__c
                                              FROM PIM_Product_Stage__c WHERE Id IN :stageIds With USER_MODE ORDER BY Product_Display_Order_Stage__c]; 
         List<Product2> products = [SELECT Id, Product_Line__c, Product_Display_Order__c, IsActive
                                    FROM Product2 WHERE  Name != 'Total' With USER_MODE ORDER BY Product_Display_Order__c];
@@ -1097,6 +759,11 @@ Output : PublishSummary
                 
             }
             else if (oldActive && newActive && oldGroup == newGroup && oldOrder != newOrder) {
+                
+                  if(isListView){
+                  throw new AuraHandledException('Some products in this list have ‘Product Display Order’ changes. Please remove them to proceed or contact your Admin. Product display order updates for existing products must be handled individually at the Staging Table record level.');
+
+                }
                 //shiftRange(groupMap.get(newGroup), oldOrder, newOrder, orderUpdates, productId);
                
                 Integer min = Math.min(oldOrder, newOrder);
@@ -1216,15 +883,18 @@ Output : PublishSummary
                 Map<String, String> cfg = FIELD_CONFIG.get(stageField);
                 Object stageVal = s.get(stageField);
                 Object prodVal  = s.get(cfg.get('snapshot'));
-                system.debug(String.valueOf(stageVal) +'--'+cfg.get('product')+'--'+String.valueOf(prodVal));
+                //String stageStr = stageVal == null ? null : String.valueOf(stageVal);
+                //String prodStr  = prodVal == null ? null : String.valueOf(prodVal);
                 IF(cfg.get('product') == 'Product_Display_Order__c'){
                     p.put(cfg.get('product'),finalOrderMap.get(p.Id));
-                                }
-                if (String.valueOf(stageVal) != String.valueOf(prodVal) && cfg.get('product') != 'Product_Display_Order__c') {
-                    p.put(cfg.get('product'), stageVal);
+                }
+                String stage = stageVal == null ? '' : String.valueOf(stageVal);
+                String prod  = prodVal == null ? '' : String.valueOf(prodVal);
+                if(!stage.equals(prod) &&  cfg.get('product') != 'Product_Display_Order__c'){
+                     p.put(cfg.get('product'), stageVal);
+                //if (String.valueOf(stageVal == null ? '' : stageVal) != String.valueOf(prodVal == null ? '' : prodVal) && cfg.get('product') != 'Product_Display_Order__c'){
                 }
             }
-        	System.debug('veera Prod++++++'+p);
             updates.add(p);
             productToStage.put(p.Id, s);
         }
@@ -1236,7 +906,6 @@ Output : PublishSummary
             for (Product2 existing : updates) {
                 
                 if (existing.Id == pid) {
-                    System.debug('veera Prod+++finalOrderMap.get(pid)+++'+finalOrderMap.get(pid));
                     existing.Product_Display_Order__c = finalOrderMap.get(pid);
                     found = true;
                     break;
@@ -1250,19 +919,38 @@ Output : PublishSummary
         if (!Schema.sObjectType.Product2.isUpdateable()) {
             throw new AuraHandledException('You do not have permission to Update Products.');
         }
+
+        
+        
+       
+        if(errorRows.size()>0){
+            if(isListView){
+                sendQuickPublishEmail(successCount,errorCount,totalCount,successRows,errorRows,true);
+                summary.successCount = 0;
+                summary.errorCount = errorRows.size();
+                summary.totalCount = totalCount;
+                summary.message = 'Product update failed. All changes rolled back. Please check your email for more details.';
+                return summary;
+            }
+            
+            //return 'Failed';
+            //throw new AuraHandledException('Product update failed. All changes rolled back.');
+        }
+        
         Database.SaveResult[] results = Database.update(updates, false,AccessLevel.USER_MODE);
+
+        
         List<PIM_Product_Stage__c> stageUpdates = new List<PIM_Product_Stage__c>();
         for (Integer i = 0; i < results.size(); i++) {
             Product2 updatedProduct = updates[i];
-            
             if (!productToStage.containsKey(updatedProduct.Id)) {
                 continue;
             }
-            /* if (!indexToStage.containsKey(i)) {
-continue; 
-}*/
+          
+            
             PIM_Product_Stage__c s = productToStage.get(updatedProduct.Id);
-            //PIM_Product_Stage__c s = indexToStage.get(i);
+            
+            
             if (results[i].isSuccess()) {
                 if(!isListView){
                     summary.productId   = updatedProduct.Id;
@@ -1302,7 +990,6 @@ continue;
                 );
                 
             } else {
-                
                 List<String> allErrors = new List<String>();
                 
                 for(Database.Error e : results[i].getErrors()){
@@ -1335,18 +1022,21 @@ continue;
                 );
             }
         }
-        if (!stageUpdates.isEmpty()) {
-            //update as user stageUpdates;
-            Database.update(stageUpdates, false,AccessLevel.USER_MODE);
-        }
-        if (!auditRecords.isEmpty()) {
-            Database.insert(auditRecords, false,AccessLevel.USER_MODE);
-            //insert as user auditRecords;
-        }
-        if(isListView){
-            sendQuickPublishEmail(successCount,errorCount,totalCount,successRows,errorRows,true);
-            
-        }
+        
+      
+            if (!stageUpdates.isEmpty()) {
+                //update as user stageUpdates;
+                Database.update(stageUpdates, false,AccessLevel.USER_MODE);
+            }
+            if (!auditRecords.isEmpty()) {
+                Database.insert(auditRecords, false,AccessLevel.USER_MODE);
+                //insert as user auditRecords;
+            }
+            if(isListView){
+                sendQuickPublishEmail(successCount,errorCount,totalCount,successRows,errorRows,true);
+                
+            }
+        
        // sendQuickPublishEmail(successCount,errorCount,totalCount,successRows,errorRows,true);
         summary.successCount = successCount;
         summary.errorCount   = errorCount;
@@ -1365,70 +1055,7 @@ continue;
         }
         return summary;
     }
-    /*----Bulk Update order Changes---*/
-    private static void shiftRange(List<Product2> list1,Integer oldOrder, Integer newOrder,Map<Id, Product2> updates,Id excludeId) {
-        if (list1 == null || oldOrder == null || newOrder == null) return;
-        Integer min = Math.min(oldOrder, newOrder);
-        Integer max = Math.max(oldOrder, newOrder);
-        for (Product2 p : list1) {
-            if (p.Id == excludeId){
-                
-              
-                continue;
-            } 
-            Integer ord = toInt(p.Product_Display_Order__c);
-            if (ord == null) continue;
-            
-            // Moving UP (e.g., 10 → 5)
-            if (newOrder < oldOrder) {
-                if (ord >= newOrder && ord < oldOrder) {
-                    updates.put(
-                        p.Id,
-                        new Product2(
-                            Id = p.Id,
-                            Product_Display_Order__c = pad(ord + 1)
-                        )
-                    );
-                }
-            }
-            // Moving DOWN (e.g., 5 → 10)
-            else {
-                if (ord > oldOrder && ord <= newOrder) {
-                    updates.put(p.Id,new Product2(Id = p.Id,Product_Display_Order__c = pad(ord - 1)));
-                }
-            }
-        }
-    }
-    
-    private static void shiftDown(List<Product2> list1, Integer fromOrder,Map<Id, Product2> updates,Id excludeId) {
-        if (list1 == null || fromOrder == null) return;
-        for (Product2 p : list1) {
-            if (p.Id == excludeId) continue;
-            Integer ord = toInt(p.Product_Display_Order__c);
-            if (ord != null && ord > fromOrder) {
-                updates.put(
-                    p.Id,
-                    new Product2(Id = p.Id,Product_Display_Order__c = pad(ord - 1))
-                );
-            }
-        }
-    }
-    private static void shiftUp(List<Product2> list1,Integer fromOrder,Map<Id, Product2> updates,Id excludeId ) {
-        if (list1 == null || fromOrder == null) return;
-        for (Product2 p : list1) {
-            if (p.Id == excludeId) continue;
-            Integer ord = toInt(p.Product_Display_Order__c);
-            if (ord != null && ord >= fromOrder) {
-                updates.put(
-                    p.Id,
-                    new Product2(
-                        Id = p.Id,
-                        Product_Display_Order__c = pad(ord + 1)
-                    )
-                );
-            }
-        }
-    }
+  
     private static final Map<String, Map<String, String>> FIELD_CONFIG = new Map<String, Map<String, String>>{
         'PIM_ID_Stage__c' => new Map<String, String>{'snapshot' => 'PIM_ID_Prod__c','product'  => 'PIM_ID__c'},
             'PIM_Name_Stage__c' => new Map<String, String>{'snapshot' => 'PIM_Name_Prod__c','product'  => 'PIM_Name__c'},  
@@ -1452,6 +1079,12 @@ continue;
                                                                                 'SFGO_Applicable_Product_Stage__c' => new Map<String, String>{ 'snapshot' => 'SFGO_Applicable_Product_Prod__c', 'product' => 'SFGO_Applicable_Product__c' },
                                                                                     'Surest_Implementation_Lead_Time_Stage__c' => new Map<String, String>{ 'snapshot' => 'Surest_Implementation_Lead_Time_Prod__c','product'  => 'Surest_Implementation_Lead_Time__c'},
                                                                                         'Standard_Implementation_LeadTime_Stage__c' => new Map<String, String>{ 'snapshot' => 'Standard_Implementation_Lead_Time_Prod__c','product'  => 'Standard_Implementation_Lead_Time__c'},
+                                                                                          'NAStandardImplementationLeadTime_Stage__c' => new Map<String, String>{ 'snapshot' => 'UHC_NA_Standard_Impl_Lead_Time_Prod__c','product'  => 'UHC_NA_Standard_Implementation_Lead_Time__c'},
+                                                                                                'Eligible_for_Sales_Incentives__c' => new Map<String, String>{ 'snapshot' => 'Eligible_for_Sales_Incentives_Prod__c','product'  => 'Eligible_for_Sales_Incentives__c'},
+
+                                                                                         'Underwriting_Validation__c' => new Map<String, String>{ 'snapshot' => 'Underwriting_Validation_Prod__c','product'  => 'Underwriting_Validation__c'},
+
+
                                                                                             'Product_Name_Stage__c' => new Map<String, String>{'snapshot' => 'Product_Name__c','product'  => 'Name'}
         
         
@@ -1490,17 +1123,7 @@ continue;
         if (productLine == 'Medical') return 'MEDICAL';
         return 'NON_MEDICAL';
     }
-    /*****Helper methods**********/
-    /***Converts String to Integer**/
-    /* private static Integer toInt(Object val) {
-if (val == null) 
-return null;
-try {
-return Integer.valueOf(String.valueOf(val));
-} catch (Exception e) {
-return null;
-}
-}*/
+   
     /**** Pads integer with leading zeros (length 4)
 I/p:Integer o/p:String***/
     private static String padOrder(Integer value) {
@@ -1515,139 +1138,7 @@ I/p:Integer o/p:String***/
              }
         return vals;
     }
-   /*private static void handleDisplayOrderShift(Id productId,String oldLine,String newLine,Boolean oldActive,Boolean newActive,Integer oldOrder, Integer newOrder) {
-        List<Product2> toChange = new List<Product2>();
-        String oldGroup = orderGroup(oldLine);
-        String newGroup = orderGroup(newLine);
-        
-        if (oldActive && !newActive) {
-            toChange.addAll(queryShift(oldGroup, oldOrder, '>', -1, productId));
-            toChange.add(new Product2(
-                Id = productId,
-                Product_Display_Order__c = null
-            ));
-        }
-        else if (!oldActive && newActive) {
-            toChange.addAll(queryShift(newGroup, newOrder, '>=', 1, productId));
-        }
-        
-        else if (oldActive && newActive && oldGroup == newGroup && oldOrder != newOrder) {
-            
-            if (newOrder < oldOrder)
-                toChange.addAll(queryRange(newGroup, newOrder, oldOrder, 1, productId));
-            else
-                toChange.addAll(queryRange(newGroup, oldOrder, newOrder, -1, productId));
-        }
-        
-        else if (oldActive && newActive && oldGroup != newGroup) {
-            toChange.addAll(queryShift(oldGroup, oldOrder, '>', -1, productId));
-            toChange.addAll(queryShift(newGroup, newOrder, '>=', 1, productId));
-        }
-        
-        if (!toChange.isEmpty())
-            if (Schema.sObjectType.Product2.isUpdateable()) {
-                Database.update(toChange, false,AccessLevel.USER_MODE);
-            }
-        //update as user updates;
-    }*/
-  /* private static List<Product2> queryRange(String groupKey,Integer fromOrder, Integer toOrder,Integer delta,Id excludeProductId) {
-        
-        if (groupKey == null || fromOrder == null || toOrder == null)
-            return new List<Product2>();
-        
-        Integer minVal = Math.min(fromOrder, toOrder);
-        Integer maxVal = Math.max(fromOrder, toOrder);
-        
-        List<Product2> products = [
-            SELECT Id, Product_Display_Order__c, Product_Line__c
-            FROM Product2
-            WHERE IsActive = true
-            AND Product_Display_Order__c != null
-            AND Name != 'Total'
-            AND Id != :excludeProductId
-            WITH USER_MODE
-        ];
-        
-        List<Product2> updates = new List<Product2>();
-        
-        for (Product2 p : products) {
-            
-            if (orderGroup(p.Product_Line__c) != groupKey)
-                continue;
-            
-            Integer ord = toInt(p.Product_Display_Order__c);
-            
-            if (ord != null && ord >= minVal && ord <= maxVal) {
-                p.Product_Display_Order__c = padOrder(ord + delta);
-                updates.add(p);
-            }
-        }
-        
-        return updates;
-    }*/
-   /* private static List<Product2> queryShift(String groupKey,Integer orderValue,String operator,Integer delta,Id excludeProductId ) {
-        if (groupKey == null || orderValue == null)
-            return new List<Product2>();
-        List<Product2> products = [
-            SELECT Id, Product_Display_Order__c, Product_Line__c  FROM Product2 WHERE IsActive = true  AND Product_Display_Order__c != null AND Name != 'Total' AND Id != :excludeProductId  WITH USER_MODE];
-        List<Product2> updates = new List<Product2>();
-        for (Product2 p : products) {
-            if (orderGroup(p.Product_Line__c) != groupKey)
-                continue;
-            Integer ord = toInt(p.Product_Display_Order__c);
-            if (ord == null)
-                continue;
-            Boolean match =
-                (operator == '>'  && ord >  orderValue) ||
-                (operator == '>=' && ord >= orderValue);
-            if (match) {
-                p.Product_Display_Order__c = padOrder(ord + delta);
-                updates.add(p);
-            }
-        }
-        return updates;
-    }*/
-    /*******************************************
-Sends Quick Validate Picklist Values
-Input  : String
-Output : void
-*********************************************/
-    
-    
-   /* private static void validateProductFamily(String familyValue) {
-        if (String.isBlank(familyValue)) return;
-        
-        Set<String> allowed = new Set<String>();
-        for (Schema.PicklistEntry pe : Product2.Family.getDescribe().getPicklistValues()) {
-            if (pe.isActive()) { // Only active values
-                allowed.add(pe.getValue());
-            }
-        }
-        
-        if (!allowed.contains(familyValue)) {
-            throw new AuraHandledException(
-                'Invalid Picklist value for Product Family : "' + familyValue + '".'
-            );
-        }
-    }*/
-    
-   /* private static String validateProductFamilyBulk(String familyValue) {
-        
-        if (String.isBlank(familyValue)) return null;
-        
-        Set<String> allowed = new Set<String>();
-        for (Schema.PicklistEntry pe : Product2.Family.getDescribe().getPicklistValues()) {
-            if (pe.isActive()) {
-                allowed.add(pe.getValue());
-            }
-        }
-        
-        if (!allowed.contains(familyValue)) {
-            return 'Invalid Product Family value: "' + familyValue + '"';
-        }
-        
-        return null;
-    }*/
+  
     /*******************************************
 Sends Quick Publish summary email
 Input  : successCount, errorCount, totalCount, successRows, errorRows
@@ -1658,16 +1149,11 @@ Output : void
         /*OrgWideEmailAddress owea = [SELECT Id, Address, DisplayName 
 FROM OrgWideEmailAddress 
 WHERE DisplayName = 'Merit' LIMIT 1];*/
-        OrgWideEmailAddress[] owea = [SELECT Id FROM OrgWideEmailAddress WHERE DisplayName = 'Merit' LIMIT 1];
-        //OrgWideEmailAddress owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address = 'exploregearset@gmail.com' LIMIT 1];
-
         mail.setToAddresses(new List<String>{ UserInfo.getUserEmail() });
         if (errorCount > 0) {
             String ccLabel = System.Label.PIM_CC_Emails_on_error_notification;
             List<String> ccList = ccLabel.split(',');
             mail.setCcAddresses(ccList);
-           // mail.setOrgWideEmailAddressId(owea.Id);
-           mail.setOrgWideEmailAddressId(owea.get(0).Id);
             // mail.setOrgWideEmailAddressId(owea.Id);
             //mail.setCcAddresses(new List<String>{'chandrikakottanuru@gmail.com','chandukottanuru11@gmail.com'} );
         }
@@ -1678,27 +1164,7 @@ WHERE DisplayName = 'Merit' LIMIT 1];*/
             '<b>Successfully Published Products:</b> ' + successCount + '<br/>' +
             '<b>Unsuccessful Records with Error:</b> ' + errorCount + '<br/>' +
             '<b>Total Records:</b> ' + totalCount + '<br/><br/>';
-        // Success table
-        // if(!successRows.isEmpty()){
-        /* if(!successRows.isEmpty()){
-body +=
-'<b>Successfully Published Products</b><br/>' +
-'<table border="1" cellpadding="6" cellspacing="0" width="100%">' +
-'<tr>' +
-'<th>Product Name</th>' +
-'<th>Product Code</th>' +
-'<th>Change Type</th>' +
-if (includeChangeTracker) {
-body += '<th>Change Tracker</th>';
-}
-body += '</tr>' +
-String.join(successRows, '') +
-'</table><br/><br/>';
-'<th>Change Tracker</th>' +
-'</tr>' +
-String.join(successRows, '') +
-'</table><br/><br/>';
-}*/
+       
         if (!successRows.isEmpty()) {
             
             body +=
@@ -1718,22 +1184,7 @@ String.join(successRows, '') +
                 String.join(successRows, '') +
                 '</table><br/><br/>';
         }
-        // Error table
-        /*if (!errorRows.isEmpty()) {
-body +=
-'<b>Unsuccessful Records with Error</b><br/>' +
-'<table border="1" cellpadding="6" cellspacing="0" width="100%">' +
-'<tr>' +
-'<th>Product Name</th>' +
-'<th>Product Code</th>' +
-'<th>Staging Record</th>' +
-'<th>Change Type</th>' +
-'<th>Change Tracker</th>' +
-'<th>Reason for Error</th>' +
-'</tr>' +
-String.join(errorRows, '') +
-'</table><br/><br/>';
-}*/
+      
         // Error table
         if (!errorRows.isEmpty()) {
             

@@ -3732,9 +3732,9 @@
            
         <!-- Clinical Programs Section Start --> 
           <apex:outputPanel layout="none" rendered="{!showCPWSection}">
-                <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-family: Arial;font-size: 12px; white-space:nowrap;" >
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-family: Arial;font-size: 12px; white-space:nowrap; border-bottom:0;" >
                     <tr>
-                        <td colspan="4" style="border:1px solid #000;font-weight:bold;color:#f2f4f7;background: #002060; font-family: Arial; font-size: 14px; padding-left: 3px; height:10px;">
+                        <td colspan="2" style="border:1px solid #000;font-weight:bold;color:#f2f4f7;background: #002060; font-family: Arial; font-size: 14px; padding-left: 3px; height:10px;">
                             Surest Sold Case Checklist
                         </td>
                     </tr>
@@ -3861,27 +3861,44 @@
                         </td>
                     </tr>
                     <tr>
-                        <td align="left" style="border:1px solid #000;padding-left:20px;" >
+                        <td align="left" style="border:1px solid #000;padding-left:20px; border-bottom:0;" >
                             <span>Surest Member Services and Surest Clinical Advocacy</span>
                         </td>
-                        <td align="Center" style="border:1px solid #000;border-left:0;">
+                        <td align="Center" style="border:1px solid #000;border-left:0; border-bottom:0;">
                             Yes
                         </td>
                     </tr>
-                    <tr >
+              </table>
+              <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-family: Arial;font-size: 12px; white-space:nowrap;border-top:0;" >
+
+                    <tr>
                         <td align="left" style="border:1px solid #000;padding-left:10px;border-right:none;" >
                             <b><span>Optional Programs:</span></b>
                         </td>
-                        <td align="Center" style="border:1px solid #000;border-left:0;border-left:none;">
+                        <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
+                            <b><span>PIM Implementation Lead Time</span></b>
                         </td>
+                        
+                        <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
+                             <b><span>Dual Indicator</span></b>
+                        </td>
+                        <td align="left" style="border:1px solid #000;width:18%;padding-left:2px;">
+                             <b><span>Validation</span></b>
+                        </td>
+                 
                     </tr>
                     <apex:repeat value="{!surestFields}" var="field">
                         <tr>
                             <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0px;">
                                 <span>{!field.fieldLabel}</span>
                             </td>
-                            
-                            <td align="Center" style="border:1px solid #000;border-left:none;">
+                            <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
+                                <apex:outputText value="{!field.productValue}" />
+                            </td>
+                            <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
+                                <apex:outputText rendered="{!field.isDual}" escape="false" value="Dual Product (Surest with UNET only)" />
+                            </td>
+                            <td align="left" style="border:1px solid #000;width:18%;padding-left:2px;">
                                 <apex:outputPanel rendered="{!field.fieldApiName == 'One_Pass_Select__c'}">
                                     {!soldCaseDetails.sccData.One_Pass_Select__c}
                                     <div>

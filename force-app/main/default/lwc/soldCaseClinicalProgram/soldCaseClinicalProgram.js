@@ -17,6 +17,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
     @api userTimeZone;
     @api opplineitems;
     @track soldCaseDataCopy;
+    @track soldCaseDefaultValues;
     @track masterData;
     @track clinicalPrgmDetail;
     @track accRecordId;
@@ -32,6 +33,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
     }
     set soldCaseObjectData(value) {
         this.soldCaseDataCopy = Object.assign({}, value);
+        this.soldCaseDefaultValues = Object.assign({}, value);
         this.setDefaultPicklistValues();
         this.loadChecklistMetadata();      
     }
@@ -149,7 +151,8 @@ export default class SoldCaseClinicalProgram extends LightningElement {
                     isActive: m.isActive,
                     yesNoOnly: m.yesNoOnly,
                     restrictSurestOptions: m.restrictSurestOptions,
-                    restrictDirectContractOption: m.restrictDirectContractOption
+                    restrictDirectContractOption: m.restrictDirectContractOption,
+                    restrictDirectContractOnlyOption: m.restrictDirectContractOnlyOption
                 });
             });
     
@@ -172,14 +175,24 @@ export default class SoldCaseClinicalProgram extends LightningElement {
             'Surest_Case_Management_CM_CPSurest__c',
             'Specialty_Guidance_Program_CPSurest__c',
             'Optum_Physical_Health_Network__c',
-            'Optum_Behavioral_Network__c'
+            'Optum_Behavioral_Network__c',
+            'Surest_Standard_Communications__c',
+            'Surest_Member_Svcs_Clinical_Advocacy__c'
         ];
     
         fieldsToDefault.forEach(field => {
             if (!this.soldCaseDataCopy[field]) {
                 this.soldCaseDataCopy[field] = defaultValue;
             }
+            if (!this.soldCaseDefaultValues[field]) {
+                this.soldCaseDefaultValues[field] = defaultValue;
+            }
         });
+
+        setTimeout(() => {
+            this.handleDefaultValueSave();
+        }, 0);
+
 
     }
 
@@ -238,9 +251,9 @@ export default class SoldCaseClinicalProgram extends LightningElement {
         
         });
 
-        updatedSoldCaseDataCopy.Coronary_Artery_Disease_Management__c ||= 'No';
+       // updatedSoldCaseDataCopy.Coronary_Artery_Disease_Management__c ||= 'No';
         updatedSoldCaseDataCopy.Calm_Health__c ||= 'Yes';
-        updatedSoldCaseDataCopy.CPW_2nd_MD__c ||= '';
+        updatedSoldCaseDataCopy.Clinical_Prgm_2nd_MD__c ||= 'Yes - Sold';
         if(updatedSoldCaseDataCopy.One_Pass_Select__c == ''){
             updatedSoldCaseDataCopy.One_Pass_Subsidized__c = '';    
         }
@@ -255,7 +268,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
                 });
             }
         });
-
+        readOnlyFlags['Calm_Health__c'] = true;
         this.readOnlyFlags = readOnlyFlags;
         this.isDual = isDual;
         this.productFieldValues = productFieldValues;
@@ -283,7 +296,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
             accupdate: null,
             opplineitem: null,
             auditTrailListToInsert: null,
-            updatedSoldCaseData: this.updatedSoldCaseData
+            updatedSoldCaseData: this.soldCaseDefaultValues
         })
             .then(result => {
                 if (result) {
@@ -315,7 +328,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
             const isOnePass = item.field === 'One_Pass_Select__c';
             const mainValue = this.soldCaseDataCopy?.[item.field];
             let finalReadOnly = false;
-
+            
             if (item.isActive === false && mainValue !== "" && mainValue != null) {
                 finalReadOnly = true;
             }
@@ -356,6 +369,13 @@ export default class SoldCaseClinicalProgram extends LightningElement {
                     { label: 'Yes - Direct Contract', value: 'Yes - Direct Contract'},
                     { label: 'No - N/A', value: 'No - N/A' },
                     { label: 'No - Term', value: 'No - Term' }
+                ];
+            }
+            else if (item.restrictDirectContractOnlyOption){
+                options =  [
+                    { label: '', value: '' },
+                    { label: 'Yes - Direct Contract Only', value: 'Yes - Direct Contract Only'},
+                    { label: 'No', value: 'No'}
                 ];
             }
             else if (item.yesNoOnly) {

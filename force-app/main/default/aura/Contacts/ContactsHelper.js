@@ -129,9 +129,14 @@
         $A.util.addClass(appletIcon, 'slds-hide');
         
         page = page || 1;
-        columnName = columnName || 'Direct_Marketing_Target_Contact__c';
-        sortType = sortType || 'DESC NULLS LAST';
-        
+        if(component.get('v.cdAccountType')){
+            columnName = columnName || 'Direct_Marketing_Target_Contact__c';
+            sortType = sortType || 'DESC NULLS LAST';
+        }
+        else{
+            columnName = columnName || 'LastName';
+            sortType = sortType || 'ASC';
+        }
         var cdAccountAction = component.get('c.getAccountContacts');	
         cdAccountAction.setParams({
             "accountId" : component.get('v.recordId'),

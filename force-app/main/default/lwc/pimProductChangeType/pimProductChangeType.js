@@ -14,6 +14,7 @@ const FIELDS = [PRODUCT_NAME,PRODUCT_DISPLAY_ORDER];
 
 
 export default class PimProductChangeType extends NavigationMixin(LightningElement) {
+    selectedFilter = 'Change in Product';
     @api recordId;
     differences = [];
     hasDifferences = false;
@@ -76,7 +77,7 @@ export default class PimProductChangeType extends NavigationMixin(LightningEleme
         this.isLoading = true;
 
        // updateProductOnPublish({stageRecordId: this.recordId,isListView: false})
-        updateProductsBulk({ stageIds: [this.recordId], isListView: false })
+        updateProductsBulk({ stageIds: [this.recordId], isListView: false,selectedFilter:this.selectedFilter })
             .then(result => {
                 if (!result || result.successCount !== 1) {
                     throw new Error(result?.message || 'Update failed.');

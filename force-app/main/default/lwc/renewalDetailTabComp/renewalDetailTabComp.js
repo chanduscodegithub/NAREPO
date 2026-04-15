@@ -836,7 +836,9 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
         // this.showValidateButton = event.detail.showValidation;
         this.isEditChild = event.detail.showValidation;;
         this.isLoading = true;
-        this.getOppLnItemsData();
+        setTimeout(() => {
+            this.getOppLnItemsData();
+        }, 2000);
         this.isEditPI =true;
         this.isEditPISurest =true;
         this.isEditCPWSurest =true;

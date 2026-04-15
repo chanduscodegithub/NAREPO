@@ -3,7 +3,7 @@ export default class StrategyMemoRfpStrategy extends LightningElement {
     @api recordId;
     @api isEditMode;
     @api businessOverview;
-
+    @api companyDescription;
     @api businessPressures = '';
     @api potentialCompelling = '';
     @api uniqueBusinessValues = '';

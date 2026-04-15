@@ -132,7 +132,8 @@ export default class PccClinicalProgramSection extends LightningElement {
                         label: m.label,
                         yesNoOnly: m.yesNoOnly,
                         restrictSurestOptions: m.restrictSurestOptions,
-                        restrictDirectContractOption: m.restrictDirectContractOption
+                        restrictDirectContractOption: m.restrictDirectContractOption,
+                        restrictDirectContractOnlyOption: m.restrictDirectContractOnlyOption
                     });
                 });
         
@@ -155,7 +156,9 @@ export default class PccClinicalProgramSection extends LightningElement {
             'Surest_Case_Management_CM_CPSurest__c',
             'Specialty_Guidance_Program_CPSurest__c',
             'Optum_Physical_Health_Network__c',
-            'Optum_Behavioral_Network__c'
+            'Optum_Behavioral_Network__c',
+            'Surest_Standard_Communications__c',
+            'Surest_Member_Svcs_Clinical_Advocacy__c'
         ];
     
         fieldsToDefault.forEach(field => {
@@ -287,6 +290,13 @@ export default class PccClinicalProgramSection extends LightningElement {
                     { label: 'No - Term', value: 'No - Term' }
                 ];
             }
+            else if (item.restrictDirectContractOnlyOption){
+                options =  [
+                    { label: '', value: '' },
+                    { label: 'Yes - Direct Contract Only', value: 'Yes - Direct Contract Only'},
+                    { label: 'No', value: 'No'}
+                ];
+            }
             else if (item.yesNoOnly) {
                 options = [
                     { label: '', value: '' },
@@ -333,17 +343,48 @@ export default class PccClinicalProgramSection extends LightningElement {
     handleCopyCPW() {
         this.showCopyPopup = true;
     }
-    confirmCopy(){
+
+    valueMapping = {
+        Field_API_Name1: {
+            'Old Value A': 'New Value A',
+            'Old Value B': 'New Value B'
+        },
+        Field_API_Name2: {
+            'Yes - Legacy': 'Yes',
+            'No - Legacy': 'No'
+        }
+    };
+    confirmCopy() {
+        const commonPicklistMapping = {
+            'Yes - Sold': 'Yes - Direct with Surest',
+            'Yes - Retained': 'Yes - Direct with Surest',
+            'No - N/A': 'No',
+            'No - Term': 'No'
+        };
+        const fieldsWithCommonMapping = [
+            'Canary_Surest_Disease_Management__c',
+            'Ardynn_Surest_Cancer_Advocacy__c',
+            'Pacify_Surest_Maternity__c',
+            'Pivot_Surest_Smoking_Cessation__c'
+        ];
         this.showCopyPopup = false;
-        
+
+        let updatedChecklist = { ...this.lastYearChecklist };
+
+        fieldsWithCommonMapping.forEach(field => {
+            if (updatedChecklist[field] && commonPicklistMapping[updatedChecklist[field]]) {
+                updatedChecklist[field] = commonPicklistMapping[updatedChecklist[field]];
+            }
+        });
+
         this.renewalChecklistData = {
             ...this.renewalChecklistData,
-            ...this.lastYearChecklist
+            ...updatedChecklist
         };
 
         this.clinicalPrgmToBackend = {
             ...this.clinicalPrgmToBackend,
-            ...this.lastYearChecklist
+            ...updatedChecklist
         };
 
         this.setPCCFieldValues();
@@ -356,7 +397,7 @@ export default class PccClinicalProgramSection extends LightningElement {
     }
 
     handleChange(event) {
-        
+         
         let value = event.target.value;
         let fieldName = event.target.dataset.api;
         let clinicalPrgmObj = {};

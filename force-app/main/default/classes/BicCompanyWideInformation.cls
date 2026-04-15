@@ -11,6 +11,8 @@ public with sharing class BicCompanyWideInformation {
                     AND (Type__c !='Projected' or (Year__c!='2022'  and type__c='Projected'))
                     AND (NOT (Year__c = '2019' AND Type__c = 'Full Year')) AND (NOT (Year__c = '2020' AND Type__c = 'Mid Year')) 
                     AND (NOT (Year__c = '2020' AND Type__c = 'Full Year'))
+                    AND (NOT (Year__c = '2021' AND Type__c = 'Mid Year'))
+                    
                      
 WITH USER_MODE
                     ORDER BY Year__c];

@@ -63,6 +63,7 @@ export default class StrategyMemoPoc extends LightningElement {
     executiveSponsor = '';
     dealSponsor = '';
     businessOverview = '';
+    companyDescription = '';
     comments = '';
     businessPressures = '';
     potentialCompellingEvent = '';
@@ -113,7 +114,9 @@ export default class StrategyMemoPoc extends LightningElement {
     bluesBidComments = '';
     annualRevenue = '';
     healthPlan = '';
+    primaryConsultingFirm = '';
     isRFPUser = false; 
+    maName = '';
     questNoFormat =  rfpQuesNoFormat;//"Please use the following format to add strategic questions (q)<br/><b>Word:</b> q1,q2,q3<br/><b>Excel:</b> SheetName(q1,q2,q3), SheetName2(q1,q2,q3)rfpQuesNoFormat";
     /* string
     vsAnthem = '';
@@ -196,12 +199,12 @@ export default class StrategyMemoPoc extends LightningElement {
             console.log('strategy infor========>' + JSON.stringify(this.strategyInfo));
             if (this.isEditAllowed) {
                 const fieldsToAssign = [
-                    'oppId', 'strategyCallDat', 'bidStrategy', 'eligibleEesAndRetirees',
+                    'oppId','maName', 'strategyCallDat', 'bidStrategy', 'eligibleEesAndRetirees',
                     'enrolledEmployeesProposal', 'membersInProposal', 'proposalDateReceived',
                     'proposalDueDate', 'primarySitusState', 'billingAddress', 'webAddress',
                     'corporateMailingAddress', 'finalistDate', 'specialityBenefits',
                     'covetedAccount', 'corporateMailingCity', 'financialStrategyLead',
-                    'averageContractSize', 'businessOverview', 'businessPressures',
+                    'averageContractSize', 'businessOverview', 'businessPressures', 'companyDescription',
                     'potentialCompelling', 'uniqueBusinessValues', 'keyRisks', 'outcomeDrivers',
                     'approachStrategy', 'surestNetworkConstraints', 'networkContracting',
                     'surestComments', 'lastAction', 'nextAction', 'surestApproachStrategy',
@@ -211,7 +214,7 @@ export default class StrategyMemoPoc extends LightningElement {
                     'sceAssignment', 'executiveSponsor', 'dealSponsor',
                     'anticipatedActualCloseDate', 'isClientCannabisBusiness', 'effectiveDate',
                     'aggregatorInvolved', 'cvgAccount', 'privateEquity', 'surestSvpInvolved', 'comments',
-                    'recordType', 'billingCity', 'annualRevenue', 'healthPlan'
+                    'recordType', 'billingCity', 'annualRevenue', 'healthPlan', 'primaryConsultingFirm'
                 ];
                 /*let strategyInfo = this.strategyInfo;
                 fieldsToAssign.forEach(field => {
@@ -246,6 +249,7 @@ export default class StrategyMemoPoc extends LightningElement {
                         strategyCallDat: 'Strategy_Call_Date__c',
                         finalistDate: 'Finalist_Date__c',
                         oppId: 'Salesforce_Opportunity_ID__c',
+                        maName: 'Membership_Activity_Name__c',
                         surestSvpInvolved: 'Surest_SVP__c',
                         bidStrategy: 'Bid_Strategy__c',
                         proposalDateReceived: 'Proposal_Date_Received__c',
@@ -258,6 +262,7 @@ export default class StrategyMemoPoc extends LightningElement {
                         primaryConsultantEmail: 'Consultant_Email__c',
                         primaryConsultantPhone: 'Phone_Number__c',
                         consultantName: 'RFP_Primary_Consultant_s__c',
+                        primaryConsultingFirm: 'Primary_Consulting_Firm__c',
                         corporateMailingCity: 'Consultant_Firm_Loc__c',
                         corporateMailingAddress: 'Consultant_Address__c',
                         specialityBenefits: 'Specialty_SVP__c',
@@ -276,6 +281,7 @@ export default class StrategyMemoPoc extends LightningElement {
                         enrolledEmployeesProposal: 'Employees_in_the_Proposal_Medical__c',
                         membersInProposal: 'Members_in_the_Proposal_Medical__c',
                         averageContractSize: 'Acs__c',
+                        companyDescription: 'Company_Description__c',
                         businessOverview: 'Business_Overview__c',
                         businessPressures: 'Business_Pressures__c',
                         potentialCompelling: 'Potential_Compelling_Event__c',
@@ -733,6 +739,7 @@ export default class StrategyMemoPoc extends LightningElement {
             ...this.strategyMemo,
             Strategy_Call_Date__c: this.strategyCallDat,
             Salesforce_Opportunity_ID__c: this.oppId,
+            Membership_Activity_Name__c: this.maName,
             Proposal_Date_Due__c: this.proposalDueDate,
             Proposal_Date_Received__c: this.proposalDateReceived,
             Headquarters_City__c: this.billingCity,
@@ -744,6 +751,7 @@ export default class StrategyMemoPoc extends LightningElement {
             EEs_Retirees_in_the_Proposal_Medical__c: this.eligibleEesAndRetirees,
             Address__c: this.billingAddress,
             Website_URL__c: this.webAddress,
+            Primary_Consulting_Firm__c: this.primaryConsultingFirm,
             Consultant_Firm_Loc__c: this.corporateMailingCity,
             RFP_Primary_Consultant_s__c: this.consultantName,
             Consultant_Address__c: this.corporateMailingAddress,
@@ -763,6 +771,7 @@ export default class StrategyMemoPoc extends LightningElement {
             Is_the_Client_in_the_Cannabis_Business__c: this.isClientCannabisBusiness === 'Yes',
             Eligible_for_second_Blues_bid__c: this.eligible === 'Yes',
             Bidding_Blue_Plans__c: this.bluesBidComments,
+            Company_Description__c: this.companyDescription,
             Business_Overview__c: this.businessOverview,
             Business_Pressures__c: this.businessPressures,
             Potential_Compelling_Event__c: this.potentialCompelling,
@@ -892,7 +901,7 @@ export default class StrategyMemoPoc extends LightningElement {
                                 let replaceItagName = '%%' + objectName + '.' + key + '@@';
                                 let value = this.strategyMemo[key];
                                 let dateFieldsToFormat = ['Intent_to_Bid_Due__c', 'Q_A_Responses_Due_Back__c', 'Implementation_Kick_Off_Date__c',
-                                    'Questions_to_Consultant_Due__c', 'Bidder_s_Conference_Call_Date__c', 'NAC_Deliverables_Due_to_CD_Dir__c', 'All_Optum_Pricing_Due_to_NPS_and_Sales__c',
+                                    'Questions_to_Consultant_Due__c', 'Bidder_s_Conference_Call_Date__c', 'NAC_Deliverables_Due_to_CD_Dir__c', 'All_Optum_Pricing_Due_to_NPS_and_Sales__c', 'Draft_Due_from_NPS__c',
                                     'Executive_Summary_Cover_Letter_Due__c', 'E_Ship_Date__c', 'Strategy_Call_Date__c', 'Proposal_Date_Received__c', 'Proposal_Date_Due__c', 'Finalist_Date__c',
                                     'Anticipated_Actual_Close_Date__c', 'Effective_Date__c'];
                                 if (dateFieldsToFormat.includes(key) && value) {
@@ -1620,26 +1629,5 @@ export default class StrategyMemoPoc extends LightningElement {
             return value;
         }
         return '';
-    }
-
-
-
-
-    //Added by Vignesh -- StrategyMemoPoc Doc
-    closeAction(){
-        this.dispatchEvent(new CloseActionScreenEvent());
-    }
-
-    importStrategyMemoInfo(){
-        console.log('inside word ');       
-        let vfPageUrl = '/apex/StrategyMemoPrintVfp?wordReport=word&Id=' + this.recordId;
-        console.log('inside wordid ',vfPageUrl); 
-        let a = document.createElement('a');
-        a.href = vfPageUrl;
-        document.body.appendChild(a);
-        a.click();
-        const evnt = new CustomEvent('loaded', {detail: this.loaded});
-        this.dispatchEvent(evnt);
-        this.closeAction();
     }
 }

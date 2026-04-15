@@ -18,6 +18,7 @@ export default class PimNewProduct extends NavigationMixin(LightningElement) {
     stageLoaded = false;
     picklistsLoaded = false;
     @track isLoading = true;
+    
 
     connectedCallback() {
         this.loadData();
@@ -213,6 +214,7 @@ export default class PimNewProduct extends NavigationMixin(LightningElement) {
                 this.isLoading = false;
             });
     }*/
+    selectedFilter = 'New Product';
     createProduct() {
         if (!this.pimStageRecord?.Product_Display_Order_Stage__c) {
             this.dispatchEvent(
@@ -226,9 +228,10 @@ export default class PimNewProduct extends NavigationMixin(LightningElement) {
             return;
         }
         this.isLoading = true;
+        
 
        // createProduct2({ stageRecordId: this.recordId })
-        bulkCreateProducts({stageIds: [this.recordId],isListView: false})
+        bulkCreateProducts({stageIds: [this.recordId],isListView: false,selectedFilter:this.selectedFilter})
             .then(result => {
 
                 if (result.successCount !== 1 || !result.productId) {

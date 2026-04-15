@@ -20,7 +20,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="slds-text-align_left custom-td">Bidder’s Conference Call Date (if applicable)</td>
+                <td class="slds-text-align_left custom-td">Consultant Call Date</td>
                 <td colspan="3" class="value">
                     <template if:true={isEditMode}>
                         <lightning-input type ="Date"  date-style="short" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.Bidder_s_Conference_Call_Date__c} name="Bidder_s_Conference_Call_Date__c" onchange={handleChange}>
@@ -89,6 +89,21 @@
                     <template if:false={isEditMode}>
                         <template if:true={strategyMemo.All_Optum_Pricing_Due_to_NPS_and_Sales__c}>
                             <span>{formattedIntentToNps}</span>
+                        </template>
+
+                    </template>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-text-align_left custom-td">Draft Due from NPS</td>
+                <td colspan="3" class="value">
+                    <template if:true={isEditMode}>
+                        <lightning-input type ="Date" date-style="short" class="slds-p-around_xxx-small"  variant="label-hidden" value={strategyMemo.Draft_Due_from_NPS__c} name="Draft_Due_from_NPS__c" onchange={handleChange}>
+                        </lightning-input>
+                    </template>
+                    <template if:false={isEditMode}>
+                        <template if:true={strategyMemo.Draft_Due_from_NPS__c}>
+                            <span>{formattedIntentToDDNps}</span>
                         </template>
 
                     </template>

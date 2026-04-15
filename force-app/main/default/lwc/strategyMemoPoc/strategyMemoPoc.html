@@ -16,9 +16,7 @@
                     <lightning-button label="Edit" variant="Neutral" onclick={handleClickEdit}
                         class="slds-m-left_x-small"></lightning-button>
                 </template>
-                <lightning-button label="Print" variant="brand" onclick={importStrategyMemoInfo} class="slds-m-left_x-small">
-                </lightning-button>
-                <lightning-button label="PrintXML" variant="brand" onclick={handleClickPrint} class="slds-m-left_x-small">
+                <lightning-button label="Print" variant="brand" onclick={handleClickPrint} class="slds-m-left_x-small">
                 </lightning-button>
             </div>
         </template>
@@ -40,9 +38,7 @@
                         <lightning-button label="Edit" variant="Neutral" onclick={handleClickEdit}
                             class="slds-m-left_x-small"></lightning-button>
                     </template>
-                    <lightning-button label="Print" variant="brand" onclick={importStrategyMemoInfo}
-                        class="slds-m-left_x-small"></lightning-button>
-                        <lightning-button label="PrintXML" variant="brand" onclick={handleClickPrint}
+                    <lightning-button label="Print" variant="brand" onclick={handleClickPrint}
                         class="slds-m-left_x-small"></lightning-button>
                 </div>
             </template>
@@ -159,6 +155,14 @@
                                 <template if:true={strategyMemo.Strategic_Question_No__c}>
                                     <span>{strategyMemo.Strategic_Question_No__c}</span>
                                 </template>
+                            </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="slds-text-align_left custom-td">Membeship Activity Name:</td>
+                        <td colspan="3" class="slds-text-align_left value">
+                            <template if:true={maName}>
+                                <span>{maName}</span>
                             </template>
                         </td>
                     </tr>
@@ -300,6 +304,12 @@
                 class="slds-text-body_small slds-table slds-border_left slds-border_right slds-border_top slds-border_bottom slds-table--bordered  slds-table--resizable-cols slds-table--fixed-layout">
                 <tbody>
                     <tr>
+                        <td class="slds-text-align_left custom-td">Consulting Firm</td>
+                        <td colspan="3" class="value"><template if:true={primaryConsultingFirm}>
+                                <span>{primaryConsultingFirm}</span>
+                            </template></td>
+                    </tr>
+                    <tr>
                         <td class="slds-text-align_left custom-td">Consultant Firm-Loc</td>
                         <td colspan="3" class="value"><template if:true={corporateMailingCity}>
                                 <span>{corporateMailingCity}</span>
@@ -406,7 +416,7 @@
                 record-id={recordId} is-edit-mode={isEditMode} formatted-intent-to-bid-due={formattedIntentToBidDue}
                 formatted-intent-to-bidder={formattedIntentToBidder}
                 formatted-intent-to-questions={formattedIntentToQuestions} formatted-intent-to-qa={formattedIntentToQa}
-                formatted-intent-to-nac={formattedIntentToNac} formatted-intent-to-nps={formattedIntentToNps}
+                formatted-intent-to-nac={formattedIntentToNac} formatted-intent-to-nps={formattedIntentToNps} formatted-intent-to-d-d-nps={formattedIntentToDDNps}
                 formatted-intent-to-exe={formattedIntentToExe} formatted-intent-to-eship={formattedIntentToEship}
                 formatted-intent-to-imp={formattedIntentToImp} finalist-date={finalistDate}
                 effective-date={effectiveDate} proposal-due-date={proposalDueDate}
@@ -615,7 +625,7 @@
             <!-- START RFP STRATEGY -->
             <c-strategy-memo-rfp-strategy strategy-memo={strategyMemo} record-id={recordId}
                 onstrategymemochange={handleStrategyMemoChange} is-edit-mode={isEditMode}
-                business-overview={businessOverview} business-pressures={businessPressures}
+                business-overview={businessOverview} business-pressures={businessPressures} company-description={companyDescription}
                 potential-compelling={potentialCompelling} unique-business-values={uniqueBusinessValues}
                 key-risks={keyRisks} outcome-drivers={outcomeDrivers} approach-strategy={approachStrategy}
                 last-action={lastAction} surest-approach-strategy={surestApproachStrategy}

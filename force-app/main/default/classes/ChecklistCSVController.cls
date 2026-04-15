@@ -33,18 +33,20 @@ public with sharing class ChecklistCSVController {
             'Behavioral Health Utilization Management ABA UM' => 'BHU_Management_ABA_UM__c',
             'Surest Case Management (CM)' => 'Surest_Case_Management_CM_CPSurest__c',
             'Optum Behavioral Network' => 'Optum_Behavioral_Network__c',
-            'Optum Physical Health Network' => 'Optum_Physical_Health_Network__c'
+            'Optum Physical Health Network' => 'Optum_Physical_Health_Network__c',
+            'Standard Communications' => 'Surest_Standard_Communications__c',
+            'Surest Member Services and Surest Clinical Advocacy' => 'Surest_Member_Svcs_Clinical_Advocacy__c'
         };
 
         String soldSoql = 'SELECT Id,' + String.join(extraFields.values(), ',') + 
                           ', Membership_Activity__c, Membership_Activity__r.AccountId, Membership_Activity__r.Account.EID_Name__c, Membership_Activity__r.Account.EID_Number__c, Membership_Activity__r.Name, Membership_Activity__r.RecordType.Name,Membership_Activity__r.EffectiveDate__c, One_Pass_Subsidized__c' +
                           buildMetadataSoql(mappings) +
-                          ' FROM Sold_Case_Checklist__c where CPW__c = true';
+                          ' FROM Sold_Case_Checklist__c where CPW__c = true WITH USER_MODE';
 
         String renewalSoql = 'SELECT Id,' + String.join(extraFields.values(), ',') +
                              ', Company__c, Company__r.Name, Company__r.EID_Name__c, Company__r.EID_Number__c, One_Pass_Subsidized__c,Client_Specific_Programs__c' +
                              buildMetadataSoql(mappings) +
-                             ' FROM Renewal_Checklist__c where CPW__c = true';
+                             ' FROM Renewal_Checklist__c where CPW__c = true WITH USER_MODE';
 
         List<SObject> soldRecords = Database.query(soldSoql);
         List<SObject> renewalRecords = Database.query(renewalSoql);
@@ -166,7 +168,6 @@ public with sharing class ChecklistCSVController {
             String businessType = '';
             //String MA = ''; //extra
             String effectiveDate;
-            Integer insertIndex1 = 5 + extraFields.size() + 38;
             
             if (sourceName == 'Sold_Case_Checklist__c') {
                 if (rec.getSObject('Membership_Activity__r') != null) {
@@ -182,8 +183,8 @@ public with sharing class ChecklistCSVController {
                     Date eff = (Date) rec.getSObject('Membership_Activity__r').get('EffectiveDate__c');
                     effectiveDate = eff != null ? eff.month() + '/' + eff.day() + '/' + eff.year(): '';
                     
-                    if ((String)rec.getSObject('Membership_Activity__r').getSObject('RecordType').get('Name')!=null){
-                        if ((String)rec.getSObject('Membership_Activity__r').getSObject('RecordType').get('Name')=='CM Membership Activity (Existing Client)'){
+                    if ((String)rec.getSObject('Membership_Activity__r').getSObject('RecordType').get('DeveloperName')!=null){
+                        if ((String)rec.getSObject('Membership_Activity__r').getSObject('RecordType').get('DeveloperName')=='CM'){
                          businessType = 'SCC - Existing';
                         }
                         else{

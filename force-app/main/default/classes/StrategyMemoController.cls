@@ -3,69 +3,6 @@
 **/
 public with sharing class StrategyMemoController {
     
-    //Added By Vignesh
-    public String ContentTypeValue{get;private set;}
-    public StrategyMemoInfoWrapper StrategyMemoInfoWrapper { get; set; }
-    public Boolean isPdf{get;private set;}
-    public Strategy_Memo__c memoRecord {get; set;}
-    public List<OpportunityContactRole> secondaryConsultants {get; set;}
-    public List<Opportunity> relatedOpportunities {get;set;}
-
-    
-    public StrategyMemoController(){
-        String membershipActivityId = ApexPages.currentPage().getParameters().get('Id');
-        System.debug('membershipActivityId: ' + membershipActivityId);
-        StrategyMemoInfoWrapper = new StrategyMemoInfoWrapper();
-        memoRecord = getStrategyMemo(membershipActivityId);
-        secondaryConsultants = getSecondaryConsultants(membershipActivityId);
-        
-        if(membershipActivityId != null){
-            relatedOpportunities = getRelatedOpportunities(membershipActivityId);
-        } else {
-            relatedOpportunities = new List<Opportunity>();
-        }
-
-        map<String,String> UrlParameterMap = ApexPages.currentPage().getParameters();
-        for(String str:UrlParameterMap.keySet()){
-            if(str =='wordReport'){
-                this.isPdf=true;
-            }
-        }
-        
-        if(this.isPdf == true){
-            this.ContentTypeValue = 'application/msword#';
-            this.ContentTypeValue += this.getWordFileName()+'.doc';
-        }
-    }
-    
-    
-    public String getWordFileName() {         
-        /*String sanitizedName = StrategyMemoInfoWrapper.getStrategyMemo.Name.replaceAll('[\\.,&\\+\\/\\-]', '_');
-        date datetoday = System.today();
-        String monthStr = String.valueOf(datetoday.month());
-        String dayStr = String.valueOf(datetoday.day());
-        String yearStr = String.valueOf(datetoday.year());         
-        String formattedDate = monthStr + '_' + dayStr + '_' + yearStr + '_';         
-        String docName = 'StrategyMemo_' + sanitizedName;
-        return docName;*/
-        String nameValue = 'StrategyMemo';       
-        if(memoRecord != null && memoRecord.Name != null){
-            nameValue = memoRecord.Name.replaceAll('[\\.,&\\+\\/\\-]', '_');
-        }        
-        Date datetoday = System.today();       
-        String formattedDate = 
-            datetoday.month() + '_' +
-            datetoday.day() + '_' +
-            datetoday.year();      
-        return 'StrategyMemo_' + nameValue + '_' + formattedDate;
-    }
-    
-    
-    
-    
-    
-    //
-    
     @AuraEnabled(cacheable=true)
     public static StrategyMemoInfoWrapper getStrategyInformation(String membershipActivityId){
         StrategyMemoInfoWrapper strategyMemoInfoWrapper = new StrategyMemoInfoWrapper();
@@ -85,22 +22,18 @@ public with sharing class StrategyMemoController {
                                           Surest_SVP_Involved__c, Specialty_Benefits_SVP__c, Financial_Strategy_Lead__c, SCE_Assignment__c, Executive_Sponsor__c, Deal_Sponsor__c, 
                                           Finalist_Date_Medical__c,Anticipated_Actual_Close_Date_Medical__c,EffectiveDate__c, Is_the_Client_in_the_Cannabis_Business__c,
                                           Notes_taken_on_call_with_consultant__c,Aggregator_Involved_in_the_Oppty_Risk__c,Aggregator_Involved_in_the_Oppty_Risk__r.Name, Opportunity_Average_Contract_Size_ACS__c, 
-                                          Account.Name,
-                                          Account.X2nd_Blues_Bid_Comments__c,
-                                          Account.BillingAddress, account.Primary_Situs_State__c, Account.BillingCity,Account.Web_Address__c, Account.Coveted_Account__c, 
+                                          Account.Name,Account.X2nd_Blues_Bid_Comments__c,Account.BillingAddress, account.Primary_Situs_State__c, Account.BillingCity,Account.Web_Address__c, Account.Coveted_Account__c, 
                                           Account.Comments__c, Account.BusinessPressures__c, Account.PotentialCompellingEvent__c, 
                                           Account.OurPotentialUniqueBusinessValue__c, Account.KeyRiskstoourUBV__c, Account.OutcomeDrivers__c,Account.Health_Plan_Manager_Industry__c,Account.AnnualRevenue__c,
-                                          Account.ApproachStrategy__c,
-                                          Account.Surest_Last_Action_Taken__c, Account.Surest_Next_Action_to_be_Taken__c, Account.Network_Contracting_Issue_Other__c, 
+                                          Account.ApproachStrategy__c, Account.Surest_Last_Action_Taken__c, Account.Surest_Next_Action_to_be_Taken__c,
                                           Account.Surest_Approach_Strategy__c,Account.CVGAccount__r.Name,
-                                          Account.Surest_Network_Constraints__c,
+                                          Account.Surest_Network_Constraints__c, Account.Network_Contracting_Issue_Other__c, 
                                           Account.Surest_Comments__c,Account.Private_Equity_Relationship__c, 
-                                          Owner_Name__c, PrimaryConsultant__r.MailingCity,PrimaryConsultant__r.Name, 
-                                          PrimaryConsultant__r.Phone,PrimaryConsultant__r.MailingAddress,  PrimaryConsultant__r.Email
+                                          Owner_Name__c, PrimaryConsultant__r.MailingCity,PrimaryConsultant__r.Name, Account.Company_Description__c,
+                                          PrimaryConsultant__r.Phone,PrimaryConsultant__r.MailingAddress,  PrimaryConsultant__r.Email, Account.ConsultantFirm__r.Name
                                           from Opportunity where id = :membershipActivityId With USER_MODE Limit 1];
             if(strategyMemoOppQueryResult!=null)
             {
-                //strategyMemoInfoWrapper.strategyMemoOppQueryResult = strategyMemoOppQueryResult;
                 system.debug('strategyMemoOppQueryResult'+strategyMemoOppQueryResult);
                 strategyMemoInfoWrapper.stageMedical= strategyMemoOppQueryResult.Sales_Stage_Medical__c != null ? strategyMemoOppQueryResult.Sales_Stage_Medical__c:'';
                 strategyMemoInfoWrapper.strategyCallDat  = strategyMemoOppQueryResult.Strategy_Call_Date__c!= null ? formatDate(strategyMemoOppQueryResult.Strategy_Call_Date__c) :'';
@@ -111,6 +44,7 @@ public with sharing class StrategyMemoController {
                 strategyMemoInfoWrapper.proposalDateReceived = getEarliestProposalReceivedDate(strategyMemoOppQueryResult);
                 strategyMemoInfoWrapper.proposalDueDate = getEarliestDueDate(strategyMemoOppQueryResult);
                 strategyMemoInfoWrapper.oppId = strategyMemoOppQueryResult.Id != null ? String.valueOf(strategyMemoOppQueryResult.Id):''; 
+                strategyMemoInfoWrapper.maName = strategyMemoOppQueryResult.Name != null ? String.valueOf(strategyMemoOppQueryResult.Name):'';
                 strategyMemoInfoWrapper.vsAetna = strategyMemoOppQueryResult.vs_Aetna__c != null ? String.valueOf(strategyMemoOppQueryResult.vs_Aetna__c):''; 
                 strategyMemoInfoWrapper.vsAnthem = strategyMemoOppQueryResult.vs_Anthem__c != null ? String.valueOf(strategyMemoOppQueryResult.vs_Anthem__c):'';
                 strategyMemoInfoWrapper.vsBlues = strategyMemoOppQueryResult.vs_Blues__c != null ? String.valueOf(strategyMemoOppQueryResult.vs_Blues__c):''; 
@@ -176,6 +110,7 @@ public with sharing class StrategyMemoController {
                 strategyMemoInfoWrapper.dealSponsor = strategyMemoOppQueryResult.Deal_Sponsor__c != null ? strategyMemoOppQueryResult.Deal_Sponsor__c:''; 
                 strategyMemoInfoWrapper.privateEquity = strategyMemoOppQueryResult.Account.Private_Equity_Relationship__c != null ? String.valueOf(strategyMemoOppQueryResult.Account.Private_Equity_Relationship__c):''; 
                 strategyMemoInfoWrapper.businessOverview = strategyMemoOppQueryResult.Account.Comments__c != null ? strategyMemoOppQueryResult.Account.Comments__c:''; 
+                strategyMemoInfoWrapper.companyDescription = strategyMemoOppQueryResult.Account.Company_Description__c != null ? strategyMemoOppQueryResult.Account.Company_Description__c:''; 
                 strategyMemoInfoWrapper.businessPressures = strategyMemoOppQueryResult.Account.BusinessPressures__c != null ? strategyMemoOppQueryResult.Account.BusinessPressures__c:''; 
                 strategyMemoInfoWrapper.potentialCompelling = strategyMemoOppQueryResult.Account.PotentialCompellingEvent__c != null ? strategyMemoOppQueryResult.Account.PotentialCompellingEvent__c:''; 
                 strategyMemoInfoWrapper.uniqueBusinessValues = strategyMemoOppQueryResult.Account.OurPotentialUniqueBusinessValue__c != null ? strategyMemoOppQueryResult.Account.OurPotentialUniqueBusinessValue__c:''; 
@@ -190,6 +125,7 @@ public with sharing class StrategyMemoController {
                 strategyMemoInfoWrapper.surestApproachStrategy= strategyMemoOppQueryResult.Account.Surest_Approach_Strategy__c != null ? strategyMemoOppQueryResult.Account.Surest_Approach_Strategy__c:'';
                 strategyMemoInfoWrapper.eligibleEesAndRetirees  = strategyMemoOppQueryResult.EEsRetireesintheProposalMedical__c!= null ? String.valueOf(strategyMemoOppQueryResult.EEsRetireesintheProposalMedical__c) :'';
                 strategyMemoInfoWrapper.notesTaken= strategyMemoOppQueryResult.Notes_taken_on_call_with_consultant__c != null ? strategyMemoOppQueryResult.Notes_taken_on_call_with_consultant__c:'';
+                strategyMemoInfoWrapper.primaryConsultingFirm = strategyMemoOppQueryResult.Account.ConsultantFirm__r.Name != null ? String.valueOf(strategyMemoOppQueryResult.Account.ConsultantFirm__r.Name):''; 
                 if(strategyMemoOppQueryResult.PrimaryConsultant__r.MailingAddress!=null){
                     Address corporateMailingAddress = strategyMemoOppQueryResult.PrimaryConsultant__r.MailingAddress;
                     if(corporateMailingAddress!=null){
@@ -400,9 +336,11 @@ public with sharing class StrategyMemoController {
     
     @AuraEnabled(cacheable=true)
     public static Strategy_Memo__c getStrategyMemo(String membershipActivityId) {
+         List<Strategy_Memo__c> memoList = new  List<Strategy_Memo__c>();
+        Strategy_Memo__c memo = new Strategy_Memo__c();
         system.debug('recordID'+membershipActivityId);
         try{
-            Strategy_Memo__c memo = [SELECT Id,Name,Strategy_Call_Date__c, Strategy_Call_Time__c,Record_Type__c,Proposal_Date_Received__c, Proposal_Date_Due__c,  
+            memoList = [SELECT Id,Name,Strategy_Call_Date__c, Strategy_Call_Time__c,Record_Type__c,Proposal_Date_Received__c, Proposal_Date_Due__c,  
                                      Membership_Activity__c, Company_Name_as_per_RFP__c, People__c, Spotlight_RFP__c, Reference_Attributes__c,Account_Name__c, 
                                      File_Passwords_If_so_please_provide__c, Headquarters_City__c, Primary_Situs_State__c,Client_Manager_Traditional__c,Client_Manager_Surest__c,   
                                      Contact_Names__c, Address__c, Website_URL__c, Consultant_Firm_Loc__c,  Salesforce_Opportunity_ID__c,
@@ -426,9 +364,7 @@ public with sharing class StrategyMemoController {
                                      Implementation_Kick_Off_Date__c, Effective_Date__c, RFP_Release_NDA__c,  
                                      Repricing_NDA_for_Line_by_Line__c, Other_NDA__c, Is_the_Client_in_the_Cannabis_Business__c,  
                                      DIVERSITY_EQUITY_and_INCLUSION_DEI__c, MWBE_Requirements__c,  
-                                     Eligible_for_second_Blues_bid__c,
-                                     Bidding_Blue_Plans__c, 
-                                     Company_Overview__c,  
+                                     Eligible_for_second_Blues_bid__c, Bidding_Blue_Plans__c, Company_Overview__c,  
                                      Business_Strategy__c, Census_Data__c, PHI_PII_Removed__c, Eligibility_Criteria__c,  
                                      Enrollment_History__c, Current_Contract_ASA__c, Large_Claims_Data__c,  
                                      Current_Plan_Design_s__c, Proposed_Plan_Design_s__c, RFP_Current_Rates_Fees__c,  
@@ -447,10 +383,9 @@ public with sharing class StrategyMemoController {
                                      Service_Area_Report__c, ASO__c, EPO__c, FI_HMOs__c, POS__c, PPO__c, CDHP__c,  
                                      Currently_in_an_ACO__c, Business_Overview__c, Business_Pressures__c,  
                                      Potential_Compelling_Event__c, Unique_Business_Value__c, Key_Risks_to_our_UBV__c,  
-                                     Outcome_Drivers__c, Approach_Strategy__c, 
-                                     Surest_Last_Action_Taken__c, Surest_Next_Action_to_be_Taken__c,Network_Contracting_Issue_Other__c,  
-                                      Surest_Approach_strategy__c, Surest_Netwok__c,  
-                                     Surest_Comments__c, Special_Notes_RFP__c,  
+                                     Outcome_Drivers__c, Approach_Strategy__c, Surest_Last_Action_Taken__c,  
+                                     Surest_Next_Action_to_be_Taken__c, Surest_Approach_strategy__c, Surest_Netwok__c,  
+                                     Network_Contracting_Issue_Other__c, Surest_Comments__c, Special_Notes_RFP__c,  
                                      Discussion_Points__c, Notes_Taken_on_call_with_Consultant__c, 
                                      Quoting_CVG__c, Aggregator_involved_in_the_opportunity__c, CVG_Association__c,  
                                      Private_Equity_Relationship__c, Acs__c, EEs_Retirees_in_the_Proposal_Medical__c,  
@@ -462,19 +397,22 @@ public with sharing class StrategyMemoController {
                                      Nexus_ACO_Plan_Savings_PPT__c, Network_Development_Guarantee__c, Claim_Trend_Guarantee__c,  
                                      Trend_Guarantee__c, Other_Guarantees__c, Platform_Stability__c, Optum_CLINICAL_PGs__c,  
                                      Clinical_Integration__c, Pre_Implementation_Audit__c, Transition_Credit__c,  
-                                     Communication_Credit__c, Wellness_Credit__c, Specialty_Package_Credit__c,  
+                                     Communication_Credit__c, Wellness_Credit__c, Specialty_Package_Credit__c, Credits__c,
                                      Passport_HP_Pricing_Needed__c, Pre_member_Web_Site__c, Onshoring_Domestic_Level__c,  
                                      Onsite_Resource__c, Texting_an_E_mail_campaigns__c, Vendor_Integration_Needs__c,  
                                      Additional_Levers_AI_1__c, Additional_Levers_AI_2__c, Additional_Levers_AI_3__c,  
                                      Additional_Levers_AI_4__c, Additional_Levers_AI_5__c, Additional_Levers_AI_6__c, Notes_Taken_During_Call__c, 
                                      Special_EMT_Requested__c, SPDs_Submitted_for_compatibility_Review__c,  SPDs_Availability_and_Compatibility_Docs__c,
                                      What_EMTs_will_be_Submitted__c, Any_Non_Standard_PGs__c, Non_Standard_Requests_and_EMT_Needs__c,  
-                                     Vendor_Integration_File_Feeds__c, Confirm_Dates_for_Finalist_Kick_Off__c,Approach__c,Health_Plan_Manager_Industry__c,Annual_Revenue__c,Bid_Strategy__c  
+                                     Vendor_Integration_File_Feeds__c, Confirm_Dates_for_Finalist_Kick_Off__c,Approach__c,Health_Plan_Manager_Industry__c,Annual_Revenue__c,Bid_Strategy__c,
+                                     Senior_Proposal_Development_Analyst_UMR__c,Senior_Strategic_Coordinator_UMR__c,Proposal_Writers_Surest__c ,Primary_Consulting_Firm__c,
+                                     Benefits_Strategist_Surest__c, Pricing_Analyst_Surest__c, Draft_Due_from_NPS__c, Pharmacy_Rebate_Questions__c, Consultant_Commission__c, Company_Description__c
                                      FROM Strategy_Memo__c 
                                      WHERE Membership_Activity__c =: membershipActivityId With USER_MODE LIMIT 1 ];
-                        System.debug('memo'+memo);
-              
-               return memo;
+           // System.debug('memo'+memo);
+            if(!memoList.isEmpty())
+                 memo  = memoList[0];
+            return memo;
         }
         catch (Exception e) {
             throw new AuraHandledException('Error retrieving Strategy Memo: ' + e.getMessage());
@@ -515,10 +453,8 @@ public with sharing class StrategyMemoController {
     }
     
     public class StrategyMemoInfoWrapper {
-      @AuraEnabled
-      public Strategy_Memo__c getStrategyMemo{get; set;}
-        
         @AuraEnabled   public String oppId { get; set; }   
+        @AuraEnabled   public String maName { get; set; }
         @AuraEnabled   public String strategyCallDat { get; set; } 
         @AuraEnabled   public String bidStrategy { get; set; } 
         @AuraEnabled   public String eligibleEesAndRetirees { get; set; } 
@@ -552,6 +488,7 @@ public with sharing class StrategyMemoController {
         @AuraEnabled public String dealSponsor {get; set;}
         @AuraEnabled public String privateEquity {get; set;}
         @AuraEnabled public String businessOverview {get; set;}
+        @AuraEnabled public String companyDescription {get; set;}
         @AuraEnabled public String businessPressures {get; set;}
         @AuraEnabled public String potentialCompelling {get; set;}
         @AuraEnabled public String uniqueBusinessValues {get; set;}
@@ -577,6 +514,7 @@ public with sharing class StrategyMemoController {
         @AuraEnabled public String stageMedical{get;set;}
         @AuraEnabled public String healthPlan{get;set;}
         @AuraEnabled public String annualRevenue{get;set;}
+        @AuraEnabled public String  primaryConsultingFirm {get; set;} 
         @AuraEnabled public Boolean isRFPUser{get;set;}
         @AuraEnabled 
         public String bluesBidComments {get; set;}
@@ -585,8 +523,4 @@ public with sharing class StrategyMemoController {
         @AuraEnabled
         public  Map<String,Set<String>> objectItags{ get;set; }
     }
-    
-    
-    
-    
 }

@@ -164,7 +164,7 @@ Returns: Wrapper Class.
                                                             UHC_Hub_Quest_eGFR_Venipuncture_AddOn__c,UHC_Hub_Quest_eGFR_Visit_Add_On__c,UHC_Hub_Quest_Fax_to_Physician__c,UHC_Hub_Quest_Flu_Shots__c,UHC_Hub_Quest_Heart_Health_Home_Kit__c,UHC_Hub_Quest_Hlth_Prvdr_Screening_Form__c,UHC_Hub_Quest_HPSF_Prov_Med_PA__c,
                                                             UHC_Hub_Quest_KYN_Plus_Fingerstick__c,UHC_Hub_Quest_KYNS_Comprehensive__c,UHC_Hub_Quest_KYNS_Full_Lipid_Venipctr__c,UHC_Hub_Quest_KYNS_Full_Lpd_Fingerstick__c,UHC_Hub_Quest_KYNS_Partial_Lpd_Fingerst__c,UHC_Hub_Quest_Lab_Visit_Comp_Veni__c,
                                                             UHC_Hub_Quest_Lab_Visit_Full_Lipid_Veni__c,UHC_Hub_Quest_Measure_Waist__c,UHC_Hub_Quest_Privacy_Screens__c,UHC_Hub_Quest_PSA_Fingerstick_Add_On__c,UHC_Hub_Quest_Waist_Hip_Ratio__c,UHC_Hub_Teladoc_Advanced_Weight_Mgmt__c,UHC_Hub_Teladoc_Chronic_Mgmt_Plus_Bundl__c,
-                                                            UHC_Hub_Teladoc_Diabetes_Mgmt_Plus_Bund__c,UHC_Hub_Teladoc_Diabetes_Mgmt_Standalon__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Stand__c,UHC_Hub_Teladoc_Prediabetes_Mgmt_Plus__c,UHC_Hub_Weight_Watchers__c,UHC_Hub_Wellthy__c,UHC_Hub_Wondr_Health__c 
+                                                            UHC_Hub_Teladoc_Diabetes_Mgmt_Plus_Bund__c,UHC_Hub_Teladoc_Diabetes_Mgmt_Standalon__c,UHC_Hub_Teladoc_Hypertension_Mgmt_Stand__c,UHC_Hub_Teladoc_Prediabetes_Mgmt_Plus__c,UHC_Hub_Weight_Watchers__c,UHC_Hub_Wellthy__c,UHC_Hub_Wondr_Health__c,Surest_Member_Svcs_Clinical_Advocacy__c,Surest_Standard_Communications__c
                                                             FROM Renewal_Checklist__c WHERE Company__c =: String.escapeSingleQuotes(accId) AND Sales_Season__c =:currentSS WITH USER_MODE ];
         system.debug('renewalCheckListData = '+renewalCheckListData);
 
@@ -431,8 +431,12 @@ Returns: List of renewal checklist.
             Account[] accList = [SELECT Id,Name,CM_SCE__c,CM_SCE__r.Name,CM_SCE__r.Email,Surest_Members__c FROM Account WHERE Id =: recordId WITH USER_MODE];
             
             String AccountName = accList[0].Name;
-            String cmsce = accList[0].CM_SCE__r.Name;
-            String cmSceEmailId = accList[0].CM_SCE__r.Email;
+            String cmSceEmailId;
+            String cmsce;
+            if(accList[0].CM_SCE__c != null && accList[0].CM_SCE__r.Name != null && String.isNotBlank(accList[0].CM_SCE__r.Email)) {
+                 cmsce = accList[0].CM_SCE__r.Name;
+                 cmSceEmailId = accList[0].CM_SCE__r.Email;
+            }
             String[] emailIdList = new List<String>();
             Double surestMembers = accList[0].Surest_Members__c;
             String pharmacyOpsEmail = Label.PharmacyOpsEmail;
