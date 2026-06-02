@@ -16,9 +16,10 @@ export default class ProspectEngagementInsights extends LightningElement {
                      const responseData = JSON.parse(result.finalContent);
                      this.sections =this.buildSections(responseData);
 
+
                 })
                 .catch(error => {
-
+//n
                 this.errorMessage =
                     error?.body?.message ||
                     error.message;
