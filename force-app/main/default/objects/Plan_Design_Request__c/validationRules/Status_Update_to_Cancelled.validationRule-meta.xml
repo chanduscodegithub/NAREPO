@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status_Update_to_Cancelled</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+				ISCHANGED(Status__c),
+    ISPICKVAL(Status__c, &quot;Cancelled&quot;),
+    $Profile.Name = &quot;Benefit Strategist&quot;
+)</errorConditionFormula>
+    <errorMessage>Benefit Strategists do not have permission to cancel Plan Design Requests.
+This must be cancelled by Sales Team</errorMessage>
+</ValidationRule>

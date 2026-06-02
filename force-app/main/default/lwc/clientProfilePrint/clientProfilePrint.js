@@ -71,7 +71,7 @@ export default class ClientProfilePrint extends LightningElement {
                         }
                     }
                 }
-                var order = ['Specialty Benefits Client Manager', 'Client Manager', 'Client Management Consultant', 'Service Account Manager',
+                var order = ['Specialty Benefits Consultant', 'Client Manager', 'Client Management Consultant', 'Service Account Manager',
                     'UHC Medical Director', 'Clinical Account Executive', 'Health Analytics Consultant', 'Engagement Solutions Consultant'];
 
                 finalContactRoleMapForPrint = contactRoleMapForPrint.sort(function (a, b) {

@@ -1,10 +1,3 @@
-/**
- * @description       : 
- * @author            : Spoorthy
- * @group             : 
- * @last modified on  : 09-03-2024
- * @last modified by  : Spoorthy
-**/
 global without sharing class ganttcontroller{
     
     public static String csvVals{get; set;}
@@ -104,7 +97,7 @@ global without sharing class ganttcontroller{
         
         List<Project_Task__c> ProdtaskList = new List<Project_Task__c>();
         List<IPM_Team__c> TeamList = new List<IPM_Team__c>();
-        for(Project_Template__c ProjData : [SELECT Id, Name, Account__c, Project_Template__c, Effective_Date__c, Start_Date__c, Template__c, Project_Type__c,
+        for(Project_Template__c ProjData : [SELECT Id, Name, Account__c, Project_Template__c, Effective_Date__c, Start_Date__c, Template__c,
                                                 (SELECT Id, Duration__c, linkId__c, Source_Link_Id__c, lag__c, Row_Number__c, Project_Type__c,
                                                  Target_Link_Id__c, Project_Task_Name__c, Project_Task_Id__c, Target__c, Source__c, Parent__c,
                                                  type__c, ParentId__c, WBS_Code__c, Start_Date__c, End_Date__c, Predecessors__c,

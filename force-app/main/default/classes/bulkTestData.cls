@@ -142,6 +142,15 @@ public class bulkTestData {
         accCM.RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Existing Client').getRecordTypeId();
         insert accCM;
         
+        ClientSurveyResults__c acc_Client_Survey = new ClientSurveyResults__c();
+        acc_Client_Survey.Name = 'Test Survey 2';
+        acc_Client_Survey.Account__c  = accCM.Id;
+        acc_Client_Survey.Year__c = '2023';
+        acc_Client_Survey.LikelihoodtoRecommendScore__c = '8';
+        acc_Client_Survey.Type__c = 'Client Survey Results';
+        insert acc_Client_Survey;        
+       
+        
         accCM2 = new Account();
         accCM2.Name = 'Competitive Medical CM2';
         accCM2.Subtype__c ='Specialty Benefits Only';
@@ -398,6 +407,8 @@ public class bulkTestData {
         acc_Con_Rel.ContactId = contact1.Id;       
         acc_Con_Rel.AccountId = accFirm2.Id;
         insert acc_Con_Rel;
+        
+        
         
     }
     

@@ -1,0 +1,43 @@
+<template>
+    <lightning-card title="Download RFP Response" icon-name="custom:custom19">
+        <div class="slds-p-around_medium">
+            <template if:true={stats}>
+                <div class="slds-text-heading_small slds-m-bottom_medium">
+                    {rfpName}
+                </div>
+                <div class="slds-box slds-m-bottom_large">
+                    <p class="slds-text-align_center slds-m-bottom_small">
+                        Total Strategic Questions: <strong>{stats.totalStrategicQuestionsCount}</strong> |
+                        Total Standard Questions: <strong>{stats.totalNonStrategicQuestionsCount}</strong>
+                    </p>
+                    <p class="slds-text-align_center slds-m-bottom_small">
+                        Strategic Finalized: <strong>{stats.strategicFinalized}</strong> | WIP: <strong>{stats.strategicNotFinalized}</strong>
+                    </p>
+                    <p class="slds-text-align_center slds-m-bottom_small">
+                        Standard Finalized: <strong>{stats.nonStrategicFinalized}</strong> | WIP: <strong>{stats.nonStrategicNotFinalized}</strong>
+                    </p>
+                    <p class="slds-text-align_center slds-text-color_weak">
+                        {downloadMessage}
+                    </p>
+                </div>
+            </template>
+            <div class="slds-grid slds-grid_align-center slds-wrap">
+                <lightning-button 
+                    label="Download Strategic Answers" 
+                    variant="brand" 
+                    class="slds-m-around_x-small"
+                    onclick={handleStrategicDownload}>
+                </lightning-button>
+                <lightning-helptext content="Downloads finalized answers for only strategic questions."></lightning-helptext>
+                
+                <lightning-button 
+                    label="Download RFP Response" 
+                    variant="brand" 
+                    class="slds-m-around_x-small"
+                    onclick={handleFinalizedDownload}>
+                </lightning-button>
+                <lightning-helptext content="Downloads all finalized answers (both strategic and standard)."></lightning-helptext>
+            </div>
+        </div>
+    </lightning-card>
+</template>

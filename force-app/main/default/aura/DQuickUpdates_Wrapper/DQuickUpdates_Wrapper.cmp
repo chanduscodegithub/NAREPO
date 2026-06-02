@@ -1,0 +1,16 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <!-- Attribute to control success message -->
+    <aura:attribute name="showMessage" type="Boolean" default="false"/>
+    <aura:attribute name="message" type="string" default=""/>
+    
+    <!-- Success Message -->
+    <div class="slds-p-around_medium">
+        <aura:if isTrue="{!v.showMessage}">
+            <div class="slds-notify slds-notify_alert slds-alert_success">
+                <h2>{!v.message}</h2>
+            </div>
+        </aura:if>
+    </div>
+    <c:cDQuickUpdates recordId="{!v.recordId}" isAnalytics='yes' onmyevent="{!c.handleSuccess}" onmyevent1="{!c.handlefailure}"/>
+</aura:component>

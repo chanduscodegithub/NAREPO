@@ -1,19 +1,5 @@
-/**
- * @description       : 
- * @author            : Spoorthy
- * @group             : 
- * @last modified on  : 04-02-2024
- * @last modified by  : Spoorthy
-**/
-import {
-    LightningElement,
-    track,
-    api,
-    wire
-} from 'lwc';
-import {
-    ShowToastEvent
-} from 'lightning/platformShowToastEvent';
+import {LightningElement,track,api,wire} from 'lwc';
+import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 
 import Surest__c from '@salesforce/schema/ProductMix__c.Surest__c';
 import Pharmacy__c from '@salesforce/schema/ProductMix__c.Pharmacy__c';
@@ -36,7 +22,8 @@ import Behavioral_Health__c from '@salesforce/schema/ProductMix__c.Behavioral_He
 import EAP_Domestic__c from '@salesforce/schema/ProductMix__c.EAP_Domestic__c';
 import EAP_Global__c from '@salesforce/schema/ProductMix__c.EAP_Global__c';
 import Retiree_Products__c from '@salesforce/schema/ProductMix__c.Retiree_Products__c';
-import 	Member_Service_Vendor__c from '@salesforce/schema/ProductMix__c.Member_Service_Vendor__c';  //Added CR-3847
+import Member_Digital_Tools_Vendor__c from '@salesforce/schema/ProductMix__c.Member_Digital_Tools_Vendor__c'; // Added CR - 4088
+import Member_Service_Vendor__c from '@salesforce/schema/ProductMix__c.Member_Service_Vendor__c';  //Added CR-3847
 import UHC_UMR_Member_Service_and_Tools__c from '@salesforce/schema/ProductMix__c.UHC_UMR_Member_Service_and_Tools__c';
 import UHC_UMR_Telehealth_Solutions__c from '@salesforce/schema/ProductMix__c.UHC_UMR_Telehealth_Solutions__c';
 import UMR_COBRA_Services__c from '@salesforce/schema/ProductMix__c.UMR_COBRA_Services__c';
@@ -87,7 +74,8 @@ export default class CurrentProductClientSurvey extends LightningElement {
     @track EAP_Domestic__c = [];
     @track EAP_Global__c = [];
     @track Retiree_Products__c = [];
-    @track Member_Service_Vendor__c = [];
+    @track Member_Digital_Tools_Vendor__c = [];  
+    @track Member_Service_Vendor__c = [];  //Added CR-3847
     @track UHC_UMR_Member_Service_and_Tools__c = [];
     @track UHC_UMR_Telehealth_Solutions__c = [];
     @track UMR_COBRA_Services__c = [];
@@ -96,11 +84,11 @@ export default class CurrentProductClientSurvey extends LightningElement {
     @track UHC_Cobra_Administration__c = [];
     @track Financial_Accounts__c = [];
     @track UHC_Hub__c = [];
-    isRequired = false;
+    @track isRequired = false;
     @track isReq = false;
     hasTabAccess;
     showProductError = false;
-    productFields = ['Surest__c', 'Pharmacy__c', 'Dental__c', 'Vision__c','UHC_Hub__c', 'Supplemental_Health__c', 'Care_Management__c', 'Women_s_Health__c', 'Decision_Support__c','Financial_Accounts__c', 'Centers_of_Excellence__c', 'Disease_Management__c', 'Worksite_Wellness__c', 'Wellness_and_Wellness_Coaching__c', 'Rally_Client_above_base__c', 'Incentive_Products__c', 'Health_Savings_Account_HSA__c', 'Health_Reimbursement_Account_HRA__c', 'Flexible_Spending_Account_FSA__c', 'Behavioral_Health__c', 'EAP_Domestic__c', 'EAP_Global__c', 'Retiree_Products__c', 'UHC_Cobra_Administration__c', 'UHC_UMR_Telehealth_Solutions__c', 'UHC_UMR_Member_Service_and_Tools__c', 'UMR_COBRA_Services__c', '	Member_Service_Vendor__c']
+    productFields = ['Surest__c', 'Pharmacy__c', 'Dental__c', 'Vision__c','UHC_Hub__c', 'Supplemental_Health__c', 'Care_Management__c', 'Women_s_Health__c', 'Decision_Support__c','Financial_Accounts__c', 'Centers_of_Excellence__c', 'Disease_Management__c', 'Worksite_Wellness__c', 'Wellness_and_Wellness_Coaching__c', 'Rally_Client_above_base__c', 'Incentive_Products__c', 'Health_Savings_Account_HSA__c', 'Health_Reimbursement_Account_HRA__c', 'Flexible_Spending_Account_FSA__c', 'Behavioral_Health__c', 'EAP_Domestic__c', 'EAP_Global__c', 'Retiree_Products__c', 'UHC_Cobra_Administration__c', 'UHC_UMR_Telehealth_Solutions__c', 'UHC_UMR_Member_Service_and_Tools__c', 'UMR_COBRA_Services__c', 'Member_Service_Vendor__c','Member_Digital_Tools_Vendor__c']
 
     @api hasEditAccess; //added by SAMARTH
 
@@ -466,6 +454,7 @@ export default class CurrentProductClientSurvey extends LightningElement {
         }
 
     }
+
     //Added CR-3847
     @wire(getPicklistValues, {
         recordTypeId: '$objectInfo.data.defaultRecordTypeId',
@@ -481,6 +470,24 @@ export default class CurrentProductClientSurvey extends LightningElement {
         }
 
     } 
+
+     @wire(getPicklistValues, {
+        recordTypeId: '$objectInfo.data.defaultRecordTypeId',
+        fieldApiName: Member_Digital_Tools_Vendor__c
+    })
+    wiredPickListValuesMember_Digital_Tools_Vendor__c({
+        data,
+        error
+    }) {
+        if (data) {
+
+            this.Member_Digital_Tools_Vendor__c = data.values;
+        }
+
+    } 
+
+    
+
     @wire(getPicklistValues, {
         recordTypeId: '$objectInfo.data.defaultRecordTypeId',
         fieldApiName: UHC_UMR_Member_Service_and_Tools__c
@@ -547,21 +554,23 @@ export default class CurrentProductClientSurvey extends LightningElement {
 
         //(this.UMRClientPlatform != null && this.UMRClientPlatform != undefined) - added by SAMARTH
         if ((this.UMRClientPlatform != null && this.UMRClientPlatform != undefined) &&
-            !this.UMRClientPlatform.includes('UMR - CPS') && !this.UMRClientPlatform.includes('Healthscope - HSB')) {
+            !this.UMRClientPlatform.includes('UMR - CPS') && !this.UMRClientPlatform.includes('Healthscope - HSB')) {               
             this.ProductMix__c.UHC_UMR_Telehealth_Solutions__c = this.ProductMix__c.UHC_UMR_Telehealth_Solutions__c ? this.ProductMix__c.UHC_UMR_Telehealth_Solutions__c : 'No';
             this.ProductMix__c.UHC_UMR_Member_Service_and_Tools__c = this.ProductMix__c.UHC_UMR_Member_Service_and_Tools__c ? this.ProductMix__c.UHC_UMR_Member_Service_and_Tools__c : 'No';
             this.ProductMix__c.UMR_COBRA_Services__c = this.ProductMix__c.UMR_COBRA_Services__c ? this.ProductMix__c.UMR_COBRA_Services__c : 'No';
 
         }
-
-        if(this.UMRClientPlatform.includes('UMR')){
-            this.isReq = true;
+        //Added CR-3847
+        if(this.UMRClientPlatform && this.UMRClientPlatform.includes('UMR')){
+            this.isReq = true;           
         }
+
 
         if (this.userRole == 'CM VP' || this.userRole == 'CM SCE' || this.userRole == 'Surest CM SCE' || this.userRole == 'Surest CM SVP' ||
             this.userRole == 'CM VPCR/RVP' || this.userRole == 'Specialty Benefits SCE' ||
             this.userRole == 'CRM Administrator' || this.clientSurveyCustomPermission) {
             this.isRequired = true;
+            
             this.hasTabAccess = true;
         }
 
@@ -624,9 +633,11 @@ export default class CurrentProductClientSurvey extends LightningElement {
         // }
 
         if (!memberServiceAndTools.value) {
-            memberServiceAndTools.setCustomValidity("Please select an option");
+            if(this.isReq){
+            memberServiceAndTools.setCustomValidity("Please complete this field");
             memberServiceAndTools.reportValidity();
             error++
+            } 
         } else {
             memberServiceAndTools.setCustomValidity("");
             memberServiceAndTools.reportValidity();
@@ -645,6 +656,8 @@ export default class CurrentProductClientSurvey extends LightningElement {
     }
 
     handleSave(event) {
+
+        
         for (const field of this.productFields) {
             const element = this.template.querySelector(`[data-name="${field}"]`);
             if (element) {
@@ -653,8 +666,8 @@ export default class CurrentProductClientSurvey extends LightningElement {
             }
         }
 
-        if (this.isRequired && (!this.validateRequiredFields() || !this.validateOnSCEValidation(true))) return;
-
+        if (this.isRequired && this.isReq &&(!this.validateRequiredFields() ||!this.validateOnSCEValidation(true))) return;
+        this.showProductError = false;
         this.showSpinner = true;
         saveCurrentProductData({ ProductMix: this.ProductMix__c })
             .then(result => {
@@ -663,6 +676,7 @@ export default class CurrentProductClientSurvey extends LightningElement {
 
                 this.cpList = Object.assign({}, this.ProductMix__c);
                 this.showSpinner = false;
+                
                 const evt = new ShowToastEvent({
                     title: 'Success',
                     message: 'Data saved successfully',
@@ -694,9 +708,20 @@ export default class CurrentProductClientSurvey extends LightningElement {
         for (const field of this.productFields) {
             const element = this.template.querySelector(`[data-name="${field}"]`);
             if (element) {
+                
                 if (!this.ProductMix__c[field]) {
+                    if(field == 'Member_Service_Vendor__c' || field =='Member_Digital_Tools_Vendor__c') {
+                        if(this.isReq){
+                            showError = true;
+                            element.setCustomValidity("Please complete this field");
+                        } 
+                        else{
+                         break;
+                        }
+                    }                
                     showError = true;
                     element.setCustomValidity("Please complete this field");
+                    
                 } else {
                     element.setCustomValidity("");
                 }
@@ -721,6 +746,8 @@ export default class CurrentProductClientSurvey extends LightningElement {
             }
             return false;
         }
+
+    
         return true;
     }
 

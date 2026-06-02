@@ -84,7 +84,8 @@ public class ClientStrategyCtrlTest {
             Company__c = acc.Id,
             Year__c = String.valueOf(Date.today().year()),
             Affordability_programs__c = 'Yes',
-            Wellness_program_offered__c = 'Yes'
+            Wellness_program_offered__c = 'Yes',
+            Client_rethinking_wellness_approach__c = 'Yes'
         );
         insert cs;
         
@@ -103,6 +104,41 @@ public class ClientStrategyCtrlTest {
         Boolean result = ClientStrategyController.isEditAllowed();
         Test.stopTest();
     }
+    
+    
+    
+    @isTest
+    static void testMarkAsComplete_Success() {
+        // Arrange
+        Account acc = createTestAccount();
+        String currentYear = String.valueOf(Date.today().year());
+
+        Client_Strategy__c cs = new Client_Strategy__c(
+            Company__c = acc.Id,
+            Year__c = currentYear,
+            Affordability_programs__c = 'Yes',
+            Wellness_program_offered__c = 'Yes'
+        );
+        insert cs;
+
+        Test.startTest();
+        Boolean result = ClientStrategyController.markAsComplete(acc.Id, currentYear);
+        Test.stopTest();
+
+    }
+
+    @isTest
+    static void testMarkAsComplete_NoRecord() {
+        // Arrange
+        Account acc = createTestAccount();
+        String nonExistentYear = String.valueOf(Date.today().year() + 1); // future year with no CS record
+
+        Test.startTest();
+        Boolean result = ClientStrategyController.markAsComplete(acc.Id, nonExistentYear);
+        Test.stopTest();
+
+    }
+    
     
     
     

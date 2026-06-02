@@ -7,10 +7,11 @@
         helper.caluculateTotalRecord(component);
         
         try {
+           
             var isQA = component.get('v.isQA');
             if(isQA != null && isQA == true){
                 //name columns to highlight on QA doinit
-                var columnNames = ['check_to_synch_with_medical','Existing_Membership_at_Risk__c','Existing_Members_Involved_in_the_Bid__c','Estimated_Additional_New_Members__c','Sold_Retained_Members__c','Mbrs_Transferred_From_To_Another_Segment__c','Mbrs_Transferred_From_To_Another_Segment__c','Members_Quoted_In_Proposal','Product_Conversion__c'];
+                var columnNames = ['Spec_Existing_Membership_at_Risk__c','Spec_check_to_synch_with_medical','check_to_synch_with_medical','Existing_Membership_at_Risk__c','Existing_Members_Involved_in_the_Bid__c','Estimated_Additional_New_Members__c','Sold_Retained_Members__c','Mbrs_Transferred_From_To_Another_Segment__c','Mbrs_Transferred_From_To_Another_Segment__c','Members_Quoted_In_Proposal','Product_Conversion__c'];
                 for(var i = 0; i < columnNames.length ; i++){
                     var focusColumn = component.find('Class_'+columnNames[i]);
                     if(focusColumn != undefined && focusColumn != null){
@@ -27,19 +28,31 @@
                     if(SalesStage == $A.get("$Label.c.EmergingRiskOrNoUpside")){                    
                         var focusColumn = component.find('Class_'+'Existing_Membership_at_Risk__c'); 
                         $A.util.addClass(focusColumn, 'focusColor');  
+                        var focusColumn = component.find('Class_'+'Spec_Existing_Membership_at_Risk__c'); 
+                        $A.util.addClass(focusColumn, 'focusColor');  
                         //ghanshyam c 1584
                         focusColumn = component.find('Class_'+'check_to_synch_with_medical');
+                        $A.util.addClass(focusColumn, 'focusColor');
+                        focusColumn = component.find('Class_'+'Spec_check_to_synch_with_medical');
                         $A.util.addClass(focusColumn, 'focusColor');
                     }else if(SalesStage == 'Lead'){                    
                         var focusColumn = component.find('Class_'+'Existing_Members_Involved_in_the_Bid__c'); 
                         $A.util.addClass(focusColumn, 'focusColor');
+                        focusColumn = component.find('Class_'+'Spec_Existing_Members_Involved_in_the_Bid__c'); 
+                        $A.util.addClass(focusColumn, 'focusColor');
                         focusColumn = component.find('Class_'+'Estimated_Additional_New_Members__c'); 
+                        $A.util.addClass(focusColumn, 'focusColor');
+                        focusColumn = component.find('Class_'+'Spec_Estimated_Additional_New_Members__c'); 
                         $A.util.addClass(focusColumn, 'focusColor');
                         //ghanshyam c added to highlight column
                         focusColumn = component.find('Class_'+'check_to_synch_with_medical'); 
                         $A.util.addClass(focusColumn, 'focusColor');
+                        focusColumn = component.find('Class_'+'Spec_check_to_synch_with_medical');
+                        $A.util.addClass(focusColumn, 'focusColor');
                         focusColumn = component.find('Class_'+'Existing_Membership_at_Risk__c'); 
-                        $A.util.addClass(focusColumn, 'focusColor');            
+                        $A.util.addClass(focusColumn, 'focusColor');        
+                         focusColumn = component.find('Class_'+'Spec_Existing_Membership_at_Risk__c'); 
+                        $A.util.addClass(focusColumn, 'focusColor');        
                     }else if(SalesStage == 'Notified'){
                         if(Disposition == 'Sold' || Disposition == 'Closed Emerging Risk'){                        
                             var focusColumn = component.find('Class_'+'Sold_Retained_Members__c'); 
@@ -52,11 +65,17 @@
                 }else if(maType == $A.get("$Label.c.MA_CD_TYPE")){                    
                     if(SalesStage == 'Lead'){
                         var focusColumn = component.find('Class_'+'Mbrs_Transferred_From_To_Another_Segment__c'); 
-                         $A.util.addClass(focusColumn, 'focusColor');                 
-                        focusColumn = component.find('Class_'+'Estimated_Additional_New_Members__c'); 
+                         $A.util.addClass(focusColumn, 'focusColor'); 
+                         focusColumn = component.find('Class_'+'Spec_Mbrs_Transferred_From_To_Another_Segment__c'); 
+                         $A.util.addClass(focusColumn, 'focusColor');
+                         focusColumn = component.find('Class_'+'Estimated_Additional_New_Members__c'); 
+                         $A.util.addClass(focusColumn, 'focusColor');                
+                        focusColumn = component.find('Class_'+'Spec_Estimated_Additional_New_Members__c'); 
                          $A.util.addClass(focusColumn, 'focusColor');
                         //ghanshyam c added to highlight column
                         focusColumn = component.find('Class_'+'check_to_synch_with_medical'); 
+                        $A.util.addClass(focusColumn, 'focusColor');
+                        focusColumn = component.find('Class_'+'Spec_check_to_synch_with_medical'); 
                         $A.util.addClass(focusColumn, 'focusColor');
                         
                     }else if(SalesStage == 'Proposal'){

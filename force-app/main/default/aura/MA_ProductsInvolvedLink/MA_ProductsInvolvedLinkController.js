@@ -117,6 +117,8 @@
           
             
             helper.saveme(component,'Product_Type_Involved_in_Opp__c',finalSelectedValues,ispickvalchanged);
+            helper.deleteProductLineDate(component,event);
+
         } else{
             var ErrorMessage = component.find('ErrorMessage1');
             for(var i in ErrorMessage){
@@ -162,7 +164,6 @@
             $A.util.removeClass(ErrorMessage[i], 'slds-show');
             $A.util.addClass(ErrorMessage[i], 'slds-hide');
         }
-        
     },
     closeErrorModal: function(component, event, helper){
         var removedString = component.get("v.stringremoved");

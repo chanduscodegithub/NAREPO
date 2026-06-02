@@ -12,13 +12,13 @@ global with sharing class staffBatch implements Database.Batchable<Sobject>, Dat
             staffIds.add(staffRec.Id);
         }
         
-        List<Staff_Assignment__c> ipmList = [SELECT Id, Case_FTE_s__c FROM Staff_Assignment__c WHERE Staffing_Assignment__c = 'a0jVB000001lL3dYAE'];
+        /*List<Staff_Assignment__c> ipmList = [SELECT Id, Case_FTE_s__c FROM Staff_Assignment__c WHERE Staffing_Assignment__c = 'a0jVB000001lL3dYAE'];
         for(Staff_Assignment__c s:ipmList){
             system.debug('s = '+s);
         }
         for(AggregateResult ar: [SELECT Id,Sum(Hours_Of_Complexity_Backend__c) HoursComplexity,Sum(Case_FTE_s__c) caseFte,Staffing_Assignment__c FROM Staff_Assignment__c WHERE Staffing_Assignment__c =: staffIds GROUP BY Staffing_Assignment__c,Id]){
             system.debug('ar = '+ar);
-        }
+        }*/
         
         for(AggregateResult ar: [SELECT Sum(Hours_Of_Complexity_Backend__c) HoursComplexity,Sum(Case_FTE_s__c) caseFte,Staffing_Assignment__c FROM Staff_Assignment__c WHERE Staffing_Assignment__c =: staffIds AND RecordTypeId IN (:specialProjectId, :ipmAssignmentId) GROUP BY Staffing_Assignment__c]){
             Id staffId = (Id) ar.get('Staffing_Assignment__c');

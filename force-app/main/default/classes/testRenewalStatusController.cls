@@ -22,7 +22,7 @@ public class testRenewalStatusController {
             opp.Disposition_Medical__c = 'Sold';
             //opp.Existing_Members_Risk_Outcome_Medical__c = 'Retained';
             opp.Proactive_Renewal_Additional_Info__c = 'Medical Contract WAS Extended for at Least 2 Years';
-            opp.Closed_Reason_1_Medical__c = 'Dead';
+            opp.Closed_Reason_1_Medical__c = 'Programs: Other';
             opp.Employees_in_the_Proposal_Medical__c = 5;
             opp.Members_in_the_Proposal_Medical__c = 6;
             opp.Members_QUOTED_in_the_Proposal_Medical__c = 7;
@@ -37,7 +37,7 @@ public class testRenewalStatusController {
             opp.Is_There_Existing_Membership_at_Risk__c = 'Yes';
             opp.Primary_Risk_Reason__c = 'Affordability';
             opp.Can_the_Membership_Move_Without_a_Bid__c = 'Yes';
-            opp.Proactive_Renewal_Incentive_Status__c = 'SS 2021 (First Year) - Pending Qualification';
+           	opp.Proactive_Renewal_Incentive_Status__c = 'SS 2021 (First Year) - Pending Qualification';
             opp.Estimated_Membership_Impact__c = 'Full';
             opp.Secondary_Risk_Reason__c = 'Competition';
             

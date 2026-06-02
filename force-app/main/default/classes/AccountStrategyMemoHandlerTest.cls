@@ -53,7 +53,7 @@ public class AccountStrategyMemoHandlerTest {
                KeyRiskstoourUBV__c,
                OutcomeDrivers__c,
                ApproachStrategy__c,
-              Surest_Last_Action_Taken__c,
+               Surest_Last_Action_Taken__c,
                Surest_Next_Action_to_be_Taken__c,
                Surest_Approach_Strategy__c,
                Surest_Network_Constraints__c,

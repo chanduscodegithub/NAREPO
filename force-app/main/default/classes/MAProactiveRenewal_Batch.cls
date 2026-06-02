@@ -87,7 +87,7 @@ global class MAProactiveRenewal_Batch implements Database.Batchable<sObject>, Da
                                     long retentionValue=MAProactiveRenewal_Helper.calculateRetention
                                         (crrntAndPrvsYrPlcyMmbrshipMap.get(effectiveDateMonth+'_'+effectiveDateYear),
                                          crrntAndPrvsYrPlcyMmbrshipMap.get(effectiveDateMonth+'_'+effectiveDatePreviousYear));
-                                    String proactvRnwlCompStatus=eachOpp.Proactive_Renewal_Incentive_Status__c;
+                                   String proactvRnwlCompStatus=eachOpp.Proactive_Renewal_Incentive_Status__c;
                                     if(retentionValue>=75){
                                         eachOpp.Proactive_Renewal_Incentive_Status__c=
                                             proactvRnwlCompStatus.substring(0,proactvRnwlCompStatus.indexOf('-'))+

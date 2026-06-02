@@ -211,6 +211,32 @@ public class NationalAccountSalesTeamTestClass {
                                                                                                    Case_Management_End_Date__c=Date.newInstance(2019, 12, 19),Job_Title__c='Regional Vice President',IsVPCR__c = false,Role__c='CM VPCR/RVP',Account_Firm__c=accountId1);  
         cmAccountTeamHistoryListTobeUpserted3.add(cmAccountTeamHistoryObjData512);
         
+        List<CM_Account_Team_History__c> cmAccountTeamHistoryListTobeUpsertedSpec = new List<CM_Account_Team_History__c>();
+        
+        CM_Account_Team_History__c cmAccountTeamHistoryObjData612 = new CM_Account_Team_History__c(Name='662',Last_Name__c='Test', Case_Management_Start_Date__c=Date.newInstance(2019, 12, 20),
+                                                                                                   Case_Management_End_Date__c=Date.newInstance(2024, 11, 21),Job_Title__c='Strategic Client Executive',Role__c='Specialty Benefits SCE',Account_Firm__c=accountId1);  
+        cmAccountTeamHistoryListTobeUpsertedSpec.add(cmAccountTeamHistoryObjData612);
+        CM_Account_Team_History__c cmAccountTeamHistoryObjData672 = new CM_Account_Team_History__c(Name='672',Last_Name__c='Test', Case_Management_Start_Date__c=Date.newInstance(2024, 11, 21),
+                                                                                                   Job_Title__c='Strategic Client Executive',Role__c='Specialty Benefits SCE',Account_Firm__c=accountId1);  
+        cmAccountTeamHistoryListTobeUpsertedSpec.add(cmAccountTeamHistoryObjData672);
+        
+        List<CM_Account_Team_History__c> cmAccountTeamHistoryListTobeUpsertedSpec1 = new List<CM_Account_Team_History__c>();
+        
+        
+        CM_Account_Team_History__c cmAccountTeamHistoryObjData692 = new CM_Account_Team_History__c(Name='642',Last_Name__c='Test', Case_Management_Start_Date__c=Date.newInstance(2019, 12, 20),
+                                                                                                   Case_Management_End_Date__c=Date.newInstance(2024, 11, 21),Job_Title__c='Strategic Client Executive',Role__c='Specialty Benefits SCE',Account_Firm__c=accountId2);  
+        cmAccountTeamHistoryListTobeUpsertedSpec1.add(cmAccountTeamHistoryObjData692);
+        CM_Account_Team_History__c cmAccountTeamHistoryObjData602 = new CM_Account_Team_History__c(Name='682',Last_Name__c='Test', Case_Management_Start_Date__c=Date.newInstance(2024, 11, 09),
+                                                                                                   Case_Management_End_Date__c=Date.newInstance(2024, 11, 18),Job_Title__c='Strategic Client Executive',Role__c='Specialty Benefits SCE',Account_Firm__c=accountId2);  
+        cmAccountTeamHistoryListTobeUpsertedSpec1.add(cmAccountTeamHistoryObjData602);
+        
+        NationalAccountSalesTeamClass.CMAccountTeamHistoryResult cmAccountTeamHistoryResultObj11111 = 
+            NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(accountId, cmAccountTeamHistoryListTobeUpsertedSpec);
+        
+        NationalAccountSalesTeamClass.CMAccountTeamHistoryResult cmAccountTeamHistoryResultObj1111111 = 
+            NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(accountId, cmAccountTeamHistoryListTobeUpsertedSpec1);
+        
+        
         NationalAccountSalesTeamClass.CMAccountTeamHistoryResult cmAccountTeamHistoryResultObj = 
             NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(accountId, cmAccountTeamHistoryListTobeUpserted);
         //NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(accountId3, cmAccountTeamHistoryListTobeUpserted);
@@ -234,6 +260,8 @@ public class NationalAccountSalesTeamTestClass {
             NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(accountId1, cmAccountTeamHistoryListTobeUpserted1);
         
         NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(accountId2, cmAccountTeamHistoryListTobeUpserted2); 
+        NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(accountId1, cmAccountTeamHistoryListTobeUpsertedSpec); 
+        NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(accountId2, cmAccountTeamHistoryListTobeUpsertedSpec1); 
         
         NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(accountId3, cmAccountTeamHistoryListTobeUpserted3);
         
@@ -327,23 +355,23 @@ public class NationalAccountSalesTeamTestClass {
         
         
         /*NationalAccountSalesTeamClass.getLoggedInUerRoleInfo();
-        try{
-            NationalAccountSalesTeamClass.getCMAccountTeamHistoryRecords(null,null,null,null);
-            NationalAccountSalesTeamClass.sortCMAccountTeamHistoryRecords(null,null,null);
-            NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(null,null);
-            NationalAccountSalesTeamClass.deleteCMAccountTeamHistoryRecord(null);
-            NationalAccountSalesTeamClass.updateAccountRecords(null,null);
-            NationalAccountSalesTeamClass.getUserRecords(null,null,null,null);
-            NationalAccountSalesTeamClass.getActiveCMAccountTeamHistoryRecords(null,null);
-            NationalAccountSalesTeamClass.sceVpcrsMapData(null,null,null);
-            NationalAccountSalesTeamClass.updateVPCRRVPsData(null,null,null);
-            NationalAccountSalesTeamClass.updateVpcrRvpScesData(null,null,null,null);
-            NationalAccountSalesTeamClass.sortListForStartDateInAscOrDesc(null,null,null);
-            
-        }
-        catch(Exception e){
-            system.debug('Exception occured');
-        }*/
+try{
+NationalAccountSalesTeamClass.getCMAccountTeamHistoryRecords(null,null,null,null);
+NationalAccountSalesTeamClass.sortCMAccountTeamHistoryRecords(null,null,null);
+NationalAccountSalesTeamClass.upsertCMAccountTeamHistoryRecords(null,null);
+NationalAccountSalesTeamClass.deleteCMAccountTeamHistoryRecord(null);
+NationalAccountSalesTeamClass.updateAccountRecords(null,null);
+NationalAccountSalesTeamClass.getUserRecords(null,null,null,null);
+NationalAccountSalesTeamClass.getActiveCMAccountTeamHistoryRecords(null,null);
+NationalAccountSalesTeamClass.sceVpcrsMapData(null,null,null);
+NationalAccountSalesTeamClass.updateVPCRRVPsData(null,null,null);
+NationalAccountSalesTeamClass.updateVpcrRvpScesData(null,null,null,null);
+NationalAccountSalesTeamClass.sortListForStartDateInAscOrDesc(null,null,null);
+
+}
+catch(Exception e){
+system.debug('Exception occured');
+}*/
         
         Test.stopTest();
         

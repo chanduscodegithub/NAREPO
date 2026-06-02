@@ -25,6 +25,7 @@ trigger CaseTriggers on Case (after update , after insert) {
                 
                 CaseTriggerHandler.updateUtilization(UserInfo.getUserId(),'Updated Resolution ( PHI Compliant )');
             }
+            
         }    
         if ( Trigger.isInsert && Trigger.isAfter){
             if(String.isNotBlank(c.Case_Screenshots__c) ){

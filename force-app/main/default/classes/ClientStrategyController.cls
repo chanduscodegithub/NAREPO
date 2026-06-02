@@ -62,17 +62,25 @@ public with sharing class ClientStrategyController {
         Boolean editAllowed;
         
         List<Client_Strategy_Edit_TimeFrame__mdt> windows = [
-            SELECT Start_Date__c, End_Date__c FROM Client_Strategy_Edit_TimeFrame__mdt WHERE Start_Date__c <= :today AND End_Date__c >= :today
-            LIMIT 1 ];
+            SELECT Start_Date__c, End_Date__c FROM Client_Strategy_Edit_TimeFrame__mdt WHERE Start_Date__c <= :today LIMIT 1 ];
          if (!windows.isEmpty()){
-         Integer startMonth = windows[0].Start_Date__c.month();
+       /*  Integer startMonth = windows[0].Start_Date__c.month();
          Integer endMonth   = windows[0].End_Date__c.month();
        // if (today.month() >= 10 && today.month() <= 12) {
        if (today.month() >= startMonth && today.month() <= endMonth) {
             strategyYear = currentYear + 1;
         } else {
             strategyYear = currentYear;
-        }
+        }  */
+             //26/09
+            Date startDate = windows[0].Start_Date__c;
+            if (today >= startDate) {
+                strategyYear = currentYear + 1;
+            }
+             else {
+                 strategyYear = currentYear;
+             }
+             
         }
 
         String acRecId = String.escapeSingleQuotes(accRecordId);
@@ -140,17 +148,25 @@ public with sharing class ClientStrategyController {
         }   */
             
             List<Client_Strategy_Edit_TimeFrame__mdt> windows = [
-            SELECT Start_Date__c, End_Date__c FROM Client_Strategy_Edit_TimeFrame__mdt WHERE Start_Date__c <= :today AND End_Date__c >= :today
+            SELECT Start_Date__c, End_Date__c FROM Client_Strategy_Edit_TimeFrame__mdt WHERE Start_Date__c <= :today
             LIMIT 1 ];
          if (!windows.isEmpty()){
-         Integer startMonth = windows[0].Start_Date__c.month();
+    /*     Integer startMonth = windows[0].Start_Date__c.month();
          Integer endMonth   = windows[0].End_Date__c.month();
        // if (today.month() >= 10 && today.month() <= 12) {
        if (today.month() >= startMonth && today.month() <= endMonth) {
             strategyYear = currentYear + 1;
         } else {
             strategyYear = currentYear;
-        }
+        }  */
+             //26/09
+            Date startDate = windows[0].Start_Date__c;
+            if (today >= startDate) {
+                strategyYear = currentYear + 1;
+            }
+             else {
+                 strategyYear = currentYear;
+             }
         }
             
         
@@ -208,7 +224,7 @@ public with sharing class ClientStrategyController {
     'Pharmacy_programs__c', 'Plan_design__c', 'Wellness_programs__c', 'Network_Access__c', 'Brand_Image__c', 'Innovation__c', 'Product_breadth__c', 'Administrative_capabilities__c', 'ESG_Issues__c',
     'CDHP_full_replacement__c', 'Voluntary_benefits__c', 'Value_based_benefits__c', 'Quality_Cost_tiering__c', 'POS_tiering__c', 'Reference_based_pricing__c', 'Intermittent_workforce__c',
     'Employee_affordability__c', 'Co_Pay_insurance__c', 'ICHRA_plan__c', 'Virtual_First_Solution__c', 'Traditional_PCP_Coordinated_Care__c', 'Site_of_Care_Steerage__c', 'Direct_Contracting_with_a_Provider__c', 
-    'Advanced_Primary_Care_Strategy__c', 'Streamlined_Narrow_Networks__c', 'ACO_Centric_Networks__c', 'Prioritized_Access__c', 'Important_Network_features__c','Describe_Network_features__c', 'Healthy_workplace__c',
+    'Advanced_Primary_Care_Strategy__c', 'Streamlined_Narrow_Networks__c', 'ACO_Centric_Networks__c', 'Prioritized_Access__c', 'Important_Network_features__c', 'Healthy_workplace__c',
     'On_site_near_site_clinics__c', 'Onsite_health_specialist__c', 'Cancer_Screening_and_Support_Programs__c', 'Medication_assisted_weight_loss__c', 'Women_s_health_solutions__c', 'Concierge_advocacy__c',
     'Tools_technologies__c', 'Engagement_Platform_Adoption__c', 'Digital_condition_mgmt__c', 'Diversity_equity_and_inclusion__c', 'LGBTQ_support__c', 'Social_Determinants_of_Health__c', 'Health_Equity__c', 
     'How_is_client_covering_GLP_1s__c', 'Preventive_drug_lists__c', 'Prescription_savings_outreach__c', 'Point_of_Sale_Rebates__c', 'Critical_affordability_drug_lists__c', 
@@ -219,12 +235,12 @@ public with sharing class ClientStrategyController {
     'Peer_Support__c', 'Online_tools_apps_videos_webinars__c', 'Virtual_coaching_counseling_therapy__c', 'Onsite_coaching_counseling_therapy__c', 'Burnout_stress_management_programs__c', 'Pediatric_focused_mental_health_sup__c',
     'Behavioral_Health_Engagement__c', 'Linkage_to_business_measures__c', 'Data_warehouse__c', 'SDOH_and_health_equity__c', 'Population_health_management_report__c', 'Wellness_program_offered__c', 'Client_rethinking_wellness_approach__c',
     'Biometric_screenings__c', 'Health_risk_assessment__c', 'Cancer_screenings__c', 'Tobacco_cessation_programs__c', 'Physical_activity_challenges__c', 'Weight_management_programs__c',
-    'Wellness_lifestyle_coaching__c', 'Sleep_management_programs__c', 'Client_attitude_on_engagement__c','Commitment_to_culture_of_health__c','Client_active_role_in_communication__c',
-    'Communication_resource_available__c','Openness_to_communication_advice__c', 'View_of_open_enrollment_onboarding__c','Standard_vs_custom_communications__c','Approach_to_targeted_messaging__c','Topics_communicated_to_emp_yearly__c',
-    'Approach_to_delivering_member_comms__c', 'Client_Interest_or_attitude_in_SoDH__c', 'Value_story_support_in_client_convos__c', 'Ways_to_strengthen_value_story__c', 'Competitive_landscape_updated__c', 'Annual_open_enrollment_kit_shared__c'
-    };
+    'Wellness_lifestyle_coaching__c', 'Sleep_management_programs__c',
+    'Communication_resource_available__c', 'View_of_open_enrollment_onboarding__c','Standard_vs_custom_communications__c','Approach_to_targeted_messaging__c','Topics_communicated_to_emp_yearly__c',
+    'Value_story_support_in_client_convos__c', 'Ways_to_strengthen_value_story__c', 'Competitive_landscape_updated__c', 'Annual_open_enrollment_kit_shared__c'
+    };  //25/09
         
-        String soql = 'SELECT Id, Status__c,Company__c,Completion_Date_Time__c,Year__c, ' + String.join(questionFields, ',') + ', GLP_1_obesity_management_reqs__c,Planned_changes_to_wellness_program__c,Earned_Full_Incentive__c, Earned_Partial_Incentive__c, Did_Not_Earn_Incentive__c, NA_New_program__c, Program_administrator_vendor__c,Wellness_program_duration__c, Wellness_program_offered_to__c, Participation_in_wellness_program__c, Non_UHC_Optum_wellness_reasons__c,Max_annual_employee_reward__c,Max_annual_spouse_partner_reward__c,How_are_Rewards_distributed__c,Other_reward_distribution_method__c ' + ' FROM Client_Strategy__c WHERE Company__c = :recordId and Year__c = :year' + ' ORDER BY Year__c DESC ';
+        String soql = 'SELECT Id, Status__c,Company__c,Completion_Date_Time__c,Year__c, ' + String.join(questionFields, ',') + ', Describe_Network_features__c,GLP_1_obesity_management_reqs__c,Planned_changes_to_wellness_program__c,Earned_Full_Incentive__c, Earned_Partial_Incentive__c, Did_Not_Earn_Incentive__c, NA_New_program__c, Program_administrator_vendor__c,Wellness_program_duration__c, Wellness_program_offered_to__c, Participation_in_wellness_program__c, Non_UHC_Optum_wellness_reasons__c,Max_annual_employee_reward__c,Max_annual_spouse_partner_reward__c,How_are_Rewards_distributed__c,Other_reward_distribution_method__c ' + ' FROM Client_Strategy__c WHERE Company__c = :recordId and Year__c = :year' + ' ORDER BY Year__c DESC ';
         List<Client_Strategy__c> csList = Database.query(soql);
         
         if (csList.isEmpty()) {
@@ -262,14 +278,14 @@ public with sharing class ClientStrategyController {
             }
         } */
             
-            String glpCovering = String.valueOf(cs.get('How_is_client_covering_GLP_1s__c'));
+        String glpCovering = String.valueOf(cs.get('How_is_client_covering_GLP_1s__c'));
 
-if (glpCovering != null && glpCovering.contains('For treatment of obesity')) {
-    Object obesityReqs = cs.get('GLP_1_obesity_management_reqs__c');
-    if (obesityReqs == null || String.valueOf(obesityReqs).trim() == '') {
-        unanswered.add('GLP_1_obesity_management_reqs__c');
-    }
-}
+        if (glpCovering != null && glpCovering.contains('For treatment of obesity')) {
+            Object obesityReqs = cs.get('GLP_1_obesity_management_reqs__c');
+            if (obesityReqs == null || String.valueOf(obesityReqs).trim() == '') {
+                unanswered.add('GLP_1_obesity_management_reqs__c');
+            }
+        }
             
         
        /* if (String.valueOf(cs.get('Important_Network_features__c')) == 'Other') {
@@ -278,6 +294,15 @@ if (glpCovering != null && glpCovering.contains('For treatment of obesity')) {
                 unanswered.add('Describe_Network_features__c');
             }
         } */
+            
+        String networkFeatures = String.valueOf(cs.get('Important_Network_features__c'));
+
+        if (networkFeatures != null && networkFeatures.contains('Other')) {
+            Object describeNetwork = cs.get('Describe_Network_features__c');
+            if (describeNetwork == null || String.valueOf(describeNetwork).trim() == '') {
+                unanswered.add('Describe_Network_features__c');
+            }
+        }  //25/09
             
         if (String.valueOf(cs.get('Client_rethinking_wellness_approach__c')) == 'Yes') {          
             Object obesityReqs = cs.get('Planned_changes_to_wellness_program__c');
@@ -342,7 +367,7 @@ if (glpCovering != null && glpCovering.contains('For treatment of obesity')) {
     @AuraEnabled
     public static Boolean markAsComplete(Id recordId, string year) {
         try{
-        List<Client_Strategy__c> csList = [SELECT Id, Year__c,Company__r.Unlock_Client_Strategy_Form__c FROM Client_Strategy__c WHERE Company__c = :recordId and Year__c = :year ORDER BY Year__c DESC];
+        List<Client_Strategy__c> csList = [SELECT Id, Year__c FROM Client_Strategy__c WHERE Company__c = :recordId and Year__c = :year ORDER BY Year__c DESC];
     
         if (csList.isEmpty()) {
             return false;
@@ -351,9 +376,8 @@ if (glpCovering != null && glpCovering.contains('For treatment of obesity')) {
         Client_Strategy__c cs = csList[0];
          if (Schema.sObjectType.Client_Strategy__c.isUpdateable() &&
                 Schema.sObjectType.Client_Strategy__c.fields.Status__c.isUpdateable() &&
-                Schema.sObjectType.Client_Strategy__c.fields.Completion_Date_Time__c.isUpdateable() || Test.isRunningTest()) {
+                Schema.sObjectType.Client_Strategy__c.fields.Completion_Date_Time__c.isUpdateable()) {
         cs.Status__c = 'Completed';
-        
         cs.Completion_Date_Time__c = datetime.now();
         update AS USER cs;
                 }
@@ -366,7 +390,7 @@ if (glpCovering != null && glpCovering.contains('For treatment of obesity')) {
     
     @AuraEnabled(cacheable=true)
     public static List<Client_Strategy_Edit_TimeFrame__mdt> getTimeFrames() {
-        return [ SELECT Start_Month__c ,End_Month__c FROM Client_Strategy_Edit_TimeFrame__mdt];
+        return [ SELECT Start_Month__c ,End_Month__c,Start_Date__c FROM Client_Strategy_Edit_TimeFrame__mdt];
     }
 
     public class ReturnClientStrategyData {

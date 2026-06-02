@@ -113,12 +113,14 @@ public class SoldChecklistHandlerTest {
         Product2 medicalProduct = new Product2(Name = 'Test Medical', Product_Line__c='Medical', IsActive = true);
         Product2 dentalProduct = new Product2(Name = 'Test Dental', Product_Line__c='Dental', IsActive = true);
         Product2 visionProduct = new Product2(Name = 'Test Vision', Product_Line__c='Vision', IsActive = true);
-        Product2 otherProduct = new Product2(Name = 'Test Other', Product_Line__c='Other', IsActive = true);
+        Product2 otherProduct = new Product2(Name = 'Test Other', Product_Line__c='Other', IsActive = true,Surest_Implementation_Lead_Time__c='test');
+        Product2 specialtProduct = new Product2(Name = 'Test Specialty', Product_Line__c='Other', IsActive = true, Family = 'Specialty Products',Surest_Implementation_Lead_Time__c='test');
         products.add(pharmacyProduct);
         products.add(medicalProduct);
         products.add(dentalProduct);
         products.add(visionProduct);
         products.add(otherProduct);
+        products.add(specialtProduct);
         System.runAs ( testUserRecords[0] ) {
             insert products;
         }
@@ -130,7 +132,12 @@ public class SoldChecklistHandlerTest {
         Opportunity opp3=[Select Id from Opportunity where Name='Test Opportunity insert Record 3'];
         Account acc = [SELECT Id, Name FROM Account WHERE Name='Test CM Account1'];  
         Product2 pharmacyProduct = [Select id from Product2 where name='Test Pharmacy'];
-        
+        Product2 medicalProduct = [Select id from Product2 where name='Test Medical'];
+        Product2 dentalProduct = [Select id from Product2 where name='Test Dental'];
+        Product2 visionProduct = [Select id from Product2 where name='Test Vision'];
+        Product2 otherProduct = [Select id from Product2 where name='Test Other'];
+        Product2 specialtyProduct = [Select id from Product2 where name='Test Specialty'];
+ 
         Sold_Case_Checklist__c scc1 = new Sold_Case_Checklist__c();
         scc1.Membership_Activity__c = opp.Id;
         scc1.Name = 'Test SCC';
@@ -150,6 +157,46 @@ public class SoldChecklistHandlerTest {
             IsActive = true
         );
         insert pbEntry;
+        
+        PricebookEntry pbEntryMed = new PricebookEntry(
+            Pricebook2Id = pricebookId,
+            Product2Id = medicalProduct.Id,
+            UnitPrice = 100.00,
+            IsActive = true
+        );
+        insert pbEntryMed;
+        
+        PricebookEntry pbEntryDen = new PricebookEntry(
+            Pricebook2Id = pricebookId,
+            Product2Id = dentalProduct.Id,
+            UnitPrice = 100.00,
+            IsActive = true
+        );
+        insert pbEntryDen;
+        
+         PricebookEntry pbEntryVis = new PricebookEntry(
+            Pricebook2Id = pricebookId,
+            Product2Id = visionProduct.Id,
+            UnitPrice = 100.00,
+            IsActive = true
+        );
+        insert pbEntryVis;
+        
+         PricebookEntry pbEntryOth = new PricebookEntry(
+            Pricebook2Id = pricebookId,
+            Product2Id = otherProduct.Id,
+            UnitPrice = 100.00,
+            IsActive = true
+        );
+        insert pbEntryOth;
+        
+         PricebookEntry pbEntrySpec = new PricebookEntry(
+            Pricebook2Id = pricebookId,
+            Product2Id = specialtyProduct.Id,
+            UnitPrice = 100.00,
+            IsActive = true
+        );
+        insert pbEntrySpec;
         
         List<OpportunityLineItem> oliList = new List<OpportunityLineItem>();
         OpportunityLineItem oli = new OpportunityLineItem(
@@ -173,7 +220,7 @@ public class SoldChecklistHandlerTest {
         OpportunityLineItem oli2 = new OpportunityLineItem(
             OpportunityId = opp3.Id,
             Quantity = 6,
-            PricebookEntryId = pbEntry.Id,
+            PricebookEntryId = pbEntryMed.Id,
             TotalPrice = 600,
             MNRP__c = 'N/A',
             MNRP_DME__c = 'N/A',
@@ -187,6 +234,132 @@ public class SoldChecklistHandlerTest {
             Buyup_Product_Selection__c = 'UNET or UMR Only'
         );
         oliList.add(oli2);
+        
+        OpportunityLineItem oli3 = new OpportunityLineItem(
+            OpportunityId = opp.Id,
+            Quantity = 6,
+            PricebookEntryId = pbEntryMed.Id,
+            TotalPrice = 600,
+            MNRP__c = 'N/A',
+            MNRP_DME__c = 'N/A',
+            MNRP_Lab__c = 'N/A',
+            MNRP_Default_of_Billed_Charges__c = 'N/A',
+            Physician_R_C_OON__c = 'N/A',
+            Facility_R_C__c = 'N/A',
+            ENRP__c = 'N/A',
+            ENRP_Default_of_Billed_Charge__c = 'N/A',
+            Sales_Stage__c = 'Sold',
+            Buyup_Product_Selection__c = 'UNET or UMR Only'
+        );
+        oliList.add(oli3);
+        
+        OpportunityLineItem oli4 = new OpportunityLineItem(
+            OpportunityId = opp.Id,
+            Quantity = 5,
+            PricebookEntryId = pbEntryDen.Id,
+            TotalPrice = 500,
+            MNRP__c = 'N/A',
+            MNRP_DME__c = 'N/A',
+            MNRP_Lab__c = 'N/A',
+            MNRP_Default_of_Billed_Charges__c = 'N/A',
+            Physician_R_C_OON__c = 'N/A',
+            Facility_R_C__c = 'N/A',
+            ENRP__c = 'N/A',
+            ENRP_Default_of_Billed_Charge__c = 'N/A',
+            Sales_Stage__c = 'Spin-Off',
+            Buyup_Product_Selection__c='Surest Only'
+        );
+        oliList.add(oli4);
+        
+        OpportunityLineItem oli5 = new OpportunityLineItem(
+            OpportunityId = opp1.Id,
+            Quantity = 5,
+            PricebookEntryId = pbEntryVis.Id,
+            TotalPrice = 500,
+            MNRP__c = 'N/A',
+            MNRP_DME__c = 'N/A',
+            MNRP_Lab__c = 'N/A',
+            MNRP_Default_of_Billed_Charges__c = 'N/A',
+            Physician_R_C_OON__c = 'N/A',
+            Facility_R_C__c = 'N/A',
+            ENRP__c = 'N/A',
+            ENRP_Default_of_Billed_Charge__c = 'N/A',
+            Sales_Stage__c = 'Spin-Off',
+            Buyup_Product_Selection__c='Surest & UNET'
+        );
+        oliList.add(oli5);
+        
+        OpportunityLineItem oli6 = new OpportunityLineItem(
+            OpportunityId = opp1.Id,
+            Quantity = 5,
+            PricebookEntryId = pbEntryOth.Id,
+            TotalPrice = 500,
+            MNRP__c = 'N/A',
+            MNRP_DME__c = 'N/A',
+            MNRP_Lab__c = 'N/A',
+            MNRP_Default_of_Billed_Charges__c = 'N/A',
+            Physician_R_C_OON__c = 'N/A',
+            Facility_R_C__c = 'N/A',
+            ENRP__c = 'N/A',
+            ENRP_Default_of_Billed_Charge__c = 'N/A',
+            Sales_Stage__c = 'Spin-Off',
+            Buyup_Product_Selection__c='Surest & UNET'
+        );
+        oliList.add(oli6);
+        
+        OpportunityLineItem oli7 = new OpportunityLineItem(
+            OpportunityId = opp1.Id,
+            Quantity = 5,
+            PricebookEntryId = pbEntryDen.Id,
+            TotalPrice = 500,
+            MNRP__c = 'N/A',
+            MNRP_DME__c = 'N/A',
+            MNRP_Lab__c = 'N/A',
+            MNRP_Default_of_Billed_Charges__c = 'N/A',
+            Physician_R_C_OON__c = 'N/A',
+            Facility_R_C__c = 'N/A',
+            ENRP__c = 'N/A',
+            ENRP_Default_of_Billed_Charge__c = 'N/A',
+            Sales_Stage__c = 'Spin-Off',
+            Buyup_Product_Selection__c='Surest Only'
+        );
+        oliList.add(oli7);
+        
+        OpportunityLineItem oli8 = new OpportunityLineItem(
+            OpportunityId = opp.Id,
+            Quantity = 5,
+            PricebookEntryId = pbEntryVis.Id,
+            TotalPrice = 500,
+            MNRP__c = 'N/A',
+            MNRP_DME__c = 'N/A',
+            MNRP_Lab__c = 'N/A',
+            MNRP_Default_of_Billed_Charges__c = 'N/A',
+            Physician_R_C_OON__c = 'N/A',
+            Facility_R_C__c = 'N/A',
+            ENRP__c = 'N/A',
+            ENRP_Default_of_Billed_Charge__c = 'N/A',
+            Sales_Stage__c = 'Spin-Off',
+            Buyup_Product_Selection__c='Surest & UNET'
+        );
+        oliList.add(oli8);
+        
+        OpportunityLineItem oli9 = new OpportunityLineItem(
+            OpportunityId = opp.Id,
+            Quantity = 5,
+            PricebookEntryId = pbEntryVis.Id,
+            TotalPrice = 500,
+            MNRP__c = 'N/A',
+            MNRP_DME__c = 'N/A',
+            MNRP_Lab__c = 'N/A',
+            MNRP_Default_of_Billed_Charges__c = 'N/A',
+            Physician_R_C_OON__c = 'N/A',
+            Facility_R_C__c = 'N/A',
+            ENRP__c = 'N/A',
+            ENRP_Default_of_Billed_Charge__c = 'N/A',
+            Buyup_Product_Selection__c='Surest & UNET',
+            Disposition_Other_Buy_Up_Programs__c='Sold'
+        );
+        oliList.add(oli9);
         
         insert oliList;
         
@@ -211,6 +384,7 @@ public class SoldChecklistHandlerTest {
         System.runAs(ipmUser) {
             SoldChecklistHandler.getClientData(opp.Id);
             SoldChecklistHandler.getClientData(opp1.Id);
+            SoldChecklistHandler.getClientData(opp3.Id);
             SoldChecklistHandler.accsearch('Test1', 'IPM');
             SoldChecklistHandler.accsearch('Test1', 'SCE');
             SoldChecklistHandler.metadatasearch('Test');

@@ -21,7 +21,7 @@ arrayOfYears.add(year - 2);
 return arrayOfYears;
 }*/
     
-    @AuraEnabled (cacheable = true)
+    @AuraEnabled
     public Static Map<String,Object> getfinancialsData(Id AccountId,String RecordType){
         Map<String,Object> financialReturnMap = null;
         Integer [] arrayOfYearsMed = new List<Integer>();

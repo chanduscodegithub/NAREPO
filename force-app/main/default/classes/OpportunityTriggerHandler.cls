@@ -105,7 +105,8 @@ public class OpportunityTriggerHandler {
                 new FieldMapping('EEsRetireesintheProposalMedical__c', 'EEs_Retirees_in_the_Proposal_Medical__c'),
                 new FieldMapping('Aggregator_Involved_in_the_Oppty_Risk__c','Aggregator_involved_in_the_opportunity__c'),
                 new FieldMapping('Bid_Strategy__c','Bid_Strategy__c'),
-                new FieldMapping('Proposal_Due_Date_Medical__c','E_Ship_Date__c')
+                new FieldMapping('Proposal_Due_Date_Medical__c','E_Ship_Date__c'),
+                new FieldMapping('Name','Membership_Activity_Name__c')
                 
                 
                 };
@@ -144,6 +145,20 @@ public class OpportunityTriggerHandler {
             FROM Strategy_Memo__c
             WHERE Membership_Activity__c IN :changedOppIds
         ];
+
+        // Set<Id> existingOppIds = new Set<Id>();
+        // for (Strategy_Memo__c memo : memoList) {
+        //     if (memo.Membership_Activity__c != null) {
+        //         existingOppIds.add(memo.Membership_Activity__c);
+        //     }
+        // }
+        // for (Id oppId : changedOppIds) {
+        //     if (!existingOppIds.contains(oppId)) {
+        //         memoList.add(new Strategy_Memo__c(
+        //             Membership_Activity__c = oppId
+        //         ));
+        //     }
+        // }
         System.debug('memoList --> '+memoList);
         if (memoList.isEmpty()) return;
         
@@ -223,7 +238,7 @@ public class OpportunityTriggerHandler {
 * 5. Update Strategy Memo records
 ***************************************************/
         if (!memosToUpdate.isEmpty()) {
-            update memosToUpdate;
+            upsert memosToUpdate;
         }
     }
     
@@ -242,105 +257,6 @@ public class OpportunityTriggerHandler {
         
     }
     
-    public static void validateOpp(List<Opportunity> newList, Map<Id, Opportunity> oldMap) {
-
-        Set<Id> oppIds = new Set<Id>();
-
-         for (Opportunity opp : newList) {
-            Opportunity oldOpp = oldMap != null ? oldMap.get(opp.Id) : null;
-
-            if (opp.Sales_Stage_Other__c == 'Notified') {
-                oppIds.add(opp.Id);
-            }
-        }
-
-        if (oppIds.isEmpty()) return;
-
-        // Fetch OLI + Product Reporting Type
-        Map<Id, Set<String>> oppToProductTypes = new Map<Id, Set<String>>();
-
-        for (OpportunityLineItem oli : [
-            SELECT OpportunityId,
-                   Product2.Reporting_Product_Type__c
-            FROM OpportunityLineItem
-            WHERE OpportunityId IN :oppIds
-        ]) {
-            if (!oppToProductTypes.containsKey(oli.OpportunityId)) {
-                oppToProductTypes.put(oli.OpportunityId, new Set<String>());
-            }
-
-            if (oli.Product2.Reporting_Product_Type__c != null) {
-                oppToProductTypes.get(oli.OpportunityId)
-                    .add(oli.Product2.Reporting_Product_Type__c);
-            }
-        }
-
-        // Validation per Opportunity
-        for (Opportunity opp : newList) {
-
-            if (!oppIds.contains(opp.Id)) continue;
-            if (!oppToProductTypes.containsKey(opp.Id)) continue;
-
-            Set<String> productTypes = oppToProductTypes.get(opp.Id);
-
-            if (productTypes.contains('APP') &&
-                String.isBlank(opp.Existing_Members_Risk_Outcome_APP__c)) {
-
-               opp.addError(
-                    'Existing Members Risk Outcome (APP) is required when APP products are part of the Opportunity.'
-                );
-            
-                opp.Existing_Members_Risk_Outcome_APP__c.addError('Required');
-            }
-
-            if (productTypes.contains('CI') &&
-                String.isBlank(opp.Existing_Members_Risk_Outcome_CI__c)) {
-                    
-                    opp.addError('Existing Members Risk Outcome (CI) is required when CI products are part of the Opportunity.');
-                    opp.Existing_Members_Risk_Outcome_CI__c.addError('Required');
-                }
-            
-            // HI
-            if (productTypes.contains('HI') &&
-                String.isBlank(opp.Existing_Members_Risk_Outcome_HI__c)) {
-                    
-                    opp.addError('Existing Members Risk Outcome (HI) is required when HI products are part of the Opportunity.');
-                    opp.Existing_Members_Risk_Outcome_HI__c.addError('Required');
-                }
-            
-            // Life
-            if (productTypes.contains('Life') &&
-                String.isBlank(opp.Existing_Members_Risk_Outcome_Life__c)) {
-                    
-                    opp.addError('Existing Members Risk Outcome (Life) is required when Life products are part of the Opportunity.');
-                    opp.Existing_Members_Risk_Outcome_Life__c.addError('Required');
-                }
-            
-            // STD
-            if (productTypes.contains('STD') &&
-                String.isBlank(opp.Existing_Members_Risk_Outcome_STD__c)) {
-                    
-                    opp.addError('Existing Members Risk Outcome (STD) is required when STD products are part of the Opportunity.');
-                    opp.Existing_Members_Risk_Outcome_STD__c.addError('Required');
-                }
-            
-            // LTD
-            if (productTypes.contains('LTD') &&
-                String.isBlank(opp.Existing_Members_Risk_Outcome_LTD__c)) {
-                    
-                    opp.addError('Existing Members Risk Outcome (LTD) is required when LTD products are part of the Opportunity.');
-                    opp.Existing_Members_Risk_Outcome_LTD__c.addError('Required');
-                }
-            
-            // Leave
-            if (productTypes.contains('Leave') &&
-                String.isBlank(opp.Existing_Members_Risk_Outcome_Leave__c)) {
-                    
-                    opp.addError('Existing Members Risk Outcome (Leave) is required when Leave products are part of the Opportunity.');
-                    opp.Existing_Members_Risk_Outcome_Leave__c.addError('Required');
-                }
-        }
-    }
     
   /*  private static Boolean isOliDrivenOppUpdate(Opportunity newOpp, Opportunity oldOpp) {
         if (oldOpp == null) return false;

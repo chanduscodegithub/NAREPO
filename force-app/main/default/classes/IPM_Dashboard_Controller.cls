@@ -30,7 +30,6 @@ public class IPM_Dashboard_Controller {
                                           WHERE Id=:ipmId];
         
         
-       
         if(prjctTmplt.Project_Type__c=='Surest'){
             dashboradFile='IPM_Dashboard_Surest';
         }

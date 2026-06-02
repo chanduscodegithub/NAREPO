@@ -114,6 +114,7 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
     //         console.error(error);
     //     }
     // }
+    
     handleFilterMenuSelect(event) {
         this.selectedFilter = event.detail.value;
         this.loadProducts();
@@ -172,6 +173,8 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
 
 
         }
+
+      
     }
     /*get modalHeader() {
         const productName = this.pimStageRecord?.Product_Name_Stage__c || this.pimStageRecord?.Product_Name__c || '';
@@ -223,7 +226,7 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
         if (!this.currentRecordDiff || !this.currentRecordDiff.diffs) {
             return false;
         }
-
+        
         return this.currentRecordDiff.diffs.some(row =>
             row.stageField === 'Product_Display_Order_Stage__c'
         );
@@ -446,7 +449,7 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
 
         const event = new ShowToastEvent({
             title: 'Error',
-            message:"Changes to ‘Product Display Order’ are not allowed in bulk for existing products. Please remove these updates and process them individually at the staging table record level, or contact your administrator for assistance",    
+            message:"Some products in this list have ‘Product Display Order’ changes. Please remove them to proceed or contact your Admin. Product display order updates for existing products must be handled individually at the Staging Table record level",    
             variant: 'Error',
             mode: 'pester' 
         });
@@ -461,14 +464,15 @@ export default class PimListViewComponent extends NavigationMixin(LightningEleme
             const rec = this.selectedProducts[this.currentIndex];
             this.fieldWarnings = this.productWarnings[rec.Id] || {};
         }
-        if (this.hasDisplayOrderChangeBulk) {
-            const event = new ShowToastEvent({
-                title: 'Error',
-                message: "Changes to ‘Product Display Order’ are not allowed in bulk for existing products. Please remove these updates and process them individually at the staging table record level, or contact your administrator for assistance",
-                variant: 'Error',
-                mode: 'pester'
-            });
-            this.dispatchEvent(event);
+
+        if(this.hasDisplayOrderChangeBulk){
+        const event = new ShowToastEvent({
+            title: 'Error',
+            message:"Some products in this list have ‘Product Display Order’ changes. Please remove them to proceed or contact your Admin. Product display order updates for existing products must be handled individually at the Staging Table record level",    
+            variant: 'Error',
+            mode: 'pester' 
+        });
+        this.dispatchEvent(event);
         }
     }
     get totalProducts() {

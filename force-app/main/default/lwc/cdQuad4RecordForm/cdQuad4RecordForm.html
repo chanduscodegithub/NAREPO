@@ -5,12 +5,13 @@
         </div>
     </template>
 
+  <template if:false={isLoading}>
         <lightning-quick-action-panel header={accountName}>
              
 
 
             <lightning-record-edit-form object-api-name="Contact" record-id={recordId} onsuccess={handleSuccess}
-                onerror={handleError} onsubmit={handleSubmit}  onload={handleLoad} >
+                onerror={handleError} onsubmit={handleSubmit}>
 
                 <lightning-messages></lightning-messages>
 
@@ -31,10 +32,19 @@
                             <lightning-input-field field-name="Phone"></lightning-input-field>
                         </div>
                         <div class="slds-col slds-size_1-of-2">
+                          <lightning-input-field field-name="DoNotSendCorrespondence__c"></lightning-input-field>
                         </div>
                         <div class="slds-col slds-size_1-of-2">
                             <lightning-input-field field-name="MobilePhone"></lightning-input-field>
                         </div>
+                        
+                         <div class="slds-col slds-size_1-of-2">
+                           <lightning-input-field field-name="Status__c"></lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input-field field-name="InactiveStatusReason__c"></lightning-input-field>
+                        </div>
+
                         <div class="slds-col slds-size_1-of-1">
                             <lightning-input-field field-name="MailingAddress"></lightning-input-field>
 
@@ -47,5 +57,6 @@
                 </div>
             </lightning-record-edit-form>
         </lightning-quick-action-panel>
+        </template>
 
 </template>

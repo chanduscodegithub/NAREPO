@@ -30,16 +30,16 @@ public with sharing class ChecklistCSVController {
             'Utilization Management' => 'Utilization_Management__c',
             'Specialty Guidance Program' => 'Specialty_Guidance_Program_CPSurest__c',
             'Cancer Guidance Program' => 'Cancer_Guidance_Program_CPSurest__c',
-            'Behavioral Health Utilization Management ABA UM' => 'BHU_Management_ABA_UM__c',
+            'Behavioral Health Utilization Management, ABA UM' => 'BHU_Management_ABA_UM__c',
             'Surest Case Management (CM)' => 'Surest_Case_Management_CM_CPSurest__c',
             'Optum Behavioral Network' => 'Optum_Behavioral_Network__c',
             'Optum Physical Health Network' => 'Optum_Physical_Health_Network__c',
             'Standard Communications' => 'Surest_Standard_Communications__c',
-            'Surest Member Services and Surest Clinical Advocacy' => 'Surest_Member_Svcs_Clinical_Advocacy__c'
+            'Surest Member Services and Surest Clinical Advocacy' => 'Surest_Member_Services__c'
         };
 
         String soldSoql = 'SELECT Id,' + String.join(extraFields.values(), ',') + 
-                          ', Membership_Activity__c, Membership_Activity__r.AccountId, Membership_Activity__r.Account.EID_Name__c, Membership_Activity__r.Account.EID_Number__c, Membership_Activity__r.Name, Membership_Activity__r.RecordType.Name,Membership_Activity__r.EffectiveDate__c, One_Pass_Subsidized__c' +
+                          ', Membership_Activity__c, Membership_Activity__r.AccountId, Membership_Activity__r.Account.EID_Name__c, Membership_Activity__r.Account.EID_Number__c, Membership_Activity__r.Name, Membership_Activity__r.RecordType.Name, Membership_Activity__r.RecordType.DeveloperName, Membership_Activity__r.EffectiveDate__c, One_Pass_Subsidized__c' +
                           buildMetadataSoql(mappings) +
                           ' FROM Sold_Case_Checklist__c where CPW__c = true WITH USER_MODE';
 
@@ -112,30 +112,30 @@ public with sharing class ChecklistCSVController {
                 }
             }
         }
-        List<String> headers = new List<String>();
-        headers.add('Customer EID Name');
-        headers.add('Customer EID Number');
-        headers.add('Business Type');
-       // headers.add('MA Name'); //extra
-        headers.add('Policy Numbers');
-        headers.add('Policy Names');
+        
+        List<String> headers = new List<String>{
+            escapeCsv('Customer EID Name'),
+            escapeCsv('Customer EID Number'),
+            escapeCsv('Business Type'),
+            escapeCsv('Policy Numbers'),
+            escapeCsv('Policy Names')
+        };
 
         for (String lbl : extraFields.keySet()) {
-            headers.add(cleanString(lbl));
+            headers.add(escapeCsv(lbl));
         }
+
         for (CPW_Product_Checklist_Metadata__mdt m : mappings) {
             if (finalFieldSet.contains(m.Field_API_Name__c)) {
-               // headers.add(cleanString(m.Label__c));
-                String label = String.valueOf(m.Label__c);
-        		headers.add('"' + label.replace('"','""') + '"');
-                if(m.Field_API_Name__c == 'One_Pass_Select__c'){
-                    headers.add('"One Pass Subsidized"');
-                }													
+                headers.add(escapeCsv(String.valueOf(m.Label__c)));
+                if (m.Field_API_Name__c == 'One_Pass_Select__c') {
+                    headers.add(escapeCsv('One Pass Subsidized'));
+                }
             }
         }
 	   
-        headers.add('Effective Date');
-        headers.add('Client Specific Programs');
+        headers.add(escapeCsv('Effective Date'));
+        headers.add(escapeCsv('Client Specific Programs'));
         String csv = String.join(headers, ',');
 
 
@@ -280,6 +280,12 @@ public with sharing class ChecklistCSVController {
             out += '\n' + String.join(row, ',');
         }
         return out;
+    }
+
+    private static String escapeCsv(String value) {
+        if (value == null) return '""';
+        String escaped = value.replace('"', '""');
+        return '"' + escaped + '"';
     }
 
     private String safeGet(SObject rec, String apiName) {

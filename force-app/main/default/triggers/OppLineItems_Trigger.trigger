@@ -1,32 +1,61 @@
 /****************************************************************************************************
   Name    :  OppLineItems_Trigger    
-  Purpose :  This trigger is designed to hadle insert, update & delete operations on the OpportunityLineItems object. Please refer helper classes to understand any perticular functionalities hadled.   
+  Purpose :  Handles insert, update & delete operations on OpportunityLineItem.
+             Refer helper classes for detailed business logic.
   Author  :  Jnanesh Avaradi                                 Date : 05/15/2020                                  
-  
-  Version      Author                   Date                 Release #           Purpose   
-------------------------------------------------------------------------------------------------------
-  1.0 -        Jnanesh Avaradi          05/15/2020           052019              Initial Development             
-  1.1 -                       
+
+  Version      Author              Date         Purpose   
+  ----------------------------------------------------------------------------------------------------
+  1.0          Jnanesh Avaradi     05/15/2020   Initial Development 
+  1.1          Cleaned Version     11/13/2025   Converted to best-practice trigger structure         
 *****************************************************************************************************/
-trigger OppLineItems_Trigger on OpportunityLineItem (After insert,After update,before Delete) {
-    
+
+trigger OppLineItems_Trigger on OpportunityLineItem ( before insert, before update, before delete, after insert, after update) {
+	
     Set<Id> oppIds = new Set<Id>();
-    for (OpportunityLineItem oli : Trigger.isDelete ? Trigger.old : Trigger.new) {
-        oppIds.add(oli.OpportunityId);
+system.debug('Veera1');
+ if (Trigger.isInsert || Trigger.isUpdate) {
+        for (OpportunityLineItem oli : Trigger.new) {
+            if (oli.OpportunityId != null) {
+                oppIds.add(oli.OpportunityId);
+            }
+        }
     }
-    if (!oppIds.isEmpty()) {
-        OLI_CPWHandler.syncCPWFields(oppIds);
+
+    if (Trigger.isDelete) {
+        for (OpportunityLineItem oli : Trigger.old) {
+            if (oli.OpportunityId != null) {
+                oppIds.add(oli.OpportunityId);
+            }
+        }
     }
+
+   
+    if (Trigger.isAfter && Trigger.isInsert) {
+        OppLineItemsAuditTrailHelper.addAuditOnAddLineItem(Trigger.new);
+    }
+
     
-    if(trigger.isUpdate){
-        //Creates audit trail records when dispostion changes on Line items of type other buy up programmes in CD Membership Activities 
-        OppLineItemsAuditTrailHelper.addAuditOnDispChange(trigger.new, trigger.oldMap);
-        OppLineItemsAuditTrailHelper.updateSpecialtySalesDebrief(trigger.new); //Samarth Sales Debrief 2023
-    }else if(trigger.isInsert){
-        //Creates audit trail records when new Line item is added in CD Membership Activities
-        OppLineItemsAuditTrailHelper.addAuditOnAddLineItem(trigger.new);
-    }else if(trigger.isDelete){
-        //Creates audit trail records when Line item is removed in CD Membership Activities
-        OppLineItemsAuditTrailHelper.addAuditOnRemoveLineItem(trigger.old);    
-    }           
+    if (Trigger.isAfter && Trigger.isUpdate) {
+        OppLineItemsAuditTrailHelper.addAuditOnDispChange(Trigger.new, Trigger.oldMap);
+        OppLineItemsAuditTrailHelper.updateSpecialtySalesDebrief(Trigger.new); 
+    }
+
+   
+    if (Trigger.isDelete) {
+        OppLineItemsAuditTrailHelper.addAuditOnRemoveLineItem(Trigger.old);
+    }
+
+   
+ if (!oppIds.isEmpty() && Trigger.isAfter) {
+        
+        if (Trigger.isInsert) {
+            OLI_CPWHandler.syncCPWFields(oppIds, null);
+        }
+        else if (Trigger.isUpdate) {
+            OLI_CPWHandler.syncCPWFields(oppIds, Trigger.oldMap);
+        }
+    }
+
+
 }

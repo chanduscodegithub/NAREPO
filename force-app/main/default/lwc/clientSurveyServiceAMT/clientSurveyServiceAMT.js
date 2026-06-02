@@ -23,20 +23,6 @@ export default class ClientSurveyServiceAMT extends LightningElement {
     @api cmsceId;
     @api cmSCELastName;
     @api specialitySCEIn;
-    specialitySCEInFN = '';
-    specialitySCEInLN = '';
-    /*@api
-    get specialitySCEIn() {
-        return this.specialitySCEIn
-    }
-    set specialitySCEIn(value) {
-                    let a = value.split(' ');
-                    this.specialitySCEInLN = a[1];
-                    this.specialitySCEInFN = a[0];
-                    this.showSCECheckBox = true;
-    }*/
-
-
     @api userRole;
     @api hasEditAccess;
     @api excludeSpecialtyBenefitsSCESurvey
@@ -50,7 +36,8 @@ export default class ClientSurveyServiceAMT extends LightningElement {
     label_Exclude_AMT_Role_From_Survey_Section_Help_Text = Exclude_AMT_Role_From_Survey_Section_Help_Text;
     /*******SHRUTI******END*********/
     showTable = true;
-    
+    specialitySCEInFN = '';
+    specialitySCEInLN = '';
     sfdcBaseURL;
     isEdit = false;
     showSpinner = false;

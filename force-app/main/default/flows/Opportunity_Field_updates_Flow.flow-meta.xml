@@ -1,0 +1,1446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Buy_Up_Branch_update_Unchecking_the_Check_boxes</name>
+        <label>Buy Up-Branch update &amp; Unchecking the Check boxes</label>
+        <locationX>380</locationX>
+        <locationY>1079</locationY>
+        <defaultConnector>
+            <targetReference>Buy_Up_Vision_Dental_Pharmacy_Reset_Fact_NBEA</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Buy_Up_Branch_update_Unchecking_the_Check_boxes_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue></stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Sales_Stage_Notified_or_Transfer_In_Out</targetReference>
+            </connector>
+            <label>Buy Up-Branch update &amp; Unchecking the Check boxes IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Buy_Up_Vision_Dental_Pharmacy_Reset_Fact_NBEA</name>
+        <label>Buy Up &amp; Vision &amp; Dental &amp; Pharmacy - Reset Fact NBEA</label>
+        <locationX>380</locationX>
+        <locationY>1571</locationY>
+        <defaultConnector>
+            <targetReference>Vision_Reset_Fact_NBEA</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Buy_Up_Other_Reset_Fact_NBEA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>BuyUpResetFactNBEA</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Closed_Reason_1_OtherBuyUp_Field_To_Null</targetReference>
+            </connector>
+            <label>Buy Up Other - Reset Fact NBEA</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>CopyUncheck_MO</name>
+        <label>CopyUncheck MO</label>
+        <locationX>380</locationX>
+        <locationY>2447</locationY>
+        <defaultConnector>
+            <targetReference>MA_Header_SalesStage_Clearing</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>isCheckBox_IsChanged_IsTrue</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Copy_Finalist_information_from_Med__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Copy_Prop_Due_Dt_Received_Dt_from_Med__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Copy_Risk_Prob_Cls_Dt_from_Med__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_CopyCheckbox_for_MO_fields</targetReference>
+            </connector>
+            <label>isCheckBox IsChanged IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Dental_Reset_Fact_NBEA</name>
+        <label>Dental - Reset Fact NBEA</label>
+        <locationX>858</locationX>
+        <locationY>1787</locationY>
+        <defaultConnector>
+            <targetReference>Pharmacy_Reset_Fact_NBEA</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Dental_Reset_Fact_NBEA_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>DentalResetFactNBEA</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Existing_Members_Risk_Outcome_Dental_To_Null</targetReference>
+            </connector>
+            <label>Dental - Reset Fact NBEA IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Edit_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_No_Distribution_Type_Cal_is_Not</name>
+        <label>Edit Is the PEX Team Creating this Oppty\Risk is No &amp; Distribution Type Cal is Not Null</label>
+        <locationX>2097</locationX>
+        <locationY>5195</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsUpdate_PEXteam_No_and_DisTypeCal_Not_Null_IsTrue</name>
+            <conditionLogic>(1 OR 2) AND (3 OR 5) AND 4</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>No</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.DistributionTypecalculated__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Membership_Activity_Type__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_MAType_is_Trad_1</targetReference>
+            </connector>
+            <label>IsUpdate PEXteam No and DisTypeCal Not Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Edit_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_No_Distribution_Type_Cal_is_Nul</name>
+        <label>Edit Is the PEX Team Creating this Oppty\Risk is No &amp; Distribution Type Cal is Null</label>
+        <locationX>1668</locationX>
+        <locationY>4979</locationY>
+        <defaultConnector>
+            <targetReference>Edit_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_Yes_Distribution_Type_Cal_is_No</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsUpdate_PEXteam_No_and_DisTypeCal_Null_IsTrue</name>
+            <conditionLogic>(1 OR 2) AND (3 OR 5) AND 4</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>No</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.DistributionTypecalculated__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Membership_Activity_Type__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_DisTypeCal_is_NorDis_and_MAType_is_Trad_1</targetReference>
+            </connector>
+            <label>IsUpdate PEXteam No and DisTypeCal Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Edit_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_Yes_Distribution_Type_Cal_is_No</name>
+        <label>Edit Is the PEX Team Creating this Oppty\Risk is Yes &amp; Distribution Type Cal is Not Null</label>
+        <locationX>1899</locationX>
+        <locationY>5087</locationY>
+        <defaultConnector>
+            <targetReference>Edit_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_No_Distribution_Type_Cal_is_Not</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsUpdate_PEXteam_Yes_and_DisTypeCal_Not_Null_IsTrue</name>
+            <conditionLogic>1 AND (2 OR 4) AND 3</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Yes</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.DistributionTypecalculated__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Membership_Activity_Type__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_MAType_is_PriExchanged_1</targetReference>
+            </connector>
+            <label>IsUpdate PEXteam Yes and DisTypeCal Not Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Edit_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_Yes_Distribution_Type_Cal_is_Nu</name>
+        <label>Edit Is the PEX Team Creating this Oppty\Risk is Yes &amp; Distribution Type Cal is Null</label>
+        <locationX>1420</locationX>
+        <locationY>4871</locationY>
+        <defaultConnector>
+            <targetReference>Edit_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_No_Distribution_Type_Cal_is_Nul</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsUpdate_PEXteam_Yes_and_DisTypeCal_Null_IsTrue</name>
+            <conditionLogic>1 AND (2 OR 5) AND (3 OR 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Yes</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.DistributionTypecalculated__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.DistributionTypecalculated__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Normal Distribution</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Membership_Activity_Type__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_DisTypeCal_is_Null_and_MAType_is_PriExchange_1</targetReference>
+            </connector>
+            <label>IsUpdate PEXteam Yes and DisTypeCal Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Initial_Sales_Stage_Dental_is_Changed</name>
+        <label>Initial Sales Stage Dental is Changed</label>
+        <locationX>578</locationX>
+        <locationY>2855</locationY>
+        <defaultConnector>
+            <targetReference>Initial_Sales_Stage_Medical_is_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Initial_Sales_Stage_Dental_is_Changed_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Inital_Selected_Sales_Stage_Dental__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_isEmpty_Sales_Stage_Dental_Field</targetReference>
+            </connector>
+            <label>Initial Sales Stage Dental is Changed IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Initial_Sales_Stage_Medical_is_Changed</name>
+        <label>Initial Sales Stage Medical is Changed</label>
+        <locationX>578</locationX>
+        <locationY>3155</locationY>
+        <defaultConnector>
+            <targetReference>Initial_Sales_Stage_Pharmacy_is_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Initial_Sales_Stage_Medical_is_Changed_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Inital_Selected_Sales_Stage_Medical__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_isEmpty_Sales_Stage_Medical_Field</targetReference>
+            </connector>
+            <label>Initial Sales Stage Medical is Changed IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Initial_Sales_Stage_Other_is_Changed</name>
+        <label>Initial Sales Stage Other is Changed</label>
+        <locationX>578</locationX>
+        <locationY>4055</locationY>
+        <defaultConnector>
+            <targetReference>MA_Membership_Type_AND_Distribution_Type_Cal</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Initial_Sales_Stage_Other_is_Changed_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Inital_Selected_Sales_Stage_Other__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_isEmpty_Sales_Stage_OtherBuyUp_Field</targetReference>
+            </connector>
+            <label>Initial Sales Stage Other is Changed IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Initial_Sales_Stage_Pharmacy_is_Changed</name>
+        <label>Initial Sales Stage Pharmacy is Changed</label>
+        <locationX>578</locationX>
+        <locationY>3455</locationY>
+        <defaultConnector>
+            <targetReference>Initial_Sales_Stage_Vision_is_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Initial_Sales_Stage_Pharmacy_is_Changed_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Inital_Selected_Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_isEmpty_Sales_Stage_Pharmacy_Field</targetReference>
+            </connector>
+            <label>Initial Sales Stage Pharmacy is Changed IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Initial_Sales_Stage_Vision_is_Changed</name>
+        <label>Initial Sales Stage Vision is Changed</label>
+        <locationX>578</locationX>
+        <locationY>3755</locationY>
+        <defaultConnector>
+            <targetReference>Initial_Sales_Stage_Other_is_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Initial_Sales_Stage_Vision_isChanged_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Inital_Selected_Sales_Stage_Vision__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_isEmpty_Sales_Stage_Vision_Field</targetReference>
+            </connector>
+            <label>Initial Sales Stage Vision isChanged IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>IsNew_or_IsUpdate</name>
+        <label>IsNew or IsUpdate</label>
+        <locationX>380</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>Proactive_Renewal_Override</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsNew_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>MA_Classification_NB_NBEA_Xfer_default_value</targetReference>
+            </connector>
+            <label>IsNew True</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>MA_Classification_NB_NBEA_Xfer_default_value</name>
+        <label>MA &quot;Classification (NB,NBEA,Xfer)&quot; default value</label>
+        <locationX>226</locationX>
+        <locationY>395</locationY>
+        <defaultConnector>
+            <targetReference>Proactive_Renewal_Override</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>MA_Classification_NB_NBEA_Xfer_default_valueIsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>MAClassificationdefaultvalue</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Classification_NB_NBEA_Field</targetReference>
+            </connector>
+            <label>MA &quot;Classification (NB,NBEA,Xfer)&quot; default value IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>MA_Header_SalesStage_Clearing</name>
+        <label>MA Header SalesStage Clearing</label>
+        <locationX>380</locationX>
+        <locationY>2747</locationY>
+        <defaultConnector>
+            <targetReference>Initial_Sales_Stage_Dental_is_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsNew_MA_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_isEmpty_Sales_Stage_Dental_To_True</targetReference>
+            </connector>
+            <label>IsNew MA IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>MA_Membership_Type_AND_Distribution_Type_Cal</name>
+        <label>MA Membership Type AND Distribution Type(Cal)</label>
+        <locationX>380</locationX>
+        <locationY>4439</locationY>
+        <defaultConnector>
+            <targetReference>New_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_No_Distribution_Type_Cal_is_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsNew_and_PEXteam_Yes_and_DisTypecal_Null_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNewandPEXteamYesandDisTypecalNull</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_DisTypeCal_is_Null_and_MAType_is_PriExchange</targetReference>
+            </connector>
+            <label>IsNew and PEXteam Yes and DisTypecal Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>New_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_No_Distribution_Type_Cal_is_Not</name>
+        <label>New Is the PEX Team Creating this Oppty\Risk is No &amp; Distribution Type Cal is Not Null</label>
+        <locationX>1164</locationX>
+        <locationY>4763</locationY>
+        <defaultConnector>
+            <targetReference>Edit_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_Yes_Distribution_Type_Cal_is_Nu</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsNew_and_PEXteam_No_and_DisTypecal_Not_Null_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNewandPEXteamNoandDisTypecalNotNull</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_MAType_is_Trad</targetReference>
+            </connector>
+            <label>IsNew and PEXteam No and DisTypecal Not Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>New_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_No_Distribution_Type_Cal_is_Null</name>
+        <label>New Is the PEX Team Creating this Oppty\Risk is No &amp; Distribution Type Cal is Null</label>
+        <locationX>642</locationX>
+        <locationY>4547</locationY>
+        <defaultConnector>
+            <targetReference>New_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_Yes_Distribution_Type_Cal_is_Not</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsNew_and_PEXteam_No_and_DisTypecal_Null_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNewandPEXteamNoandDisTypecalNull</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_DisTypeCal_is_NorDis_and_MAType_is_Trad</targetReference>
+            </connector>
+            <label>IsNew and PEXteam No and DisTypecal Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>New_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_Yes_Distribution_Type_Cal_is_Not</name>
+        <label>New Is the PEX Team Creating this Oppty\Risk is Yes &amp; Distribution Type Cal is Not Null</label>
+        <locationX>904</locationX>
+        <locationY>4655</locationY>
+        <defaultConnector>
+            <targetReference>New_Is_the_PEX_Team_Creating_this_Oppty_Risk_is_No_Distribution_Type_Cal_is_Not</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsNew_and_PEXteam_Yes_and_DisTypecal_Not_Null_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNewandPEXteamYesandDisTypecalNotNull</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_MAType_is_PriExchanged</targetReference>
+            </connector>
+            <label>IsNew and PEXteam Yes and DisTypecal Not Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Pharmacy_Reset_Fact_NBEA</name>
+        <label>Pharmacy - Reset Fact NBEA</label>
+        <locationX>1056</locationX>
+        <locationY>1895</locationY>
+        <defaultConnector>
+            <targetReference>CopyUncheck_MO</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Pharmacy_Reset_Fact_NBEA_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>PharmacyResetFactNBEA</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Existing_Members_Risk_Outcome_Pharmacy_To_Null</targetReference>
+            </connector>
+            <label>Pharmacy - Reset Fact NBEA IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Proactive_Renewal_Override</name>
+        <label>Proactive Renewal Override</label>
+        <locationX>380</locationX>
+        <locationY>779</locationY>
+        <defaultConnector>
+            <targetReference>Buy_Up_Branch_update_Unchecking_the_Check_boxes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Override_Picklist_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Proactive_Renewal_Override__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Proactive_Renewal_Override__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Proactive_Renewal_Incentive_Status_Field</targetReference>
+            </connector>
+            <label>Override Picklist IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Sales_Stage_Notified_or_Transfer_In_Out</name>
+        <label>Sales Stage Notified or Transfer In/Out</label>
+        <locationX>182</locationX>
+        <locationY>1187</locationY>
+        <defaultConnector>
+            <targetReference>Update_Disposition_Other_Buy_Up_to_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Sales_Stage_Notified_or_Transfer_In_Out_IsTrue</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Notified</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Transfer In/Out</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Spin-Off</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Disposition_Other_Buy_Up_Programs_Field</targetReference>
+            </connector>
+            <label>If Sales Stage Notified or Transfer In/Out IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Vision_Reset_Fact_NBEA</name>
+        <label>Vision - Reset Fact NBEA</label>
+        <locationX>627</locationX>
+        <locationY>1679</locationY>
+        <defaultConnector>
+            <targetReference>Dental_Reset_Fact_NBEA</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Vision_Reset_Fact_NBEA_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>VisionResetFactNBEA</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Existing_Members_Risk_Outcome_Vision_Field_To_Null</targetReference>
+            </connector>
+            <label>Vision - Reset Fact NBEA IsTrue</label>
+        </rules>
+    </decisions>
+    <description>Flow updates the following Opportunity fields - Classification (NB,NBEA,Xfer), Proactive Renewal - Incentive Status, Closed Reason #1, Existing Members Risk Outcome (Vision/Dental/Pharmacy), Sales Stage&apos;(Product), Membership Activity Type and Distribution Type (Calculation).</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>BuyUpResetFactNBEA</name>
+        <dataType>Boolean</dataType>
+        <expression>INCLUDES({!$Record.Product_Type_Involved_in_Opp__c} ,&apos;Other Buy Up Programs&apos;)
+&amp;&amp;
+ISCHANGED({!$Record.Sales_Stage_Other__c})
+&amp;&amp;
+PRIORVALUE({!$Record.Sales_Stage_Other__c}) =&apos;Notified&apos;</expression>
+    </formulas>
+    <formulas>
+        <name>DentalResetFactNBEA</name>
+        <dataType>Boolean</dataType>
+        <expression>INCLUDES({!$Record.Product_Type_Involved_in_Opp__c} , &apos;Dental&apos;)
+&amp;&amp;
+ISCHANGED({!$Record.Sales_Stage_Dental__c})
+&amp;&amp;
+PRIORVALUE({!$Record.Sales_Stage_Dental__c}) = &apos;Notified&apos;</expression>
+    </formulas>
+    <formulas>
+        <name>DispositionOtherBuyUpFormula</name>
+        <dataType>String</dataType>
+        <expression>IF(
+    OR(
+        ISPICKVAL({!$Record.Sales_Stage_Other__c}, &apos;Notified&apos;),
+        ISPICKVAL({!$Record.Sales_Stage_Other__c}, &apos;Transfer In/Out&apos;)
+    ),
+    {!$Record.Disposition_Other__c},
+    NULL
+)</expression>
+    </formulas>
+    <formulas>
+        <name>IsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <name>IsNewandPEXteamNoandDisTypecalNotNull</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW() 
+&amp;&amp; 
+(
+ISPICKVAL({!$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c} ,&quot;No&quot;) 
+||
+ISBLANK(TEXT({!$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c})) 
+)
+&amp;&amp;
+{!$Record.DistributionTypecalculated__c} &lt;&gt; Null</expression>
+    </formulas>
+    <formulas>
+        <name>IsNewandPEXteamNoandDisTypecalNull</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW() 
+&amp;&amp; 
+(
+ISPICKVAL({!$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c} ,&quot;No&quot;) 
+||
+ISBLANK(TEXT({!$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c})) 
+)
+&amp;&amp;
+{!$Record.DistributionTypecalculated__c} = Null</expression>
+    </formulas>
+    <formulas>
+        <name>IsNewandPEXteamYesandDisTypecalNotNull</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW() 
+&amp;&amp; 
+ISPICKVAL({!$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c} ,&quot;Yes&quot;)
+&amp;&amp;
+{!$Record.DistributionTypecalculated__c}  &lt;&gt; Null</expression>
+    </formulas>
+    <formulas>
+        <name>IsNewandPEXteamYesandDisTypecalNull</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW() 
+&amp;&amp; 
+ISPICKVAL({!$Record.Is_the_PEX_Team_Creating_this_Oppty_Risk__c} ,&quot;Yes&quot;)
+&amp;&amp;
+({!$Record.DistributionTypecalculated__c}  = Null
+||
+{!$Record.DistributionTypecalculated__c}  = &apos;Normal Distribution&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>MAClassificationdefaultvalue</name>
+        <dataType>Boolean</dataType>
+        <expression>AND({!$Record.RecordType.Name}=&quot;CM Membership Activity (Existing Client)&quot;, ISPICKVAL({!$Record.Reason_for_the_Opportunity_Risk__c},&quot;Intersegment Transfer&quot;))</expression>
+    </formulas>
+    <formulas>
+        <name>PharmacyResetFactNBEA</name>
+        <dataType>Boolean</dataType>
+        <expression>INCLUDES({!$Record.Product_Type_Involved_in_Opp__c} , &apos;Pharmacy&apos;)
+&amp;&amp;
+ISCHANGED({!$Record.Sales_Stage_Pharmacy__c})
+&amp;&amp;
+PRIORVALUE({!$Record.Sales_Stage_Pharmacy__c}) = &apos;Notified&apos;</expression>
+    </formulas>
+    <formulas>
+        <name>ProactiveRenewalIncentiveValue</name>
+        <dataType>String</dataType>
+        <expression>IF(MONTH({!$Record.EffectiveDate__c})&lt;&gt; 1 , &apos;SS &apos; &amp; TEXT(YEAR({!$Record.EffectiveDate__c})+1), &apos;SS &apos; &amp; TEXT(YEAR({!$Record.EffectiveDate__c}))) + &apos; -  &apos;+ TEXT({!$Record.Proactive_Renewal_Override__c})</expression>
+    </formulas>
+    <formulas>
+        <name>UpdateSalesStageDental</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(ISBLANK({!$Record.Inital_Selected_Sales_Stage_Dental__c} ),FALSE,TRUE)</expression>
+    </formulas>
+    <formulas>
+        <name>UpdateSalesStageMedical</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(ISBLANK({!$Record.Inital_Selected_Sales_Stage_Medical__c}), FALSE,TRUE)</expression>
+    </formulas>
+    <formulas>
+        <name>UpdateSalesStageOther</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(ISBLANK({!$Record.Inital_Selected_Sales_Stage_Other__c}), FALSE,TRUE)</expression>
+    </formulas>
+    <formulas>
+        <name>UpdateSalesStagePharmacy</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(ISBLANK({!$Record.Inital_Selected_Sales_Stage_Pharmacy__c}), FALSE,TRUE)</expression>
+    </formulas>
+    <formulas>
+        <name>UpdateSalesStageVision</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(ISBLANK({!$Record.Inital_Selected_Sales_Stage_Vision__c}), FALSE,TRUE)</expression>
+    </formulas>
+    <formulas>
+        <name>VisionResetFactNBEA</name>
+        <dataType>Boolean</dataType>
+        <expression>INCLUDES({!$Record.Product_Type_Involved_in_Opp__c} , &apos;Vision&apos;)
+&amp;&amp;
+ISCHANGED({!$Record.Sales_Stage_Vision__c})
+&amp;&amp;
+PRIORVALUE({!$Record.Sales_Stage_Vision__c}) = &apos;Notified&apos;</expression>
+    </formulas>
+    <interviewLabel>Opportunity Field updates Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity Field updates Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Classification_NB_NBEA_Field</name>
+        <label>Update Classification_NB_NBEA Field</label>
+        <locationX>94</locationX>
+        <locationY>503</locationY>
+        <connector>
+            <targetReference>Proactive_Renewal_Override</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Classification_NB_NBEA_Xfer__c</field>
+            <value>
+                <stringValue>Xfer from KA</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Closed_Reason_1_OtherBuyUp_Field_To_Null</name>
+        <label>Update Closed Reason #1(OtherBuyUp) Field To Null</label>
+        <locationX>132</locationX>
+        <locationY>1679</locationY>
+        <connector>
+            <targetReference>CopyUncheck_MO</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Closed_Reason_1_Other_Buy_Up_Programs__c</field>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_CopyCheckbox_for_MO_fields</name>
+        <label>Update CopyCheckbox for MO fields</label>
+        <locationX>248</locationX>
+        <locationY>2555</locationY>
+        <connector>
+            <targetReference>MA_Header_SalesStage_Clearing</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Copy_Finalist_information_from_Med__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Copy_Prop_Due_Dt_Received_Dt_from_Med__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Copy_Risk_Prob_Cls_Dt_from_Med__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Disposition_Other_Buy_Up_Programs_Field</name>
+        <label>Update Disposition(Other Buy Up Programs) Field</label>
+        <locationX>50</locationX>
+        <locationY>1295</locationY>
+        <connector>
+            <targetReference>Buy_Up_Vision_Dental_Pharmacy_Reset_Fact_NBEA</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Disposition_Other__c</field>
+            <value>
+                <elementReference>$Record.Disposition_Other__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Disposition_Other_Buy_Up_to_Null</name>
+        <label>Update Disposition(Other Buy Up) to Null</label>
+        <locationX>314</locationX>
+        <locationY>1295</locationY>
+        <connector>
+            <targetReference>Buy_Up_Vision_Dental_Pharmacy_Reset_Fact_NBEA</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Disposition_Other__c</field>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_DisTypeCal_is_NorDis_and_MAType_is_Trad</name>
+        <label>Update DisTypeCal is NorDis and MAType is Trad</label>
+        <locationX>381</locationX>
+        <locationY>4655</locationY>
+        <inputAssignments>
+            <field>DistributionTypecalculated__c</field>
+            <value>
+                <stringValue>Normal Distribution</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Membership_Activity_Type__c</field>
+            <value>
+                <stringValue>Traditional</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_DisTypeCal_is_NorDis_and_MAType_is_Trad_1</name>
+        <label>Update DisTypeCal is NorDis and MAType is Trad 1</label>
+        <locationX>1437</locationX>
+        <locationY>5087</locationY>
+        <inputAssignments>
+            <field>DistributionTypecalculated__c</field>
+            <value>
+                <stringValue>Normal Distribution</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Membership_Activity_Type__c</field>
+            <value>
+                <stringValue>Traditional</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_DisTypeCal_is_Null_and_MAType_is_PriExchange</name>
+        <label>Update DisTypeCal is Null and MAType is PriExchange</label>
+        <locationX>117</locationX>
+        <locationY>4547</locationY>
+        <inputAssignments>
+            <field>DistributionTypecalculated__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Membership_Activity_Type__c</field>
+            <value>
+                <stringValue>Private Exchange</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_DisTypeCal_is_Null_and_MAType_is_PriExchange_1</name>
+        <label>Update DisTypeCal is Null and MAType is PriExchange 1</label>
+        <locationX>1173</locationX>
+        <locationY>4979</locationY>
+        <inputAssignments>
+            <field>DistributionTypecalculated__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Membership_Activity_Type__c</field>
+            <value>
+                <stringValue>Private Exchange</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Existing_Members_Risk_Outcome_Dental_To_Null</name>
+        <label>Update Existing Members Risk Outcome (Dental) To Null</label>
+        <locationX>660</locationX>
+        <locationY>1895</locationY>
+        <connector>
+            <targetReference>CopyUncheck_MO</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Existing_Members_Risk_Outcome_Dental__c</field>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Existing_Members_Risk_Outcome_Pharmacy_To_Null</name>
+        <label>Update Existing Members Risk Outcome (Pharmacy) To Null</label>
+        <locationX>924</locationX>
+        <locationY>2003</locationY>
+        <connector>
+            <targetReference>CopyUncheck_MO</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Existing_Members_Risk_Outcome_Pharmacy__c</field>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Existing_Members_Risk_Outcome_Vision_Field_To_Null</name>
+        <label>Update Existing Members Risk Outcome (Vision) Field To Null</label>
+        <locationX>396</locationX>
+        <locationY>1787</locationY>
+        <connector>
+            <targetReference>CopyUncheck_MO</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Existing_Members_Risk_Outcome_Vision__c</field>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Dental_Field</name>
+        <label>Update isEmpty Sales Stage Dental Field</label>
+        <locationX>446</locationX>
+        <locationY>2963</locationY>
+        <connector>
+            <targetReference>Initial_Sales_Stage_Medical_is_Changed</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Dental__c</field>
+            <value>
+                <elementReference>UpdateSalesStageDental</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Dental_To_False</name>
+        <label>Update isEmpty Sales Stage Dental To False</label>
+        <locationX>182</locationX>
+        <locationY>3395</locationY>
+        <connector>
+            <targetReference>Update_isEmpty_Sales_Stage_Medical_To_False</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Dental__c</field>
+            <operator>EqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Dental__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Dental_To_True</name>
+        <label>Update isEmpty Sales Stage Dental To True</label>
+        <locationX>182</locationX>
+        <locationY>2855</locationY>
+        <connector>
+            <targetReference>Update_isEmpty_Sales_Stage_Medical_To_True</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Dental__c</field>
+            <operator>NotEqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Dental__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Medical_Field</name>
+        <label>Update isEmpty Sales Stage Medical Field</label>
+        <locationX>446</locationX>
+        <locationY>3263</locationY>
+        <connector>
+            <targetReference>Initial_Sales_Stage_Pharmacy_is_Changed</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Medical__c</field>
+            <value>
+                <elementReference>UpdateSalesStageMedical</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Medical_To_False</name>
+        <label>Update isEmpty Sales Stage Medical To False</label>
+        <locationX>182</locationX>
+        <locationY>3503</locationY>
+        <connector>
+            <targetReference>Update_isEmpty_Sales_Stage_OtherBuyUp_To_False</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Medical__c</field>
+            <operator>EqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Medical__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Medical_To_True</name>
+        <label>Update isEmpty Sales Stage Medical To True</label>
+        <locationX>182</locationX>
+        <locationY>2963</locationY>
+        <connector>
+            <targetReference>Update_isEmpty_Sales_Stage_OtherBuyUp_To_True</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Medical__c</field>
+            <operator>NotEqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Medical__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_OtherBuyUp_Field</name>
+        <label>Update isEmpty Sales Stage OtherBuyUp Field</label>
+        <locationX>446</locationX>
+        <locationY>4163</locationY>
+        <connector>
+            <targetReference>MA_Membership_Type_AND_Distribution_Type_Cal</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Other__c</field>
+            <value>
+                <elementReference>UpdateSalesStageOther</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_OtherBuyUp_To_False</name>
+        <label>Update isEmpty Sales Stage OtherBuyUp To False</label>
+        <locationX>182</locationX>
+        <locationY>3611</locationY>
+        <connector>
+            <targetReference>Update_isEmpty_Sales_Stage_Pharmacy_To_False</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Other__c</field>
+            <operator>EqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Other__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_OtherBuyUp_To_True</name>
+        <label>Update isEmpty Sales Stage OtherBuyUp To True</label>
+        <locationX>182</locationX>
+        <locationY>3071</locationY>
+        <connector>
+            <targetReference>Update_isEmpty_Sales_Stage_Pharmacy_To_True</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Other__c</field>
+            <operator>NotEqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Other__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Pharmacy_Field</name>
+        <label>Update isEmpty Sales Stage Pharmacy Field</label>
+        <locationX>446</locationX>
+        <locationY>3563</locationY>
+        <connector>
+            <targetReference>Initial_Sales_Stage_Vision_is_Changed</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Pharmacy__c</field>
+            <value>
+                <elementReference>UpdateSalesStagePharmacy</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Pharmacy_To_False</name>
+        <label>Update isEmpty Sales Stage Pharmacy To False</label>
+        <locationX>182</locationX>
+        <locationY>3719</locationY>
+        <connector>
+            <targetReference>Update_isEmpty_Sales_Stage_Vision_To_False</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Pharmacy__c</field>
+            <operator>EqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Pharmacy__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Pharmacy_To_True</name>
+        <label>Update isEmpty Sales Stage Pharmacy To True</label>
+        <locationX>182</locationX>
+        <locationY>3179</locationY>
+        <connector>
+            <targetReference>Update_isEmpty_Sales_Stage_Vision_To_True</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Pharmacy__c</field>
+            <operator>NotEqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Pharmacy__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Vision_Field</name>
+        <label>Update isEmpty Sales Stage Vision Field</label>
+        <locationX>446</locationX>
+        <locationY>3863</locationY>
+        <connector>
+            <targetReference>Initial_Sales_Stage_Other_is_Changed</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Vision__c</field>
+            <value>
+                <elementReference>UpdateSalesStageVision</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Vision_To_False</name>
+        <label>Update isEmpty Sales Stage Vision To False</label>
+        <locationX>182</locationX>
+        <locationY>3827</locationY>
+        <connector>
+            <targetReference>MA_Membership_Type_AND_Distribution_Type_Cal</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Vision__c</field>
+            <operator>EqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Vision__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_isEmpty_Sales_Stage_Vision_To_True</name>
+        <label>Update isEmpty Sales Stage Vision To True</label>
+        <locationX>182</locationX>
+        <locationY>3287</locationY>
+        <connector>
+            <targetReference>Update_isEmpty_Sales_Stage_Dental_To_False</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Inital_Selected_Sales_Stage_Vision__c</field>
+            <operator>NotEqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>isEmpty_Sales_Stage_Vision__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_MAType_is_PriExchanged</name>
+        <label>Update MAType is PriExchanged</label>
+        <locationX>645</locationX>
+        <locationY>4763</locationY>
+        <inputAssignments>
+            <field>Membership_Activity_Type__c</field>
+            <value>
+                <stringValue>Private Exchange</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_MAType_is_PriExchanged_1</name>
+        <label>Update MAType is PriExchanged 1</label>
+        <locationX>1701</locationX>
+        <locationY>5195</locationY>
+        <inputAssignments>
+            <field>Membership_Activity_Type__c</field>
+            <value>
+                <stringValue>Private Exchange</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_MAType_is_Trad</name>
+        <label>Update MAType is Trad</label>
+        <locationX>909</locationX>
+        <locationY>4871</locationY>
+        <inputAssignments>
+            <field>Membership_Activity_Type__c</field>
+            <value>
+                <stringValue>Traditional</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_MAType_is_Trad_1</name>
+        <label>Update MAType is Trad 1</label>
+        <locationX>1965</locationX>
+        <locationY>5303</locationY>
+        <inputAssignments>
+            <field>Membership_Activity_Type__c</field>
+            <value>
+                <stringValue>Traditional</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Proactive_Renewal_Incentive_Status_Field</name>
+        <label>Update Proactive Renewal Incentive Status Field</label>
+        <locationX>248</locationX>
+        <locationY>887</locationY>
+        <connector>
+            <targetReference>Buy_Up_Branch_update_Unchecking_the_Check_boxes</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Proactive_Renewal_Incentive_Status__c</field>
+            <value>
+                <elementReference>ProactiveRenewalIncentiveValue</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>254</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>IsNew_or_IsUpdate</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

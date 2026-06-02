@@ -59,8 +59,8 @@ import surestWillConsPartInImplnSCC from '@salesforce/schema/Sold_Case_Checklist
 import surestAreSsoTechRequiredSCC from '@salesforce/schema/Sold_Case_Checklist__c.Surest_Are_SSO_Technology_required__c';
 import surestSupplementalCompensation from '@salesforce/schema/Sold_Case_Checklist__c.Surest_Supplemental_Compensation_Payee__c';
 
-import getValidationEmails from '@salesforce/apex/renewalChecklistCls.getValidationEmails';
-import sendEmailWithPDF from '@salesforce/apex/EmailSCCbySalesSurestTeam.sendEmailWithPDF';
+// import getValidationEmails from '@salesforce/apex/renewalChecklistCls.getValidationEmails';
+// import sendEmailWithPDF from '@salesforce/apex/EmailSCCbySalesSurestTeam.sendEmailWithPDF';
 
 import { loadStyle } from 'lightning/platformResourceLoader';
 import SccStaticResourceCss from '@salesforce/resourceUrl/SCC_Static_Resource';
@@ -1278,14 +1278,14 @@ export default class SoldCaseGeneralComp extends LightningElement {
           { fieldedited: event.target.name, fieldvalue: todayDateAndTime }];
         }
         else {
-          if(this.soldCaseDataCopy.CPW__c == true){
-            this.handleEmailPopUp(); 
-          }
-          else{
+          // if(this.soldCaseDataCopy.CPW__c == true){
+          //   this.handleEmailPopUp(); 
+          // }
+          // else{
             this.generalProductDetails['Completed_by_Sales__c'] = true;
             editfielddetails = [{ fieldedited: 'Completed_by_Sales__c', fieldvalue: true },
             { fieldedited: event.target.name, fieldvalue: todayDateAndTime }];
-          }
+         // }
         }
       }
       else {
@@ -1441,77 +1441,77 @@ export default class SoldCaseGeneralComp extends LightningElement {
     return allValid;
   }
   
-  @track showEmailModal = false;
-  @track emails = [];
-  @track isLoading = false;
-  selectedEmails = [];
-   handleEmailPopUp(){
-        this.showEmailModal = true;
+  // @track showEmailModal = false;
+  // @track emails = [];
+  // @track isLoading = false;
+  // selectedEmails = [];
+  //  handleEmailPopUp(){
+  //       this.showEmailModal = true;
 
-            getValidationEmails({ accId: this.generalProductDetails.AccountId })
-                .then(result => {
-                    this.emails = result;
-                    this.selectedEmails = result.map(emailOption => emailOption.value);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-    }
-    closeModal() {
-        this.showEmailModal = false;
-        this.generalProductDetails['Completed_by_Sales__c'] = false;
-        this.generalProductDetails['Last_email_sent_by_sales__c'] = this.oldSalesDateTime;
-    }
+  //           getValidationEmails({ accId: this.generalProductDetails.AccountId })
+  //               .then(result => {
+  //                   this.emails = result;
+  //                   this.selectedEmails = result.map(emailOption => emailOption.value);
+  //               })
+  //               .catch(error => {
+  //                   console.error(error);
+  //               });
+  //   }
+  //   closeModal() {
+  //       this.showEmailModal = false;
+  //       this.generalProductDetails['Completed_by_Sales__c'] = false;
+  //       this.generalProductDetails['Last_email_sent_by_sales__c'] = this.oldSalesDateTime;
+  //   }
 
-    handleSelection(event) {
-        this.selectedEmails = event.detail.value;
-    }
-    sendReport() {
-        console.log('Selected emails:', this.selectedEmails);
-        if (!this.selectedEmails || this.selectedEmails.length === 0) {
-            this.showToast('Error', 'Please select at least one email', 'error');
-            return;
-        }
-        this.closeModal(); 
-        this.commonValidation(); 
+  //   handleSelection(event) {
+  //       this.selectedEmails = event.detail.value;
+  //   }
+  //   sendReport() {
+  //       console.log('Selected emails:', this.selectedEmails);
+  //       if (!this.selectedEmails || this.selectedEmails.length === 0) {
+  //           this.showToast('Error', 'Please select at least one email', 'error');
+  //           return;
+  //       }
+  //       this.closeModal(); 
+  //       this.commonValidation(); 
         
-    }
+  //   }
 
-    commonValidation() {
-        this.isLoading = true;
-        sendEmailWithPDF({ recordId: this.generalProductDetails.Id, accountName: this.generalProductDetails.Account.Name, oppName: this.generalProductDetails.Name, effectiveDate: this.generalProductDetails.EffectiveDate__c, selectedEmails: this.selectedEmails })
-            .then((results) => {
+  //   commonValidation() {
+  //       this.isLoading = true;
+  //       sendEmailWithPDF({ recordId: this.generalProductDetails.Id, accountName: this.generalProductDetails.Account.Name, oppName: this.generalProductDetails.Name, effectiveDate: this.generalProductDetails.EffectiveDate__c, selectedEmails: this.selectedEmails })
+  //           .then((results) => {
                 
-                const event = new ShowToastEvent({
-                    title: 'Success',
-                    message: 'Email has been sent Successfully',
-                    variant: 'success',
-                    mode: 'dismissable'
-                });
-                this.dispatchEvent(event);
-                var now = new Date();
-                let editfielddetails;
-                this.generalProductDetails['Completed_by_Sales__c'] = true;
-                 editfielddetails = [{ fieldedited: 'Completed_by_Sales__c', fieldvalue: true },
-                 { fieldedited: 'Last_email_sent_by_sales__c', fieldvalue: now }];
-                const ClientDetailRecord = new CustomEvent("progressvaluechange", {
-                  detail: editfielddetails
-                });
+  //               const event = new ShowToastEvent({
+  //                   title: 'Success',
+  //                   message: 'Email has been sent Successfully',
+  //                   variant: 'success',
+  //                   mode: 'dismissable'
+  //               });
+  //               this.dispatchEvent(event);
+  //               var now = new Date();
+  //               let editfielddetails;
+  //               this.generalProductDetails['Completed_by_Sales__c'] = true;
+  //                editfielddetails = [{ fieldedited: 'Completed_by_Sales__c', fieldvalue: true },
+  //                { fieldedited: 'Last_email_sent_by_sales__c', fieldvalue: now }];
+  //               const ClientDetailRecord = new CustomEvent("progressvaluechange", {
+  //                 detail: editfielddetails
+  //               });
 
-                this.dispatchEvent(ClientDetailRecord);
-                this.isLoading = false;
-            })
-            .catch((error) => {
-                console.log('sceValidation  error----> ' + JSON.stringify(error));
-                const event = new ShowToastEvent({
-                    variant: 'error',
-                    title: 'ERROR',
-                    message: 'Error while sending Email. Please contact your administrator',
-                });
-                this.dispatchEvent(event);
-                this.isLoading = false;
-            })
-    }
+  //               this.dispatchEvent(ClientDetailRecord);
+  //               this.isLoading = false;
+  //           })
+  //           .catch((error) => {
+  //               console.log('sceValidation  error----> ' + JSON.stringify(error));
+  //               const event = new ShowToastEvent({
+  //                   variant: 'error',
+  //                   title: 'ERROR',
+  //                   message: 'Error while sending Email. Please contact your administrator',
+  //               });
+  //               this.dispatchEvent(event);
+  //               this.isLoading = false;
+  //           })
+  //   }
   renderedCallback() {
     if (this.editmode) {
       var p1 = this.template.querySelector('.preAud1');

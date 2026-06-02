@@ -1,7 +1,7 @@
 public without sharing class EmailSCCbySalesSurestTeam {
 
     @AuraEnabled(cacheable = true)
-    public static void sendEmailWithPDF( Id recordId, String accountName, String oppName, Date effectiveDate, List<String> selectedEmails) 
+    public static void sendEmailWithPDF( string salesorIPM, Id recordId, String accountName, String oppName, Date effectiveDate, List<String> selectedEmails) 
     {
         system.debug('recordId>>'+recordId);
         system.debug('accountName>>'+accountName);
@@ -23,6 +23,7 @@ public without sharing class EmailSCCbySalesSurestTeam {
             Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
 
             email.setToAddresses(selectedEmails);
+            String fullRecordURL = URL.getOrgDomainURL().toExternalForm() + '/' + recordId;
 
             String subject = et.Subject;
             subject = subject.replace('{!Opportunity.Account}', accountName);
@@ -32,11 +33,14 @@ public without sharing class EmailSCCbySalesSurestTeam {
             String body = et.Body;
             body = body.replace('{!Opportunity.Account}', accountName);
             body = body.replace('{!Opportunity.EffectiveDate__c}', effectiveDate.format());
+            body = body.replace('{!Opportunity.Link}',fullRecordURL);
+            body = body.replace('{!salesorIPM}',salesorIPM);
             email.setPlainTextBody(body);
 
             email.setFileAttachments(new Messaging.EmailFileAttachment[]{ attachment });
 
             Messaging.sendEmail(new Messaging.SingleEmailMessage[]{ email });
+            system.debug('email>>'+email);
         }
     }
 

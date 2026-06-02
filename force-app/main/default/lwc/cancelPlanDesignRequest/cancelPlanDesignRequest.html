@@ -1,0 +1,50 @@
+<template>
+
+    <!-- 🔹 Loader -->
+    <template if:true={isLoading}>
+        <div class="overlay">
+            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+        </div>
+    </template>
+
+    <lightning-quick-action-panel header="Cancel Plan Design Request">
+
+        <div class="slds-p-around_medium" style="padding-top:0px">
+
+            <!-- 🔹 Confirmation Message -->
+            <div class="slds-box slds-theme_alert-texture slds-theme_warning slds-m-bottom_medium"
+                style="font-size:14px;font-weight:500">
+                Are you sure you would like to cancel this Plan Design Request?
+                If yes, please provide the cancellation reason.
+            </div>
+
+
+
+            <!-- 🔹 Cancelled Date (Read Only) -->
+            <p class="slds-text-body_regular">
+                <span class="slds-form-element__label">Cancelled Date</span><br/>
+                <span>{formattedCancelledDate}</span>
+            </p>
+
+            <!-- 🔹 Cancellation Reason -->
+            <lightning-textarea label="Cancellation Reason" value={cancelReason} onchange={handleChange}
+                data-field="Cancelled_Reason__c" required max-length='500'
+                message-when-too-long="Maximum 500 characters allowed.">
+            </lightning-textarea>
+
+        </div>
+
+        <!-- 🔹 Footer Buttons -->
+        <div slot="footer">
+            <lightning-button label="Back" onclick={handleBack}>
+            </lightning-button>
+
+
+            <lightning-button label="Confirm and Cancel" variant="brand" onclick={handleConfirm}
+                class="slds-m-left_small" disabled={isConfirmDisabled}>
+            </lightning-button>
+        </div>
+
+    </lightning-quick-action-panel>
+
+</template>

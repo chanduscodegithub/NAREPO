@@ -80,7 +80,6 @@
                           </div>
                         </td>
                     </tr>
-                    
                     <tr>
                         <td class="left">
                           <div class="slds-grid slds-grid--vertical-align-center border-bottom">
@@ -106,7 +105,6 @@
                           </div>
                         </td>
                     </tr>
-                  
                     <tr>
                         <td class="left">
                             <div class="slds-grid slds-grid--vertical-align-center"
@@ -270,47 +268,76 @@
                     </tr>
                     <tr>
                         <td class="left">
-                            <div class="slds-grid slds-grid--vertical-align-center border-bottom"
-                                style="width:100%;">
-                                <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
-                                    <span>Optum Physical Health Network</span>
-                                </div>
-                                <div
-                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
-                                    Yes
-                                </div>
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Optum Physical Health Network</span>
                             </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Optum_Physical_Health_Network__c}>
+                                  <span>{soldCaseDataCopy.Optum_Physical_Health_Network__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox name="Sold_Case_Checklist__c.Optum_Physical_Health_Network__c" variant="label-hidden"
+                                            value={soldCaseDataCopy.Optum_Physical_Health_Network__c}
+                                            options={picklistValues} onchange={FieldChangeHandler}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
+                          </div>
                         </td>
                     </tr>
-                    <tr>
-                      <td class="left">
-                          <div class="slds-grid slds-grid--vertical-align-center border-bottom"
-                              style="width:100%;">
-                              <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
-                                  <span>Standard Communications</span>
-                              </div>
-                              <div
-                                  class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
-                                  Yes
-                              </div>
+                     <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Standard Communications</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Surest_Standard_Communications__c}>
+                                  <span>{soldCaseDataCopy.Surest_Standard_Communications__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox name="Sold_Case_Checklist__c.Surest_Standard_Communications__c" variant="label-hidden"
+                                            value={soldCaseDataCopy.Surest_Standard_Communications__c}
+                                            options={picklistValues} onchange={FieldChangeHandler}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
                           </div>
-                      </td>
+                        </td>
                     </tr>
-                    <tr>
-                      <td class="left">
-                          <div class="slds-grid slds-grid--vertical-align-center border-bottom"
-                              style="width:100%;">
-                              <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
-                                  <span>Surest Member Services and Surest Clinical Advocacy</span>
-                              </div>
-                              <div
-                                  class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
-                                  Yes
-                              </div>
+                      <tr>
+                        <td class="left">
+                          <div class="slds-grid slds-grid--vertical-align-center border-bottom">
+                            <div class="slds-col slds-size_3-of-4 slds-p-around_xx-small">
+                              <span>Surest Member Services and Surest Clinical Advocacy</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_xx-small  slds-cell-wrap slds-text-align_right">
+                              <template if:false={editmode}>
+                                <template if:true={soldCaseDataCopy.Surest_Member_Services__c}>
+                                  <span>{soldCaseDataCopy.Surest_Member_Services__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={editmode}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox name="Sold_Case_Checklist__c.Surest_Member_Services__c" variant="label-hidden"
+                                            value={soldCaseDataCopy.Surest_Member_Services__c}
+                                            options={picklistValues} onchange={FieldChangeHandler}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                            </div>
                           </div>
-                      </td>
-                    </tr>
-                          
+                        </td>
+                    </tr>     
                     <!-- <tr>
                         <td class="left">
                             <div class="slds-grid slds-grid--vertical-align-center"
@@ -445,7 +472,7 @@
                                                         variant="label-hidden"
                                                         value={item.value}
                                                         options={item.options}
-                                                        onchange={FieldChangeHandler}>
+                                                        onchange={FieldChangeHandler} dropdown-alignment="auto">
                                                     </lightning-combobox>
                                                 </template>
                                             </template>
@@ -466,7 +493,7 @@
                                                                 variant="label-hidden"
                                                                 value={item.relatedField.value}
                                                                 options={extraOnePassValues}
-                                                                onchange={FieldChangeHandler}>
+                                                                onchange={FieldChangeHandler} dropdown-alignment="auto">
                                                             </lightning-combobox>
                                                         </template>
                                                     </template>

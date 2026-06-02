@@ -18,14 +18,33 @@
             var state = response.getState();
             if(state === "SUCCESS"){
                 
-                console.log(JSON.stringify(response.getReturnValue()));
+                console.log('actionToGetRelatedAccounts@@@'+JSON.stringify(response.getReturnValue()));
                 
                 var contactAccountList  = response.getReturnValue();
                 if(contactAccountList != null){
                     if(contactAccountList.contactAccountRecords.length != 0){
+                        //Added -- 25/11/24
+                        for(var j=0;j<contactAccountList.contactAccountRecords.length;j++){
+                            if(contactAccountList.CSRList.length>0){
+                                for(var i=0;i<contactAccountList.CSRList.length;i++){
+                                    if(contactAccountList.CSRList[i].Account__c ==contactAccountList.contactAccountRecords[j].Account.Id){
+                                        contactAccountList.contactAccountRecords[j].Account.NPS__c =contactAccountList.CSRList[i].LikelihoodtoRecommendScore__c;
+                                    }
+                                }
+                            }                       
+                        }
+                        
                         component.set("v.contactAccountsRecords", contactAccountList.contactAccountRecords);
                         component.set("v.page", contactAccountList.page);
                         component.set("v.total", contactAccountList.total);
+                        /* Added as part of CR on 08th Oct 2024 */
+                        component.set("v.existingClientTotal",contactAccountList.existingClientTotal);
+                        /* End of CR Modification */
+                         /* Added by vignesh*/
+                        component.set("v.allProspect",contactAccountList.allProspect);
+                        component.set('v.allCompanies',contactAccountList.allCompaniesCount);
+                        component.set('v.allyearValue',contactAccountList.yearValue);
+                        /* End */
                         component.set("v.pages", Math.ceil(contactAccountList.total/contactAccountList.pageSize));
                         var device = $A.get("$Browser.formFactor");
                         if(device != "DESKTOP"){ 
@@ -125,6 +144,17 @@
                 var contactAccountList  = response.getReturnValue();
                 if(contactAccountList != null){
                     if(contactAccountList.length != 0){
+                        //Added by Vignesh  -- 25/11/24
+                         for(var j=0;j<contactAccountList.contactAccountRecords.length;j++){
+                            if(contactAccountList.CSRList.length>0){
+                                for(var i=0;i<contactAccountList.CSRList.length;i++){
+                                    if(contactAccountList.CSRList[i].Account__c ==contactAccountList.contactAccountRecords[j].Account.Id){
+                                        contactAccountList.contactAccountRecords[j].Account.NPS__c =contactAccountList.CSRList[i].LikelihoodtoRecommendScore__c;
+                                    }
+                                }
+                            }                       
+                        }
+                        
                         component.set("v.contactAccountsRecords", contactAccountList.contactAccountRecords);
                         component.set("v.page", contactAccountList.page);
                         component.set("v.total", contactAccountList.total);

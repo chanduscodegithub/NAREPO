@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Email_Send_to_SCC_Notification_to_Surest_Team</name>
+        <label>Email Send to SCC Notification to Surest Team</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <actionName>01pPi00000CU866NotFound</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>AccountName</name>
+            <value>
+                <elementReference>$Record.Account.Name</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>EffectiveDate</name>
+            <value>
+                <elementReference>$Record.EffectiveDate__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>oppName</name>
+            <value>
+                <elementReference>$Record.Name</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>I</description>
+        <name>Checked_By_Surest_Sales_CheckBox</name>
+        <label>Checked By Surest Sales CheckBox</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Check_By_Sales_CheckBox_isTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CompletedbySales</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_OpportunityProduct_Records</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Disposition_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Sold</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_Send_to_SCC_Notification_to_Surest_Team</targetReference>
+            </connector>
+            <label>If Check By Sales CheckBox isTrue</label>
+        </rules>
+    </decisions>
+    <description>CR - 3826 ==&gt; SCC Notification to Surest Team
+ Note: Once MA Flow Transition moved to UAT. Deactivate this flow in UAT.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>CompletedbySales</name>
+        <dataType>Boolean</dataType>
+        <expression>NOT(ISNULL({!$Record.Last_email_sent_by_sales__c} )) &amp;&amp;
+ISCHANGED({!$Record.Last_email_sent_by_sales__c} )</expression>
+    </formulas>
+    <interviewLabel>SCC SurestTeam Notification Send Email {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SCC SurestTeam Notification Send Email</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_OpportunityProduct_Records</name>
+        <label>Get OpportunityProduct Records</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Checked_By_Surest_Sales_CheckBox</targetReference>
+        </connector>
+        <filterLogic>1 AND (2 OR 3) AND 4</filterLogic>
+        <filters>
+            <field>OpportunityId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Buyup_Product_Selection__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Surest Only</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Buyup_Product_Selection__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Surest &amp; UNET</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Product_Line__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Medical</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>OpportunityLineItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_OpportunityProduct_Records</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>

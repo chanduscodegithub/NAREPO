@@ -129,12 +129,13 @@
         $A.util.addClass(appletIcon, 'slds-hide');
         
         page = page || 1;
-        if(component.get('v.cdAccountType')){
-            columnName = columnName || 'Direct_Marketing_Target_Contact__c';
-            sortType = sortType || 'DESC NULLS LAST';
+        
+         if(component.get('v.cdAccountType')){
+            columnName = columnName || 'Direct_Marketing_Target_Contact__c DESC NULLS LAST, lastname ASC';
+            sortType = sortType || '';
         }
         else{
-            columnName = columnName || 'LastName';
+            columnName = columnName || 'lastname';
             sortType = sortType || 'ASC';
         }
         var cdAccountAction = component.get('c.getAccountContacts');	

@@ -18,11 +18,10 @@
                                             <h2 class="slds-text-heading_medium">Confirmation</h2>
                                         </header>
                                         <div class="slds-modal__content slds-p-around_medium">
-                                            <p
-                                                class="slds-text-heading_small slds-text-align_center slds-p-horizontal_large">
-                                                This action will clear all user-entered data in the form, except for
-                                                prepopulated fields. Are you sure you want to proceed?
-                                            </p>
+                                                <p class="slds-text-heading_small slds-text-align_center slds-p-horizontal_large">
+                                                    This action will clear all user-entered data in the form, except for
+                                                    prepopulated fields. Are you sure you want to proceed?
+                                                </p>
                                             <div style="text-align: center;" class="slds-p-top_large">
                                                 <lightning-button label="Continue" onclick={handleConfirmDelete}>
                                                 </lightning-button>
@@ -187,9 +186,8 @@
                         </c-ebd-current-uhc-competitors>
                     </div>
                     <div class="slds-p-horizontal_small">
-                        <c-ebd-anticipated-bid-cycle is-edit-mode={isEditMode} incumbent-medical={incumbentMedical}
-                            incumbent-pharmacy={incumbentPharmacy} incumbent-dental={incumbentDental}
-                            incumbent-vision={incumbentVision} record-id={recordId}
+                        <c-ebd-anticipated-bid-cycle is-edit-mode={isEditMode} incumbent-medical={incumbentMedical} incumbent-pharmacy={incumbentPharmacy}
+                           incumbent-dental={incumbentDental} incumbent-vision={incumbentVision} record-id={recordId}
                             anticipated-details-data={anticipatedDetailsData} ebd-id={ebdId} ebd-list-data={ebdListData}
                             onebdchange={handleEbdChange}></c-ebd-anticipated-bid-cycle>
                     </div>
@@ -211,18 +209,14 @@
                             class="slds-table slds-table_bordered slds-border_left slds-border_right slds-no-row-hover slds-table_cell-buffer slds-table--fixed-layout">
                             <thead class="header-color">
                                 <tr>
-                                    <th class="slds-border_right"> Validated By</th>
+                                    <th> Validated By</th>
                                     <th> Date/Time</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="slds-border_right">{accountInfo.EBD_Validation_Name__c}</td>
-                                    <td>
-                                        <lightning-formatted-date-time value={accountInfo.EBD_Validated_On__c} year="numeric" month="numeric" day="numeric"
-                                            hour="2-digit" minute="2-digit" hour12 time-zone={userTimeZone} time-zone-name="short">
-                                        </lightning-formatted-date-time>
-                                        </td>
+                                    <td>{accountInfo.EBD_Validation_Name__c}</td>
+                                    <td>{accountInfo.EBD_Sce_Validated_Time__c}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -274,7 +268,7 @@
 
                         </div>
                     </template>
-                </div>
+               </div>
                 <!--</template>-->
             </lightning-tab>
             <lightning-tab label="Files" value="EBD Files" onactive={handleActive}>

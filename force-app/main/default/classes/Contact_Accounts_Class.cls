@@ -27,6 +27,10 @@ Throws [Exceptions]:
     public static contactAccountsResult queryRelatedAccounts(Id contactId, Decimal pageNumber, String columnName, String sortType){
         
         contactAccountsResult contactAccountsResult = null;
+        //Changes on 25/11/24
+        list<ClientSurveyResults__c> CSRList=new list<ClientSurveyResults__c>();
+        List<AccountContactRelation> contactAccountRecords =new List<AccountContactRelation>();
+        set<string> accountIdList =new set<string>();
         
         UHGContactSOQLConstants contactSOQLConstants = new UHGContactSOQLConstants();
         UHGContactConstants contactConstants = new UHGContactConstants();
@@ -53,8 +57,24 @@ Throws [Exceptions]:
                     contactAccountsResult.total = Database.countQuery(contactSOQLConstants.queryForCount);
                     
                     System.debug('contactSOQLConstants.queryForCount--'+contactSOQLConstants.queryForCount+'---total--'+contactAccountsResult.total);
+                    /* Added as part of CR on 08th Oct 2024 */
+                    contactAccountsResult.existingClientTotal = Database.countQuery(contactSOQLConstants.queryForExistingClientCount);
+                    /* End of CR Modification */
+                    /* Added by Vignesh*/
+                    contactAccountsResult.allProspect = Database.countQuery(contactSOQLConstants.queryForAllProspectCount);
+                    contactAccountsResult.allCompaniesCount = Database.countQuery(contactSOQLConstants.queryForAllCompaniesCount);
                     
-                    contactAccountsResult.contactAccountRecords = Database.query(contactSOQLConstants.queryStringForRelatedAccounts1+columnName+' '+sortType+contactSOQLConstants.queryStringForRelatedAccounts2);
+                    list<ClientSurveyResults__c> CSR =  Database.query(contactSOQLConstants.queryForClientSurveyYear);
+                    contactAccountsResult.yearValue =CSR[0].year__c;
+                    contactAccountRecords =Database.query(contactSOQLConstants.queryStringForRelatedAccounts1+String.escapeSingleQuotes(columnName)+' '+String.escapeSingleQuotes(sortType)+contactSOQLConstants.queryStringForRelatedAccounts2);
+                    contactAccountsResult.contactAccountRecords = contactAccountRecords;//Database.query(contactSOQLConstants.queryStringForRelatedAccounts1+String.escapeSingleQuotes(columnName)+' '+String.escapeSingleQuotes(sortType)+contactSOQLConstants.queryStringForRelatedAccounts2);
+                    for(AccountContactRelation ac:contactAccountRecords){
+                        accountIdList.add(ac.AccountId);
+                    }
+                    CSRList =[SELECT Id, Name, LikelihoodtoRecommendScore__c, Account__r.Name,Account__c,year__c FROM ClientSurveyResults__c where Account__c IN:accountIdList and year__c=:CSR[0].Year__c and type__c='Client Survey Results'];//Database.query(contactSOQLConstants.queryLRTValues); 
+                    contactAccountsResult.CSRList =CSRList;
+                    /* End*/
+                    //contactAccountsResult.contactAccountRecords = Database.query(contactSOQLConstants.queryStringForRelatedAccounts1+String.escapeSingleQuotes(columnName)+' '+String.escapeSingleQuotes(sortType)+contactSOQLConstants.queryStringForRelatedAccounts2);
                     
                     System.debug('Query 2--'+contactSOQLConstants.queryStringForRelatedAccounts1+columnName+' '+sortType+contactSOQLConstants.queryStringForRelatedAccounts2);
                     System.debug('contactAccountsResult.contactAccountRecords---'+contactAccountsResult.contactAccountRecords);
@@ -102,6 +122,29 @@ Throws [Exceptions]:
         
         @AuraEnabled
         public Integer total { get;set; }
+        
+        /* Added as part of CR on 08th Oct 2024 */
+        @AuraEnabled
+        public Integer existingClientTotal { get;set; }
+        /* End of CR Modification */
+        
+         /* Added by Vignesh*/
+        @AuraEnabled
+        public Integer allProspect { get;set; }
+        
+         @AuraEnabled
+        public Integer allCompaniesCount { get;set; }
+        
+         @AuraEnabled
+        public string yearValue { get;set; }
+        
+         @AuraEnabled
+        public Integer allLRTValues { get;set; }
+        
+         @AuraEnabled
+        public List<ClientSurveyResults__c> CSRList{ get;set; }
+
+        /* End */
         
     }
     

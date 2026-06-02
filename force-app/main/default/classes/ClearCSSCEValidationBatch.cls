@@ -15,11 +15,13 @@ global class ClearCSSCEValidationBatch implements Database.Batchable<SObject> {
         }
 
         if (!recordsToUpdate.isEmpty()) {
-            update as User recordsToUpdate;
+            update recordsToUpdate;
         }
     }
 
     global void finish(Database.BatchableContext BC) {
         System.debug('SCE Validation and DateTime fields cleared.');
+        ClearNASaleCSSCEValidationBatch nextBatch = new ClearNASaleCSSCEValidationBatch();
+        Database.executeBatch(nextBatch, 200);
     }
 }

@@ -52,6 +52,7 @@ public class GenerateClientSurveyController_Test {
                                 ); 
         insert sce_user;
         system.runAs(sce_user){
+            list<account> acList =new List<account>();
             Account acc = new Account();
             acc.Name = 'Salesforce';
             acc.CM_SCE__c = sce_user.Id;
@@ -61,7 +62,19 @@ public class GenerateClientSurveyController_Test {
             acc.Specialty_SCE_Involved__c = 'Sarah Theodossopoulos';
             acc.RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Prospect').getRecordTypeId();
             
-            insert acc;
+            acList.add(acc);
+            
+            Account acc1 = new Account();
+            acc1.Name = 'Salesforce1';
+            acc1.CM_SCE__c = sce_user.Id;
+            acc1.CM_CMC_Validation_By__c = cmc_user.Id;
+            acc1.SCE_Validation_DateTime__c = system.now();
+            acc1.Subtype__c = 'Specialty Benefits Only' ;
+            acc1.Specialty_SCE_Involved__c = 'Sarah Theodossopoulos';
+            acc1.RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Existing Client').getRecordTypeId();
+            
+            acList.add(acc1);
+            insert acList;
             
             Contact con = new Contact();
             con.FirstName ='test';
@@ -75,17 +88,38 @@ public class GenerateClientSurveyController_Test {
             Service_AMT__c SAMTobj = new Service_AMT__c();
             SAMTobj.First_Name__c = 'test';
             SAMTobj.Last_Name__c = 'test';
-            SAMTobj.Contact_Role__c = 'Specialty Benefits Client Manager';
+            SAMTobj.Contact_Role__c = 'Service Account Manager';
             SAMTobj.Company__c = acc.Id;
-            SAMTobj.Case_Management_End_Date__c = system.today().addDays(10);
+            SAMTobj.Case_Management_Start_Date__c = system.today().addDays(-10);
             SAMTobj.Primary__c = true;
             insert SAMTobj;
+            Service_AMT__c SAMTobj11= new Service_AMT__c();
+            SAMTobj11.First_Name__c = 'test1';
+            SAMTobj11.Last_Name__c = 'test2';
+            SAMTobj11.Contact_Role__c = 'Client Manager';
+            SAMTobj11.Company__c = acc1.Id;
+            SAMTobj11.Case_Management_Start_Date__c = system.today().addDays(-10);
+            SAMTobj11.Primary__c = true;
+            insert SAMTobj11;
         }
 
     }
     
     public static testmethod void testGeneratePdf(){
         Account acc = [SELECT Id FROM Account WHERE Name = 'Salesforce' LIMIT 1];
+        String accId = acc.Id;
+      
+        PageReference pageRef = Page.GenerateClientSurveyPdf;
+        pageRef.getParameters().put('recordId',acc.Id);
+        test.setCurrentPageReference(pageRef);
+        GenerateClientSurveyController obj = new GenerateClientSurveyController();
+        Double x = obj.offset;
+        system.assertNotEquals(null, x);
+        
+    }
+    
+    public static testmethod void testGeneratePdf2(){
+        Account acc = [SELECT Id FROM Account WHERE Name = 'Salesforce1' LIMIT 1];
         String accId = acc.Id;
       
         PageReference pageRef = Page.GenerateClientSurveyPdf;

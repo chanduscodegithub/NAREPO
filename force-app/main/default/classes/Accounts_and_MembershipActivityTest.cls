@@ -37,17 +37,26 @@ private class Accounts_and_MembershipActivityTest {
         acc_Con_Rel.AccountId = accFirm2.Id;
         insert acc_Con_Rel;
         
+        ClientSurveyResults__c acc_Client_Survey = new ClientSurveyResults__c();
+        acc_Client_Survey.Name = 'Test Survey 2';
+        acc_Client_Survey.Account__c  = accFirm1.Id;
+        acc_Client_Survey.Year__c = '2023';
+        acc_Client_Survey.LikelihoodtoRecommendScore__c = '8';
+        acc_Client_Survey.Type__c = 'Client Survey Results';
+        insert acc_Client_Survey; 
+           
         User readOnlyUser = new User(
             LastName = 'LIVE',
             FirstName='JASON',
             Alias = 'jliv',
-            Email = 'jason.liveston@asdf.com',
+            Email = 'jason.liveston@crmit.com',
             Username = 'uhgDevReadOnly@crmit.com',
             ProfileId = [select Id, Name from Profile where name = 'Test No Access Profile' limit 1].id,
             TimeZoneSidKey = 'GMT',
             LanguageLocaleKey = 'en_US',
             EmailEncodingKey = 'UTF-8',
-            LocaleSidKey = 'en_US');
+            LocaleSidKey = 'en_US',
+            Position__c  = 'Test User');
         
         insert readOnlyUser;
     }

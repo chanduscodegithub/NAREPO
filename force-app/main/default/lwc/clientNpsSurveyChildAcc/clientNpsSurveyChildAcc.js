@@ -83,10 +83,9 @@ export default class ClientNpsSurveyChildAcc extends NavigationMixin(LightningEl
 
     }
     connectedCallback() {
-         if(!this.cmc){
+          if(!this.cmc){
                 this.isReadonlyCmc =false;
-            }
-        
+            } // Tracker 00003937
         let tempcontactRecord = {};
         this.eachcontactRecord = Object.assign({}, this.eachcontact);
         if (this.eachcontactRecord.Contact_Source__c != undefined) {
@@ -131,7 +130,7 @@ export default class ClientNpsSurveyChildAcc extends NavigationMixin(LightningEl
             } else if (this.eachcontactRecord['Correspondence_Type__c'].indexOf('Customer Survey - Secondary') !== -1) {
                 //this.eachcontactRecord['Correspondence_Type__c'] = 'Customer Survey - Secondary';
                 this.correspondenceTypeValue = 'Customer Survey - Secondary';
-                 // if (this.cmc)
+                // if (this.cmc)
                 //     this.isReadonlyCmc = false; // Tracker 00003937
             }
         } else {

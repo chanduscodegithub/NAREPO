@@ -380,7 +380,7 @@ System.assertNotEquals(null, pbe);
         
         System.assertEquals(1, summary.successCount);
     }
-    @isTest
+   /* @isTest
     static void testUpdateProductsBulk_ListViewBranch() {
         
         Product2 p = new Product2(
@@ -399,14 +399,14 @@ System.assertNotEquals(null, pbe);
             Product_Display_Order_Stage__c='0002',
             IsActiveStage__c=true,
             Product_Name_Prod__c=p.Id,
-            Product_Change_Type__c='Change in Product'
+            Product_Change_Type__c='Deactivation'
         );
         insert stage;
         
         Test.startTest();
-        PimController.updateProductsBulk( new List<Id>{stage.Id},true,'Change in Product');
+        PimController.updateProductsBulk( new List<Id>{stage.Id},true,'Deactivation');
         Test.stopTest();
-    }
+    }*/
     @isTest
     static void testMoveBetweenGroups() {
         

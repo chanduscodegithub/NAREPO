@@ -34,6 +34,7 @@ import {
 //---------------------------------SUMMARY---------------------------------
 import FundingArrangements from '@salesforce/schema/ProductMix__c.Funding_Arrangements__c';
 import GlobalProducts from '@salesforce/schema/ProductMix__c.Global_Products__c';//#3958
+
 import TieredBenefits from '@salesforce/schema/ProductMix__c.Tiered_Benefits__c';
 import Pharmacy from '@salesforce/schema/ProductMix__c.Pharmacy__c';
 import Surest from '@salesforce/schema/ProductMix__c.Surest__c';
@@ -183,7 +184,8 @@ import StopLoss from '@salesforce/schema/ProductMix__c.Stop_Loss__c';
 import UhcUmrTelehealth from '@salesforce/schema/ProductMix__c.UHC_UMR_Telehealth_Solutions__c';
 import UhcUmrMemberService from '@salesforce/schema/ProductMix__c.UHC_UMR_Member_Service_and_Tools__c';
 import UmrCobra from '@salesforce/schema/ProductMix__c.UMR_COBRA_Services__c';
-import MemberServiceVendor from '@salesforce/schema/ProductMix__c.Member_Service_Vendor__c';
+import MemberServiceVendor from '@salesforce/schema/ProductMix__c.Member_Service_Vendor__c'; 
+import Member_Digital_Tools_Vendor__c from '@salesforce/schema/ProductMix__c.Member_Digital_Tools_Vendor__c';  //Added CR-3847
 
 //------------------------------------------------------ADDITIONAL DETAILS------------------------------------------------------
 
@@ -265,12 +267,14 @@ export default class currentProductsCmp extends NavigationMixin(LightningElement
         fieldApiName: FundingArrangements
     })
     fundingArrangementsValues;
-    @wire(getPicklistValues, {
+
+    ///#3958
+     @wire(getPicklistValues, {
         recordTypeId: '$currentProductInfo.data.defaultRecordTypeId',
         fieldApiName: GlobalProducts
     })
     globalProductValues;
-
+    ///#3958
     @track tieredBenefitsValues;
     @wire(getPicklistValues, {
         recordTypeId: '$currentProductInfo.data.defaultRecordTypeId',
@@ -1837,6 +1841,22 @@ export default class currentProductsCmp extends NavigationMixin(LightningElement
             alert('ERROR');
         }
     }
+     @track memberdigitaltoolsvender;
+    @wire(getPicklistValues, {
+        recordTypeId: '$currentProductInfo.data.defaultRecordTypeId',
+        fieldApiName: Member_Digital_Tools_Vendor__c
+    })
+    getMember_Digital_Tools_Vendor__cValues(result) {
+        if (result.data) {
+            this.memberdigitaltoolsvender = [{
+                label: '--None--',
+                value: '',
+                selected: true
+            }, ...result.data.values];
+        } else if (result.error) {
+            alert('ERROR');
+        }
+    }
 
     @track uhcUmrMemberServiceValues;
     @wire(getPicklistValues, {
@@ -1935,7 +1955,6 @@ export default class currentProductsCmp extends NavigationMixin(LightningElement
     @api isWorksiteWellnessTrue;
 
     connectedCallback() {
-        
         this.cssDisplay = '';
         //this.sectionNames.push('SUMMARY INFORMATION - MEDICAL \\ RX \\ SPECIALTY BENEFITS \\ RETIREE:', 'SUMMARY INFORMATION - OPTUM PRODUCTS:');
         //this.activeSections = this.sectionNames;
@@ -2207,6 +2226,7 @@ export default class currentProductsCmp extends NavigationMixin(LightningElement
                     } else {
                         this.fundingArrangements = '';
                     }
+
                     ///-----#3958---------
                      if (result.Global_Products__c !== null && result.Global_Products__c !== undefined) {
                         this.globalProducts = result.Global_Products__c.split(';');
@@ -2214,6 +2234,7 @@ export default class currentProductsCmp extends NavigationMixin(LightningElement
                         this.globalProducts = '';
                     }
                     ///-----#3958---------
+
 
 
                 } else {

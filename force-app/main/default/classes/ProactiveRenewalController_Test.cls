@@ -37,7 +37,7 @@ public class ProactiveRenewalController_Test {
         
         List<Opportunity> oppLstToInsert = new List<Opportunity>();
         
-        oppLstToInsert.add(new Opportunity(AccountId = accListToInsert[0].Id,
+       oppLstToInsert.add(new Opportunity(AccountId = accListToInsert[0].Id,
                                            Name = 'Proactive Renewal Test Opportunity',
                                            Reason_for_the_Opportunity_Risk__c = 'Proactive Renewal',
                                            Product_Type_Involved_in_Opp__c = 'Pharmacy;Medical;Other Buy Up Programs',

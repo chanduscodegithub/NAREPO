@@ -31,18 +31,10 @@ else*/
                 //lastName = sceUser.Manager.LastName;
             }
             
-           /*  pipeLineURL = 'https://orbitbi-tableau.optum.com/t/SCRM/views/RVP-HomePage-PipelineAnalysis/PipelineAnalysis?VPCR%20RVP='+firstName+'&:showVizHome=no&:embed=true#2';
+            pipeLineURL = 'https://orbitbi-tableau.optum.com/t/SCRM/views/RVP-HomePage-PipelineAnalysis/PipelineAnalysis?VPCR%20RVP='+firstName+'&:showVizHome=no&:embed=true#2';
             netResultsURL = 'https://orbitbi-tableau.optum.com/t/SCRM/views/HomePage-NetResults/NetResults?VPCR%20RVP='+firstName+'&:showVizHome=no&:embed=true#2';
             bobURL = 'https://orbitbi-tableau.optum.com/t/SCRM/views/BoBAnalysis/BoBSummary?VPCR%20RVP='+firstName+'&:showVizHome=no&:embed=true#2';
             whiteSpaceURL = 'https://orbitbi-tableau.optum.com/t/SCRM/views/WhiteSpaceAnalysis-Homepage/WhiteSpaceHomepage?VPCR%20RVP%20='+firstName+'&:showVizHome=no&:embed=true#2';
-           */
-            
-            pipeLineURL = 'https://orbitbi-tableau.optum.com/t/SCRM/views/RVP-HomePage-PipelineAnalysis/PipelineAnalysis?:showVizHome=no&:embed=true#2';
-            netResultsURL = 'https://orbitbi-tableau.optum.com/t/SCRM/views/HomePage-NetResults/NetResults?:showVizHome=no&:embed=true#2';
-            bobURL = 'https://orbitbi-tableau.optum.com/t/SCRM/views/BoBAnalysis/BoBSummary?:showVizHome=no&:embed=true#2';
-            whiteSpaceURL = 'https://orbitbi-tableau.optum.com/t/SCRM/views/WhiteSpaceAnalysis-Homepage/WhiteSpaceHomepage?:showVizHome=no&:embed=true#2';
-            
-            
         }
     }
 }

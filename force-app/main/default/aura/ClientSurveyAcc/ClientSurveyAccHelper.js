@@ -37,6 +37,7 @@
             if (state === "SUCCESS") {
                 
                 let responseObj = response.getReturnValue();
+                console.log('Checking if check...', responseObj);
                 this.processCommonLogic(component, event, response);
                 component.set('v.businessLine', responseObj.businessLine);
                 
@@ -50,35 +51,47 @@
                 if (responseObj.isCustomTabVisible != null) {
                     component.set('v.isCustomTabVisible', responseObj.isCustomTabVisible);
                 }
-               //Added Vignesh CR-3847 -- CM Validation
+               //Added Vignesh CR-3847
                if(responseObj.isclientManagersCheck){
                    if(responseObj.isCMLoggedin)
                        component.set('v.isclientManagersCheck', true); 
                    else 
                        component.set('v.isclientManagersCheck', false); 
                }
-                else if(responseObj.issurestClientManagersCheck){
+               else if(responseObj.issurestClientManagersCheck){
                     if(responseObj.isSCMLoggedin)
                        component.set('v.isclientManagersCheck', true); 
                     else 
                        component.set('v.isclientManagersCheck', false); 
-               }
-                
+               } 
+               else if(responseObj.isumrClientManagersCheck){     //Added Vignesh - 18/08/25
+                    if(responseObj.isUMRLoggedin)
+                       component.set('v.isclientManagersCheck', true); 
+                    else 
+                       component.set('v.isclientManagersCheck', false); 
+               } 
                else if(responseObj.isspecialtyClientManagersCheck){ 
                     if(responseObj.isSBCMLoggedin)
                        component.set('v.isclientManagersCheck', true); 
                     else 
                        component.set('v.isclientManagersCheck', false); 
                }
-                
-               //Added Vignesh CR-3847 -- SCE Validation                
+
+               //Added Vignesh CR-3847 -- SCE Validation   
+                 console.log('Checking if check...', responseObj.isSCECheck);           
                 if(responseObj.iscmsceCheck){
+                    console.log('Checking CM SCE condition...');
+                    console.log('isCmsceLoggedin: ', responseObj.isCmsceLoggedin);
+                    
                    if(responseObj.isCmsceLoggedin)
                        component.set('v.iscmsceCheck', true); 
                    else 
                        component.set('v.iscmsceCheck', false); 
                }
                 else if(responseObj.issurestCmsceCheck){
+                    console.log('Checking Surest CM SCE condition...');
+                    console.log('isSurestCmsceLoggedin: ', responseObj.isSurestCmsceLoggedin);
+                    
                     if(responseObj.isSurestCmsceLoggedin)
                        component.set('v.iscmsceCheck', true); 
                     else 
@@ -86,16 +99,14 @@
                }
                 
                else if(responseObj.isspecialtybenefitsSceCheck){ 
+                   console.log('Checking Specialty Benefits SCE condition...');
+                   console.log('isSpeBenSceLoggedin: ', responseObj.isSpeBenSceLoggedin);
                     if(responseObj.isSpeBenSceLoggedin)
                        component.set('v.iscmsceCheck', true); 
                     else 
                        component.set('v.iscmsceCheck', false); 
                }
-                
-                
-                
-
-               
+               console.log('Final v.isSCECheck value: ', component.get('v.isSCECheck'));
                 
                 component.set('v.isMATabVisible', true);
                 //Added Vignesh CR-3847
@@ -104,7 +115,8 @@
                     component.set('v.isclientManagersCheck', true);                   
                 }
                 
-                if(responseObj.loggedInUserRoleName.UserRole.Name == 'CRM Administrator'){  
+                if(responseObj.loggedInUserRoleName.UserRole.Name == 'CRM Administrator' || responseObj.loggedInUserRoleName.UserRole.Name == 'Surest CM SVP'
+                    || responseObj.loggedInUserRoleName.UserRole.Name == 'CM VP' || responseObj.loggedInUserRoleName.UserRole.Name == 'CM VPCR/RVP'){  
                     component.set('v.iscmsceCheck', true);                   
                 }
                 
@@ -217,7 +229,6 @@
     processCommonLogic: function (component, event, response) {
         let responseObj = response.getReturnValue();
         component.set('v.loggedInUserRoleName', responseObj.loggedInUserRoleName);
-        
         let todayDate = new Date();
         component.set("v.excludeSpecialtyBenefitsSCESurvey", responseObj.getAMTList[0].Exclude_Specialty_Benefits_SCE_Survey__c);
        
@@ -226,7 +237,6 @@
                 var offset = new Date().getTimezoneOffset();
                 let startDate = new Date(new Date(responseObj.clientSurveyDates[i].Start_Date__c).setUTCMinutes(offset));
                 let endDate = new Date(new Date(responseObj.clientSurveyDates[i].End_Date__c).setUTCMinutes(offset));
-           
                 if (responseObj.loggedInUserRoleName.UserRole.Name == 'CRM Administrator' || responseObj.loggedInUserRoleName.UserRole.Name == 'CM SCE' || responseObj.loggedInUserRoleName.UserRole.Name == 'Surest CM SCE' || responseObj.loggedInUserRoleName.UserRole.Name == 'Surest CM SVP' || responseObj.loggedInUserRoleName.UserRole.Name == 'CM VP' || responseObj.loggedInUserRoleName.UserRole.Name == 'CM VPCR/RVP' || responseObj.loggedInUserRoleName.UserRole.Name == 'Specialty Benefits SCE') {
                     if (responseObj.clientSurveyDates[i].DeveloperName == "SCE_Validation") {
                         //if (new Date(todayDate.toLocaleDateString()) >= new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) && new Date(todayDate.toLocaleDateString()) <= new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate())) {
@@ -252,7 +262,6 @@
                         responseObj.loggedInUserRoleName.Position__c == 'Client Director'){
                     
                     if (responseObj.clientSurveyDates[i].DeveloperName == "CM_Valiadation") {
-                       
                         if(new Date(new Date(todayDate).toDateString())>= new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) && new Date(new Date(todayDate).toDateString()) <= new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate())) {
                             component.set('v.SCEValidationTime', false);
                             component.set('v.CMValidationTime', true);
@@ -755,7 +764,6 @@
                             var responseObj = response.getReturnValue();
                             component.set('v.SCE_Validation_By__c', responseObj.userName);
                             component.set('v.SCE_Validation_DateTime__c', responseObj.validatedDate);
-                            console.log('surveyList Value inside 11If >>>> ' + JSON.stringify(SCE_Validation_DateTime__c));
                             component.set('v.isLoading', false);
                             var toastEvent = $A.get("e.force:showToast");
                             toastEvent.setParams({

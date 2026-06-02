@@ -1,6 +1,6 @@
 public class TaskTriggerHelper {
     private static final Id QUALITY_RECORDTYPE_ID = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('Quality').getRecordTypeId();
-    private static final Set<String> VALID_SUBJECTS = new Set<String>{'BTB/SBC QA','BTB QA','CDS QA','ACIS QA','ID Card Design QA', 'SBC QA', 'PhBit QA', 'IMD QA', 'OBM QA','CDS QA Retro', 'CDS Part 1', 'CDS Part 2','Surest OBM','Surest OBM Part 1','Surest OBM Part 2','Surest OBM Part 1 & 2','DOC360 QA', 'BTB Policy QA'};
+    private static final Set<String> VALID_SUBJECTS = new Set<String>{'BTB/SBC QA','BTB QA','CDS QA','ACIS QA','ID Card Design QA', 'SBC QA', 'PhBit QA', 'IMD QA', 'OBM QA','CDS QA Retro', 'CDS Part 1', 'CDS Part 2','Surest OBM','Surest OBM Part 1','Surest OBM Part 2','Surest OBM Part 1 & 2','BTB Policy QA','DOC360 QA'};
         private static final Set<String> VALID_SUBJECTS_SUREST = new Set<String>{'OBM QA','Surest OBM','Surest OBM Part 1','Surest OBM Part 2','Surest OBM Part 1 & 2'};
             private static final Set<Date> HOLIDAY_DATES = getHolidayDates();
     private static final Set<Id> QA_TEAMS_IDS = getQATeamIds();
@@ -48,6 +48,11 @@ public class TaskTriggerHelper {
                 if(eachtask.RecordTypeId == QUALITY_RECORDTYPE_ID){   
                     if(eachtask.OwnerId != oldTaskMap.get(eachtask.Id).OwnerId) 
                     {
+                        if(eachtask.CustomUserLookup__c !=eachtask.OwnerId && (eachtask.Status!='Completed' || eachtask.Status!='Retro Completed' || eachtask.Status!='Enhancement Completed')){
+                            
+                            eachtask.Last_Assigned_To_Date__c = Datetime.now();
+                            eachtask.CustomUserLookup__c =eachtask.OwnerId;
+                        }
                         if(!QA_TEAMS_IDS.contains(UserInfo.getUserId()) && VALID_SUBJECTS.contains(eachtask.Subject)){
                             setActivityDate(eachtask,eachtask.OwnerId);
                         }else if(!QA_TEAMS_IDS.contains(eachtask.OwnerId) && VALID_SUBJECTS.contains(eachtask.Subject)){
@@ -67,7 +72,7 @@ public class TaskTriggerHelper {
                     }  
                 }
                 if(eachtask.Last_Assigned_To_Date__c!=null)
-                if(eachtask.Status =='Completed' || eachtask.Completed_Date__c != oldTaskMap.get(eachtask.Id).Completed_Date__c){
+                if((eachtask.Status =='Completed'||eachtask.Status =='Retro Completed' || eachtask.Status =='Enhancement Completed' ) || eachtask.Completed_Date__c != oldTaskMap.get(eachtask.Id).Completed_Date__c){
                     if(eachtask.Completed_Date__c!=null){
                         Integer d = eachtask.Completed_Date__c.day();
                         Integer mo = eachtask.Completed_Date__c.month();
@@ -155,7 +160,7 @@ public class TaskTriggerHelper {
         
         for(Integer i = 0; i < 50; i++){
             
-           /* if(VALID_SUBJECTS_SUREST.contains(eachtask.Subject) && bussinessDays == 4){
+            /* if(VALID_SUBJECTS_SUREST.contains(eachtask.Subject) && bussinessDays == 4){
                 break;
             }
             if(!VALID_SUBJECTS_SUREST.contains(eachtask.Subject) && bussinessDays == 3){
@@ -165,7 +170,6 @@ public class TaskTriggerHelper {
             if(bussinessDays == 4){
                 break;
             }
-            
             Date nextDate = presentDate.addDays(i); //today's date + 0
             DateTime dateDay = DateTime.newInstance(nextDate.year(), nextDate.month(), nextDate.day());  
             String nextDay = dateDay.format('EEEE');
@@ -203,7 +207,8 @@ public class TaskTriggerHelper {
         
         if(!isQAMember){
             for(Task tsk:newTaskList){
-                if(tsk.RecordTypeId == TaskRecordTypeId && oldTaskMap.get(tsk.Id).status == 'Completed' && tsk.Status != oldTaskMap.get(tsk.Id).status){
+                if(tsk.RecordTypeId == TaskRecordTypeId && (oldTaskMap.get(tsk.Id).Status == 'Completed' || oldTaskMap.get(tsk.Id).Status == 'Retro Completed' || 
+     oldTaskMap.get(tsk.Id).Status == 'Enhancement Completed') && tsk.Status != oldTaskMap.get(tsk.Id).status && tsk.Completed_Date__c != null){
                     tsk.addError('Cannot change task status from complete unless you are a QA Team Member');
                 }
             }

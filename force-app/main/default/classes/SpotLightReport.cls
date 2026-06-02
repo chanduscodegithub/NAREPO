@@ -1,4 +1,4 @@
-public with sharing class SpotLightReport {
+public with Sharing class SpotLightReport {
  @AuraEnabled
     public static List<Project_Template__c> getIPMData(){
         List<Project_Template__c> projTemp = [Select Id,Name,Account__r.Name, Effective_Date__c, Owner.Name, Number_of_Lives__c, Description__c, (Select Id,Start_Date__c,PRT_Name__c,Project_Task_Name__c from Project_Tasks__r WHERE Project_Task_Name__c='Effective Date') from Project_Template__c where Spotlight__c= true ORDER BY Name ASC];

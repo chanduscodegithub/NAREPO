@@ -42,7 +42,7 @@ public with sharing class CurrentProductsRestructuredController {
                        Real_Appeal__c, UHC_Motion__c, Wellness_Coaching__c, Shared_Savings_Program_Facility_R_C__c,
                        Site_of_Service_SOS_Office_Based__c, Arthroscopy__c, Foot_Surgery__c, Infertility__c, 
                        Radiology_Services__c, Cardiology_Services__c, ECRS_client__c, ECRS_Type__c, Engagement_Solutions_Client__c, Engagement_Solutions_Tier__c, 
-                       UHC_Cobra_Administration__c, Stop_Loss__c, UHC_UMR_Telehealth_Solutions__c, UHC_UMR_Member_Service_and_Tools__c, UMR_COBRA_Services__c, Member_Service_Vendor__c,
+                       UHC_Cobra_Administration__c, Stop_Loss__c, UHC_UMR_Telehealth_Solutions__c, UHC_UMR_Member_Service_and_Tools__c, UMR_COBRA_Services__c, Member_Service_Vendor__c,Member_Digital_Tools_Vendor__c,
                        Transplant_Resource_Services__c, Orthopedic_Solutions__c, Buoy__c, Surgical_Management_Solution_SMS__c,Stride__c, Complex_Care_Concierge_C3__c, 
                        Cancer_Guidance_Program__c, Site_of_Service_SOS_Outpatient_Facility__c, Commuter_Expense_Reimbursement_Account__c, Chronic_Obstructive_Pulmonary_Disease__c,
                        Care_Mgmt_Decision_Supprt_Women_s_Health__c, Pet_Insurance_FIGO__c, Payment_Integrity__c, Adult_Flu_Clinic__c, Biometric_Screening__c, Onsite_Fitness__c, 

@@ -1,7 +1,6 @@
 <aura:component controller="ClientSurveyCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" >
-    <aura:attribute name="isclientManagersCheck" type="Boolean" default="false"/> <!--  Added Vignesh CR - 3847 -->  
+    <aura:attribute name="isclientManagersCheck" type="Boolean" default="false"/> <!--  Added Vignesh CR - 3847 -->
     <aura:attribute name="iscmsceCheck" type="Boolean" default="false"/> <!--  Added Vignesh CR - 3847 -->
-
     
     <aura:attribute name="WorkItemsDataArray" type="String[]"/>
     <aura:attribute name="WorkItemsEmptyList" type="Boolean" default="false" />
@@ -234,9 +233,11 @@
                     </div>
                     
                     
-                    <br/>
+                      <br/>
                     <aura:if isTrue="{!v.hasTabAccess}">  
-                      <aura:if isTrue='{!v.isclientManagersCheck}'><!--  Added Vignesh CR - 3847 -->
+                        <!--  Added Vignesh CR - 3847 -->
+                        <!-- Reverting the changes related to 3847-->
+                      <!--aura:if isTrue='{!v.isclientManagersCheck}'>
                         <aura:if isTrue='{!v.cmcmc}'>
                             <lightning:button label="CM/CMC Validation" title="CM/CMC Validation" onclick="{!c.handleCMCMCValidation}"/>
                             <br/>
@@ -246,10 +247,21 @@
                             <br/>
                         </aura:if>
                        </aura:if> 
-                        <aura:if isTrue='{!v.iscmsceCheck}'><!--  Added Vignesh CR - 3847 -->
+                        <aura:if isTrue='{!v.iscmsceCheck}'>
                         <aura:if isTrue='{!v.isSce}'>
                             <lightning:button label="SCE Validation" title="SCE Validation" onclick="{!c.handleSCEValidation}"/>
                         </aura:if>
+                        </aura:if-->
+                        <aura:if isTrue='{!v.cmcmc}'>
+                            <lightning:button label="CM/CMC Validation" title="CM/CMC Validation" onclick="{!c.handleCMCMCValidation}"/>
+                            <br/>
+                        </aura:if>
+                        <aura:if isTrue='{!v.CMCMCADMIN}'>
+                            <lightning:button label="CM/CMC Validation" title="CM/CMC Validation" onclick="{!c.handleCMCMCValidation}"/>
+                            <br/>
+                       </aura:if> 
+                        <aura:if isTrue='{!v.isSce}'>
+                            <lightning:button label="SCE Validation" title="SCE Validation" onclick="{!c.handleSCEValidation}"/>
                         </aura:if>
                     </aura:if>
                 </div>

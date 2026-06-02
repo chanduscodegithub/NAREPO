@@ -43,14 +43,6 @@ public with sharing class SA_StandardBatchProcessor implements Database.Batchabl
 
     // Start method - constructs a dynamic SOQL query based on run mode to fetch either strategic or standard Q&A records.
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        /* List<Id> rfpQID = new List<Id>{
-            'a1Hdx000000KJuhEAG',
-                'a1Hdx000000KJujEAG',
-                'a1Hdx000000KJuiEAG',
-                'a1Hdx000000KJukEAG',
-                'a1Hdx000000KJulEAG',
-                'a1Hdx000000KJumEAG'
-                };*/                   //  'AND ID IN :rfpQID '+
 
         String base =
         'SELECT Id, RFP__c, RFP__r.Membership_Activity__c,' +

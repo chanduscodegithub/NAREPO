@@ -21,10 +21,10 @@ public class ClearCSSCEValidationBatchTest {
 
         insert amtRecords;
         
-        List<CM_Account_Team_History__c> NASaleRecords = new List<CM_Account_Team_History__c>();
+        List<CM_Account_Team_History__c> NASalesRecords = new List<CM_Account_Team_History__c>();
 
         for (Integer i = 0; i < 10; i++) {
-            NASaleRecords.add(new CM_Account_Team_History__c(
+            NASalesRecords.add(new CM_Account_Team_History__c(
                 Name = 'Test AMT Record ' + i,
                 Account_Firm__c = acc.Id,
                 SCE_Validated__c = true,
@@ -32,7 +32,7 @@ public class ClearCSSCEValidationBatchTest {
             ));
         }
 
-        insert NASaleRecords;
+        insert NASalesRecords;
     }
 
     @isTest
@@ -45,7 +45,7 @@ public class ClearCSSCEValidationBatchTest {
     }
     
     @isTest
-    static void testBatchExecutionNASales() {
+    static void testBatchNAExecution() {
         Test.startTest();
         ClearNASaleCSSCEValidationBatch batch = new ClearNASaleCSSCEValidationBatch();
         Database.executeBatch(batch, 200);

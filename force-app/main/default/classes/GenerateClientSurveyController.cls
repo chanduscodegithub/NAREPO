@@ -75,8 +75,21 @@ public with sharing class GenerateClientSurveyController {
         
         lstContact = ClientSurveyCtrl.getContactRecords(recordId);
         for(Contact con:lstContact){
-            if(con.Contact_Source__c != null){
-                con.Contact_Source__c = con.Contact_Source__c.replace(';','; ');
+            if (con.Contact_Source__c != null) {
+                
+                // Split into list
+                List<String> sources = con.Contact_Source__c.split(';');
+                
+                // Trim spaces (important before sorting)
+                for (Integer i = 0; i < sources.size(); i++) {
+                    sources[i] = sources[i].trim();
+                }
+                
+                // Sort alphabetically
+                sources.sort();
+                
+                // Join back with proper spacing
+                con.Contact_Source__c = String.join(sources, '; ');
             }
             if(con.Correspondence_Type__c != null){
                 con.Correspondence_Type__c = con.Correspondence_Type__c.replace(';','; ');
@@ -151,7 +164,7 @@ public with sharing class GenerateClientSurveyController {
            // String[] splits   = workItems.getAMTList[0].Specialty_SCE_Involved__c.split(' ');
            // specialitySCEInFN = splits[0];
            // specialitySCEInLN = splits[1];
-            specialitySCEInFN =workItems.getAMTList[0].Specialty_SCE__r.FirstName;
+           specialitySCEInFN =workItems.getAMTList[0].Specialty_SCE__r.FirstName;
             specialitySCEInLN =workItems.getAMTList[0].Specialty_SCE__r.LastName;
         }else{
             specialitySCEInFN = '';
@@ -165,7 +178,8 @@ public with sharing class GenerateClientSurveyController {
         SCE_Validation_DateTime 	= workItems.getAMTList[0].SCE_Validation_DateTime__c;
         
         for(Service_AMT__c amtObj : workItems.getAMTList[0].Service_AMT__r){
-            
+            system.debug(amtObj.Contact_Role__c);
+            system.debug(roleSequence);
             if(amtObj.Contact_Role__c != null && roleSequence.contains(amtObj.Contact_Role__c)){
                 
 				TeamMembers objTemp = new TeamMembers();

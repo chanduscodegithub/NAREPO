@@ -28,7 +28,7 @@ public class AccountStrategyMemoHandler {
             new FieldMapping('BillingCity', 'Headquarters_City__c'),
             new FieldMapping('Health_Plan_Manager_Industry__c', 'Health_Plan_Manager_Industry__c'),
             new FieldMapping('AnnualRevenue__c', 'Annual_Revenue__c'),
-           new FieldMapping('X2nd_Blues_Bid_Comments__c', 'Bidding_Blue_Plans__c'),
+            new FieldMapping('X2nd_Blues_Bid_Comments__c', 'Bidding_Blue_Plans__c'),
             new FieldMapping('Eligible_for_2nd_Blues_Bid__c', 'Eligible_for_second_Blues_bid__c')
         };
 
@@ -86,7 +86,7 @@ public class AccountStrategyMemoHandler {
                    KeyRiskstoourUBV__c,
                    OutcomeDrivers__c,
                    ApproachStrategy__c,
-                  Surest_Last_Action_Taken__c,
+                   Surest_Last_Action_Taken__c,
                    Surest_Next_Action_to_be_Taken__c,
                    Surest_Approach_Strategy__c,
                    Surest_Network_Constraints__c,

@@ -6,8 +6,9 @@
  * @last modified by  : Spoorthy
 **/
 public with sharing class ClientProfileEBDDownload {
+    
     @AuraEnabled
-     public static List<ContentVersion> returnDocIds(String accountId) {
+    public static List<ContentVersion> returnDocIds(string accountId){
         List<ContentVersion> result = new List<ContentVersion>();
         if (String.isBlank(accountId)) {
             return result;
@@ -21,13 +22,16 @@ public with sharing class ClientProfileEBDDownload {
             
             // 1. EBD-level files for this account and year
             List<EBD__c> ebdList = [
-                SELECT Id, Company__c, Year__c
+                SELECT Id, Company__c, Year__c,Company__r.Subtype__c
                 FROM EBD__c
                 WHERE Company__c = :accountId
                 AND Year__c = :ebdYear
                 ORDER BY LastModifiedDate DESC
                 LIMIT 1
             ];
+             list<Account> accList = new list<account>();
+            accList=[select id,name,Subtype__c,CM_SCE__c from account where id=:accountId];
+            //string businessLine =accList[0].Subtype__c;
             
             if (!ebdList.isEmpty()) {
                 Set<Id> ebdIds = new Set<Id>();
@@ -71,8 +75,23 @@ public with sharing class ClientProfileEBDDownload {
                     AND IsLatest = true
                     ORDER BY SystemModstamp DESC
                 ];
-                
+               // String bLine='';
                 if (!latestFiles.isEmpty()) {
+                    //  if(businessLine =='National Accounts - East'){
+                    //     bLine ='East';
+                    // }
+                    // else if(businessLine =='National Accounts - West'){
+                    //     bLine ='West';
+                    // }
+                    // else if(businessLine=='Enterprise Strategic Accounts'){
+                    //     bLine='ESA';
+                    // }
+                    // else
+                    //     bLine =businessLine;
+                    //     if(latestFiles[0].title.split('-')[0]!=bLine){
+                    //         latestFiles[0].title =bLine+'-'+latestFiles[0].title;
+                    //         update latestFiles;
+                    //     }
                     result.add(latestFiles[0]); // return the newest file
                 }
             }
@@ -83,10 +102,8 @@ public with sharing class ClientProfileEBDDownload {
         
         return result;
     }
-
-
-        
-        /****commented existing ebd  list<string> cmList =new List<string>();
+        /***Commented as part of mass export changes 17/sep/25
+         list<string> cmList =new List<string>();
         cmList.add('Client Subsidiary');cmList.add('Existing Client');
         cmList.add('Sold Client');cmList.add('Pending Transfer In Client');        
         Id currentUserId = UserInfo.getUserId();
@@ -117,7 +134,7 @@ public with sharing class ClientProfileEBDDownload {
             map<id,string> clinicalNurse =new map<id,string>();
             
             list<Service_AMT__c> serviceList = [SELECT Id, Company__c, Last_Name__c, First_Name__c, Contact_Role__c FROM Service_AMT__c WHERE Company__c=:accountList[0].Id AND Case_Management_End_Date__c = null and (contact_Role__c='UHC Medical Director' or contact_Role__c='Clinical Nurse')];
-            commented existing ebd ****/
+            Commented as part of Mass export changes***/
             /*for(Service_AMT__c ser:serviceList){
 string name='';
 if(ser.First_Name__c!=null){
@@ -136,8 +153,8 @@ clinicalNurse.put(ser.Company__c,name);
             
             // 3442 - By Lokesh
             // ebdList = [Select id,Company__c,Year__c,LastModifiedDate from EBD__c where Company__c=:accountList[0].Id AND (Year__c =: currentYearString OR Year__c =: previousYearString) ORDER BY lastmodifieddate desc];
-           /****commented existing ebd 
-             ebdList = [Select id,Company__c,Year__c,LastModifiedDate from EBD__c where Company__c=:accountList[0].Id AND (Year__c =: currentYearString) ORDER BY lastmodifieddate desc];
+             /***Commented as part of mass export changes 17/sep/25
+              ebdList = [Select id,Company__c,Year__c,LastModifiedDate from EBD__c where Company__c=:accountList[0].Id AND (Year__c =: currentYearString) ORDER BY lastmodifieddate desc];
             list<id> ebdIdList =new list<id>();
             map<id,EBD__c> ebdMapLatestYear = new map<id,EBD__c>();
             Map<Id,id> accMapEbd = new Map<Id,Id>();
@@ -200,41 +217,18 @@ clinicalNurse.put(ser.Company__c,name);
                     else
                         bLine =businessLine;
                     
-                    cv.title =bLine+'-'+'EBD - '+accName+' '+accMapEbdYear.get(accId); commneted existing ebd***///+' - '+medicalDirector.get(accId)+' - '+clinicalNurse.get(accId);
+                    cv.title =bLine+'-'+'EBD - '+accName+' '+accMapEbdYear.get(accId);//+' - '+medicalDirector.get(accId)+' - '+clinicalNurse.get(accId);
+                    Commented as part of mass export changes 17/sep/25***/
                     /*if(medicalDirector.get(accId)!=null){
 cv.title =cv.title+' - '+medicalDirector.get(accId);
 }
 if(clinicalNurse.get(accId)!=null){
 cv.Title =cv.Title+' - '+clinicalNurse.get(accId);
 }*/
-            /** commented existing legacy ebd }
+                 /***Commented as part of mass export changes 17/sep/25}
                 update as user contentVList;
-            }commented existing ebd**  /
-            /******To conisder new ebd files as well ********/
-          //String expectedYear = System.Label.ebd_year;
-       /** commented existing legacy ebd 
-         List<ContentDocumentLink> accountLinks = [
-            SELECT ContentDocumentId, ContentDocument.Title, LinkedEntityId, SystemModstamp 
-            FROM ContentDocumentLink
-            WHERE LinkedEntityId = :accountId
-            WITH USER_MODE
-            ORDER BY SystemModstamp DESC
-        ];
-
-        for (ContentDocumentLink link : accountLinks) {
-            String fileName = link.ContentDocument.Title;
-            if (String.isNotBlank(fileName)) {
-                List<String> parts = fileName.split('-');
-                if (!parts.isEmpty()) {
-                    String lastPart = parts[parts.size() - 1].trim();
-                    if (lastPart == ebd_year) {
-                        cdlList.add(link);  // add Account file to same list
-                    }
-                }
             }
         }
-
-    } 
         catch(exception e){
             system.debug(e.getCause());
             system.debug(e.getLineNumber());
@@ -243,15 +237,41 @@ cv.Title =cv.Title+' - '+clinicalNurse.get(accId);
         
         return cdlList;
         
-    } 
-legacy ebd*******/
+    } Commented as part of mass export changes 17/sep/25*/
+
+
+     @AuraEnabled(cacheable=true)
+    public static List<Map<String, String>> getPicklistValues(
+        String objectApiName,
+        String fieldApiName
+    ) {
+        List<Map<String, String>> picklistOptions = new List<Map<String, String>>();
+
+        Schema.DescribeFieldResult fieldResult =
+            Schema.getGlobalDescribe()
+                  .get(objectApiName)
+                  .getDescribe()
+                  .fields.getMap()
+                  .get(fieldApiName)
+                  .getDescribe();
+
+        for (Schema.PicklistEntry ple : fieldResult.getPicklistValues()) {
+            Map<String, String> option = new Map<String, String>();
+            option.put('label', ple.getLabel());
+            option.put('value', ple.getValue());
+            picklistOptions.add(option);
+        }
+
+        return picklistOptions;
+    }
+        
     @AuraEnabled(cacheable=true)
     public static list<Account> getAccountIdList(){
         list<string> cmList =new List<string>();
         cmList.add('Client Subsidiary');cmList.add('Existing Client');
         cmList.add('Sold Client');cmList.add('Pending Transfer In Client'); 
         list<Account> accList = new list<account>();
-        accList=[select id,name from account where Recordtype.Name IN:cmList];
+        accList=[select id,name,Subtype__c,CM_SCE__c from account where Recordtype.Name IN:cmList];
         return accList;
     }
     @AuraEnabled

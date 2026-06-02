@@ -1,12 +1,5 @@
-<!--
-  @description       : 
-  @author            : Spoorthy
-  @group             : 
-  @last modified on  : 09-03-2024
-  @last modified by  : Spoorthy
--->
 <apex:page extensions="ganttcontroller" standardController="Project_Template__c"  standardStylesheets="false" showHeader="false" action="{!getProjDatatest}"> 
-    <head> 
+  <head> 
         <apex:stylesheet value="{!URLFOR($Resource.DHTMLX_Latest, '/css/dhtmlxgantt.css')}"/> 
         <apex:stylesheet value="{!URLFOR($Resource.DHTMLX_Latest, '/css/style.css')}"/> 
         <apex:stylesheet value="{!URLFOR($Resource.DHTMLX_Latest, '/css/jquery_multiselect.css')}"/>
@@ -150,24 +143,24 @@
             
             
             .gantt_task_line.milestone_task .gantt_task_content{
-            left: 28px;
-            width:20px !important;
-            height: 20px !important;
-            display: inline-block;
-            background: #d33daf;
-            color:#d33daf;
-            visibility: visible !important;
-            border: 1px solid #61164f !important;
-            transform: rotate(45deg);
-            box-sizing: border-box;
+                left: 28px;
+                width:20px !important;
+                height: 20px !important;
+                display: inline-block;
+                background: #d33daf;
+                color:#d33daf;
+                visibility: visible !important;
+                border: 1px solid #61164f !important;
+                transform: rotate(45deg);
+                box-sizing: border-box;
             }
             
             .gantt_task_line.milestone_task {
-            border: none;
-            width: 70px !important;
-            height: 20px !important;
-            background-color: rgba(0,0,0,0) !important;
-            box-shadow: none;
+                border: none;
+                width: 70px !important;
+                height: 20px !important;
+                background-color: rgba(0,0,0,0) !important;
+                box-shadow: none;
             }
             
             .gantt_task_line.milestone_task .gantt_task_progress_wrapper,
@@ -202,13 +195,13 @@
             .chosen-container-multi .chosen-choices li.search-choice .search-choice-close{background-image: url({!URLFOR($Resource.close_icon)}) !important; width: 15px !important;background-size: 10px !important;background-position: 3px 0 !important;}
             .gantt_cal_larea{height: 366px !important;overflow-y: scroll !important;padding-bottom:20px !important;}
             .column_icon{
-            width: 18px;
-            height: 86%;
-            display: inline-block;
-            background-repeat: no-repeat;
-            background-position: center center;
-            vertical-align: top;
-            border-radius: 50%;
+                width: 18px;
+                height: 86%;
+                display: inline-block;
+                background-repeat: no-repeat;
+                background-position: center center;
+                vertical-align: top;
+                border-radius: 50%;
             }
             .slds-notify_container{z-index: 100000 !important }
         </style> 
@@ -305,98 +298,89 @@
                 <li class="gantt-menu-item gantt-menu-item-last"><a data-action="Delete"><svg class="slds-icon slds-icon-text-default slds-icon--x-small"><use href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#delete')}"></use></svg> Delete</a></li>
                 <li class="gantt-menu-item gantt-menu-item-right"><a data-action="fullscreen"><svg class="slds-icon slds-icon-text-default slds-icon--x-small"><use href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#desktop')}"></use></svg> Fullscreen</a></li>
                 <li class="gantt-menu-item gantt-menu-item-right gantt-menu-item-last"><a data-action="zoomToFit"><svg class="slds-icon slds-icon-text-default slds-icon--x-small"><use href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#zoomin')}"></use></svg> Zoom to Fit</a></li>
-                
+               
             </ul>
         </div>
         <div id="gantt_here" style='width:100%; height:70%;'>
         </div> 
         <script> 
+            
+            gantt.config.date_grid = "%D %m/%d/%Y";
+            
+            gantt.config.layout = {
+                css: "gantt_container",
+                cols: [
+                    {
+                        width:900,
+                        min_width: 100,
+                        rows:[
+                            {view: "grid", scrollX: "gridScroll", scrollable: true, scrollY: "scrollVer"},
+                            {view: "scrollbar", id: "gridScroll", group:"horizontal"}
+                        ]
+                    },
+                    {resizer: true, width: 1},
+                    {
+                        rows:[
+                            {view: "timeline", scrollX: "scrollHor", scrollY: "scrollVer"},
+                            {view: "scrollbar", id: "scrollHor", group:"horizontal"}
+                        ]
+                    },
+                    {view: "scrollbar", id: "scrollVer"}
+                ]
+            };
+            
+            gantt.init("gantt_here");
+            
+            gantt.addCalendar({
+                id:"custom",
+                worktime: {
+                    hours: ["8:00-17:00"],
+                    days: [ 1, 1, 1, 1, 1, 1 ,1]
+                }
+            });
+            gantt.config.auto_types = true;
+            gantt.config.work_time = true;
+            gantt.config.correct_work_time = true;
+            gantt.keys.edit_save = 32;
+            gantt.config.keyboard_navigation_cells = true;
+            gantt.config.auto_scheduling = true;
+            gantt.config.auto_scheduling_initial = true;
+            //gantt.config.auto_scheduling_strict = true;
+            gantt.config.row_height = 23;
+            gantt.config.fit_tasks = true;
+            gantt.config.show_unscheduled = true;
+            gantt.config.open_tree_initially = true;
+            gantt.config.order_branch = true;
+            gantt.config.order_branch_free = true;
+            gantt.config.cascade_delete = true;
+            gantt.config.date_grid = "%D %m/%d/%Y";
+            // added for performance increase
+            gantt.config.show_task_cells = false;
+            gantt.config.static_background = true;
+            gantt.config.branch_loading = true;
+            gantt.config.smart_scales = true;
+            //gantt.config.smart_rendering = false;
+            gantt.config.show_progress = false;
+            gantt.config.buttons_right = ["gantt_delete_btn11"];
+            gantt.locale.labels["gantt_delete_btn11"] = "";
+            
+           
+            gantt.attachEvent("onQuickInfo",function(taskId){
+                gantt.hideQuickInfo();
+                // your code here
+            });
         
-        gantt.config.date_grid = "%D %m/%d/%Y";
-        
-        gantt.config.layout = {
-            css: "gantt_container",
-            cols: [
-                {
-                    width:900,
-                    min_width: 100,
-                    rows:[
-                        {view: "grid", scrollX: "gridScroll", scrollable: true, scrollY: "scrollVer"},
-                        {view: "scrollbar", id: "gridScroll", group:"horizontal"}
-                    ]
-                },
-                {resizer: true, width: 1},
-                {
-                    rows:[
-                        {view: "timeline", scrollX: "scrollHor", scrollY: "scrollVer"},
-                        {view: "scrollbar", id: "scrollHor", group:"horizontal"}
-                    ]
-                },
-                {view: "scrollbar", id: "scrollVer"}
-            ]
-        };
-        
-        gantt.init("gantt_here");
-        
-        gantt.addCalendar({
-            id:"custom",
-            worktime: {
-                hours: ["8:00-17:00"],
-                days: [ 1, 1, 1, 1, 1, 1 ,1]
-            }
-        });
-        
-         gantt.addCalendar({
-            id:"Normal",
-            worktime: {
-                hours: ["0:00-23:59"],
-                days: [ 0, 1, 1, 1, 1, 1,0]
-            }
-        });
-         
-        gantt.config.auto_types = true;
-        gantt.config.work_time = true;
-        gantt.config.correct_work_time = true;
-        gantt.keys.edit_save = 32;
-        gantt.config.keyboard_navigation_cells = true;
-        gantt.config.auto_scheduling = true;
-        gantt.config.auto_scheduling_initial = true;
-        //gantt.config.auto_scheduling_strict = true;
-        gantt.config.row_height = 23;
-        gantt.config.fit_tasks = true;
-        gantt.config.show_unscheduled = true;
-        gantt.config.open_tree_initially = true;
-        gantt.config.order_branch = true;
-        gantt.config.order_branch_free = true;
-        gantt.config.cascade_delete = true;
-        gantt.config.date_grid = "%D %m/%d/%Y";
-        // added for performance increase
-        gantt.config.show_task_cells = false;
-        gantt.config.static_background = true;
-        gantt.config.branch_loading = true;
-        gantt.config.smart_scales = true;
-        //gantt.config.smart_rendering = false;
-        gantt.config.show_progress = false;
-        gantt.config.buttons_right = ["gantt_delete_btn11"];
-        gantt.locale.labels["gantt_delete_btn11"] = "";
-        
-        
-        gantt.attachEvent("onQuickInfo",function(taskId){
-            gantt.hideQuickInfo();
-            // your code here
-        });
-        
-        
-        var tempche;
-        var tempflag = {!JSENCODE(projecttemplateFlag)}
-        var isnewtask=false; 
-        
-        var startdate = '{!JSENCODE(TEXT(Project_Template__c.Start_Date__c))}';
-        var TempLookup = '{!JSENCODE(Project_Template__c.Project_Template__c)}';
-        var EffectiveDate = '{!JSENCODE(TEXT(Project_Template__c.Effective_Date__c))}';
-        var YearLabel = '{!$Label.Value_of_Year}';
-        var effectiveDateTasks = [];
-        
+            
+            var tempche;
+            var tempflag = {!JSENCODE(projecttemplateFlag)}
+            var isnewtask=false; 
+            
+            var startdate = '{!JSENCODE(TEXT(Project_Template__c.Start_Date__c))}';
+            var TempLookup = '{!JSENCODE(Project_Template__c.Project_Template__c)}';
+            var EffectiveDate = '{!JSENCODE(TEXT(Project_Template__c.Effective_Date__c))}';
+            var YearLabel = '{!$Label.Value_of_Year}';
+            var effectiveDateTasks = [];
+            
         gantt.config.start_date = startdate;
         function formatEndDate(task){
             var date;
@@ -423,17 +407,8 @@
                 date = gantt.calculateEndDate({start_date:task.end_date, duration:-1, task:task});
                 return gantt.templates.date_grid(date, task);
             }else{
-                // date = gantt.calculateEndDate({start_date:task.end_date, duration:-1, task:task});
-                //return gantt.templates.date_grid(date, task);
-                if(task.text.toUpperCase() === "EFFECTIVE DATE"){	
-                    date = gantt.calculateEndDate({start_date : task.start_date, duration : 0, task : task});	
-                    return gantt.templates.date_grid(date, task);	
-                }else{	
-                    //updateEffectiveDatePred(task);
-                    task['calendar_id']='Normal';
-                    date = gantt.calculateEndDate({start_date:task.end_date, duration:-1, task:task});	
-                    return gantt.templates.date_grid(date, task);	
-                }
+                date = gantt.calculateEndDate({start_date:task.end_date, duration:-1, task:task});
+                return gantt.templates.date_grid(date, task);
             }
             
         }
@@ -454,7 +429,7 @@
         var holiday_data = [];
         <apex:repeat value="{!holidayData}" var="holi">
             var holidayDate = gantt.date.convert_to_utc(new Date('{!holi.ActivityDate}'));
-        holiday_data.push(gantt.date.convert_to_utc(new Date(holidayDate.getFullYear(),holidayDate.getMonth(),holidayDate.getDate())));
+            holiday_data.push(gantt.date.convert_to_utc(new Date(holidayDate.getFullYear(),holidayDate.getMonth(),holidayDate.getDate())));
         </apex:repeat>
         
         for (var i = 0; i < holiday_data.length; i++) {
@@ -463,15 +438,15 @@
                 hours: false
             });
         }
-        
+       
         
         var ifcondition = "{!ifcondition}";
         var projrolelist =[
             <apex:repeat value="{!IPMupdateList}" var="ProjRole">
-            {
-            roleid : "{!ProjRole.id}",
-            rolestring: "{!ProjRole.IPM_Roles__c}",
-            },
+                {
+                roleid : "{!ProjRole.id}",
+                rolestring: "{!ProjRole.IPM_Roles__c}",
+                },
             </apex:repeat>
         ]
         
@@ -488,52 +463,50 @@
         let records = [];
         let taskLoopVar;
         let isAllExtChecked =  'checked';
-       
         
         if('{!thousandBlocks[0].cases.size}' == '0'){
             isAllExtChecked = '';
-           
         }
         
         
         <apex:repeat value="{!thousandBlocks}" var="proj">
             <apex:repeat value="{!proj.cases}" var="aflA">
-              
                 taskLoopVar = {
-                sfdcid : "{!aflA.id}",
-                wbs : "{!aflA.WBS_Code__c}",
-                Duration :  "{!aflA.Duration__c}",
-                text :  "{!aflA.Project_Task_Name__c}",
-                start_date : "{!aflA.Start_Date__c}",
-                end_date : "{!aflA.End_Date__c}",
-                predecessor: "{!aflA.predecessors__c}", 
-                projId : "{!aflA.Project_Task_Id__c}",
-                parentid:"{!aflA.Parent__c}",  
-                target:"{!aflA.target__c}",
-                source:"{!aflA.source__c}",
-                type:"{!aflA.type__c}",
-                linkid:"{!aflA.linkId__c}",
-                owner_id:"{!aflA.Resource_Id__c}",
-                Owner:"{!aflA.Owner__c}",
-                lag :"{!aflA.lag__c}",
-                projtype : "{!aflA.Project_Type__c}",
-                RowNum : "{!aflA.Row_Number__c}",
-                checked: "{!aflA.Checked__c}",
-                progress: "{!aflA.Progress__c}",
-                PR_Name : "{!aflA.PRT_Name__r.Project_Template__c}",
-                actual_finish_date : "{!aflA.Actual_Finish__c}",
-                Notes :"{!SUBSTITUTE(JSENCODE(aflA.Notes__c), '\\u003Cbr /\\u003E', '')}",
-                dashboard : "{!aflA.Dashboard__c}",
-                Additional_Comments : "{!SUBSTITUTE(JSENCODE(aflA.Additional_Comments__c), '\\u003Cbr /\\u003E', '')}",
-                split : {!aflA.Mark_as_Milestone__c}?"[true]":"[false]"
-            };
-        if({!aflA.Checked__c} == false){
-            isAllExtChecked = '';
-        }
-        
-        recordstemplate.push({ ...taskLoopVar });
-        records.push({ ...taskLoopVar })
-        </apex:repeat>
+                
+                    sfdcid : "{!aflA.id}",
+                    wbs : "{!aflA.WBS_Code__c}",
+                    Duration :  "{!aflA.Duration__c}",
+                    text :  "{!aflA.Project_Task_Name__c}",
+                    start_date : "{!aflA.Start_Date__c}",
+                    end_date : "{!aflA.End_Date__c}",
+                    predecessor: "{!aflA.predecessors__c}", 
+                    projId : "{!aflA.Project_Task_Id__c}",
+                    parentid:"{!aflA.Parent__c}",  
+                    target:"{!aflA.target__c}",
+                    source:"{!aflA.source__c}",
+                    type:"{!aflA.type__c}",
+                    linkid:"{!aflA.linkId__c}",
+                    owner_id:"{!aflA.Resource_Id__c}",
+                    Owner:"{!aflA.Owner__c}",
+                    lag :"{!aflA.lag__c}",
+                    projtype : "{!aflA.Project_Type__c}",
+                    RowNum : "{!aflA.Row_Number__c}",
+                    checked: "{!aflA.Checked__c}",
+                    progress: "{!aflA.Progress__c}",
+                    PR_Name : "{!aflA.PRT_Name__r.Project_Template__c}",
+                    actual_finish_date : "{!aflA.Actual_Finish__c}",
+                    Notes : "{!SUBSTITUTE(JSENCODE(aflA.Notes__c), '\\u003Cbr /\\u003E', '')}",
+                    dashboard : "{!aflA.Dashboard__c}",
+                    Additional_Comments : "{!SUBSTITUTE(JSENCODE(aflA.Additional_Comments__c), '\\u003Cbr /\\u003E', '')}",
+                    split : {!aflA.Mark_as_Milestone__c}?"[true]":"[false]"
+                    };
+            if({!aflA.Checked__c} == false){
+                isAllExtChecked = '';
+            }
+       
+            recordstemplate.push({ ...taskLoopVar });
+            records.push({ ...taskLoopVar })
+            </apex:repeat>
         </apex:repeat>
         
         
@@ -670,29 +643,20 @@
                                type:str_array2[j],
                                lag:str_array3[j]};
                     // instead of calling gantt.init/gantt.parse - put data items into arrays you defined before
-                    if(records[i].text.toUpperCase() === "EFFECTIVE DATE"){	
-                        rowDataObj['calendar_id'] = 'custom';	
-                    } else
-                        rowDataObj['calendar_id'] = 'Normal';
+                    
                     ganttData.data.push(rowDataObj);
                     ganttData.links.push(linkObj);
                     
                 }
             }else if(records[i].linkid=='undefined' ||records[i].linkid==''){
-                if(records[i].text.toUpperCase() === "EFFECTIVE DATE"){	
-                    rowDataObj['calendar_id'] = 'custom';	
-                }  else
-                        rowDataObj['calendar_id'] = 'Normal';
+                
                 ganttData.data.push(rowDataObj);
                 
             }else{ 
-                if(records[i].text.toUpperCase() === "EFFECTIVE DATE"){	
-                    rowDataObj['calendar_id'] = 'custom';	
-                }  else
-                        rowDataObj['calendar_id'] = 'Normal';
+                
                 ganttData.data.push(rowDataObj);
                 ganttData.links.push(linkObj);
-            }
+             }
         }
         
         gantt.attachEvent("onTaskLoading", function(task){
@@ -733,10 +697,6 @@
             gantt.batchUpdate(function () {
                 var task = gantt.getTaskByTime();
                 for(var i=0; i<task.length ; i++){
-                    if(task[i].text.toUpperCase()==="EFFECTIVE DATE"){	
-                        task[i].calendar_id='custom';    	
-                    }else
-                        task[i].calendar_id='Normal'; 
                     gantt.updateTask(task[i].id,task[i]);
                 }
             });
@@ -854,7 +814,7 @@
                             
                             task[i].predecessors = labels.join(", ");
                             task[i].RowNum = task[i].RowNum;
-                            
+                           
                             
                             if(task[i].id != null && task[i].id != undefined){
                                 //gantt.autoSchedule(task[i].id);
@@ -1095,7 +1055,6 @@
             {key: "{!own.Name}",label: "{!own.Name}"},
             </apex:repeat>
         ]);
-         console.log('Veera');
         console.log(gantt.serverList());
         //resource code -----------
         /*  gantt.serverList("priority", [
@@ -1172,7 +1131,7 @@
             progress: {type: "number", map_to: "progress"},
             owner: {type: "select", map_to: "owner", options:gantt.serverList("owner")},
             Notes : {type: "text", map_to: "Notes"},
-            Additional_Comments : {type:"textarea",map_to:"Additional_Comments"},
+            Additional_Comments : {type:"text",map_to:"Additional_Comments"},
             split :{type :"checkbox",map_to :"split"},
             add : {type:"add",map_to:"add"}
         };
@@ -1371,10 +1330,7 @@
         gantt.attachEvent("onLightboxSave", function(id, task, is_new){
             console.log('onLightboxSave called')
             var sDate =task.start_date;
-            if(task.text.toUpperCase()==="EFFECTIVE DATE"){	
-                task.calendar_id='custom';	
-            }else
-                task.calendar_id='Normal';
+             
             serdata.push(task);
             savelist.push(task);
             var Today = gantt.date.convert_to_utc(new Date());
@@ -1919,12 +1875,7 @@
                 task.duration = 1;
                 task.end_date  = gantt.calculateEndDate({start_date: startdt, duration: task.duration});
             }
-            if(task.text.toUpperCase()==="EFFECTIVE DATE"){	
-                task.calendar_id='custom'	
-            }
-            else
-                task.calendar_id='Normal';
-            
+           
             if(task.parent >0 && task.actual_finish != null && task.actual_finish !='' && task.actual_finish != undefined && task.actual_finish !='N/A'){
                 parenttasktype = gantt.getTask(task.parent);
                 childIds = gantt.getChildren(task.parent);
@@ -2202,7 +2153,7 @@
                 
                //task.predecessors
             */
-            // updateEffectiveDatePred(task);
+           
             return true;
         });
         
@@ -2213,12 +2164,7 @@
         
         
         gantt.attachEvent("onAfterTaskAdd", function(id,item){
-            console.log('onAfterTaskAdd called');	
-            if(item.text.toUpperCase()==="EFFECTIVE DATE"){	
-                item.calendar_id='custom';	
-            }
-            else
-                item.calendar_id='Normal';	
+           
             // serdata.push(item);//pushing New Gantt data for Navigation
             tasklist.push(item);
             
@@ -2482,10 +2428,7 @@
                     }
                     var taskpred = task[i].$target;
                     var taskid =[];
-                    if(task[i].text.toUpperCase()==="EFFECTIVE DATE"){	
-                        task[i].calendar_id='custom';	
-                    }
-                    
+                   
                     //console.log('taskpred>>>>>'+taskpred);
                     if(task[i].$target == null || task[i].$target == undefined || task[i].$target == '' || task[i].$target.length == 0)
                     {
@@ -2594,10 +2537,7 @@
                             }
                         }
                     }
-                    if(task[i].text.toUpperCase()==="EFFECTIVE DATE"){	
-                        task[i].calendar_id='custom';	
-                    }else
-                task.calendar_id='Normal';
+                    
                     gantt.updateTask(task[i].id,task[i]);
                     gantt.refreshTask(task[i].id);
                 }
@@ -2606,17 +2546,17 @@
             gantt.autoSchedule();
             gantt.render();
             
-            
-            
-            
+                      
+           
+           
             
         });
         
-        
+       
         function selectAllExt(){
-            
+           
             isAllExtChecked = document.querySelector('.ext-selectAll').checked;
-            
+                        
             gantt.batchUpdate(function () {
                 
                 
@@ -2627,10 +2567,10 @@
                     gantt.updateTask(tasks[i].id,tasks[i]);
                 }
                 setTimeout(function(){
-                    document.querySelector('.ext-selectAll').checked = isAllExtChecked
-                    console.log('settimeout called after refresh',isAllExtChecked);
+                     document.querySelector('.ext-selectAll').checked = isAllExtChecked
+                     console.log('settimeout called after refresh',isAllExtChecked);
                 }, 200);
-                
+               
                 
             });
             
@@ -2863,7 +2803,7 @@
                     
                     //var tasklist =records;
                     
-                    function taskDetail(id, action){
+      function taskDetail(id, action){
                 var recordid;
                 var iddup = id;
                 for(var i = 0; i < serdata.length; i++){
@@ -2885,7 +2825,7 @@
                     } */
                     
                 }
-            }
+      }
             /*gantt.attachEvent("onTaskRowClick", function(id,row){
                 
                 var checkbox = row.querySelector(".gantt-checkbox-column");
@@ -2925,7 +2865,7 @@
             
             if(tempflag == true)
             {
-                
+               
                 gantt.config.drag_progress = false;
                 gantt.config.columns = [
                     {name:"add",width:40},
@@ -2947,32 +2887,19 @@
                     template: colContent
                     },
                     {name:"checked", label:"Ext <input class='ext-selectAll' type='checkbox' onClick='selectAllExt();' "+isAllExtChecked+" />" ,width: 50,min_width: 50,
-                    resize: true, 
-                    template:function(task){
-                    var boolVal = false;
-                    if(task.checked == 'true'){
-                    boolVal = true
-                    }
-                    var checked = !!boolVal ? " checked" : "";
-                    return "<input onclick='checkbox_check("+task.id+")'  data-taskId='"+task.id+"'  class='gantt-checkbox-column extCheck' type='checkbox' " +checked+ "/>";
+                        resize: true, 
+                        template:function(task){
+                        var boolVal = false;
+                        if(task.checked == 'true'){
+                            boolVal = true
+                        }
+                        var checked = !!boolVal ? " checked" : "";
+                        return "<input onclick='checkbox_check("+task.id+")'  data-taskId='"+task.id+"'  class='gantt-checkbox-column extCheck' type='checkbox' " +checked+ "/>";
                     }
                     },
                     {name:"RowNum",label:"Row #", width: 50,min_width: 50, align: "center",resize: true,template:gantt.getTaskNumber},
                     {name: "wbs", label: "WBS", width: 60,min_width: 60,resize: true, align: "center", template: gantt.getWBSCode},
-                    /*{name: "axis", label: "Axis", width: 60,min_width: 60,resize: true, align: "center", template: gantt.getWBSCode},*/
-                    /*** Added Axis Row */
-                     {name:"checked", label:"AXIS <input class='ext-selectAll' type='checkbox' onClick='selectAllExt();' "+isAllExtChecked+" />" ,width: 50,min_width: 50,
-                    resize: true, 
-                    template:function(task){
-                    var boolVal = false;
-                    if(task.checked == 'true'){
-                    boolVal = true
-                    }
-                    var checked = !!boolVal ? " checked" : "";
-                    return "<input onclick='checkbox_check("+task.id+")'  data-taskId='"+task.id+"'  class='gantt-checkbox-column extCheck' type='checkbox' " +checked+ "/>";
-                    }
-                    },
-
+                    
                     {name: "text", label: "Task Name", tree: true, width: 150,min_width: 150, align: "left",editor: editors.text, resize: true},        
                     {name: "start_date", label: "Start",  width: 120,min_width: 120,editor: editors.start_date, align: "center",  resize: true},      
                     {name: "end_date", label: "Projected Finish",width: 120,min_width: 120, editor: editors.end_date, align: "center", template:formatEndDate, resize: true},
@@ -3104,128 +3031,116 @@
                 }
             },
                 
-                //{name: "priority", label: "Priority", width: 100,min_width: 100, align: "center", editor: editors.priority, template: priorityLabel, resize: true},
+                 //{name: "priority", label: "Priority", width: 100,min_width: 100, align: "center", editor: editors.priority, template: priorityLabel, resize: true},
                 {name: "Notes", label: "Comments",width:165, min_width: 150, align: "center", editor: editors.Notes,resize: true},
-                    {name: "Additional_Comments", label: "Internal Comments", width: 150,min_width: 150, align: "center", editor: editors.Additional_Comments, resize: true},
-                        
-                        ];
+                {name: "Additional_Comments", label: "Internal Comments", width: 150,min_width: 150, align: "center", editor: editors.Additional_Comments, resize: true},
+        
+        ];
         }
         // for project flow 
         else
         {
-            
+           
             gantt.config.drag_progress = true;
             gantt.config.columns = [
                 {name:"add", width:40, min_width: 40, resize: true},
                 {name:"dashboard", label:'<svg class="slds-icon slds-icon-text-default slds-icon--medium slds-m-top_x-small" style="fill:rgba(0, 0, 0, 0.7);"><use href="{!URLFOR($Resource.SLDS, '/assets/icons/standard-sprite/svg/symbols.svg#metrics')}"></use></svg>',width: 30,min_width: 30,resize: true,
                  template:function(task){
-                 var boolVal = false;
-                 if(task.dashboard == 'true'){
-                 boolVal = true
-                }
-                var checked1 = !!boolVal ? " checked" : "";
-                return "<input onclick='dashboardcheck("+task.id+")' class='gantt-checkbox-column' type='checkbox' name='test' id='test' value='1' " +checked1+ "/>";
+                     var boolVal = false;
+                     if(task.dashboard == 'true'){
+                         boolVal = true
+                    }
+                    var checked1 = !!boolVal ? " checked" : "";
+                    return "<input onclick='dashboardcheck("+task.id+")' class='gantt-checkbox-column' type='checkbox' name='test' id='test' value='1' " +checked1+ "/>";
                 }
                 },
                 {name:"farol",label:"Status", width:50,min_width:50 , align: "center", template:function(obj){
-                var color = statuscheck(obj);
-                return "<div class='column_icon' style=background-color:"+color+"></div>"} 
+                    var color = statuscheck(obj);
+                    return "<div class='column_icon' style=background-color:"+color+"></div>"} 
                 }, 
                 {
-                name: "buttons", label:'<svg class="slds-icon slds-icon-text-default slds-icon--x-small slds-m-top_medium" style="fill:rgba(0, 0, 0, 0.7);"><use href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#new_window')}"></use></svg>',width: 40,min_width: 40,
-                template: colContent
+                    name: "buttons", label:'<svg class="slds-icon slds-icon-text-default slds-icon--x-small slds-m-top_medium" style="fill:rgba(0, 0, 0, 0.7);"><use href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#new_window')}"></use></svg>',width: 40,min_width: 40,
+                    template: colContent
                 },
                 {name:"checked", label:"Ext <input class='ext-selectAll' type='checkbox' onClick='selectAllExt();' name='test' id='test' value='1' "+isAllExtChecked+" />", width: 50, min_width: 50, resize: true,
-                template:function(task){
-                var boolVal = false;
-                if(task.checked == 'true'){
-                boolVal = true
-                }
-                var checked = !!boolVal ? " checked" : "";
-                return "<input onclick='checkbox_check("+task.id+")' data-taskId='"+task.id+"' class='gantt-checkbox-column extCheck' type='checkbox'  " +checked+ "/>";
-                }
+                    template:function(task){
+                        var boolVal = false;
+                        if(task.checked == 'true'){
+                            boolVal = true
+                        }
+                        var checked = !!boolVal ? " checked" : "";
+                        return "<input onclick='checkbox_check("+task.id+")' data-taskId='"+task.id+"' class='gantt-checkbox-column extCheck' type='checkbox'  " +checked+ "/>";
+                    }
                 },
                 {name:"RowNum",label:"Row #",  width: 50,min_width: 50, align: "center",resize: true,template:gantt.getTaskNumber},
                 {name: "wbs", label: "WBS",width: 60,min_width: 60,align: "center",resize: true, template: gantt.getWBSCode},
-                /* {name: "axis", label: "AXIS",width: 60,min_width: 60,align: "center",resize: true, template: gantt.getWBSCode},*/
-                {name:"checked", label:"AXIS <input class='ext-selectAll' type='checkbox' onClick='selectAllExt();' name='test' id='test' value='1' "+isAllExtChecked+" />", width: 50, min_width: 50, resize: true,
-                template:function(task){
-                var boolVal = false;
-                if(task.checked == 'true'){
-                boolVal = true
-                }
-                var checked = !!boolVal ? " checked" : "";
-                return "<input onclick='checkbox_check("+task.id+")' data-taskId='"+task.id+"' class='gantt-checkbox-column extCheck' type='checkbox'  " +checked+ "/>";
-                }
-                },
-
                 
                 {name: "text", label: "Task Name", tree: true, width: 150,min_width: 150,align: "left", editor: editors.text, resize: true},        
                 {name: "start_date", label: "Start",  width: 120,min_width: 120,editor: editors.start_date, align: "center",  resize: true},      
                 {name: "end_date", label: "Projected Finish",width: 120,min_width: 120, editor: editors.end_date, align: "center", template:formatEndDate, resize: true},
                 {name: "actual_finish", label: "Actual Finish", width:100,min_width: 180, editor: editors.actual_finish ,align: "center", resize: true,
-                template : function(task){
-                var actual_finish = task.actual_finish;
-                if(actual_finish == null){
-                actual_finish ='N/A';
-                }else{
-                //actual_finish = gantt.date.add(actual_finish, -1, gantt.config.duration_unit);
-                actual_finish = actual_finish;
-                }
-                return actual_finish;
-                }
+                    template : function(task){
+                        var actual_finish = task.actual_finish;
+                        if(actual_finish == null){
+                            actual_finish ='N/A';
+                        }else{
+                            //actual_finish = gantt.date.add(actual_finish, -1, gantt.config.duration_unit);
+                            actual_finish = actual_finish;
+                        }
+                        return actual_finish;
+                    }
                 },
                 
                 {name: "duration", label:'<svg class="slds-icon slds-icon-text-default slds-icon--small slds-m-top_small" style="fill:rgba(0, 0, 0, 0.7); width:20px "><use href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#clock')}"></use></svg>',width:40,min_width: 40, align: "center", editor: editors.duration, resize: true},
                 {name: "predecessors", label: "Predecessors",width:100,min_width: 100, align: "center",editor: editors.predecessors, resize: true,
-                template: function(task){
-                var links = task.$target;
-                var labels = [];
-            var types = [];
-            
-            for(var i = 0; i < links.length; i++){
-                var link = gantt.getLink(links[i]);
-                //alert('link'+JSON.stringify(link));
-                var pred = gantt.getTask(link.source);
-                // alert('pred'+JSON.stringify(pred));
-                var index = pred.$index;
-                index = index+1;
-                var typ = link.type;
-                var lag = link.lag;
-                if(typ == 0){
-                    typedup = 'FS';
-                }else if(typ == 1){
-                    typedup = 'SS';
-                }else if(typ == 2){
-                    typedup = 'FF';
-                }else if(typ == 3){
-                    typedup = 'SF';
-                }
-                var sign;
-                if(lag >= 0){
-                    sign ='+';
-                }else{
-                    sign ='';  
-                }
+                    template: function(task){
+                        var links = task.$target;
+                        var labels = [];
+                        var types = [];
                 
-                //alert('lag>>'+lag);
-                if(lag == null || lag == '' || lag == undefined)
-                {
-                    lag =0;
-                    sign ='+';
-                    if(labels.indexOf(gantt.getTaskNumber(pred)+typedup+sign+lag+'days') == -1){
-                        labels.push(gantt.getTaskNumber(pred)+typedup+sign+lag+'days');
+                        for(var i = 0; i < links.length; i++){
+                            var link = gantt.getLink(links[i]);
+                            //alert('link'+JSON.stringify(link));
+                            var pred = gantt.getTask(link.source);
+                            // alert('pred'+JSON.stringify(pred));
+                            var index = pred.$index;
+                            index = index+1;
+                            var typ = link.type;
+                            var lag = link.lag;
+                            if(typ == 0){
+                                typedup = 'FS';
+                            }else if(typ == 1){
+                                typedup = 'SS';
+                            }else if(typ == 2){
+                                typedup = 'FF';
+                            }else if(typ == 3){
+                                typedup = 'SF';
+                            }
+                            var sign;
+                            if(lag >= 0){
+                                sign ='+';
+                            }else{
+                                sign ='';  
+                            }
+                            
+                            //alert('lag>>'+lag);
+                            if(lag == null || lag == '' || lag == undefined)
+                            {
+                                lag =0;
+                                sign ='+';
+                                if(labels.indexOf(gantt.getTaskNumber(pred)+typedup+sign+lag+'days') == -1){
+                                    labels.push(gantt.getTaskNumber(pred)+typedup+sign+lag+'days');
+                                }
+                            }else{ 
+                                if(labels.indexOf(gantt.getTaskNumber(pred)+typedup+sign+lag+'days') == -1){
+                                    labels.push(gantt.getTaskNumber(pred)+typedup+sign+lag+'days');
+                                }
+                                
+                            }
+                        }
+                        return labels.join(", ")
                     }
-                }else{ 
-                    if(labels.indexOf(gantt.getTaskNumber(pred)+typedup+sign+lag+'days') == -1){
-                        labels.push(gantt.getTaskNumber(pred)+typedup+sign+lag+'days');
-                    }
-                    
-                }
-            }
-            return labels.join(", ")
-        }
-        },
+                },
             
             //{name: "owner", label: "Owner",width:90,min_width: 90, align: "center", editor: editors.owner, template: ownerLabel, resize: true},
             {name: "owner", align: "center", width: 80, label: "Resources", resize: true,
@@ -3287,7 +3202,7 @@
             },
                 //{name: "priority", label: "Priority",width:100,min_width: 100, align: "center", editor: editors.priority, template: priorityLabel, resize: true},
                 {name: "Notes", label: "Comments", width:165, min_width: 150, align: "center", editor: editors.Notes,resize: true},
-                    {name: "Additional_Comments", label: "Internal Comments", width: 150,min_width: 150, align: "center", editor: editors.Additional_Comments, resize: true}
+                {name: "Additional_Comments", label: "Internal Comments", width: 150,min_width: 150, align: "center", editor: editors.Additional_Comments, resize: true}
         
         /*  {name: "progress", label: "Progress %",  width: 120,min_width: 120,resize: true,editor: editors.progress, align: "center", template: function (task) {
                 var progress = task.progress || 0;
@@ -3319,11 +3234,11 @@
             
             checkAllExtCheckboxes();
             
-            
+           
         };
         
         function checkAllExtCheckboxes(){
-            
+           
             let allRecords  = document.querySelectorAll('.extCheck');
             let uncheckExists = false;
             for (let i = 0; i < allRecords.length; i++) {
@@ -3337,7 +3252,7 @@
             console.log(document.querySelector('.ext-selectAll').checked);
             isAllExtChecked = !uncheckExists
             
-            
+                      
         }
         
         function dashboardcheck(id){
@@ -3424,6 +3339,7 @@
                 if(dateToCheck.getDate() === holidayData[eachHoliday].getDate() && dateToCheck.getMonth() === holidayData[eachHoliday].getMonth() && dateToCheck.getYear() === holidayData[eachHoliday].getYear())
                 {
                     isHoliday=true;
+                  
                 }
                 
             }
@@ -3724,10 +3640,7 @@
             if(task.type == gantt.config.types.placeholder){
                 task.text = "New Task";
             }
-            if(task.text.toUpperCase()==="EFFECTIVE DATE"){	
-                task.calendar_id='custom';	
-            }else
-                task.calendar_id='Normal';
+            
             return true;
         });
         //--------------------- new code to datepicker ---------------
@@ -3861,31 +3774,17 @@
         gantt.attachEvent("onBeforeTaskUpdate", function(id,new_item){
             
             var task = gantt.getTask(id);
-            if(task.text.toUpperCase() === "EFFECTIVE DATE"){	
-                
-                if(new_item.duration == 0){	
-                    new_item.duration = 1;	
-                    //new_item.end_date = new_item.start_date;	
-                }	
-                task.calendar_id = 'custom';	
-                /*new_item.start_date = new_item.start_date;	
-                new_item.end_date = new_item.end_date;	
-                new_item.actual_finish = new_item.actual_finish;	
-                */	
-                //new_item.actual_finish = gantt.date.add(new_item.actual_finish, -1, 'day');	
-            }else{
-                if(!gantt.isWorkTime(new_item.start_date)) {
-                    new_item.start_date = gantt.getClosestWorkTime({date:new_item.start_date, dir:"future" });
-                }
-                if(!gantt.isWorkTime(new_item.end_date)) {
-                    new_item.end_date = gantt.getClosestWorkTime({date:new_item.end_date, dir:"past" });
-                }
-                if(new_item.actual_finish != null && new_item.actual_finish != '' && new_item.actual_finish != 'N/A' && new_item.actual_finish != undefined)
-                {
-                    if(!gantt.isWorkTime(new_item.actual_finish)) {
-                        new_item.actual_finish = gantt.getClosestWorkTime({date:new_item.actual_finish, dir:"past" });
-                        new_item.actual_finish = gantt.date.add(new_item.actual_finish, -1, 'day');
-                    }
+            if(!gantt.isWorkTime(new_item.start_date)) {
+                new_item.start_date = gantt.getClosestWorkTime({date:new_item.start_date, dir:"future" });
+            }
+            if(!gantt.isWorkTime(new_item.end_date)) {
+                new_item.end_date = gantt.getClosestWorkTime({date:new_item.end_date, dir:"past" });
+            }
+            if(new_item.actual_finish != null && new_item.actual_finish != '' && new_item.actual_finish != 'N/A' && new_item.actual_finish != undefined)
+            {
+                if(!gantt.isWorkTime(new_item.actual_finish)) {
+                    new_item.actual_finish = gantt.getClosestWorkTime({date:new_item.actual_finish, dir:"past" });
+                    new_item.actual_finish = gantt.date.add(new_item.actual_finish, -1, 'day');
                 }
             }
         });
@@ -4730,63 +4629,10 @@
         var SaveTempRecords;
         
         
-        function updateEffectiveDatePred(task){	
-            if(task.predecessors){	
-                var target = gantt.getTask(task.id).$target;
-                if(target){	
-                    for(var i=0;i<target.length;i++)
-                    {	
-                        var link = gantt.getLink(target[i]);	
-                        var pred = gantt.getTask(link.source); 	
-                        var pred1 = gantt.getTask(link.target);	
-                        var typ = link.type;	
-                        var lag = parseInt(link.lag);	
-                        
-                        if(pred.text.toUpperCase() === "EFFECTIVE DATE" && !gantt.isWorkTime(pred.start_date)){	
-                            console.log('start date before change',task.start_date);	
-                            console.log('end date before change',task.end_date);                            	
-                            console.log('actual duration',task.duration)	
-                            let duration = parseInt(task.duration);	
-                            if(duration > 5){	
-                                let additionalDays = Math.floor(duration/5)*2;	
-                                duration = duration + additionalDays;	
-                            }	
-                            console.log('new  duration is ===>',duration);	
-                            
-                            //duration =  duration-1;	
-                            if(!gantt.isWorkTime(pred.start_date)) {	
-                                task.start_date = gantt.getClosestWorkTime({date:pred.start_date, dir:"future" });	
-                            }	
-                            //task['calender_id'] ='Normal';
-                            task.start_date = gantt.date.add(task.start_date, lag, "day");
-                            
-                            console.log(task.text,'lag is '+lag);	
-                            /* if(typ == 1){	
-                                
-                            }else if(typ == 2){	
-                                
-                            }else if(typ == 3){	
-                                
-                            }*/	
-                            
-                            if(!gantt.isWorkTime(task.start_date)) {	
-                                task.start_date = gantt.getClosestWorkTime({date:task.start_date, dir:"future" });	
-                            }	
-                            task.end_date = gantt.date.add(task.start_date, duration, "day");	
-                            if(!gantt.isWorkTime(task.end_date)) {	
-                                task.end_date = gantt.getClosestWorkTime({date:task.end_date, dir:"future" });	
-                            }	
-                        }	
-                    }	
-                }	
-            }	
-            
-        }
-        
         function savechart(flagval)
         {
             console.log('calling save chart');
-            
+           
             var saveflag = flagval;
             var Taskdata = gantt.serialize();
             var tasks = Taskdata.data;
@@ -4795,7 +4641,7 @@
             var taskArrayInsert = [];
             
             if(tasks.length != 0 ){
-                
+               
                 var predvalues = '';
                 var statusvalues = '';
                 var typevalues = '';
@@ -5058,8 +4904,8 @@
                                             tasklistdata.data = gantt.getTask(result[i].cases[0].Project_Task_Id__c);
                                             tasklistdata.data.sfdcid = result[i].cases[0].Id;
                                         }*/
-                                    
-                                }
+                                        
+                                    }
                                 if(!isSuccess){
                                     document.getElementById("failHeader").style.display = 'block'; 
                                     document.getElementById("failHeader").innerHTML = errMsg;
@@ -5983,7 +5829,7 @@
             }
         ];
         
-        
+       
         </script>
         
         <div id="modal1" style="display:none;">
@@ -6457,5 +6303,5 @@
             </div>
         </div>
     </body> 
-    
+   
 </apex:page>

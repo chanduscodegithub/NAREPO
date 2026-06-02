@@ -3,7 +3,17 @@ public class UHGContactSOQLConstants {
     /* Accounts Starts Here */
     
     public String queryForCount = 'SELECT count() FROM AccountContactRelation WHERE ContactId = :contactId AND IsDirect=false';
-    public String queryStringForRelatedAccounts1 = 'SELECT Account.Name, Primary__c, Account.RecordType.Name, Account.Owner.Name FROM AccountContactRelation WHERE ContactId = :contactId AND IsDirect=false ORDER BY ';
+    /* Added as part of CR on 08th Oct 2024 */
+    public String queryForExistingClientCount = 'SELECT count() FROM AccountContactRelation WHERE ContactId = :contactId AND IsDirect=false AND Account.RecordType.DeveloperName = \'Existing_Client\'';
+    /* End of CR Modification */
+    /* Added by Vignesh */
+    public String queryForAllProspectCount = 'SELECT count() FROM AccountContactRelation WHERE ContactId = :contactId AND IsDirect=false AND Account.RecordType.DeveloperName = \'Prospect\'';
+    public String queryForAllCompaniesCount = 'SELECT count() FROM AccountContactRelation WHERE ContactId = :contactId AND IsDirect=false';
+    //Changes on 25/11/24
+    public String queryForClientSurveyYear = 'SELECT Id, Name, LikelihoodtoRecommendScore__c, Year__c FROM ClientSurveyResults__c where type__c=\'Client Survey Results\' ORDER BY Year__c desc Limit 1';
+    public String queryLRTValues = 'SELECT Id, Name, LikelihoodtoRecommendScore__c, Account__r.Name,Account__c FROM ClientSurveyResults__c where Account__c IN:accountIdList and year__c=:CSR[0].Year__c';    
+    /* End */
+    public String queryStringForRelatedAccounts1 = 'SELECT AccountId,Account.Name, Primary__c, Account.RecordType.Name,Account.RecordType.DeveloperName, Account.Owner.Name, Account.Client_Reference_Status__c FROM AccountContactRelation WHERE ContactId = :contactId AND IsDirect=false ORDER BY ';
     public String queryStringForRelatedAccounts2 = ' LIMIT :pageSize OFFSET :offset';
     
     /*public String QUERY_FOR_PRIMARY_RECORDS = 'SELECT Account.Name, Primary__c FROM AccountContactRelation WHERE ContactId = :contactId AND IsDirect=false AND Primary__c = true ORDER BY Account.Name';

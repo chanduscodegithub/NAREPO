@@ -2,6 +2,22 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>49.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>myVariable_waitStartTimeAssignment</name>
+        <label>myVariable_waitStartTimeAssignment</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>myVariable_waitStartTimeVariable</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>isChangedDecision2_myRule_1_Sales_Stage_Other_c</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>isChangedDecision2_myRule_1_Sales_Stage_Other_c</name>
         <label>isChangedDecision2_myRule_1_Sales_Stage_Other_c</label>
@@ -122,12 +138,12 @@
                 <stringValue>IF(ISPICKVAL([Opportunity].Sales_Stage_Other__c ,&apos;Notified&apos;)||ISPICKVAL([Opportunity].Sales_Stage_Other__c ,&apos;Transfer In/Out&apos;), [Opportunity].Disposition_Other__c , Null) </stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_3_myRule_1_A1_9490829262</name>
+        <name>formula_3_myRule_1_A1_2702771868</name>
         <dataType>String</dataType>
         <expression>IF(ISPICKVAL({!myVariable_current.Sales_Stage_Other__c} ,&apos;Notified&apos;)||ISPICKVAL({!myVariable_current.Sales_Stage_Other__c} ,&apos;Transfer In/Out&apos;), {!myVariable_current.Disposition_Other__c} , Null)</expression>
     </formulas>
     <interviewLabel>Buy_Up_Branch_update_Unchecking_the_Check_boxes-2_InterviewLabel</interviewLabel>
-    <label>Buy Up-Branch update &amp; Unchecking the Check boxes Test Demo Check</label>
+    <label>Buy Up-Branch update &amp; Unchecking the Check boxes 1</label>
     <processMetadataValues>
         <name>ObjectType</name>
         <value>
@@ -161,9 +177,6 @@
             </value>
         </processMetadataValues>
         <processMetadataValues>
-            <name>extraTypeInfo</name>
-        </processMetadataValues>
-        <processMetadataValues>
             <name>isChildRelationship</name>
             <value>
                 <booleanValue>false</booleanValue>
@@ -174,9 +187,6 @@
             <value>
                 <stringValue>[Opportunity]</stringValue>
             </value>
-        </processMetadataValues>
-        <processMetadataValues>
-            <name>referenceTargetField</name>
         </processMetadataValues>
         <name>myRule_1_A1</name>
         <label>Buy Up-Branch update &amp; Unchecking the Check boxes</label>
@@ -229,13 +239,13 @@
             </processMetadataValues>
             <field>Disposition_Other__c</field>
             <value>
-                <elementReference>formula_3_myRule_1_A1_9490829262</elementReference>
+                <elementReference>formula_3_myRule_1_A1_2702771868</elementReference>
             </value>
         </inputAssignments>
         <object>Opportunity</object>
     </recordUpdates>
-    <startElementReference>isChangedDecision2_myRule_1_Sales_Stage_Other_c</startElementReference>
-    <status>Draft</status>
+    <startElementReference>myVariable_waitStartTimeAssignment</startElementReference>
+    <status>Obsolete</status>
     <variables>
         <name>myVariable_current</name>
         <dataType>SObject</dataType>
@@ -251,5 +261,15 @@
         <isInput>true</isInput>
         <isOutput>false</isOutput>
         <objectType>Opportunity</objectType>
+    </variables>
+    <variables>
+        <name>myVariable_waitStartTimeVariable</name>
+        <dataType>DateTime</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Flow.CurrentDateTime</elementReference>
+        </value>
     </variables>
 </Flow>

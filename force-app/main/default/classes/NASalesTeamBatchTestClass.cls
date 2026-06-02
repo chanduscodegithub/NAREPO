@@ -24,7 +24,7 @@ public class NASalesTeamBatchTestClass {
         //List to store and insert NA sales Team Records and insert them.
         List<CM_Account_Team_History__c> naSalesTeamRecords = new List<CM_Account_Team_History__c>();
         
-        for(Integer i =0;i < 6; i++){
+        for(Integer i =0;i < 9; i++){
             Account acc = new Account();
             acc.Name = 'Test Account '+i;
             acc.Subtype__c ='Prospect';
@@ -40,8 +40,9 @@ public class NASalesTeamBatchTestClass {
             insert accData;
         }
         
-        for(Integer i = 0; i<6 ; i++) {
+        for(Integer i = 0; i<9 ; i++) {
             CM_Account_Team_History__c naRecords = new CM_Account_Team_History__c();
+            
             if(i < 3) {
                 naRecords.Account_Firm__c = accData[i].Id;
                 naRecords.Name = 'Test NA User ';
@@ -50,7 +51,7 @@ public class NASalesTeamBatchTestClass {
                 naRecords.Case_Management_Start_Date__c = System.today() -4;
                 naRecords.Role__c = 'CM SCE';
                 naRecords.Job_Title__c = 'Strategic Client Executive';
-            } else if(i >= 3) {
+            } else if(i <6) {
                 naRecords.Account_Firm__c = accData[i].Id;
                 naRecords.Name = 'Test NA User ';
                 naRecords.Last_Name__c = 'RVP '+i;
@@ -59,7 +60,17 @@ public class NASalesTeamBatchTestClass {
                 naRecords.Role__c = 'CM VPCR/RVP';
                 naRecords.Job_Title__c = 'Regional Vice President';
             }
+            else if(i<9) {
+                naRecords.Account_Firm__c = accData[i].Id;
+                naRecords.Name = 'Test NA User ';
+                naRecords.Last_Name__c = 'SCE '+i;
+                naRecords.Case_Management_End_Date__c = Date.today() + 1;
+                naRecords.Case_Management_Start_Date__c = System.today() -4;
+                naRecords.Role__c = 'Specialty Benefits SCE';
+                naRecords.Job_Title__c = 'Strategic Client Executive';
+            } 
             naSalesTeamRecords.add(naRecords);
+            
         }
         CM_Account_Team_History__c naRecordWithPassedRVPEndDate = new CM_Account_Team_History__c();
         naRecordWithPassedRVPEndDate.Account_Firm__c = accData[0].Id;
@@ -73,26 +84,46 @@ public class NASalesTeamBatchTestClass {
         naSalesTeamRecords.add(naRecordWithPassedRVPEndDate);
         
         CM_Account_Team_History__c naRecordWithPassedCMSCEEndDate = new CM_Account_Team_History__c();
-        naRecordWithPassedCMSCEEndDate.Account_Firm__c = accData[0].Id;
+        naRecordWithPassedCMSCEEndDate.Account_Firm__c = accData[3].Id;
         naRecordWithPassedCMSCEEndDate.Name = 'Test NA User ';
         naRecordWithPassedCMSCEEndDate.Last_Name__c = 'SCE Passed End Date';
-        naRecordWithPassedCMSCEEndDate.Case_Management_End_Date__c = System.today() - 1;
+        naRecordWithPassedCMSCEEndDate.Case_Management_End_Date__c = System.today() - 2;
         naRecordWithPassedCMSCEEndDate.Case_Management_Start_Date__c = System.today() - 5;
         naRecordWithPassedCMSCEEndDate.Role__c = 'CM SCE';
         naRecordWithPassedCMSCEEndDate.Job_Title__c = 'Strategic Client Executive';
-        
-        naSalesTeamRecords.add(naRecordWithPassedCMSCEEndDate);
+                naSalesTeamRecords.add(naRecordWithPassedCMSCEEndDate);
 
-        /*CM_Account_Team_History__c naRecordWithPassedSBSCEEndDate = new CM_Account_Team_History__c();
-        naRecordWithPassedSBSCEEndDate.Account_Firm__c = accData[0].Id;
-        naRecordWithPassedSBSCEEndDate.Name = 'Test NA User ';
-        naRecordWithPassedSBSCEEndDate.Last_Name__c = 'SCE Passed End Date';
-        naRecordWithPassedSBSCEEndDate.Case_Management_End_Date__c = System.today() - 1;
-        naRecordWithPassedSBSCEEndDate.Case_Management_Start_Date__c = System.today() - 5;
+      /*  CM_Account_Team_History__c naRecordWithPassedCMSCEEndDate1 = new CM_Account_Team_History__c();
+        naRecordWithPassedCMSCEEndDate1.Account_Firm__c = accData[3].Id;
+        naRecordWithPassedCMSCEEndDate1.Name = 'Test NA User1 ';
+        naRecordWithPassedCMSCEEndDate1.Last_Name__c = 'SCE Passed End Date';
+        naRecordWithPassedCMSCEEndDate1.Case_Management_End_Date__c = System.today() + 1;
+        naRecordWithPassedCMSCEEndDate1.Case_Management_Start_Date__c = System.today() - 5;
+        naRecordWithPassedCMSCEEndDate1.Role__c = 'CM SCE';
+        naRecordWithPassedCMSCEEndDate1.Job_Title__c = 'Strategic Client Executive';
+        
+        naSalesTeamRecords.add(naRecordWithPassedCMSCEEndDate1);*/
+        
+        /*CM_Account_Team_History__c naRecordWithPassedSpecialtyCMSCEEndDate = new CM_Account_Team_History__c();
+        naRecordWithPassedSpecialtyCMSCEEndDate.Account_Firm__c = accData[5].Id;
+        naRecordWithPassedSpecialtyCMSCEEndDate.Name = 'Test NA User11 ';
+        naRecordWithPassedSpecialtyCMSCEEndDate.Last_Name__c = 'SCE Passed End Date2';
+        naRecordWithPassedSpecialtyCMSCEEndDate.Case_Management_End_Date__c = System.today() +10;
+        naRecordWithPassedSpecialtyCMSCEEndDate.Case_Management_Start_Date__c = System.today() + 5;
+        naRecordWithPassedSpecialtyCMSCEEndDate.Role__c = 'Specialty Benefits SCE';
+        naRecordWithPassedSpecialtyCMSCEEndDate.Job_Title__c = 'Strategic Client Executive';
+        naSalesTeamRecords.add(naRecordWithPassedSpecialtyCMSCEEndDate);*/        
+
+        CM_Account_Team_History__c naRecordWithPassedSBSCEEndDate = new CM_Account_Team_History__c();
+        naRecordWithPassedSBSCEEndDate.Account_Firm__c = accData[4].Id;
+        naRecordWithPassedSBSCEEndDate.Name = 'Test NA User1 ';
+        naRecordWithPassedSBSCEEndDate.Last_Name__c = 'SCE Passed End Date1';
+        naRecordWithPassedSBSCEEndDate.Case_Management_End_Date__c = System.today() -2;
+        naRecordWithPassedSBSCEEndDate.Case_Management_Start_Date__c = System.today() -5;
         naRecordWithPassedSBSCEEndDate.Role__c = 'Specialty Benefits SCE';
         naRecordWithPassedSBSCEEndDate.Job_Title__c = 'Strategic Client Executive';
         
-        naSalesTeamRecords.add(naRecordWithPassedSBSCEEndDate);*/
+        naSalesTeamRecords.add(naRecordWithPassedSBSCEEndDate);
         
         System.runAs(systemAdmin) {
             insert naSalesTeamRecords;
@@ -105,8 +136,8 @@ public class NASalesTeamBatchTestClass {
         System.runAs(systemAdmin) {
             //Database.executeBatch(new NASalesTeamEmailNotoficationBatch()); 
             Datetime dt = Datetime.now().addMinutes(1);
-        	String CRON_EXP = '0 '+ dt.minute() + ' * ' + dt.day() + ' ' + dt.month() + ' ? ' + dt.year();
-        	System.schedule('Test NA Sales Team Batch', CRON_EXP, new ScheduleNASalesTeamBatch());  
+            String CRON_EXP = '0 '+ dt.minute() + ' * ' + dt.day() + ' ' + dt.month() + ' ? ' + dt.year();
+            System.schedule('Test NA Sales Team Batch', CRON_EXP, new ScheduleNASalesTeamBatch());  
         }
         Test.stopTest();
     }

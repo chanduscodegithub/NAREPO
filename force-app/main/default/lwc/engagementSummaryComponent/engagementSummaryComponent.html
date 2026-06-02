@@ -1,0 +1,262 @@
+<template>
+    <!--div class="container">
+        <button class="btn" onclick={handleOpenModal}>Engagement Summary</button>
+    </div-->
+
+    <section role="dialog" class="slds-modal slds-fade-in-open" if:true={isModalOpen}>
+        <div class="slds-modal__container">
+
+            <header class="slds-modal__header">
+                <div class="header-container">
+                    <div class="header-left">
+                        <p class=" slds-text-color_weak accountName">{accountName}</p>
+
+                    </div>
+                    <h2 class="pop_Up_Heading">Engagement Summary</h2>
+                    <div class="header-right">
+                        <button class={generateButtonClass} onclick={handleGenerateSummary} disabled={isGenerating}>
+                            <lightning-icon icon-name="utility:agent_astro" size="small" alternative-text="Agent Astro"></lightning-icon>
+                            <span class="button-text">Refresh Summary</span>
+                        </button>
+                        <!-- spinner added -->
+                        <template if:true={isSummaryLoading}>
+                            <div class="spinner-overlay">
+                                <lightning-spinner alternative-text="Generating summary......" size="small"
+                                    variant="brand"></lightning-spinner>
+                            </div>
+                        </template>
+                        <!-- spinner added -->
+                        <!-- <template if:true={isEmpty}> -->
+                        <p class="slds-text-body_medium slds-text-color_weak slds-text-align_left">Last Updated:
+                            {lastRunDate}</p>
+                        <!-- </template> -->
+
+                    </div>
+                </div>
+            </header>
+
+            <div class="slds-modal__content slds-p-around_medium">
+
+                <template if:true={isEmpty}>
+                    <div class="slds-text-align_center slds-p-around_medium">
+                        <p class="slds-text-heading_small slds-text-color_weak">There is no engagement summary for this
+                            account yet. Click the Refresh Summary button to create one.</p>
+                    </div>
+                </template>
+
+                <template if:true={isLoading}>
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </template>
+
+                <template if:true={error}>
+                    <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                        <span class="slds-assistive-text">Error</span>
+                        <h2>Error loading engagement data: {error.body.message}</h2>
+                    </div>
+                </template>
+
+                <template if:true={errorMessage}>
+                    <div class="slds-text-align_center slds-p-around_medium">
+                        <p class="slds-text-heading_small slds-text-color_error">{errorMessage}</p>
+                    </div>
+                </template>
+
+
+                <template if:true={engagementData}>
+                    <lightning-accordion active-section-name={activeSections} onsectiontoggle={handleSectionToggle}
+                        allow-multiple-sections-open>
+
+                        <template for:each={sections} for:item="section">
+                            <lightning-accordion-section key={section.id} name={section.id} label={section.label}>
+
+                                <!-- Slider Template for Channels -->
+                                <template if:true={section.hasSlider}>
+                                     <template if:true={section.sliderData.length}> <!--added for no data-->
+                                    <div class="slider-container slds-p-horizontal_medium slds-p-top_x-small">
+                                        <div class="slider-content">
+
+                                            <template if:true={currentSlide}>
+                                                <div class="slide-card">
+                                                    <div class="slds-media slds-media_center slds-m-bottom_medium">
+                                                        <div class="slds-media__figure">
+                                                            <lightning-icon icon-name={currentSlide.icon} size="medium">
+                                                            </lightning-icon>
+                                                        </div>
+                                                        <div class="slds-media__body">
+                                                            <h2
+                                                                class="slds-card__header-title slds-text-heading_medium">
+                                                                {currentSlide.title}
+                                                            </h2>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-card__body slds-card__body_inner">
+                                                        <template if:true={currentSlide.hasItems}>
+                                                            <ul class="slds-list_dotted">
+                                                                <template for:each={currentSlide.items} for:item="item">
+                                                                    <li key={item} class="slds-p-bottom_x-small">{item}
+                                                                    </li>
+                                                                </template>
+                                                            </ul>
+                                                        </template>
+                                                        <template if:false={currentSlide.hasItems}>
+                                                            <div
+                                                                class="slds-text-align_center slds-text-color_weak slds-p-top_small">
+                                                                No data available
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+
+                                        <template if:true={hasMultipleSlides}>
+                                            <div
+                                                class="slider-controls slds-grid slds-grid_align-center slds-m-top_small">
+                                                <button class="slds-button slds-button_icon" onclick={handlePreviousSlide} title="Previous" disabled={animating}>
+                                                    <lightning-icon icon-name="utility:chevronleft" size="small"></lightning-icon>
+                                                    <span class="slds-assistive-text">Previous</span>
+                                                </button>
+
+                                                <div class="slider-indicators slds-p-horizontal_medium">
+                                                    <template for:each={slideIndicators} for:item="indicator">
+                                                        <span key={indicator.id}
+                                                            class={indicator.class}
+                                                            data-index={indicator.id}
+                                                            onclick={handleSlideSelect}>
+                                                            •
+                                                        </span>
+                                                    </template>
+                                                </div>
+
+                                                <button class="slds-button slds-button_icon" onclick={handleNextSlide} title="Next" disabled={animating}>
+                                                    <lightning-icon icon-name="utility:chevronright" size="small"></lightning-icon>
+                                                    <span class="slds-assistive-text">Next</span>
+                                                </button>
+                                            </div>
+                                        </template>
+
+                                    </div>
+                                    </template><!--added for no data-->
+                                    <!--added for no data-->
+                                    <template if:false={section.sliderData.length}>
+                                        <div class="slds-text-align_center slds-text-color_weak slds-p-around_medium">
+                                            No data available
+                                        </div>
+                                    </template>
+                                    <!--added for no data-->
+                                </template>
+
+                                <!-- Top Engaged Contacts Template -->
+                                <template if:true={section.isTopEngagedSection}>
+                                    <div class="contact-cards-container">
+                                        <template for:each={section.contactData} for:item="contact">
+                                            <div key={contact.name} class="top-contacts-section">
+                                                <div class="contact-card">
+                                                    <div class="slds-grid slds-grid_align-center slds-m-bottom_medium">
+                                                        <!-- <div class="contact-photo-container">
+                                                            <img src={contact.photoUrl} alt={contact.name} class="contact-photo" onerror={handleImageError} />
+                                                        </div> -->
+                                                    </div>
+                                                    <div class="card-contents-container">
+                                                        <div class="slds-text-align_center slds-m-bottom_small">
+                                                            <h3
+                                                                class="slds-text-heading_small slds-truncate contact-name-style">
+                                                                {contact.name}</h3>
+                                                            <p class="slds-text-body_small slds-text-color_weak">
+                                                                {contact.title}</p>
+                                                            <!-- <p class="slds-text-body_small">{contact.email}</p> -->
+                                                        </div>
+                                                        <div class="slds-grid slds-grid_align-center slds-m-top_medium">
+                                                            <div class="score-circle-container">
+                                                                <div class="score-circle" style={contact.scoreStyle}>
+                                                                    <div class="score-inner">
+                                                                        <span class="score-value">{contact.score}</span>
+                                                                        <span class="score-label">Engagement Score/100</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <!--Added for to engaged contacts no data 03-11-->
+                                        <template if:false={section.contactData.length}>
+                                            <div
+                                                class="slds-text-align_center slds-text-color_weak slds-p-around_medium">
+                                                No data available
+                                            </div>
+                                        </template>
+                                        <!--Added for to engaged contacts no data 03-11-->
+                                    </div>
+                                </template>
+
+                                <!-- Generic Cards Template -->
+                                <template if:true={section.cards}>
+                                    <div class="slds-grid slds-gutters slds-wrap">
+                                        <template for:each={section.cards} for:item="card">
+                                            <div key={card.title}
+                                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+
+                                                <lightning-card title={card.title} icon-name={card.icon}>
+                                                    <div class="slds-p-around_medium">
+                                                        <template if:true={card.hasItems}>
+                                                            <ul class="slds-list_dotted">
+                                                                <template for:each={card.items} for:item="item">
+                                                                    <li key={item} class="slds-p-bottom_medium">{item}
+                                                                    </li>
+                                                                </template>
+                                                            </ul>
+                                                        </template>
+                                                        <template if:false={card.hasItems}>
+                                                            <div
+                                                                class="slds-text-align_center slds-text-color_weak slds-p-top_small">
+                                                                No data available
+                                                            </div>
+                                                        </template>
+
+                                                    </div>
+                                                </lightning-card>
+
+
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                </template>
+
+                                <!-- Key Takeaways Template -->
+                                <template if:true={section.items}>
+                                    <div class="key_recomm_style">
+                                        <template if:true={section.items.length}>
+                                            <ul class="slds-list_dotted">
+                                                <template for:each={section.items} for:item="item">
+                                                    <li key={item} class="slds-p-bottom_small">{item}</li>
+                                                </template>
+                                            </ul>
+                                        </template>
+                                        <template if:false={section.items.length}>
+                                            <div
+                                                class="slds-text-align_center slds-p-around_medium slds-text-color_weak">
+                                                No data available
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </lightning-accordion-section>
+                        </template>
+                    </lightning-accordion>
+                </template>
+            </div>
+
+            <footer class="slds-modal__footer">
+                <p class="slds-text-align_center slds-m-bottom_none ">Note: This summary is AI-generated. Please refer <a
+                        href={engagementDashboardLink} target="_blank">Engagement Summary Dashboard </a> for the most
+                    accurate and verified results.</p>
+                <lightning-button label="Close" variant="neutral" onclick={handleClose}></lightning-button>
+            </footer>
+        </div>
+
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </section>
+</template>

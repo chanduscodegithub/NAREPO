@@ -32,19 +32,82 @@ public without sharing class Accounts_and_MembershipActivity {
         List<OpportunityContactRole> MembershipActivityList = new List<OpportunityContactRole>();
         UHGAccountSOQLConstants accountCurrentRelationshipConstants = new UHGAccountSOQLConstants();
         AccountandMembershipActivityResult accountandMembershipActivityObj = new AccountandMembershipActivityResult();
+        //Added as a part of CR on 09th Oct 2024
+        Set<Id> allCompanies = new Set<Id>();
+        Set<Id> allProspectCompanies = new Set<Id>();
+        //CR changes ends
+        list<ClientSurveyResults__c> CSRList=new list<ClientSurveyResults__c>();        
+        set<string> accountIdList =new set<string>();
+        
         String columnName2 = 'Contact.Account.Name';
         try{
             if(accountId != null && columnName!=null && sortType!=null){
                 System.debug('schema.sobjecttype.AccountCFJunction__c.isaccessible()@@@@'+schema.sobjecttype.AccountCFJunction__c.isaccessible()+' xxxx schema.sobjecttype.AccountCFJunction__c.isQueryable()@@@ '+schema.sobjecttype.AccountCFJunction__c.isQueryable()+' xxxx schema.sobjecttype.OpportunityContactRole.isaccessible() @@@'
                              +schema.sobjecttype.OpportunityContactRole.isaccessible() +'xxxx schema.sobjecttype.OpportunityContactRole.isQueryable()@@@'+schema.sobjecttype.OpportunityContactRole.isQueryable()+'xxxx schema.sobjecttype.Account.isaccessible() @@@'+schema.sobjecttype.Account.isaccessible()+'schema.sobjecttype.Account.isQueryable()@@@'+schema.sobjecttype.Account.isQueryable());
                // if(schema.sobjecttype.AccountCFJunction__c.isaccessible() && schema.sobjecttype.AccountCFJunction__c.isQueryable() && schema.sobjecttype.OpportunityContactRole.isaccessible() && schema.sobjecttype.OpportunityContactRole.isQueryable() && schema.sobjecttype.Account.isaccessible() && schema.sobjecttype.Account.isQueryable()) {
-                    accountandMembershipActivity = Database.query(accountCurrentRelationshipConstants.QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS+' '+columnName+' '+sortType);
-                    accountContactRel = Database.query(accountCurrentRelationshipConstants.QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS2+' '+columnName2+' '+sortType);
+                    accountandMembershipActivity = Database.query(accountCurrentRelationshipConstants.QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS+' '+String.escapeSingleQuotes(columnName)+' '+String.escapeSingleQuotes(sortType));
+                    accountContactRel = Database.query(accountCurrentRelationshipConstants.QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS2+' '+columnName2+' '+String.escapeSingleQuotes(sortType));
                     //MembershipActivityList = Database.query(accountCurrentRelationshipConstants.QUERY_MEMBERSHIP_ACTIVITIES+' '+columnName1+' '+sortType+' '+accountCurrentRelationshipConstants.LIMIT_DISPALY_RECORDS);
                     accountandMembershipActivityObj.accountandMembershipActivity = accountandMembershipActivity;
                     accountandMembershipActivityObj.accountContactRel = accountContactRel;
-					//accountandMembershipActivityObj.MembershipActivityList = MembershipActivityList;                                        
+					//accountandMembershipActivityObj.MembershipActivityList = MembershipActivityList;
+			
+                //Added by Vignesh  25/11/24
+                list<ClientSurveyResults__c> CSR =  Database.query(accountCurrentRelationshipConstants.queryForClientSurveyYear);
+                accountandMembershipActivityObj.yearValue =CSR[0].year__c;
+                
+                accountandMembershipActivityObj.accountContactRel = accountContactRel;//Database.query(contactSOQLConstants.queryStringForRelatedAccounts1+String.escapeSingleQuotes(columnName)+' '+String.escapeSingleQuotes(sortType)+contactSOQLConstants.queryStringForRelatedAccounts2);
+                for(AccountContactRelation ac:accountContactRel){
+                    accountIdList.add(ac.AccountId);
+                }
+                for(AccountCFJunction__c ac:accountandMembershipActivity){
+                    accountIdList.add(ac.AccountFirm__c);
+                }
+                CSRList =[SELECT Id, Name, LikelihoodtoRecommendScore__c, Account__r.Name,Account__c,year__c FROM ClientSurveyResults__c where Account__c IN:accountIdList and year__c=:CSR[0].Year__c and type__c='Client Survey Results'];//Database.query(contactSOQLConstants.queryLRTValues); 
+                accountandMembershipActivityObj.CSRList =CSRList;
+                
+					//Added as a part of CR on 09th Oct 2024                                        
+                if(accountandMembershipActivity != null && accountandMembershipActivity.size()>0){
+                    for(AccountCFJunction__c accCF : accountandMembershipActivity){
+                        if(accCF.AccountFirm__r.RecordType.DeveloperName == 'Existing_Client'){
+                           allCompanies.add(accCF.AccountFirm__c);
+                        }
+                    }
+                }
+                
+                if(accountContactRel != null && accountContactRel.size()>0){
+                    for(AccountContactRelation accRel : accountContactRel){
+                        if(accRel.Account.RecordType.DeveloperName == 'Existing_Client'){
+                           allCompanies.add(accRel.AccountId);
+                        }
+                    }
+                }
+                
+                accountandMembershipActivityObj.existingClientCompanies = allCompanies.size();
+                    //CR changes ends
                     
+                //Added Vignesh 8/11/24 -- Start
+                 if(accountandMembershipActivity != null && accountandMembershipActivity.size()>0){
+                    for(AccountCFJunction__c accCF : accountandMembershipActivity){
+                        if(accCF.AccountFirm__r.RecordType.DeveloperName == 'Prospect'){
+                           allProspectCompanies.add(accCF.AccountFirm__c);
+                        }
+                    }
+                }
+                
+                if(accountContactRel != null && accountContactRel.size()>0){
+                    for(AccountContactRelation accRel : accountContactRel){
+                        if(accRel.Account.RecordType.DeveloperName == 'Prospect'){
+                           allProspectCompanies.add(accRel.AccountId);
+                        }
+                    }
+                }
+                
+                accountandMembershipActivityObj.prospectCompanies = allProspectCompanies.size();
+                system.debug('prospectCompanies'+allProspectCompanies.size());
+                
+               //Added Vignesh 8/11/24 -- End 
+                   
                 /*}else {
                     throw new NoAccessException();
                 }*/
@@ -91,7 +154,7 @@ public without sharing class Accounts_and_MembershipActivity {
                 //if(schema.sobjecttype.AccountCFJunction__c.isaccessible() && schema.sobjecttype.AccountCFJunction__c.isQueryable() && schema.sobjecttype.OpportunityContactRole.isaccessible() && schema.sobjecttype.OpportunityContactRole.isQueryable() && schema.sobjecttype.Account.isaccessible() && schema.sobjecttype.Account.isQueryable()) {
                     
                     //accountandMembershipActivityObj.MembershipActivityList = Database.query(accountCurrentRelationshipConstants.QUERY_MEMBERSHIP_ACTIVITIES+' '+columnName+' '+sortType+' '+accountCurrentRelationshipConstants.LIMIT_DISPALY_RECORDS);
-                    accountandMembershipActivityObj.MembershipActivityList = Database.query(accountCurrentRelationshipConstants.QUERY_MEMBERSHIP_ACTIVITIES+' '+columnName+' '+sortType);
+                    accountandMembershipActivityObj.MembershipActivityList = Database.query(accountCurrentRelationshipConstants.QUERY_MEMBERSHIP_ACTIVITIES+' '+String.escapeSingleQuotes(columnName)+' '+String.escapeSingleQuotes(sortType));
                     System.debug('Query--'+accountCurrentRelationshipConstants.QUERY_MEMBERSHIP_ACTIVITIES+' '+columnName+' '+sortType);
                     
                /* }else {
@@ -143,7 +206,7 @@ public without sharing class Accounts_and_MembershipActivity {
             if(accountId != null && columnName1!=null && sortType!=null){
                 //if(schema.sobjecttype.OpportunityContactRole.isaccessible() && schema.sobjecttype.OpportunityContactRole.isQueryable() && schema.sobjecttype.Account.isaccessible() && schema.sobjecttype.Account.isQueryable()) {
                     
-                    MembershipActivityList = Database.query(accountCurrentRelationshipConstants.QUERY_MEMBERSHIP_ACTIVITIES+' '+columnName1+' '+sortType+' '+accountCurrentRelationshipConstants.LIMIT_DISPALY_RECORDS);
+                    MembershipActivityList = Database.query(accountCurrentRelationshipConstants.QUERY_MEMBERSHIP_ACTIVITIES+' '+String.escapeSingleQuotes(columnName1)+' '+String.escapeSingleQuotes(sortType)+' '+accountCurrentRelationshipConstants.LIMIT_DISPALY_RECORDS);
                     MAObj.MembershipActivityList = MembershipActivityList;                                        
                     
                /* }else {
@@ -194,7 +257,7 @@ public without sharing class Accounts_and_MembershipActivity {
             if(accountId != null && columnName!=null && sortType!=null){
                // if(schema.sobjecttype.AccountCFJunction__c.isaccessible() && schema.sobjecttype.AccountCFJunction__c.isQueryable() && schema.sobjecttype.Account.isaccessible() && schema.sobjecttype.Account.isQueryable()) {
                     
-                    accountsList  = Database.query(accountCurrentRelationshipConstants.QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS+' '+columnName+' '+sortType+' '+accountCurrentRelationshipConstants.LIMIT_DISPALY_RECORDS);
+                    accountsList  = Database.query(accountCurrentRelationshipConstants.QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS+' '+String.escapeSingleQuotes(columnName)+' '+String.escapeSingleQuotes(sortType)+' '+accountCurrentRelationshipConstants.LIMIT_DISPALY_RECORDS);
                                        
                     accountsObj.accountsList = accountsList;
 				/*}else {
@@ -256,7 +319,7 @@ public without sharing class Accounts_and_MembershipActivity {
                         offset = ((Integer)pageNumber - 1) * pageSize;
                     }
                     
-                    accountsCurrentRelShowFullList  = Database.query(accountCurrentRelationshipConstants.QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS+' '+columnName+' '+sortType+' '+accountCurrentRelationshipConstants.QUERY_PAGINATION_DETAILS);
+                    accountsCurrentRelShowFullList  = Database.query(accountCurrentRelationshipConstants.QUERY_ACCOUNTS_CURRENT_RELATIONSHIPS+' '+String.escapeSingleQuotes(columnName)+' '+String.escapeSingleQuotes(sortType)+' '+accountCurrentRelationshipConstants.QUERY_PAGINATION_DETAILS);
                     accountandMAShowFullListObj.accountsCurrentRelShowFullList = accountsCurrentRelShowFullList;
                     accountandMAShowFullListObj.page = (Integer)pageNumber;
                     accountandMAShowFullListObj.pageSize = pageSize;
@@ -320,7 +383,7 @@ public without sharing class Accounts_and_MembershipActivity {
                         offset = ((Integer)pageNumber - 1) * pageSize;
                     }
                     
-                    membershipActivityShowFullList  = Database.query(accountCurrentRelationshipConstants.QUERY_MEMBERSHIP_ACTIVITIES+' '+columnName+' '+sortType);
+                    membershipActivityShowFullList  = Database.query(accountCurrentRelationshipConstants.QUERY_MEMBERSHIP_ACTIVITIES+' '+String.escapeSingleQuotes(columnName)+' '+String.escapeSingleQuotes(sortType));
                     System.debug('membershipActivityShowFullList'+membershipActivityShowFullList);
                     membershipActivityShowFullListObj.membershipActivityShowFullList = membershipActivityShowFullList;
                     membershipActivityShowFullListObj.page = (Integer)pageNumber;
@@ -388,6 +451,21 @@ public without sharing class Accounts_and_MembershipActivity {
         
         @AuraEnabled
         public List<OpportunityContactRole> membershipActivityShowFullList{ get;set; }
-         
+        
+        //Added as a part of CR on 09th Oct 2024
+        @AuraEnabled
+        public Integer existingClientCompanies { get;set;}
+        //CR changes ends
+       
+         //Added Vignesh 8/11/24 -- Start
+        @AuraEnabled
+        public Integer prospectCompanies { get;set;}
+        
+         @AuraEnabled
+        public string yearValue { get;set;}
+        
+          @AuraEnabled
+        public List<ClientSurveyResults__c> CSRList{ get;set; }
+        
     }
 }

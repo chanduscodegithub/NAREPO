@@ -1,0 +1,1306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>IF_Dental_Branch_update_Unchecking_the_Check_boxes</name>
+        <label>IF Dental -Branch update &amp; Unchecking the Check boxes</label>
+        <locationX>776</locationX>
+        <locationY>1331</locationY>
+        <defaultConnector>
+            <targetReference>IF_Pharmacy_Branch_update_Unchecking_the_Check_boxes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Dental_Branch_update_Unchecking_the_Check_boxes_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Disposition_and_Existing_Risk_Dental_Field</targetReference>
+            </connector>
+            <label>Dental -Branch update &amp; Unchecking the Check boxes IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>IF_Pharmacy_Branch_update_Unchecking_the_Check_boxes</name>
+        <label>IF Pharmacy -Branch update &amp; Unchecking the Check boxes</label>
+        <locationX>974</locationX>
+        <locationY>1439</locationY>
+        <defaultConnector>
+            <targetReference>Medical_NB_Calculations_for_totals_CD</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Pharmacy_Branch_update_Unchecking_the_Check_boxes_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Disposition_and_Existing_Risk_Pharmacy_Field</targetReference>
+            </connector>
+            <label>Pharmacy -Branch update &amp; Unchecking the Check boxes IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_Sales_Stage_Not_Null</name>
+        <label>If Sales Stage Not Null</label>
+        <locationX>495</locationX>
+        <locationY>731</locationY>
+        <defaultConnector>
+            <targetReference>Update_Status_and_StageName_Field_to_Closed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Sales Stage Close</defaultConnectorLabel>
+        <rules>
+            <name>Sales_Stage_Not_Null_IsTrue</name>
+            <conditionLogic>((28 AND(1 OR 2 OR 3 OR 4 OR 5 OR 31 OR 32 OR 42)) OR (26 AND (6 OR 7 OR 8 OR 9 OR 10 OR 33 OR 34 OR 41)) OR (30 AND (11 OR 12 OR 13 OR 14 OR 15 OR 35 OR 36 OR 45)) OR (27 AND (16 OR 17 OR 18 OR 19 OR 20 OR 37 OR 38 OR 44)) OR (29 AND (21 OR 22 OR 23 OR 24 OR 25 OR 39 OR 40 OR 43)))</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Lead</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Proposal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Finalist</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Emerging Risk\No Upside</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>In Review</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Lead</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Proposal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Finalist</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Emerging Risk\No Upside</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>In Review</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Lead</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Proposal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Finalist</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Emerging Risk\No Upside</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>In Review</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Lead</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Proposal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Finalist</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Emerging Risk\No Upside</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>In Review</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Lead</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Proposal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Finalist</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Emerging Risk\No Upside</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>In Review</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Medical</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Pharmacy</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Dental</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Vision</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Other Buy Up Programs</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer In</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer Out</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer In</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer Out</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer In</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer Out</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer In</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer Out</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer In</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Transfer Out</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Spin-Off</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Spin-Off</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Spin-Off</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Spin-Off</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Spin-Off</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Status_and_StageName_Field_to_Open</targetReference>
+            </connector>
+            <label>Sales Stage Not Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_Update_Summary_comments_last_modified_date</name>
+        <label>If Update Summary comments last modified date</label>
+        <locationX>297</locationX>
+        <locationY>3299</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Summery_comments_updated_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sales_Summary_Comments__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_summary_comments_last_modified_date</targetReference>
+            </connector>
+            <label>Summery comments updated IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>IF_Vision_Branch_update_Unchecking_the_Check_boxes</name>
+        <label>IF Vision -Branch update &amp; Unchecking the Check boxes</label>
+        <locationX>545</locationX>
+        <locationY>1223</locationY>
+        <defaultConnector>
+            <targetReference>IF_Dental_Branch_update_Unchecking_the_Check_boxes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Vision_Branch_update_Unchecking_the_Check_boxes_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Disposition_and_Existing_Risk_Vision_Field</targetReference>
+            </connector>
+            <label>Vision -Branch update &amp; Unchecking the Check boxes IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>IsUpdate_Medical_NB</name>
+        <label>IsUpdate Medical NB</label>
+        <locationX>495</locationX>
+        <locationY>2099</locationY>
+        <defaultConnector>
+            <targetReference>Medical_NB_Reset_Fact_calculation</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsUpdate_Medical_NB_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsupdateMedicalRetrieesValue</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Retirees_Proposal_Medical_Field_1</targetReference>
+            </connector>
+            <label>IsUpdate Medical NB IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>MA_Prod_Comp_Validation_Reset_Values</name>
+        <label>MA Prod Comp Validation Reset Values</label>
+        <locationX>297</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>MA_Status_Field_Update</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_IsMA_and_IsProComp_Validated_IsTrue</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.isMAtab__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.isProductCompValidated__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_IsMAtab_and_IsProComp_Fields_to_False</targetReference>
+            </connector>
+            <label>Check IsMA and IsProComp Validated IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>MA_Status_Field_Update</name>
+        <label>MA Status Field Update</label>
+        <locationX>297</locationX>
+        <locationY>623</locationY>
+        <defaultConnector>
+            <targetReference>If_Sales_Stage_Not_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Sales Stage is Null</defaultConnectorLabel>
+        <rules>
+            <name>If_Sales_Stage_is_Null_IsTrue</name>
+            <conditionLogic>(1 AND 2) OR (3 AND 4) OR (5 AND 6) OR (7 AND 8) OR (9 AND 10)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Medical</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Pharmacy</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Pharmacy__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Dental</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Dental__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Vision</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Vision__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Other Buy Up Programs</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>Update_Status_Field_as_Open</targetReference>
+            </connector>
+            <label>If Sales Stage is Null IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Medical_NB_Calculations_for_totals_CD</name>
+        <label>Medical - NB Calculations for totals - CD</label>
+        <locationX>297</locationX>
+        <locationY>1991</locationY>
+        <defaultConnector>
+            <targetReference>IsUpdate_Medical_NB</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsNew_Medical_NB_isTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsnewMedicalRetrieesValue</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Retirees_Proposal_Medical_Field</targetReference>
+            </connector>
+            <label>IsNew Medical NB isTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Medical_NB_Reset_Fact_calculation</name>
+        <label>Medical NB- Reset Fact calculation</label>
+        <locationX>297</locationX>
+        <locationY>2699</locationY>
+        <defaultConnector>
+            <targetReference>Medical_NBEA_Reset_Fact_Calculation</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Medical_NB_Reset_Fact_calculation_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>NBresetFactFieldtoNull</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Reset_Fact_Field_NB</targetReference>
+            </connector>
+            <label>Medical NB- Reset Fact calculation IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Medical_NBEA_Reset_Fact_Calculation</name>
+        <label>Medical NBEA - Reset Fact Calculation</label>
+        <locationX>297</locationX>
+        <locationY>2999</locationY>
+        <defaultConnector>
+            <targetReference>If_Update_Summary_comments_last_modified_date</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Medical_Reset_Fact_NBEA_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>NBEAresetfacttoNull</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Reset_Fact_Field_NBEA</targetReference>
+            </connector>
+            <label>Medical - Reset Fact NBEA IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Medical_Vision_Dental_Pharmacy_Branch_update_Unchecking_the_Check_boxes</name>
+        <label>Medical, Vision, Dental, Pharmacy -Branch update &amp; Unchecking the Check boxes</label>
+        <locationX>297</locationX>
+        <locationY>1115</locationY>
+        <defaultConnector>
+            <targetReference>IF_Vision_Branch_update_Unchecking_the_Check_boxes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Medical_Branch_update_Unchecking_the_Check_boxes_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Sales_Stage_Medical__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>Update_Disposition_and_Existing_Risk_Medical_Field</targetReference>
+            </connector>
+            <label>Medical-Branch update &amp; Unchecking the Check boxes IsTrue</label>
+        </rules>
+    </decisions>
+    <description>Flow updates multiple Opportunity fields including - isMAtab, isProductCompValidated, Status, Stage Administrative (Admin Use), Summary Comments Last Modified, Retirees in the Proposal (Medical), EEs &amp; Retirees in the Proposal (Medical) and Members in the Proposal (Medical) fields.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>DispositionDental</name>
+        <dataType>String</dataType>
+        <expression>IF(
+    ISPICKVAL({!$Record.Sales_Stage_Dental__c}, &apos;Notified&apos;) ||
+    ISPICKVAL({!$Record.Sales_Stage_Dental__c}, &apos;Transfer In/Out&apos;) ||
+    ISPICKVAL({!$Record.Sales_Stage_Dental__c}, &apos;Spin-Off&apos;),
+    TEXT({!$Record.Disposition_Dental__c}),
+    NULL
+)</expression>
+    </formulas>
+    <formulas>
+        <name>dispositionMedical</name>
+        <dataType>String</dataType>
+        <expression>IF(
+    ISPICKVAL({!$Record.Sales_Stage_Medical__c}, &apos;Notified&apos;) ||
+    ISPICKVAL({!$Record.Sales_Stage_Medical__c}, &apos;Transfer In/Out&apos;) ||
+    ISPICKVAL({!$Record.Sales_Stage_Medical__c}, &apos;Spin-Off&apos;),
+    TEXT({!$Record.Disposition_Medical__c}),
+    NULL
+)</expression>
+    </formulas>
+    <formulas>
+        <name>DispositionPharmacy</name>
+        <dataType>String</dataType>
+        <expression>IF(
+    ISPICKVAL({!$Record.Sales_Stage_Pharmacy__c}, &apos;Notified&apos;) ||
+    ISPICKVAL({!$Record.Sales_Stage_Pharmacy__c}, &apos;Transfer In/Out&apos;) ||
+    ISPICKVAL({!$Record.Sales_Stage_Pharmacy__c}, &apos;Spin-Off&apos;),
+    TEXT({!$Record.Disposition_Pharmacy__c}),
+    NULL
+)</expression>
+    </formulas>
+    <formulas>
+        <name>DispostionVision</name>
+        <dataType>String</dataType>
+        <expression>IF(
+    ISPICKVAL({!$Record.Sales_Stage_Vision__c}, &apos;Notified&apos;) ||
+    ISPICKVAL({!$Record.Sales_Stage_Vision__c}, &apos;Transfer In/Out&apos;) ||
+    ISPICKVAL({!$Record.Sales_Stage_Vision__c}, &apos;Spin-Off&apos;),
+    TEXT({!$Record.Disposition_Vision__c}),
+    NULL
+)</expression>
+    </formulas>
+    <formulas>
+        <name>eesRetireesProposalMedical</name>
+        <dataType>Number</dataType>
+        <expression>BLANKVALUE({!$Record.Employees_in_the_Proposal_Medical__c},0) + BLANKVALUE({!$Record.Retirees_in_the_Proposal_Medical__c},0 )</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>eesRetireesProposalMedicalisUpdate</name>
+        <dataType>Number</dataType>
+        <expression>BLANKVALUE({!$Record.Employees_in_the_Proposal_Medical__c},0) + BLANKVALUE({!$Record.Retirees_in_the_Proposal_Medical__c},0 )</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>ExistMembRiskOutDental</name>
+        <dataType>String</dataType>
+        <expression>IF(ISPICKVAL({!$Record.Sales_Stage_Dental__c} ,&apos;Emerging Risk\No Upside&apos;) , Null, TEXT({!$Record.Existing_Members_Risk_Outcome_Dental__c} ))</expression>
+    </formulas>
+    <formulas>
+        <name>ExistMembRiskOutPharmacy</name>
+        <dataType>String</dataType>
+        <expression>IF(ISPICKVAL({!$Record.Sales_Stage_Pharmacy__c} ,&apos;Emerging Risk\No Upside&apos;) , Null, TEXT({!$Record.Existing_Members_Risk_Outcome_Pharmacy__c} ))</expression>
+    </formulas>
+    <formulas>
+        <name>existMembRiskOutVision</name>
+        <dataType>String</dataType>
+        <expression>IF(ISPICKVAL({!$Record.Sales_Stage_Vision__c}  ,&apos;Emerging Risk\No Upside&apos;) , Null, TEXT({!$Record.Existing_Members_Risk_Outcome_Vision__c}) )</expression>
+    </formulas>
+    <formulas>
+        <name>existMemRiskOutMedical</name>
+        <dataType>String</dataType>
+        <expression>IF(ISPICKVAL({!$Record.Sales_Stage_Medical__c}, &apos;Emerging Risk\No Upside&apos;) , null,
+TEXT({!$Record.Existing_Members_Risk_Outcome_Medical__c}))</expression>
+    </formulas>
+    <formulas>
+        <name>IsnewMedicalRetrieesValue</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW() 
+&amp;&amp;
+{!$Record.RecordType.DeveloperName} =&apos;CD&apos;
+&amp;&amp;
+INCLUDES({!$Record.Product_Type_Involved_in_Opp__c} , &apos;Medical&apos;)
+&amp;&amp;
+(ISCHANGED({!$Record.Employees_in_the_Proposal_Medical__c} ) 
+||
+ISCHANGED({!$Record.Opportunity_Average_Contract_Size_ACS__c} ) 
+||
+ISCHANGED({!$Record.Members_in_the_Proposal_Medical__c} )
+||
+ISCHANGED({!$Record.O65_Retirees_in_the_Proposal_Medical__c} )
+||
+ISCHANGED({!$Record.U65_Retirees_in_the_Proposal_Medical__c} )
+||
+ISCHANGED({!$Record.Retirees_in_the_Proposal_Medical__c} )
+||
+ISCHANGED({!$Record.EEsRetireesintheProposalMedical__c} )
+)</expression>
+    </formulas>
+    <formulas>
+        <name>IsNow</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW()</expression>
+    </formulas>
+    <formulas>
+        <name>IsupdateMedicalRetrieesValue</name>
+        <dataType>Boolean</dataType>
+        <expression>{!$Record.RecordType.DeveloperName} =&apos;CD&apos;
+&amp;&amp;
+INCLUDES({!$Record.Product_Type_Involved_in_Opp__c} , &apos;Medical&apos;)
+&amp;&amp;
+(ISCHANGED({!$Record.Employees_in_the_Proposal_Medical__c} ) 
+||
+ISCHANGED({!$Record.Opportunity_Average_Contract_Size_ACS__c} ) 
+||
+ISCHANGED({!$Record.Members_in_the_Proposal_Medical__c} )
+||
+ISCHANGED({!$Record.O65_Retirees_in_the_Proposal_Medical__c} )
+||
+ISCHANGED({!$Record.U65_Retirees_in_the_Proposal_Medical__c} )
+||
+ISCHANGED({!$Record.Retirees_in_the_Proposal_Medical__c} )
+||
+ISCHANGED({!$Record.EEsRetireesintheProposalMedical__c} )
+)</expression>
+    </formulas>
+    <formulas>
+        <name>memberProposalMedical</name>
+        <dataType>Number</dataType>
+        <expression>BLANKVALUE({!$Record.EEsRetireesintheProposalMedical__c},0 )* BLANKVALUE({!$Record.Opportunity_Average_Contract_Size_ACS__c},0 )</expression>
+        <scale>17</scale>
+    </formulas>
+    <formulas>
+        <name>memberProposalMedicalisUpdate</name>
+        <dataType>Number</dataType>
+        <expression>BLANKVALUE({!$Record.EEsRetireesintheProposalMedical__c},0 )* BLANKVALUE({!$Record.Opportunity_Average_Contract_Size_ACS__c},0 )</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>memberQuotProMedical</name>
+        <dataType>Number</dataType>
+        <expression>IF(ISPICKVAL({!$Record.Sales_Stage_Medical__c}, &apos;Emerging Risk\No Upside&apos;) , 0, 
+{!$Record.Members_QUOTED_in_the_Proposal_Medical__c} )</expression>
+        <scale>17</scale>
+    </formulas>
+    <formulas>
+        <name>NBEAresetfacttoNull</name>
+        <dataType>Boolean</dataType>
+        <expression>{!$Record.RecordType.DeveloperName} =&apos;CM&apos;
+&amp;&amp;
+INCLUDES({!$Record.Product_Type_Involved_in_Opp__c} , &apos;Medical&apos;) 
+&amp;&amp;
+ISCHANGED({!$Record.Sales_Stage_Medical__c} ) 
+&amp;&amp;
+PRIORVALUE({!$Record.Sales_Stage_Medical__c}) =&apos;Notified&apos;</expression>
+    </formulas>
+    <formulas>
+        <name>NBresetFactFieldtoNull</name>
+        <dataType>Boolean</dataType>
+        <expression>{!$Record.RecordType.DeveloperName} =&apos;CD&apos;
+&amp;&amp;
+INCLUDES({!$Record.Product_Type_Involved_in_Opp__c} , &apos;Medical&apos;) 
+&amp;&amp;
+ISCHANGED({!$Record.Sales_Stage_Medical__c} ) 
+&amp;&amp;
+PRIORVALUE({!$Record.Sales_Stage_Medical__c}) =&apos;Notified&apos;</expression>
+    </formulas>
+    <formulas>
+        <name>overNewMemberImpMedical</name>
+        <dataType>Number</dataType>
+        <expression>IF(ISPICKVAL({!$Record.Sales_Stage_Medical__c}, &apos;Emerging Risk\No Upside&apos;) , 0, {!$Record.Overall_New_Membership_Impact__c} )</expression>
+        <scale>17</scale>
+    </formulas>
+    <formulas>
+        <name>retireesProposalMedical</name>
+        <dataType>Number</dataType>
+        <expression>BLANKVALUE({!$Record.O65_Retirees_in_the_Proposal_Medical__c}, 0) + BLANKVALUE({!$Record.U65_Retirees_in_the_Proposal_Medical__c},0)</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>retireesProposalMedicalisUpdate</name>
+        <dataType>Number</dataType>
+        <expression>BLANKVALUE({!$Record.O65_Retirees_in_the_Proposal_Medical__c}, 0) + BLANKVALUE({!$Record.U65_Retirees_in_the_Proposal_Medical__c},0)</expression>
+        <scale>0</scale>
+    </formulas>
+    <interviewLabel>NB Medical Members Calculations and Opportunity Field Updates {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>NB Medical Members Calculations and Opportunity Field Updates</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Disposition_and_Existing_Risk_Dental_Field</name>
+        <label>Update Disposition and Existing Risk Dental Field</label>
+        <locationX>578</locationX>
+        <locationY>1439</locationY>
+        <connector>
+            <targetReference>Medical_NB_Calculations_for_totals_CD</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Disposition_Dental__c</field>
+            <value>
+                <elementReference>DispositionDental</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Existing_Members_Risk_Outcome_Dental__c</field>
+            <value>
+                <elementReference>ExistMembRiskOutDental</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Disposition_and_Existing_Risk_Medical_Field</name>
+        <label>Update Disposition and Existing Risk Medical Field</label>
+        <locationX>50</locationX>
+        <locationY>1223</locationY>
+        <connector>
+            <targetReference>Medical_NB_Calculations_for_totals_CD</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Disposition_Medical__c</field>
+            <value>
+                <elementReference>dispositionMedical</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Existing_Members_Risk_Outcome_Medical__c</field>
+            <value>
+                <elementReference>existMemRiskOutMedical</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Members_QUOTED_in_the_Proposal_Medical__c</field>
+            <value>
+                <elementReference>memberQuotProMedical</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Overall_New_Membership_Impact__c</field>
+            <value>
+                <elementReference>overNewMemberImpMedical</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Disposition_and_Existing_Risk_Pharmacy_Field</name>
+        <label>Update Disposition and Existing Risk Pharmacy Field</label>
+        <locationX>842</locationX>
+        <locationY>1547</locationY>
+        <connector>
+            <targetReference>Medical_NB_Calculations_for_totals_CD</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Disposition_Pharmacy__c</field>
+            <value>
+                <elementReference>DispositionPharmacy</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Existing_Members_Risk_Outcome_Pharmacy__c</field>
+            <value>
+                <elementReference>ExistMembRiskOutPharmacy</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Disposition_and_Existing_Risk_Vision_Field</name>
+        <label>Update Disposition and Existing Risk Vision Field</label>
+        <locationX>314</locationX>
+        <locationY>1331</locationY>
+        <connector>
+            <targetReference>Medical_NB_Calculations_for_totals_CD</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Disposition_Vision__c</field>
+            <value>
+                <elementReference>DispostionVision</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Existing_Members_Risk_Outcome_Vision__c</field>
+            <value>
+                <elementReference>existMembRiskOutVision</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_EEsRetirees_Proposal_Medical_Field</name>
+        <label>Update EEsRetirees Proposal Medical Field</label>
+        <locationX>99</locationX>
+        <locationY>2207</locationY>
+        <connector>
+            <targetReference>Update_Members_Proposal_Medical_Field</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>EEsRetireesintheProposalMedical__c</field>
+            <value>
+                <elementReference>eesRetireesProposalMedical</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_EEsRetirees_Proposal_Medical_Field_1</name>
+        <label>Update EEsRetirees Proposal Medical Field 1</label>
+        <locationX>363</locationX>
+        <locationY>2315</locationY>
+        <connector>
+            <targetReference>Update_Members_Proposal_Medical_Field_1</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>EEsRetireesintheProposalMedical__c</field>
+            <value>
+                <elementReference>eesRetireesProposalMedicalisUpdate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_IsMAtab_and_IsProComp_Fields_to_False</name>
+        <label>Update IsMAtab and IsProComp Fields to False</label>
+        <locationX>165</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>MA_Status_Field_Update</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>isMAtab__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>isProductCompValidated__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Members_Proposal_Medical_Field</name>
+        <label>Update Members Proposal Medical Field</label>
+        <locationX>99</locationX>
+        <locationY>2315</locationY>
+        <connector>
+            <targetReference>Medical_NB_Reset_Fact_calculation</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Members_in_the_Proposal_Medical__c</field>
+            <value>
+                <elementReference>memberProposalMedical</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Members_Proposal_Medical_Field_1</name>
+        <label>Update Members Proposal Medical Field 1</label>
+        <locationX>363</locationX>
+        <locationY>2423</locationY>
+        <connector>
+            <targetReference>Medical_NB_Reset_Fact_calculation</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Members_in_the_Proposal_Medical__c</field>
+            <value>
+                <elementReference>memberProposalMedicalisUpdate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Reset_Fact_Field_NB</name>
+        <label>Update Reset Fact Field NB</label>
+        <locationX>165</locationX>
+        <locationY>2807</locationY>
+        <connector>
+            <targetReference>Medical_NBEA_Reset_Fact_Calculation</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Closed_Comments__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Closed_Reason_1_Medical__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Closed_Reason_1_Surest__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Closed_Reason_2_Medical__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Closed_Reason_2_Surest__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Final_Plan_Proposed__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Net_Results__c</field>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Overall_New_Membership_Impact__c</field>
+            <value>
+                <elementReference>$Record.Estimated_Additional_New_Members__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Platforms_Sold__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Sold_Retained_Members__c</field>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Reset_Fact_Field_NBEA</name>
+        <label>Update Reset Fact Field NBEA</label>
+        <locationX>165</locationX>
+        <locationY>3107</locationY>
+        <connector>
+            <targetReference>If_Update_Summary_comments_last_modified_date</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Closed_Comments__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Closed_Reason_1_Medical__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Closed_Reason_1_Surest__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Closed_Reason_2_Medical__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Closed_Reason_2_Surest__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Existing_Members_Retained_Pinnacle__c</field>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Existing_Members_Retained__c</field>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Existing_Members_Risk_Outcome_Medical__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Final_Plan_Proposed__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Net_Results__c</field>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Overall_New_Membership_Impact__c</field>
+            <value>
+                <elementReference>$Record.Estimated_Additional_New_Members__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Platforms_Sold__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Proactive_Renewal_Additional_Info__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Proactive_Renewal_Underwriter__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Sold_Retained_Members__c</field>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Retirees_Proposal_Medical_Field</name>
+        <label>Update Retirees Proposal Medical Field</label>
+        <locationX>99</locationX>
+        <locationY>2099</locationY>
+        <connector>
+            <targetReference>Update_EEsRetirees_Proposal_Medical_Field</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Retirees_in_the_Proposal_Medical__c</field>
+            <value>
+                <elementReference>retireesProposalMedical</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Retirees_Proposal_Medical_Field_1</name>
+        <label>Update Retirees Proposal Medical Field 1</label>
+        <locationX>363</locationX>
+        <locationY>2207</locationY>
+        <connector>
+            <targetReference>Update_EEsRetirees_Proposal_Medical_Field_1</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Retirees_in_the_Proposal_Medical__c</field>
+            <value>
+                <elementReference>retireesProposalMedicalisUpdate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Status_and_StageName_Field_to_Closed</name>
+        <label>Update Status and StageName Field to Closed</label>
+        <locationX>627</locationX>
+        <locationY>839</locationY>
+        <connector>
+            <targetReference>Medical_Vision_Dental_Pharmacy_Branch_update_Unchecking_the_Check_boxes</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>StageName</field>
+            <value>
+                <stringValue>Closed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>Closed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Status_and_StageName_Field_to_Open</name>
+        <label>Update Status and StageName Field to Open</label>
+        <locationX>363</locationX>
+        <locationY>839</locationY>
+        <connector>
+            <targetReference>Medical_Vision_Dental_Pharmacy_Branch_update_Unchecking_the_Check_boxes</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>StageName</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Status_Field_as_Open</name>
+        <label>Update Status Field as Open</label>
+        <locationX>99</locationX>
+        <locationY>731</locationY>
+        <connector>
+            <targetReference>Medical_Vision_Dental_Pharmacy_Branch_update_Unchecking_the_Check_boxes</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_summary_comments_last_modified_date</name>
+        <label>Update summary comments last modified date</label>
+        <locationX>165</locationX>
+        <locationY>3407</locationY>
+        <inputAssignments>
+            <field>Summary_Comments_Last_Modified__c</field>
+            <value>
+                <elementReference>IsNow</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>171</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>MA_Prod_Comp_Validation_Reset_Values</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

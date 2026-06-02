@@ -164,8 +164,8 @@
         
         var selectedItem = event.currentTarget;
         var fieldNameToBeSorted = selectedItem.dataset.record;
-        
-        var fieldItagsWithAuraAttrMap = '{"AccountFirm__r.Name":"sortAccountName","RecordType":"sortAccountType","Owner":"sortAccountOwner"}';
+        // Modified By Gurjot
+        var fieldItagsWithAuraAttrMap = '{"AccountFirm__r.Name":"sortAccountName","AccountFirm__r.Client_Reference_Status__c":"sortReferenceableAsc","RecordType":"sortAccountType","Owner":"sortAccountOwner","AccountFirm__r.NPS__c":"sortLRTAsc"}';
         var sortFieldCompNameMap = JSON.parse(fieldItagsWithAuraAttrMap);
         var sortFieldCompName = sortFieldCompNameMap[fieldNameToBeSorted];
         
@@ -201,10 +201,12 @@
         
         if(sortBtn === 'sortAcc'){
             component.set('v.accSort', true);
-            
+            //Modified By Gurjot
             fieldsToSort = [{"fieldName":"AccountFirm__r.Name","fieldDisplayName":"Company Name","fieldOrder":component.get("v.sortAccountName")},
+                            {"fieldName":"AccountFirm__r.Client_Reference_Status__c","fieldDisplayName":"Referenceable Client","fieldOrder":component.get("v.sortReferenceableAsc")},
                             {"fieldName":"RecordType","fieldDisplayName":"Company Type","fieldOrder":component.get("v.sortAccountType")},
-                            {"fieldName":"Owner","fieldDisplayName":"Owner","fieldOrder":component.get("v.sortAccountOwner")}
+                            {"fieldName":"Owner","fieldDisplayName":"Owner","fieldOrder":component.get("v.sortAccountOwner")},
+                            {"fieldName":"AccountFirm__r.NPS__c","fieldDisplayName":"LRT (Most Recent Score)","fieldOrder":component.get("v.sortLRTAsc")}
                            ];
         }else if(sortBtn === 'sortMA'){
             component.set('v.maSort', true);
@@ -250,8 +252,8 @@
             
             if(component.get('v.accSort')){
                 component.set('v.accSort', true);
-                
-                fieldItagsWithAuraAttrMap = '{"AccountFirm__r.Name":"sortAccountName","RecordType":"sortAccountType","Owner":"sortAccountOwner"}';
+                // Modified By Gurjot
+                fieldItagsWithAuraAttrMap = '{"AccountFirm__r.Name":"sortAccountName","AccountFirm__r.Client_Reference_Status__c":"sortReferenceableAsc","RecordType":"sortAccountType","Owner":"sortAccountOwner",,"AccountFirm__r.NPS__c":"sortLRTAsc"}';
                 var sortFieldCompNameMap = JSON.parse(fieldItagsWithAuraAttrMap);
                 var sortFieldCompName = sortFieldCompNameMap[fieldNameToBeSorted];
                 

@@ -16,15 +16,14 @@ global class EBDBatchApex implements Database.Batchable<SObject> {
     /* =========================
        START – ALL CM ACCOUNTS
     ========================== */
-   /* global Database.QueryLocator start(Database.BatchableContext bc) {
+    /*global Database.QueryLocator start(Database.BatchableContext bc) {
         return Database.getQueryLocator(
             'SELECT Id, Name ' +
             'FROM Account ' +
             'WHERE RecordType.DeveloperName IN :CM_ACCOUNT_RT_DEV_NAMES'
         );
     }*/
-        
-        global Database.QueryLocator start(Database.BatchableContext bc) {
+         global Database.QueryLocator start(Database.BatchableContext bc) {
     return Database.getQueryLocator([
         SELECT Id, Name
         FROM Account

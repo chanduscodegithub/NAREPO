@@ -1,0 +1,328 @@
+<template>
+    <template if:true={isLoaded}>
+    <lightning-quick-action-panel header={panelHeader}>
+        <template if:false={recordId}>
+            <div class="slds-p-around_xx-small slds-border_bottom slds-align_absolute-center"
+                style="border-bottom: 3px solid #d8dde6;">
+                <h1 class="slds-text-heading_medium s slds-m-bottom_medium custom-heading">
+                    Upload and Process RFP Response
+                </h1>
+            </div>
+        </template>
+        <!-- Spinner -->
+        <template if:true={showSpinner}>
+            <!-- <div class="exampleHolder"> -->
+                 <section class="spinner-overlay">
+                <lightning-spinner alternative-text="Loading" size="Large" variant="brand"></lightning-spinner>
+                </section>
+            <!-- </div> -->
+        </template>
+
+        <div class="smooth-container" style="height: fit-content;">
+            <div class="slds-col slds-size_1-of-1">
+                <template if:false={recordId}>
+                    <lightning-record-picker label="Membership Activity" object-api-name="Opportunity"
+                        field-api-name="RFP__c.Membership_Activity__c" onchange={handleMaChange} filter={accountFilter}
+                        required>
+                    </lightning-record-picker>
+                </template>
+            </div>
+            <!-- ============ Non-Excel Mode ============ -->
+            <template if:false={isExcelMode}>
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input label="Company" value={company} disabled></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input label="Primary Consultant" value={primaryConsultant} disabled>
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input label="Consulting Firm" value={consultingFirm} disabled></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input label="Sales Season" value={year} disabled></lightning-input>
+                    </div>
+                </div>
+
+                <section class="slds-m-top_medium">
+                    <lightning-input type="file" label="Upload File" accept=".docx,.xls,.xlsx"
+                        onchange={handleFileSelect}>
+                    </lightning-input>
+                    <p class="slds-text-body_small slds-m-top_x-small">
+                        <strong>Note: </strong> Supported file types: Microsoft Word (.docx) and Excel (.xls, .xlsx)
+                        only.
+                    </p>
+                </section>
+
+                <template if:true={fileName}>
+                    <section class="slds-m-top_medium">
+                        <p><strong>File Name:</strong> {fileName}</p>
+                    </section>
+                </template>
+            </template>
+
+            <!-- ============ Excel Mode ============ -->
+            <template if:true={isExcelMode}>
+                <!-- ========== Instructions (Collapsible) ========== -->
+                <section class="slds-box elegant-card slds-theme_alert-texture fade-in">
+                    <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                        <lightning-button-icon icon-name={instructionsIcon} alternative-text="Toggle Instructions"
+                            onclick={toggleInstructions} variant="border-filled" size="xx-small">
+                        </lightning-button-icon>
+                        <p class="slds-m-left_x-small slds-text-title_bold slds-text-color_blue">Instructions</p>
+                    </div>
+
+                    <template if:true={showInstructions}>
+                        <p> Steps to Upload the Excel Document into the MERIT: </p>
+                        <ul class="slds-list_dotted slds-m-left_medium">
+                            <li>Select one or more sheets from the multi-select picklist for which you want to upload
+                                and generate AI responses.</li>
+                            <li>Identify the correct header row for each selected sheet.</li>
+                            <li>Map the required columns — Question Number, RFP Question, Questions Options, and
+                                Proposal Gateway Response.</li>
+                            <li>Click Proceed to insert the data into MERIT.</li>
+                        </ul>
+                        <p>Precautions:</p>
+                        <ul class="slds-list_dotted slds-m-left_medium">
+                            <li>Questions without a response will not be inserted into Merit.</li>
+                            <li>Ensure that all strategic questions are properly identified in the Strategy Memo.</li>
+                        </ul>
+                    </template>
+                </section>
+
+                <!-- Workbook Sheets -->
+                <section class="slds-box elegant-card fade-in slds-m-top_medium">
+                    <div
+                        class="slds-form-element__label slds-m-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                        <div>
+                            <span class="slds-text-title_bold slds-text-color_blue">Workbook Sheets</span>
+                            <lightning-helptext class="slds-m-left_xx-small"
+                                content="Select sheets from the uploaded workbook to upload into MERIT and generate AI responses.">
+                            </lightning-helptext>
+                        </div>
+                        <lightning-button label="Select All" variant="neutral" size="small"
+                            onclick={handleSelectAllSheets}></lightning-button>
+                    </div>
+
+                    <lightning-dual-listbox name="sheets" source-label="Available Sheets"
+                        selected-label="Selected Sheets" options={sheetOptions} value={selectedSheets}
+                        onchange={handleSheetSelection} class="animated-box"></lightning-dual-listbox>
+                </section>
+
+                <!-- Unified Sheet Mapping Section -->
+                <template if:true={hasSelectedSheets}>
+                    <section class="slds-box elegant-card slds-m-top_medium fade-in">
+                        <p class="slds-text-title_bold slds-text-color_blue">Sheet Mapping</p>
+
+                        <template for:each={selectedSheetRenderData} for:item="sheet">
+                            <div key={sheet.name} class="slds-m-top_medium slds-p-around_small slds-border_top">
+
+                                <!-- Collapsible Header -->
+                                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center sheet-header"
+                                    onclick={toggleSheetCollapse} data-sheet={sheet.name}>
+                                    <div class="slds-grid slds-grid_vertical-align-center">
+                                        <lightning-button-icon icon-name={sheet.iconName}
+                                            alternative-text="Toggle Section" variant="bare" size="small"
+                                            class="slds-m-right_x-small" data-sheet={sheet.name}>
+                                        </lightning-button-icon>
+                                        <p class="slds-text-title_bold slds-text-color_blue">
+                                            {sheet.displayIndex}. {sheet.name}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Collapsible Body -->
+                                <template if:false={sheet.isCollapsed}>
+                                    <div class="slds-m-top_small slds-p-left_medium ">
+
+                                        <!-- Header Row -->
+                                        <div class="slds-form-element__label slds-m-top_small">
+                                            <span class="slds-text-title_bold slds-text-color_blue">Header Row</span>
+                                            <lightning-helptext
+                                                content="Select the row number that contains the column headers.">
+                                            </lightning-helptext>
+                                        </div>
+                                        <lightning-combobox placeholder="Select Header Row" value={sheet.headerRow}
+                                            data-sheet={sheet.name} onchange={handleHeaderRowChange}
+                                            options={headerRowOptions} class="animated-box"></lightning-combobox>
+
+                                        <!-- Mapping Fields -->
+                                        <template if:true={sheet.headerSelected}>
+                                            <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                                <div class="slds-m-vertical_x-small slds-col slds-size_1-of-2">
+                                                    <div
+                                                        class="slds-grid slds-grid_vertical-align-center slds-m-bottom_x-small">
+
+                                                        <div class="slds-form-element__label slds-col">
+                                                            <span class="slds-text-title_bold slds-text-color_blue">
+                                             <span style="color: red;">*</span> RFP Question Number
+                                                            </span>
+                                                            <lightning-helptext
+                                                                content="Select the column that contains the question numbers.">
+                                                            </lightning-helptext>
+                                                        </div>
+                                                        <div
+                                                            class="slds-col slds-grid slds-grid_vertical-align-center slds-p-left_small">
+                                                            <lightning-input type="checkbox"
+                                                                label="No Question Number Column (Use Excel Row Number)"
+                                                                data-sheet={sheet.name} checked={sheet.noQuestionNumber}
+                                                                onchange={handleNoQuestionNumberToggle}>
+                                                            </lightning-input>
+                                                            <lightning-helptext
+                                                                content="Select the checkbox if your Excel sheet does NOT contain a question number column. System will use the Excel row number automatically.">
+                                                            </lightning-helptext>
+                                                        </div>
+                                                    </div>
+                                                    <!-- <template if:false={sheet.noQuestionNumber}> -->
+                                                    <lightning-dual-listbox source-label="Available Columns"
+                                                        selected-label="Selected Columns"
+                                                        options={sheet.filteredHeaders.RFP_Question_Number__c}
+                                                        value={sheet.mapping.RFP_Question_Number__c}
+                                                        data-sheet={sheet.name} data-field="RFP_Question_Number__c"
+                                                        onchange={handleMappingChange}></lightning-dual-listbox>
+                                                    <!-- </template> -->
+
+
+
+
+                                                </div>
+
+                                                <div class="slds-m-vertical_x-small slds-col slds-size_1-of-2">
+                                                    <div class="slds-form-element__label">
+                                                        <span class="slds-text-title_bold slds-text-color_blue">
+                                             <span style="color: red;">*</span> RFP Question
+                                                        </span>
+                                                        <lightning-helptext
+                                                            content="Select the column that contains the questions.">
+                                                        </lightning-helptext>
+                                                    </div>
+                                                    <lightning-dual-listbox source-label="Available Columns"
+                                                        selected-label="Selected Columns"
+                                                        options={sheet.filteredHeaders.RFP_Question__c}
+                                                        value={sheet.mapping.RFP_Question__c} data-sheet={sheet.name}
+                                                        data-field="RFP_Question__c" onchange={handleMappingChange}>
+                                                    </lightning-dual-listbox>
+                                                </div>
+
+                                                <div class="slds-m-vertical_x-small slds-col slds-size_1-of-2">
+                                                    <div class="slds-form-element__label">
+                                                        <span class="slds-text-title_bold slds-text-color_blue">Question Options</span>
+                                                        <lightning-helptext
+                                                            content="Select the column that contains the questions options.">
+                                                        </lightning-helptext>
+                                                    </div>
+                                                    <lightning-dual-listbox source-label="Available Columns"
+                                                        selected-label="Selected Columns"
+                                                        options={sheet.filteredHeaders.Answer_size_limit__c}
+                                                        value={sheet.mapping.Answer_size_limit__c}
+                                                        data-sheet={sheet.name} data-field="Answer_size_limit__c"
+                                                        onchange={handleMappingChange}></lightning-dual-listbox>
+                                                </div>
+
+                                                <div class="slds-m-vertical_x-small slds-col slds-size_1-of-2">
+                                                    <div class="slds-form-element__label">
+                                                        <span class="slds-text-title_bold slds-text-color_blue">
+                                             <span style="color: red;">*</span> Proposal Gateway Response
+                                                        </span>
+                                                        <lightning-helptext
+                                                            content="Select the column that contains the UHC responses/answers.">
+                                                        </lightning-helptext>
+                                                    </div>
+                                                    <lightning-dual-listbox source-label="Available Columns"
+                                                        selected-label="Selected Columns"
+                                                        options={sheet.filteredHeaders.Proposal_Gateway_Response__c}
+                                                        value={sheet.mapping.Proposal_Gateway_Response__c}
+                                                        data-sheet={sheet.name}
+                                                        data-field="Proposal_Gateway_Response__c"
+                                                        onchange={handleMappingChange}></lightning-dual-listbox>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </section>
+                </template>
+
+            </template>
+
+        </div>
+
+        <!-- <template if:true={showErrorBanner}>
+            <section
+                class="slds-popover slds-popover_error slds-nubbin_bottom-left slds-is-absolute slds-p-around_medium error-popover"
+                role="alert" aria-label={errorTitle}>
+                <button
+            class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse slds-float_right"
+            title="Close error dialog"
+            onclick={clearErrorMessage}
+        >
+            <lightning-icon
+                icon-name="utility:close"
+                alternative-text="Close"
+                size="x-small"
+                class="slds-button__icon"
+            ></lightning-icon>
+        </button>
+
+                <header class="slds-popover__header slds-m-bottom_small">
+                    <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="utility:error" size="x-small" variant="inverse"
+                                class="slds-icon slds-icon_x-small slds-icon-text-error"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-truncate slds-text-heading_medium">{errorTitle}</h2>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="slds-popover__body">
+                    <p class="slds-text-body_small slds-m-bottom_x-small">
+                        <strong>Review the following:</strong>
+                    </p>
+                    <ul class="slds-m-left_medium">
+                        <template for:each={errorMessages} for:item="msg">
+                            <li key={msg}>{msg}</li>
+                        </template>
+                    </ul>
+                </div>
+            </section>
+        </template> -->
+        <!-- Footer -->
+        <div slot="footer">
+            <lightning-button variant="neutral" label="Cancel" onclick={closeQuickAction}></lightning-button>
+            <lightning-button variant="brand" label="Proceed" class="slds-m-left_x-small" onclick={handleProceed}>
+            </lightning-button>
+        </div>
+
+
+        <template if:true={showConfirmationForExcel}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_x-small"
+                aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                <div class="slds-modal__container WarniningModal">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Are you sure you want to proceed?</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_large">
+                        <p class="slds-text-align_center MheadingSize">
+                            <strong> Please confirm that you’ve reviewed the mapping before moving to AI Review. </strong>
+                        </p>
+                        <p class="slds-text-align_center MheadingSize"> NOTE:
+                            <em>You will receive an email notification once the AI Review is complete.</em>
+                        </p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Go back" onclick={closeConfirmationForExcel}> </lightning-button>
+                        <lightning-button class="slds-m-horizontal_small" label="Confirm" variant="brand"
+                            onclick={handleConfirmAndContinueToGenerateAIResponses}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-quick-action-panel>
+    </template>
+</template>

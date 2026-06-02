@@ -50,8 +50,10 @@
         
         var fieldsToSort = [{"fieldName":"Primary__c","fieldDisplayName":"Company Primary","fieldOrder":component.get("v.sortFirmPrimaryAsc")},
                             {"fieldName":"Account.Name","fieldDisplayName":"Company Name","fieldOrder":component.get("v.sortCFNameAsc")},
+                            {"fieldName":"Account.Client_Reference_Status__c","fieldDisplayName":"Referenceable Client","fieldOrder":component.get("v.sortReferenceableAsc")},
                             {"fieldName":"Account.RecordType.Name","fieldDisplayName":"Company Type","fieldOrder":component.get("v.sortTypeAsc")},
-                            {"fieldName":"Account.Owner.Name","fieldDisplayName":"Owner","fieldOrder":component.get("v.sortOwnerAsc")}
+                            {"fieldName":"Account.Owner.Name","fieldDisplayName":"Owner","fieldOrder":component.get("v.sortOwnerAsc")},
+                            {"fieldName":"Account.NPS__c","fieldDisplayName":"LRT (Most Recent Score) ","fieldOrder":component.get("v.sortLRTAsc")}
                            ];
         $A.createComponents([["c:Panel_Component_Sorting",{attribute:true,'FieldsToSort':fieldsToSort,'lastSortField':component.get("v.lastSortField")}]],
                             function(newCmp, status){ 
@@ -76,10 +78,12 @@
         
         var selectedItem = event.currentTarget;
         var fieldNameToBeSorted = selectedItem.dataset.record;
-        var fieldItagsWithAuraAttrMap = '{"Primary__c":"sortFirmPrimaryAsc","Account.Name":"sortCFNameAsc","Account.RecordType.Name":"sortTypeAsc","Account.Owner.Name":"sortOwnerAsc"}';
+        var fieldItagsWithAuraAttrMap = '{"Primary__c":"sortFirmPrimaryAsc","Account.Name":"sortCFNameAsc","Account.Client_Reference_Status__c":"sortReferenceableAsc","Account.RecordType.Name":"sortTypeAsc","Account.Owner.Name":"sortOwnerAsc","Account.NPS__c":"sortLRTAsc"}';
         var sortFieldCompNameMap = JSON.parse(fieldItagsWithAuraAttrMap);
         var sortFieldCompName = sortFieldCompNameMap[fieldNameToBeSorted];
-        var page = 1;
+        //var page = 1;
+        var page = component.get('v.page'); // Based on pagination sorting the data
+        console.log('page::'+component.get('v.page'));
         
         helper.sortBy(component, event, fieldNameToBeSorted, page, sortFieldCompName);
         
@@ -97,7 +101,7 @@
             component.set("v.lastSortField",fieldNameToBeSorted);
             
             var orderToBeSorted = event.getParam('orderToBeSorted');
-            var fieldItagsWithAuraAttrMap = '{"Primary__c":"sortFirmPrimaryAsc","Account.Name":"sortCFNameAsc","Account.RecordType.Name":"sortTypeAsc","Account.Owner.Name":"sortOwnerAsc"}';
+            var fieldItagsWithAuraAttrMap = '{"Primary__c":"sortFirmPrimaryAsc","Account.Name":"sortCFNameAsc","Account.Client_Reference_Status__c":"sortReferenceableAsc","Account.RecordType.Name":"sortTypeAsc","Account.Owner.Name":"sortOwnerAsc","Account.NPS__c":"sortLRTAsc"}';
             var sortFieldCompNameMap = JSON.parse(fieldItagsWithAuraAttrMap);
             var sortFieldCompName = sortFieldCompNameMap[fieldNameToBeSorted]; 
             if(orderToBeSorted === "DESC"){

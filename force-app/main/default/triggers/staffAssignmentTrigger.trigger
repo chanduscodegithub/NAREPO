@@ -20,6 +20,7 @@ trigger staffAssignmentTrigger on Staff_Assignment__c (before insert , before up
                 if (!staffAssignmentTriggerHelper.isRunUpdate) {
                     staffAssignmentTriggerHelper.staffAssignmentUpdate(trigger.newMap, trigger.oldMap);
                     staffAssignmentTriggerHelper.calculateHoc(trigger.new);
+                    //staffAssignmentTriggerHelper.calculateStaffHoc(trigger.new);
                 }
                /** if (!staffAssignmentTriggerHelper.isRunUpdate2) {
                     staffAssignmentTriggerHelper.serviceAMTEndDateUpdate(trigger.newMap, trigger.oldMap);
@@ -28,6 +29,7 @@ trigger staffAssignmentTrigger on Staff_Assignment__c (before insert , before up
                 if (!staffAssignmentTriggerHelper.isRunInsert) {
                     staffAssignmentTriggerHelper.staffAssignmentInsert(trigger.new);
                     staffAssignmentTriggerHelper.calculateHoc(trigger.new);
+                    //staffAssignmentTriggerHelper.calculateStaffHoc(trigger.new);
                 }
             }
             

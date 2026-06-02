@@ -46,20 +46,19 @@ public class EmailSCCbySalesSurestTeamTest {
         // Fetch test data
         Account acc = [SELECT Id, Name FROM Account LIMIT 1];
         Opportunity opp = [SELECT Id, Name, Account.Name, EffectiveDate__c FROM Opportunity LIMIT 1];
-        
+        List<String> emails = new List<String>{ 'test@example.com' };
+            
         Test.startTest();
         
         // Prepare request list
-        List<EmailSCCbySalesSurestTeam.EmailRequest> requests = new List<EmailSCCbySalesSurestTeam.EmailRequest>();
-        EmailSCCbySalesSurestTeam.EmailRequest req = new EmailSCCbySalesSurestTeam.EmailRequest();
-        req.recordId = opp.Id;
-        req.AccountName = acc.Name;
-        req.oppName = opp.Name;
-        req.EffectiveDate = opp.EffectiveDate__c;
-        requests.add(req);
-        
-        // Invoke the method
-        EmailSCCbySalesSurestTeam.sendEmailWithPDF(requests);
+        EmailSCCbySalesSurestTeam.sendEmailWithPDF(
+            'Sales',
+            opp.Id,
+            acc.Name,
+            opp.Name,
+            Date.today(),
+            emails
+        );
         
         Test.stopTest();
         

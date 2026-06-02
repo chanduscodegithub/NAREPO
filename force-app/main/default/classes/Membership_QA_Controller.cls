@@ -62,9 +62,7 @@ public without sharing class Membership_QA_Controller {
                     List<Schema.PicklistEntry> picklistDataList = field_map.get(picklistItag).getDescribe().getPickListValues();
                     List<String> picklistValuesList = new List<String>();
                     for(Schema.PicklistEntry entry : picklistDataList) {
-                        
                         picklistValuesList.add(entry.getValue());
-                        System.debug('picklistValuesList'+picklistValuesList);
                     }
                     returnQARelatedDataObj.picklistFieldsMap.put(picklistItag, picklistValuesList);
                 } 

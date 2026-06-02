@@ -87,7 +87,7 @@ public with sharing class NewRFPTemplateController {
                     Account.CVGAccount__r.Name, Account.CVG_Top_10__c, Account.Private_Equity_Relationship__c, Account.Previous_Customer__c,
                     Account.Cancellation_Date__c, Account.Members_at_Term__c, Account.ReasonforTermMedical__c, 
                     Account.Eligible_US_EEs__c, Account.AnnualB2BSpend__c, Account.Web_Address__c, Account.SVP_Top_10__c,
-                    Account.B2BServiceSolution__c, Account.Direct_Marketing_Target__c, Account.Reason_for_Term_Comments__c,
+                    Account.B2BServiceSolution__c, Account.Direct_Marketing_Target__c, Account.Reason_for_Term_Comments__c,Account.Company_Description__c,
                     //Others
                     Primary_Consulting_Firm__r.Name, PrimaryConsultant__r.Name, Owner.Name, Incumbent_Primary_Medical__r.Name,
                     Incumbent_Secondary_Medical__r.Name

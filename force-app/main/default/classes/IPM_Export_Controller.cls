@@ -1,10 +1,3 @@
-/**
- * @description       : 
- * @author            : Spoorthy
- * @group             : 
- * @last modified on  : 09-04-2024
- * @last modified by  : Spoorthy
-**/
 public with sharing class IPM_Export_Controller 
 {
     
@@ -128,7 +121,7 @@ public with sharing class IPM_Export_Controller
                                                                   FROM IPM_Team__c 
                                                                   WHERE Id IN:ipmTeamIdList]);
         
-        Project_Template__c prjctTmplt = [SELECT Id,Name,Owner.Name,Account__r.Name,LastModifiedDate,Policy_Information__r.Name,Project_Type__c 
+        Project_Template__c prjctTmplt = [SELECT Id,Name,Owner.Name,Account__r.Name,LastModifiedDate,Policy_Information__r.Name ,Project_Type__c
                                           FROM Project_Template__c 
                                           WHERE Id=:ipmId];
         

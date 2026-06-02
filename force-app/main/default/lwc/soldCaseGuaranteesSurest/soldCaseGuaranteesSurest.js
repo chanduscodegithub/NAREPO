@@ -26,6 +26,12 @@ export default class SoldCaseGuaranteesSurest extends LightningElement {
 
     otherSurest = SUREST_OTHER_GUARANTEE_MEDICAL_REF;
 
+     @track picklistValues = [
+        { label: '', value: '' },
+        { label: 'Yes', value: 'Yes' },
+        { label: 'No', value: 'No' }
+    ];
+
     @api
     get editmode() {
         return this.enableEdit

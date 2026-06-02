@@ -183,7 +183,7 @@ Output : List<PIM_Product_Stage__c>
                            Product_Line_Prod__c, Level2_Options_Prod__c, Distribution_Type_Flag__c, StepWise_Product_Name__c, Product_Display_Order_Prod__c, StepWise_Product_RowID__c,
                            Surest_Applicable_Products_Prod__c, CPW_Applicable_Product_Prod__c, SFGO_Applicable_Product_Prod__c, Product_Name_Prod__c, Considered_For_StepWise_Integration__c, Surest_Implementation_Lead_Time_Stage__c,
                            Standard_Implementation_LeadTime_Stage__c,Reporting_Product_Type__c,NAStandardImplementationLeadTime_Stage__c,
-                           Underwriting_Validation_Prod__c,Eligible_for_Sales_Incentives_Prod__c
+                             Underwriting_Validation_Prod__c,Eligible_for_Sales_Incentives_Prod__c 
                            FROM PIM_Product_Stage__c where Product_Change_Type__c =:filterType  AND Product_Line_Stage__c!=NULL With USER_MODE Order by Product_Line_Stage__c ASC,Product_Display_Order_Prod__c];
         }
         catch(Exception e){
@@ -212,6 +212,12 @@ Output : PublishSummary
             throw new AuraHandledException('Deactivated products must be published before new products can be published.');
         }
         }
+         /*if(!isListView){
+            List<PIM_Product_Stage__c> getProducts =getProducts('Deactivation');
+            if(getProducts.size()>0){
+                throw new AuraHandledException('Please complete the Deactivation publish process before making any further updates to the Product Master.');
+            }
+        }*/
         Boolean isRecordPage = !isListView;
         PublishSummary summary = new PublishSummary();
         if (stageIds == null || stageIds.isEmpty()) {
@@ -254,7 +260,6 @@ Output : PublishSummary
             p.ProductCode              = s.Product_Code_Stage__c;
             p.IsActive                 = s.IsActiveStage__c;
             p.UHC_NA_Standard_Implementation_Lead_Time__c = s.NAStandardImplementationLeadTime_Stage__c;
-            
             // ---- Validate ALL picklists first ----
             List<String> picklistErrors = validatePicklists(s);
             
@@ -280,7 +285,6 @@ Output : PublishSummary
             
             
             p.Family = s.Product_Family_Stage__c;
-             p.Underwriting_Validation__c = s.Underwriting_Validation__c;
             //validateProductFamily(s.Product_Family_Stage__c);   
             //p.Family                   = s.Product_Family_Stage__c;
             p.Funding_Type__c          = s.Funding_Type_Stage__c;
@@ -293,11 +297,9 @@ Output : PublishSummary
             p.Distribution_Type_Flag__c = s.Distribution_Type_Flag__c;
             p.StepWise_Product_RowID__c = s.StepWise_Product_RowID__c;
             p.StepWise_Product_Name__c = s.StepWise_Product_Name__c;
-           // p.Underwriting_Validation__c =s.Underwriting_Validation__c;
+            p.Underwriting_Validation__c =s.Underwriting_Validation__c;
             p.Do_Not_Include_in_Total__c = s.Do_Not_Include_in_Total__c;
             p.TCOC_Hit_List__c =s.Key_Growth_Drivers__c;
-           // p.Eligible_for_Sales_Incentives__c = s.Eligible_for_Sales_Incentives__c;
-          
             p.Eligible_for_Sales_Incentives__c = s.Eligible_for_Sales_Incentives__c;
             p.Enterprise_Growth_Product__c =s.Enterprise_Growth_Product__c;
             p.Surest_Implementation_Lead_Time__c = s.Surest_Implementation_Lead_Time_Stage__c;
@@ -310,7 +312,7 @@ Output : PublishSummary
         
         if(errorRows.size()>0){
             if(isListView){
-                sendQuickPublishEmail(successCount,errorCount,totalCount,successRows,errorRows,true);
+                sendQuickPublishEmail(successCount,errorCount,totalCount,successRows,errorRows,false);
                 summary.successCount = 0;
                 summary.errorCount = errorRows.size();
                 summary.totalCount = totalCount;
@@ -619,13 +621,12 @@ Output : PublishSummary
         List<PIM_Audit_Trail__c> auditRecords = new List<PIM_Audit_Trail__c>();
         String baseUrl = URL.getOrgDomainUrl().toExternalForm();
         List<PIM_Product_Stage__c> stages = [SELECT Id, PIM_ID_Stage__c, Product_Name_Stage__c, Product_Name__c, PIM_Name_Stage__c, PIM_Parent_ID_Stage__c, PIM_Parent_Name_Stage__c, Enterprise_Growth_Product__c, PIM_SME_Name_Stage__c, PIM_ID_Composite_Stage__c, PIM_Availability_Stage__c, Program_Code_Stage__c, Supplier_Code_Stage__c, Product_Code_Stage__c, IsActiveStage__c, Change_Tracker__c, Product_Family_Stage__c, Key_Growth_Drivers__c,
-                                            
-                                              Funding_Type_Stage__c, Product_Line_Stage__c, Level_2_Options_Stage__c, Product_Display_Order_Stage__c, Surest_Applicable_Products_Stage__c, CPW_Applicable_Product_Stage__c, SFGO_Applicable_Product_Stage__c,
+                                             Eligible_for_Sales_Incentives__c, Funding_Type_Stage__c, Product_Line_Stage__c, Level_2_Options_Stage__c, Product_Display_Order_Stage__c, Surest_Applicable_Products_Stage__c, CPW_Applicable_Product_Stage__c, SFGO_Applicable_Product_Stage__c,
                                              PIM_ID_Prod__c, Product_Change_Type__c, Underwriting_Validation__c, PIM_Name_Prod__c, PIM_Parent_ID_Prod__c, Do_Not_Include_in_Total__c, PIM_Parent_Name_Prod__c, PIM_SME_Name_Prod__c, PIM_ID_Composite_Prod__c, PIM_Availability_Prod__c, Program_Code_Prod__c, Supplier_Code_Prod__c,
                                              Product_Code_Prod__c, Active_Prod__c, Product_Family_Prod__c, Funding_Type_Prod__c, Product_Line_Prod__c, Level2_Options_Prod__c, Product_Display_Order_Prod__c,
                                              Surest_Applicable_Products_Prod__c, CPW_Applicable_Product_Prod__c, StepWise_Product_RowID__c, StepWise_Product_Name__c, SFGO_Applicable_Product_Prod__c, Distribution_Type_Flag__c, Product_Name_Prod__c, Considered_For_StepWise_Integration__c,
                                              Surest_Implementation_Lead_Time_Stage__c,Standard_Implementation_LeadTime_Stage__c,Surest_Implementation_Lead_Time_Prod__c,Standard_Implementation_Lead_Time_Prod__c,UHC_NA_Standard_Impl_Lead_Time_Prod__c,NAStandardImplementationLeadTime_Stage__c,
-                                             Underwriting_Validation_Prod__c,Eligible_for_Sales_Incentives_Prod__c,Eligible_for_Sales_Incentives__c
+                                             Underwriting_Validation_Prod__c,Eligible_for_Sales_Incentives_Prod__c
                                              FROM PIM_Product_Stage__c WHERE Id IN :stageIds With USER_MODE ORDER BY Product_Display_Order_Stage__c]; 
         List<Product2> products = [SELECT Id, Product_Line__c, Product_Display_Order__c, IsActive
                                    FROM Product2 WHERE  Name != 'Total' With USER_MODE ORDER BY Product_Display_Order__c];
@@ -759,12 +760,11 @@ Output : PublishSummary
                 
             }
             else if (oldActive && newActive && oldGroup == newGroup && oldOrder != newOrder) {
-                
-                  if(isListView){
+                //shiftRange(groupMap.get(newGroup), oldOrder, newOrder, orderUpdates, productId);
+                if(isListView){
                   throw new AuraHandledException('Some products in this list have ‘Product Display Order’ changes. Please remove them to proceed or contact your Admin. Product display order updates for existing products must be handled individually at the Staging Table record level.');
 
                 }
-                //shiftRange(groupMap.get(newGroup), oldOrder, newOrder, orderUpdates, productId);
                
                 Integer min = Math.min(oldOrder, newOrder);
                 Integer max = Math.max(oldOrder, newOrder);
@@ -1080,9 +1080,10 @@ Output : PublishSummary
                                                                                     'Surest_Implementation_Lead_Time_Stage__c' => new Map<String, String>{ 'snapshot' => 'Surest_Implementation_Lead_Time_Prod__c','product'  => 'Surest_Implementation_Lead_Time__c'},
                                                                                         'Standard_Implementation_LeadTime_Stage__c' => new Map<String, String>{ 'snapshot' => 'Standard_Implementation_Lead_Time_Prod__c','product'  => 'Standard_Implementation_Lead_Time__c'},
                                                                                           'NAStandardImplementationLeadTime_Stage__c' => new Map<String, String>{ 'snapshot' => 'UHC_NA_Standard_Impl_Lead_Time_Prod__c','product'  => 'UHC_NA_Standard_Implementation_Lead_Time__c'},
-                                                                                                'Eligible_for_Sales_Incentives__c' => new Map<String, String>{ 'snapshot' => 'Eligible_for_Sales_Incentives_Prod__c','product'  => 'Eligible_for_Sales_Incentives__c'},
+                                                                                                                                                                                              'Eligible_for_Sales_Incentives__c' => new Map<String, String>{ 'snapshot' => 'Eligible_for_Sales_Incentives_Prod__c','product'  => 'Eligible_for_Sales_Incentives__c'},
 
                                                                                          'Underwriting_Validation__c' => new Map<String, String>{ 'snapshot' => 'Underwriting_Validation_Prod__c','product'  => 'Underwriting_Validation__c'},
+
 
 
                                                                                             'Product_Name_Stage__c' => new Map<String, String>{'snapshot' => 'Product_Name__c','product'  => 'Name'}

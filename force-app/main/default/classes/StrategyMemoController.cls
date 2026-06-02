@@ -8,10 +8,12 @@ public with sharing class StrategyMemoController {
         StrategyMemoInfoWrapper strategyMemoInfoWrapper = new StrategyMemoInfoWrapper();
         strategyMemoInfoWrapper.isRFPUser = false; 
         String profileName = [SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId()].Profile.Name;
+        UserRecordAccess access = [SELECT RecordId, HasEditAccess FROM UserRecordAccess WHERE UserId = :UserInfo.getUserId() AND RecordId = :membershipActivityId ];
+        strategyMemoInfoWrapper.hasEditAccess = access.HasEditAccess;
         if(profileName =='Proposal Gateway - RFP Reviewer'){
            strategyMemoInfoWrapper.isRFPUser = true;
         }
-
+        
         Opportunity strategyMemoOppQueryResult = null;
         try
         {
@@ -30,7 +32,7 @@ public with sharing class StrategyMemoController {
                                           Account.Surest_Network_Constraints__c, Account.Network_Contracting_Issue_Other__c, 
                                           Account.Surest_Comments__c,Account.Private_Equity_Relationship__c, 
                                           Owner_Name__c, PrimaryConsultant__r.MailingCity,PrimaryConsultant__r.Name, Account.Company_Description__c,
-                                          PrimaryConsultant__r.Phone,PrimaryConsultant__r.MailingAddress,  PrimaryConsultant__r.Email, Account.ConsultantFirm__r.Name
+                                          PrimaryConsultant__r.Phone,PrimaryConsultant__r.MailingAddress,  PrimaryConsultant__r.Email, Primary_Consulting_Firm__r.Name
                                           from Opportunity where id = :membershipActivityId With USER_MODE Limit 1];
             if(strategyMemoOppQueryResult!=null)
             {
@@ -55,6 +57,8 @@ public with sharing class StrategyMemoController {
                 strategyMemoInfoWrapper.surestSvpInvolved = strategyMemoOppQueryResult.Surest_SVP_Involved__c != null ? String.valueOf(strategyMemoOppQueryResult.Surest_SVP_Involved__c):''; 
                 strategyMemoInfoWrapper.specialityBenefits = strategyMemoOppQueryResult.Specialty_Benefits_SVP__c != null ? String.valueOf(strategyMemoOppQueryResult.Specialty_Benefits_SVP__c):''; 
                 strategyMemoInfoWrapper.enrolledEmployeesProposal  = strategyMemoOppQueryResult.Employees_in_the_Proposal_Medical__c!= null ? String.valueOf(strategyMemoOppQueryResult.Employees_in_the_Proposal_Medical__c) :'';
+                System.debug('strategyMemoInfoWrapper.enrolledEmployeesProposal' +strategyMemoInfoWrapper.enrolledEmployeesProposal);
+                System.debug('strategyMemoInfoWrapper.enrolledEmployeesProposal' +String.valueOf(strategyMemoOppQueryResult.Employees_in_the_Proposal_Medical__c));
                 if (strategyMemoOppQueryResult != null && strategyMemoOppQueryResult.Account.BillingAddress != null) {
                     Address billingAddress = strategyMemoOppQueryResult.Account.BillingAddress; 
                     if (billingAddress != null) {
@@ -125,7 +129,7 @@ public with sharing class StrategyMemoController {
                 strategyMemoInfoWrapper.surestApproachStrategy= strategyMemoOppQueryResult.Account.Surest_Approach_Strategy__c != null ? strategyMemoOppQueryResult.Account.Surest_Approach_Strategy__c:'';
                 strategyMemoInfoWrapper.eligibleEesAndRetirees  = strategyMemoOppQueryResult.EEsRetireesintheProposalMedical__c!= null ? String.valueOf(strategyMemoOppQueryResult.EEsRetireesintheProposalMedical__c) :'';
                 strategyMemoInfoWrapper.notesTaken= strategyMemoOppQueryResult.Notes_taken_on_call_with_consultant__c != null ? strategyMemoOppQueryResult.Notes_taken_on_call_with_consultant__c:'';
-                strategyMemoInfoWrapper.primaryConsultingFirm = strategyMemoOppQueryResult.Account.ConsultantFirm__r.Name != null ? String.valueOf(strategyMemoOppQueryResult.Account.ConsultantFirm__r.Name):''; 
+                strategyMemoInfoWrapper.primaryConsultingFirm = strategyMemoOppQueryResult.Primary_Consulting_Firm__r.Name != null ? String.valueOf(strategyMemoOppQueryResult.Primary_Consulting_Firm__r.Name):''; 
                 if(strategyMemoOppQueryResult.PrimaryConsultant__r.MailingAddress!=null){
                     Address corporateMailingAddress = strategyMemoOppQueryResult.PrimaryConsultant__r.MailingAddress;
                     if(corporateMailingAddress!=null){
@@ -150,6 +154,7 @@ public with sharing class StrategyMemoController {
                     } 
                 }
             } 
+           
             String objectName  = '';
             StaticResource sr;
             if(strategyMemoInfoWrapper.recordType == 'CD Membership Activity (Prospect or Aggregator)'){
@@ -405,7 +410,7 @@ public with sharing class StrategyMemoController {
                                      Special_EMT_Requested__c, SPDs_Submitted_for_compatibility_Review__c,  SPDs_Availability_and_Compatibility_Docs__c,
                                      What_EMTs_will_be_Submitted__c, Any_Non_Standard_PGs__c, Non_Standard_Requests_and_EMT_Needs__c,  
                                      Vendor_Integration_File_Feeds__c, Confirm_Dates_for_Finalist_Kick_Off__c,Approach__c,Health_Plan_Manager_Industry__c,Annual_Revenue__c,Bid_Strategy__c,
-                                     Senior_Proposal_Development_Analyst_UMR__c,Senior_Strategic_Coordinator_UMR__c,Proposal_Writers_Surest__c ,Primary_Consulting_Firm__c,
+                                     Senior_Proposal_Development_Analyst_UMR__c,Senior_Strategic_Coordinator_UMR__c,Proposal_Writers_Surest__c ,Primary_Consulting_Firm__c, Membership_Activity_Name__c,
                                      Benefits_Strategist_Surest__c, Pricing_Analyst_Surest__c, Draft_Due_from_NPS__c, Pharmacy_Rebate_Questions__c, Consultant_Commission__c, Company_Description__c
                                      FROM Strategy_Memo__c 
                                      WHERE Membership_Activity__c =: membershipActivityId With USER_MODE LIMIT 1 ];
@@ -522,5 +527,6 @@ public with sharing class StrategyMemoController {
         public String xmlString { get;set; }
         @AuraEnabled
         public  Map<String,Set<String>> objectItags{ get;set; }
+        @AuraEnabled public Boolean hasEditAccess{get;set;}
     }
 }

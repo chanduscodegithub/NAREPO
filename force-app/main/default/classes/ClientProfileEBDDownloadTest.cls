@@ -14,7 +14,7 @@ public class ClientProfileEBDDownloadTest {
                                        RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Competitor').getRecordTypeId()));
         testAccRecords.add(new Account(Name='Cigna',Subtype__c ='Competitor',
                                        RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Competitor').getRecordTypeId()));
-        testAccRecords.add(new Account(Name='Test',Subtype__c ='CVG',Company_Tier_Medical__c='1 - Whales',
+        testAccRecords.add(new Account(Name='Test',Subtype__c ='CVG',Company_Tier_Medical__c='7-UMR Client',
                                        RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Existing Client').getRecordTypeId()));
         
         

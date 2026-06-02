@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Create_National_Account_and_Total_Records_For_Competitor</name>
+        <label>Create National Account and Total Records For Competitor</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <actionName>CreateCompetitorRecordsForCMAccount</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>CM_Account_Creation_On_New</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>inputParams</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>CreateCompetitorRecordsForCMAccount</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Create_National_Account_and_Total_Records_For_Competitor_1</name>
+        <label>Create National Account and Total Records For Competitor 1</label>
+        <locationX>50</locationX>
+        <locationY>731</locationY>
+        <actionName>CreateCompetitorRecordsForCMAccount</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>If_Optum_Rx_Members_isAdded_or_isChanged</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>inputParams</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>CreateCompetitorRecordsForCMAccount</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>62.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>CM_Account_Creation_On_New</name>
+        <label>CM Account Creation On New</label>
+        <locationX>182</locationX>
+        <locationY>623</locationY>
+        <defaultConnector>
+            <targetReference>If_Optum_Rx_Members_isAdded_or_isChanged</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>CM_Account_Creation_isNew_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_National_Account_and_Total_Records_For_Competitor_1</targetReference>
+            </connector>
+            <label>CM Account Creation isNew True</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_Optum_Rx_Members_isAdded_or_isChanged</name>
+        <label>If Optum Rx Members isAdded or isChanged</label>
+        <locationX>182</locationX>
+        <locationY>923</locationY>
+        <defaultConnector>
+            <targetReference>If_UHC_Dental_Members_is_Added_or_isChanged</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Optum_Rx_Members_is_Added_or_changed_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>OptumRxMember</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Members_Held_and_Primary_Secondary_Incumbent</targetReference>
+            </connector>
+            <label>If Optum Rx Members is Added or changed IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_UHC_Dental_Members_is_Added_or_isChanged</name>
+        <label>If UHC Dental Members is Added or isChanged</label>
+        <locationX>182</locationX>
+        <locationY>1223</locationY>
+        <defaultConnector>
+            <targetReference>If_UHC_Vision_Members_is_Added_or_isChanged</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_UHC_Dental_Members_is_Added_or_changed_isTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>DentalMember</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Members_Held_and_Primary_Secondary_Incumbent_1</targetReference>
+            </connector>
+            <label>If UHC Dental Members is Added or changed isTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_UHC_Medical_Members_is_added_or_isChanged</name>
+        <label>If UHC Medical Members is added or isChanged</label>
+        <locationX>182</locationX>
+        <locationY>1823</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_UHC_Medical_Members_is_added_or_changed_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>MedicalMember</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Members_Held_and_Primary_Secondary_Incumbent_3</targetReference>
+            </connector>
+            <label>If UHC Medical Members is added or changed IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_UHC_Vision_Members_is_Added_or_isChanged</name>
+        <label>If UHC Vision Members is Added or isChanged</label>
+        <locationX>182</locationX>
+        <locationY>1523</locationY>
+        <defaultConnector>
+            <targetReference>If_UHC_Medical_Members_is_added_or_isChanged</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_UHC_Vision_Members_is_Added_or_changed_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>VisionMember</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Members_Held_and_Primary_Secondary_Incumbent_2</targetReference>
+            </connector>
+            <label>If UHC Vision Members is Added or changed IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>On_Change_Of_Type_to_CM</name>
+        <label>On Change Of Type to CM</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>CM_Account_Creation_On_New</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>On_Change_Of_Type_to_CM_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Category__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Client Management</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_National_Account_and_Total_Records_For_Competitor</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>On Change Of Type to CM IsTrue</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>DentalMember</name>
+        <dataType>Boolean</dataType>
+        <expression>OR
+(
+AND
+(
+ISNEW(),
+NOT(ISBLANK({!$Record.UHC_Dental_Members__c}) ),
+{!$Record.Category__c} = &apos;Client Management&apos;
+),
+AND
+(
+ISCHANGED({!$Record.UHC_Dental_Members__c} ),
+{!$Record.Category__c} = &apos;Client Management&apos;
+),
+AND(ISCHANGED({!$Record.Category__c}),{!$Record.Category__c} = &apos;Client Management&apos;)
+)</expression>
+    </formulas>
+    <formulas>
+        <name>IsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(ISNEW() ,NOT(ISBLANK({!$Record.Category__c} ) )  )</expression>
+    </formulas>
+    <formulas>
+        <name>MedicalMember</name>
+        <dataType>Boolean</dataType>
+        <expression>OR
+(
+AND
+(
+ISNEW(),
+NOT(ISBLANK({!$Record.UHC_Medical_Members__c} ) ),
+{!$Record.Category__c} = &apos;Client Management&apos;
+),
+AND
+(
+ISCHANGED({!$Record.UHC_Medical_Members__c} ),
+{!$Record.Category__c} = &apos;Client Management&apos;
+),
+AND(ISCHANGED({!$Record.Category__c}),{!$Record.Category__c} = &apos;Client Management&apos;)
+)</expression>
+    </formulas>
+    <formulas>
+        <name>OptumRxMember</name>
+        <dataType>Boolean</dataType>
+        <expression>OR
+(
+AND
+(
+ISNEW(),
+NOT(ISBLANK({!$Record.Optum_Rx_Members__c} ) ),
+{!$Record.Category__c} = &apos;Client Management&apos;
+),
+AND
+(
+ISCHANGED({!$Record.Optum_Rx_Members__c} ),
+{!$Record.Category__c} = &apos;Client Management&apos;
+),
+AND(ISCHANGED({!$Record.Category__c}),{!$Record.Category__c} = &apos;Client Management&apos;)
+)</expression>
+    </formulas>
+    <formulas>
+        <name>VisionMember</name>
+        <dataType>Boolean</dataType>
+        <expression>OR
+(
+AND
+(
+ISNEW(),
+NOT(ISBLANK({!$Record.UHC_Vision_Members__c} ) ),
+{!$Record.Category__c} = &apos;Client Management&apos;
+),
+AND
+(
+ISCHANGED({!$Record.UHC_Vision_Members__c} ),
+{!$Record.Category__c} = &apos;Client Management&apos;
+),
+AND(ISCHANGED({!$Record.Category__c}),{!$Record.Category__c} = &apos;Client Management&apos;)
+)</expression>
+    </formulas>
+    <interviewLabel>Competitor records creation for CM Account and updating Number of Members Held based on account field update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Competitor records creation for CM Account and updating Number of Members Held based on account field update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>On_Change_Of_Type_to_CM</targetReference>
+        </connector>
+        <object>Account</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>Update_Members_Held_and_Primary_Secondary_Incumbent</name>
+        <label>Update Members Held and Primary/Secondary Incumbent</label>
+        <locationX>50</locationX>
+        <locationY>1031</locationY>
+        <connector>
+            <targetReference>If_UHC_Dental_Members_is_Added_or_isChanged</targetReference>
+        </connector>
+        <flowName>Update_Competitor_Total_Number_Of_Members_Held_And_of_Number_of_Members_Held</flowName>
+        <inputAssignments>
+            <name>accountId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>competitorClassification</name>
+            <value>
+                <stringValue>Pharmacy</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>newNumberOfMembersHeld</name>
+            <value>
+                <elementReference>$Record.Optum_Rx_Members__c</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Update_Members_Held_and_Primary_Secondary_Incumbent_1</name>
+        <label>Update Members Held and Primary/Secondary Incumbent 1</label>
+        <locationX>50</locationX>
+        <locationY>1331</locationY>
+        <connector>
+            <targetReference>If_UHC_Vision_Members_is_Added_or_isChanged</targetReference>
+        </connector>
+        <flowName>Update_Competitor_Total_Number_Of_Members_Held_And_of_Number_of_Members_Held</flowName>
+        <inputAssignments>
+            <name>accountId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>competitorClassification</name>
+            <value>
+                <stringValue>Dental</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>newNumberOfMembersHeld</name>
+            <value>
+                <elementReference>$Record.UHC_Dental_Members__c</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Update_Members_Held_and_Primary_Secondary_Incumbent_2</name>
+        <label>Update Members Held and Primary/Secondary Incumbent 2</label>
+        <locationX>50</locationX>
+        <locationY>1631</locationY>
+        <connector>
+            <targetReference>If_UHC_Medical_Members_is_added_or_isChanged</targetReference>
+        </connector>
+        <flowName>Update_Competitor_Total_Number_Of_Members_Held_And_of_Number_of_Members_Held</flowName>
+        <inputAssignments>
+            <name>accountId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>competitorClassification</name>
+            <value>
+                <stringValue>Vision</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>newNumberOfMembersHeld</name>
+            <value>
+                <elementReference>$Record.UHC_Vision_Members__c</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Update_Members_Held_and_Primary_Secondary_Incumbent_3</name>
+        <label>Update Members Held and Primary/Secondary Incumbent 3</label>
+        <locationX>50</locationX>
+        <locationY>1931</locationY>
+        <flowName>Update_Competitor_Total_Number_Of_Members_Held_And_of_Number_of_Members_Held</flowName>
+        <inputAssignments>
+            <name>accountId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>competitorClassification</name>
+            <value>
+                <stringValue>Medical</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>MedicalEstimateMember</name>
+            <value>
+                <elementReference>$Record.UHC_Medical_Members__c</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+</Flow>

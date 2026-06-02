@@ -10,12 +10,7 @@ const FIELDS = [ACCOUNT_NAME];
 
 export default class cdQuad4RecordForm  extends LightningElement {
     @api recordId;
-     isLoading = true;
-     handleLoad() {
-       setTimeout(() => {
-        this.isLoading = false;
-    }, 500);
-    }
+     isLoading = true; 
  
     handleSubmit() {
         this.isLoading = true;

@@ -1,0 +1,789 @@
+<template>
+    
+    <template if:true={isOpen}>
+        <!-- <div> -->
+            <div class="slds-modal__header">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_2-of-12 slds-align_absolute-center">
+                        <img src={uhcLogo} alt="UHC Logo" class="uhc-logo">
+                    </div>
+                    <div class="slds-col slds-size_8-of-12 slds-m-top_xx-small">
+                        <p class="STRheadingSize slds-text-heading_medium"><strong>{rfpName}</strong> </p>
+                         <template if:false={isChild}>
+                              <p class="slds-text-heading_small slds-align_absolute-center"><em>Standard Questions</em></p>
+                         </template>
+                        <template if:true={isChild}>
+                            <p class="slds-text-heading_small slds-align_absolute-center"><em>Strategic Questions</em></p>
+                        </template>
+                    </div>
+                    <div
+                        class="slds-col slds-size_2-of-12 slds-grid slds-grid_align-end slds-grid_vertical-align-center slds-p-right_large">
+                        <!--#CR3 - Adding filter to see finlaised/not finalised --chandrika-->
+                        <!-- <lightning-combobox name="filter" value={selectedFilter} options={filterOptions} onchange={handleFilterChange} class="filter-combobox slds-m-right_small">
+                                            </lightning-combobox> -->
+                        <div class="top-toolbar">
+                            <span class="selected-filter">{selectedFilter}</span>
+                            <lightning-button-menu alternative-text="Filter Questions" icon-name="utility:filterList"
+                                onselect={handleFilterMenuSelect} class="filter-btn">
+                    
+                                <lightning-menu-item value="Not Finalised" label="Not Finalised" disabled={isNotFinalisedDisabled}>
+                                </lightning-menu-item>
+                    
+                                <lightning-menu-item value="Finalised" label="Finalised" disabled={isFinalisedDisabled}>
+                                </lightning-menu-item>
+                    
+                                <lightning-menu-item value="Finalised by AI" label="Finalised by AI" disabled={isFinalisedByAiDisabled}>
+                                </lightning-menu-item>
+                    
+                                <lightning-menu-item value="All" label="All" disabled={isAllDisabled}>
+                                </lightning-menu-item>
+                            </lightning-button-menu>
+                        </div>
+                        <lightning-icon icon-name="standard:metrics" alternative-text="AI" class="slds-m-left_small icon-hover-effect" title="Progress Summary" onclick={handleShowFinalisedTable}>
+                        </lightning-icon>
+                        <lightning-icon icon-name="standard:product" class="slds-m-left_small icon-hover-effect" title="View Products" onclick={openProductsTable}>
+                        </lightning-icon>
+                    </div>
+                </div>
+            </div>
+
+                                                                <!-- Modal Content -->
+
+            <div class="slds-modal__content slds-p-around_small ">
+                <template if:true={record}>
+                    <template if:true={record.Sheet_Name__c}> <p class="slds-m-left_small"> <strong> Sheet Name: </strong><span class="STRheadingSize">{record.Sheet_Name__c}</span> </p> </template>
+                    <p class="slds-text-heading_small slds-m-left_small"><strong> Question: </strong>{record.RFP_Question_Number__c} {record.RFP_Question__c} </p>
+                    <div class="slds-grid slds-grid_align-space">
+                        <div class="slds-col slds-large-size_7-of-12 slds-medium-size_6-of-12 slds-small-size_12">
+                            <div class="slds-grid slds-grid_align-space">
+
+                                <!-- Proposal Writer Response -->
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-card class="equal-height">
+                                        <div class="slds-grid slds-grid_align-spread slds-p-horizontal_small">
+                                            <template if:false={isChild}>
+                                                <h3 class="slds-text-title_bold">Proposal Writer Response</h3>
+                                                 <template if:true={isShowAllIconsExceptRegenerate}>
+                                                <lightning-icon icon-name={copyIconPGR} alternative-text="Copy"
+                                                    title="Copy to Final Answer" size="x-small" class="copy-icon"
+                                                    onclick={copyProposalResponse}>
+                                                </lightning-icon>
+                                                 </template>
+                                             </template>
+                                            <template if:true={isChild}>
+                                                <div class="slds-grid slds-grid_align-spread">
+                                                    <h3 class="slds-text-title_bold">Revised Response</h3>
+                                                    <div class="hover-wrapper">
+                                                        <lightning-icon icon-name="utility:knowledge_base" size="xx-small"
+                                                            class="slds-m-left_x-small slds-m-bottom_xx-small">
+                                                        </lightning-icon>
+                                                        <div class="slds-popover slds-nubbin_top-left custom-popover" role="dialog">
+                                                            <div class="slds-popover__body">
+                                                            <strong> Proposal Writer Response:</strong> <br>  {record.Proposal_Gateway_Response__c}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <lightning-icon icon-name={copyIconPGR} alternative-text="Copy"
+                                                    title="Copy to Final Answer" size="x-small" class="copy-icon"
+                                                    onclick={copyProposalResponse}>
+                                                </lightning-icon>
+                                            </template>
+                                        </div>
+                                        <div class="scrollable large zoom-in">
+                                             <template if:false={isChild}>
+                                                <template if:false={showMainDiffView}>
+                                                    {record.Proposal_Gateway_Response__c}
+                                                </template>
+                                                <template if:true={showMainDiffView}>
+                                                    <lightning-formatted-rich-text value={diffedProposalGatewayResponse}></lightning-formatted-rich-text>
+                                                </template>
+                                             </template>
+                                              <template if:true={isChild}>
+                                                <template if:false={showMainDiffView}>
+                                                    {revisedOrGatewayResponse}
+                                                </template>
+                                                <template if:true={showMainDiffView}>
+                                                    <lightning-formatted-rich-text value={diffedProposalGatewayResponse}> </lightning-formatted-rich-text>
+                                                </template>
+                                              </template>
+                                        </div>
+                                    </lightning-card>
+                                </div>
+
+                                <!-- Rephrased Response -->
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-card class="equal-height">
+                                        <div class="slds-grid slds-grid_align-spread slds-p-horizontal_small">
+                                            <!-- Left Section: Title and Einstein Icon -->
+                                            <div class="slds-grid slds-grid_vertical-align-center">
+                                                <h3 class="slds-text-title_bold">&nbsp;AI Recommended Response</h3>
+                                                <div class="hover-wrapper">
+                                                     <template if:true={isShowAllIconsExceptRegenerate}>
+                                                        <lightning-icon icon-name="utility:help" size="xx-small"
+                                                            class="slds-m-left_x-small slds-m-bottom_xx-small icon-hover-effect helpIcon"  onclick={handleIconClick}>
+                                                        </lightning-icon>
+                                                     </template>
+                                                    <div class={popoverClass} role="dialog">
+                                                        <div class="slds-popover__body">
+                                                            <ul>
+                                                                 <template if:true={feedbackList.length}>
+                                                                    <template for:each={feedbackList} for:item="item">
+                                                                        <li key={item.problem} style="margin-bottom: 0.75rem;">
+                                                                            <strong>Issue:</strong> {item.problem}<br />
+                                                                            <strong>Description:</strong> {item.description}
+                                                                        </li>
+                                                                    </template>
+                                                                 </template>
+                                                                <template if:true={unmatchedProducts.length}>
+                                                                    <li style="margin-top: 0.75rem;">
+                                                                        <strong>Issue:</strong> Product Mismatch<br />
+                                                                        <strong>Description:</strong> <span>{unmatchedProductsFormatted} were not added.</span>
+                                                                    </li>
+                                                                </template>
+                                                                  <template if:true={showNoIssuesMessage}>
+                                                                    <li class="slds-m-top_xx-small">Generated AI Recommended Response - No issues identified with respect to the guidelines.</li>
+                                                                </template>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Right Section: Preview, Copy, Like, Dislike Icons -->
+                                            <div class="slds-grid slds-grid_vertical-align-center">
+                                                <template if:true={isShowAllIconsExceptRegenerate}>
+                                                    <div class={diffToggleClass} onclick={toggleDiffView}>
+                                                        <lightning-icon icon-name="utility:preview" size="x-small" onclick={toggleMainDiffView}
+                                                            title="View AI changes"  class={mainDiffIconClass}>
+                                                        </lightning-icon>
+                                                    </div>
+                                                    <lightning-icon icon-name="utility:like" alternative-text="Thumbs Up" title="Like" 
+                                                        size="x-small" class={likeIconClass} onclick={handleThumbsUp}>
+                                                    </lightning-icon>
+
+                                                    <lightning-icon icon-name="utility:dislike" alternative-text="Thumbs Down" title="Dislike" 
+                                                        size="x-small" class={dislikeIconClass} onclick={handleThumbsDown}>
+                                                    </lightning-icon>
+    
+
+                                                    <lightning-icon icon-name={copyIcon} alternative-text="Copy" title="Copy to Final Answer" 
+                                                        size="x-small" class="slds-m-left_small copy-icon" onclick={copyRephrasedResponse}>
+                                                    </lightning-icon>
+                                                </template>
+                                                <template if:true={isShowRegenerateOnly}>
+                                                    <lightning-icon icon-name="utility:regenerate" alternative-text="regenerate" title="Re-generate" 
+                                                                    size="x-small" class={dislikeIconClass} onclick={handleReGenerateAiResponse}>
+                                                    </lightning-icon>
+                                                </template>
+                                            </div>
+                                        </div>
+                                        <!-- Response Content -->
+                                        <div class="scrollable large bg-lightblue zoom-in">
+                                            <template if:true={isRephrasedSameAsProposal}>
+                                                <div class="slds-text-color_success slds-p-around_small">
+                                                    <em>No issues seen. The final answer field (to the right) has been populated with the Proposal Writer Response.</em>
+                                                </div>
+                                            </template>
+                                            <template if:false={isRephrasedSameAsProposal}>
+                                                <template if:false={showMainDiffView}>
+                                                    <lightning-formatted-rich-text value={record.Rephrased_Response__c}>
+                                                    </lightning-formatted-rich-text>
+                                                </template>
+                                                <template if:true={showMainDiffView}>
+                                                    <lightning-formatted-rich-text value={diffedRephrasedResponse}>
+                                                    </lightning-formatted-rich-text>
+                                                </template>
+                                            </template>
+                                               <template if:true={isShowRegenerateOnly}>
+                                                 <p class="slds-text-color_error slds-text-align_center"> Due to some techcical glitch this response could not be generated. Kindly click on the refresh icon to Generate AI Recommended Response </p> 
+                                               </template>
+                                        </div>
+                                    </lightning-card>
+                                    <div class="slds-text-body_small slds-text-align_center slds-text-color_weak">
+                                        <em>Please verify important information for accuracy. </em>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Merge, Rewrite, Style Buttons -->
+                        <div class="slds-col slds-large-size_1-of-12 slds-medium-size_2-of-12 slds-small-size_12 slds-align_absolute-center">
+                            <div class="slds-grid slds-warp slds-grid_vertical">
+
+                                <div class="slds-col">
+                                    <lightning-button variant="neutral" label="Revise" icon-name="utility:note"
+                                        icon-position="right" onclick={handleRewriteTemplate} disabled={record.IsFinalised__c}></lightning-button>
+                                </div>
+                                
+                                <div class="slds-col slds-m-vertical_medium">
+                                    <lightning-button variant="neutral" label="Merge" icon-name="utility:jump_to_right"
+                                        icon-position="right" onclick={handleShowMergeTemplate} disabled={record.IsFinalised__c}></lightning-button>
+                                </div>
+                                
+                                <div class="slds-col">
+                                    <lightning-button variant="brand" label="Style" icon-name="utility:palette" stretch
+                                        icon-position="right" onclick={handleStyleModal} disabled={isStyleButtonDisabled} ></lightning-button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Final Answer -->
+                        <div class="slds-col slds-large-size_4-of-12 slds-medium-size_4-of-12 slds-small-size_12">
+                            <lightning-card class="equal-height">
+                                <div class="slds-grid slds-grid_align-spread slds-p-horizontal_small">
+                                    <div class="slds-grid slds-grid_vertical-align-center">
+                                        <h3 class="slds-text-title_bold slds-m-right_xx-small">&nbsp; Final Answer</h3>
+                                        <lightning-helptext
+                                            content="This section contains the final response that will be saved against this question in the RFP. Please review it before saving to ensure accuracy and completeness."
+                                            class="help-text-icon slds-m-bottom_xx-small" size="x-small">
+                                        </lightning-helptext>
+                                    </div>
+                                     <div class="slds-grid slds-grid_vertical-align-center slds-text-body_small slds-text-color_weak slds-m-right_xx-large"> 
+                                        <strong>Status:&nbsp;</strong> <span class={currentStatusClass}> {currentStatus}</span>
+                                     </div>
+                                    <div class="slds-grid slds-grid_vertical-align-center">
+                                        <img src={eraseicon} alt="eraseIcon"  title="Clear" class="eraseicon" onclick={handleClearFinalAnswer}>
+                                    </div>
+                                </div>
+                                <div class="scrollable large">
+                                    <lightning-input-rich-text name="finalAnswer" class="custom-textarea"
+                                        placeholder="You can use the copy icon located on the top right corner of the Proposal Writer Response or AI Recommended Response sections to copy the text into this section to easily edit them. You can also type the response here."
+                                        value={finalAnswer} onchange={handleInputChange} variant="label-hidden" disabled={record.IsFinalised__c}  formats="font, bold, italic, underline, strike, list, indent, align, link, clean">
+                                    </lightning-input-rich-text>
+                                </div>
+                            </lightning-card>
+                          <div class={wordCountClass}>
+                                Word Counts: {wordCount}  <template if:true={displayAnswerLimit}> / {displayAnswerLimit} </template>
+                          </div>
+
+                            <template if:true={currentRecordNeedsFinalization}>
+                                <div class="slds-text-body_small slds-text-align_center">
+                                    ⚠️<em> You have edited the Final Answer. Please style and finalize it again. </em>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                     <template if:true={showProductsTable}>
+                        <template if:true={hasAnyProducts}>
+                            <h3 class="STRheadingSize slds-text-heading_medium slds-m-top_medium" style="text-decoration: underline;"> <strong>Products Table</strong></h3>
+                        <template for:each={categorizedProductList} for:item="section">
+                            <h3 key={section.category} class="slds-text-heading_small slds-m-vertical_small"> <strong>{section.category}</strong></h3>
+                            <table key={section.category} class="slds-table slds-table_cell-buffer slds-table_bordered product-table slds-m-bottom_large">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Estimated Additional New Members</th>
+                                        <th>Members Quoted in Proposal</th>
+                                        <th>Sold/Retained Members</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={section.records} for:item="product">
+                                        <tr key={product.Id}>
+                                            <td>{product.Product2.Name}</td>
+                                            <td>{product.Estimated_Additional_New_Members__c}</td>
+                                            <td>{product.Members_Quoted_in_the_Proposal__c}</td>
+                                            <td>{product.Sold_Retained_Members__c}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                        </template>
+                        <template if:false={hasAnyProducts}>
+                            <div class="slds-text-align_center slds-text-color_weak slds-m-top_medium">
+                                <p><strong>No products available for this opportunity.</strong></p>
+                            </div>
+                        </template>
+                     </template>
+                </template>
+            </div>
+
+                                                                                            <!-- Modal Footer -->
+            <div class="slds-modal__footer">
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                                                                            <!-- Left: Status Bar -->
+                    <div class="slds-m-left_x-small slds-text-heading_small">
+                        <template if:true={isChild}>
+                            <div class="slds-m-horizontal_x-small">
+                                <lightning-button label="Back" variant="neutral" icon-name="action:back" icon-position="left"
+                                    onclick={handleGoingBacktoMainMenu}>
+                                </lightning-button>
+                            </div>
+                        </template>
+                    </div>                                       
+                                                                                     <!-- Center: Navigation Buttons -->
+                    <div class="footer-buttons slds-m-left_xx-large">
+                        <lightning-button class="slds-m-right_x-large" variant="neutral" label="Prev" onclick={handlePrev} disabled={disablePrev}></lightning-button>
+                        <template if:false={record.IsFinalised__c}>
+                            <lightning-button variant="brand" label="Finalise" onclick={handleSave} disabled={record.IsFinalised__c}></lightning-button>
+                            <lightning-button variant="brand" label="Save As Draft" class="slds-m-left_small" onclick={handleSaveDraft} disabled={record.IsFinalised__c}></lightning-button>
+                        </template>
+                        <template if:true={record.IsFinalised__c}>
+                            <lightning-button variant="destructive" label="Unlock" onclick={handleUnlock}></lightning-button>
+                        </template>
+                        <lightning-button variant="neutral" label="Next" onclick={handleNext} class="slds-m-left_x-large" disabled={disableNext}></lightning-button>
+                    </div>
+
+                                                                                    <!-- Right: Search Bar -->
+
+                    <div class="searchbar slds-m-right_x-small">
+                        <div class="slds-grid slds-grid_align-center slds-grid_vertical-align-center">
+                            <lightning-input type="search" variant="label-hidden" placeholder="RFP Question Number"
+                                onchange={handleSearchChange} value={searchKey} class="slds-m-right_x-small">
+                            </lightning-input>
+                            <lightning-icon icon-name="utility:send" size="small" title="Go" onclick={handleSendClick}
+                                class="icon-hover-effect preview-icon" disabled={isSendDisabled}>
+                            </lightning-icon>
+                        </div>
+                        <template if:true={showDropdown}>
+                            <div class="search-dropdown">
+                                <template for:each={searchResults} for:item="result">
+                                    <div key={result.Id} class="slds-p-around_x-small slds-truncate search-result-item"
+                                        onclick={handleSelectResult} data-id={result.Id} data-name={result.RFP_Question_Number__c}
+                                        style={result.dropdownStyle}> {result.RFP_Question_Number__c}
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                </div>
+            </div>
+        <!-- </div> -->
+    </template>
+
+                                                                                            <!-- Revise Modal -->
+
+    <template lwc:if={showRewriteModal}>
+        <div class="slds-modal__header">
+            <div class="slds-text-heading_medium">
+                Revise <lightning-icon icon-name="utility:note" size="x-small" variant="brand"> </lightning-icon>
+            </div>
+        </div>
+        <div class="slds-modal__content rewritecontent">
+            <p class="slds-m-bottom_small slds-m-left_x-small"> This refines the Final Answer, along with the revise instructions you provide.</p>
+            <p class="slds-m-left_x-small"><strong> Revise Instructions </strong></p>
+            <textarea  class="slds-textarea" id="RewriteInput" placeholder="Describe any refinements or changes you'd like to see in the Final Answer. &#10; &#10; • eg. I want to focus more on our use of third party contractors here &#10; • eg. Let's expand more on our adherence to the FCRA, specifically the fact that we are regularly audited"
+                       onchange={handleRewriteFeedbackChange}>
+            </textarea>
+            <p class="slds-text-heading_small slds-m-left_x-small slds-m-vertical_small"><strong> Question: </strong>{record.RFP_Question_Number__c} {record.RFP_Question__c} </p>
+            <div class="equal-height">
+                <h3 class="slds-text-title_bold slds-m-left_x-small">Final Answer</h3>
+                <div class="scrollable medium">
+                      <lightning-formatted-rich-text value=
+                    {record.Final_Answer__c}>
+                      </lightning-formatted-rich-text>
+                </div>
+            </div>
+        </div>
+        <div class="slds-modal__footer slds-align_absolute-center">
+            <lightning-button calss="slds-var-m-right_small" label="Cancel" onclick={handleCloseRewriteModal}>
+            </lightning-button>
+             <lightning-button class="slds-var-m-left_small " label="Revise" variant="brand" onclick={handleRewriteTask}>
+            </lightning-button>
+        </div>
+    </template>
+
+                                                                                            <!-- Post Revise Modal -->
+    <template lwc:if={showPostRevisedModal}>
+        <div class="slds-modal__header">
+            <div class="slds-text-heading_medium">
+                Revised Answer
+            </div>
+        </div>
+        <div class="slds-modal__content rewritecontent">
+            <div class="slds-grid slds-grid_align-space">
+                <!-- Final Answer -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-card class="equal-height">
+                        <div class="slds-p-horizontal_small">
+                            <h3 class="slds-text-title_bold">Final Answer</h3>
+                        </div>
+                        <div class="scrollable large">
+                            <template if:false={showRevisedDiffView}>
+                                <lightning-formatted-rich-text 
+                                    value={record.Final_Answer__c}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                            <template if:true={showRevisedDiffView}>
+                                <lightning-formatted-rich-text 
+                                    value={diffedRevisedFinalAnswerResponse}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+                <!-- Revised Response -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-card class="equal-height">
+                        <div class="slds-p-horizontal_small slds-grid slds-grid_vertical-align-center">
+                            <h3 class="slds-text-title_bold">Revised Answer</h3>
+                            <div onclick={toggleDiffView}>
+                                <lightning-icon icon-name="utility:preview" size="x-small" onclick={toggleRevisedDiffView}
+                                    title="View AI changes" class={revisedDiffIconClass}>
+                                </lightning-icon>
+                            </div>
+                        </div>
+                        <div class="scrollable large">
+                            <template if:false={showRevisedDiffView}>
+                                <lightning-formatted-rich-text 
+                                    value={aiResponse}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                            <template if:true={showRevisedDiffView}>
+                                <lightning-formatted-rich-text 
+                                    value={diffedRevisededResponse}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+            </div>
+        </div>
+        <div class="slds-modal__footer slds-align_absolute-center">
+            <lightning-button label="Go Back" onclick={handleClosePostRevisedModal}></lightning-button>
+            <lightning-button class="slds-var-m-left_small" label="Apply Changes" variant="brand" onclick={handleRevisedResponse}></lightning-button>
+        </div>
+    </template>
+
+
+                                                                                         <!-- Merge Modal -->
+    <template lwc:if={showMergeModal}>
+        <div class="slds-modal__header">
+            <div class="slds-text-heading_medium">
+                Merge <lightning-icon icon-name="utility:jump_to_right" size="x-small" variant="brand"> </lightning-icon>
+            </div>
+        </div>
+        <div class="slds-modal__content rewritecontent">
+            <p class="slds-m-left_x-small slds-m-bottom_small"> This merges the Proposal Writer Response with the AI Recommended Response </p> 
+            <p class="slds-m-left_x-small"><strong> Merge Instructions </strong></p>
+            <!-- <lightning-input type="text" label="Instructions" placeholder="Enter your instructions here to get customized AI response"></lightning-input> -->
+            <textarea class="slds-textarea" id="MergeInput" placeholder="Describe how you would like to merge the two responses: &#10;&#10; • eg. Preserve the financial figures from the Proposal Writer Response while integrating the AI Response's improved phrasing to highlight market leadership. &#10; • eg. Use the AI Response’s concise structure as a foundation but reintroduce the historical milestones and client commitment statements from the Proposal Writer Response."
+                      onchange={handleMergeFeedbackChange}>
+            </textarea>
+            <div class="slds-grid slds-grid_align-space">
+               
+                <!-- Proposal Writer Response -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-card class="equal-height">
+                        <div class="slds-grid slds-grid_align-spread slds-p-horizontal_small">
+                            <h3 class="slds-text-title_bold">Proposal Writer Response</h3>
+                        </div>
+                        <div class="scrollable medium slds-m-right_x-small">
+                            <template if:false={showMergeDiffView}>
+                                {record.Proposal_Gateway_Response__c}
+                            </template>
+                            <template if:true={showMergeDiffView}>
+                                <lightning-formatted-rich-text value={diffedProposalGatewayResponse}></lightning-formatted-rich-text>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Rephrased Response -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-card class="equal-height">
+                        <div class="slds-grid slds-grid_align-spread">
+                            <!-- Left Section: Title and Einstein Icon -->
+                            <div class="slds-grid slds-grid_vertical-align-center">
+                                <lightning-icon icon-name="utility:agent_astro" alternative-text="AI"
+                                    title="Smart Assistant" size="x-small" class="slds-m-left_xx-small aiIcon">
+                                </lightning-icon>
+                                <h3 class="slds-text-title_bold">&nbsp;AI Recommended Response &nbsp;</h3>
+                                <!-- <lightning-icon icon-name="utility:preview" size="x-small" title="Show AI changes" class="icon-hover-effect copy-icon" label={toggleLabel} onclick={toggleDiffView}></lightning-icon> -->
+                                <div class="hover-wrapper">
+                                    <!-- <img src={cautionIMG} alt="AI Logo" class="slds-m-left_xx-small cautionIcon"> -->
+                                    <lightning-icon icon-name="utility:help" size="xx-small"
+                                                    class="slds-m-left_xx-small slds-m-bottom_xx-small">
+                                    </lightning-icon>
+                                                                                  <div class={popoverClass} role="dialog">
+                                                        <div class="slds-popover__body">
+                                                            <ul>
+                                                                 <template if:true={feedbackList.length}>
+                                                                    <template for:each={feedbackList} for:item="item">
+                                                                        <li key={item.problem} style="margin-bottom: 0.75rem;">
+                                                                            <strong>Issue:</strong> {item.problem}<br />
+                                                                            <strong>Description:</strong> {item.description}
+                                                                        </li>
+                                                                    </template>
+                                                                 </template>
+                                                                <template if:true={unmatchedProducts.length}>
+                                                                    <li style="margin-top: 0.75rem;">
+                                                                        <strong>Issue:</strong> Product Mismatch<br />
+                                                                        <strong>Description:</strong> <span>{unmatchedProductsFormatted} were not added.</span>
+                                                                    </li>
+                                                                </template>
+                                                                  <template if:true={showNoIssuesMessage}>
+                                                                    <li class="slds-m-top_xx-small">Generated AI Recommended Response - No issues identified with respect to the guidelines.</li>
+                                                                </template>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                </div>
+                                <div onclick={toggleDiffView}>
+                                    <lightning-icon icon-name="utility:preview" size="x-small" title="View AI changes"  onclick={toggleMergeDiffView}
+                                        class={mergeDiffIconClass}>
+                                    </lightning-icon>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Response Content -->
+                        <div class="scrollable medium bg-lightblue">
+                            <template if:false={showMergeDiffView}>
+                                <lightning-formatted-rich-text value={record.Rephrased_Response__c}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                            <template if:true={showMergeDiffView}>
+                                <lightning-formatted-rich-text value={diffedRephrasedResponse}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                        </div>
+                        <!-- <div class="scrollable medium bg-lightblue">{record.Rephrased_Response__c}
+                        </div> -->
+                    </lightning-card>
+                </div>
+            </div>
+        </div>
+        <div class="slds-modal__footer slds-align_absolute-center">
+            <lightning-button label="Cancel" onclick={handleCloseMergeModal}> </lightning-button>
+            <lightning-button class="slds-var-m-left_small" label="Merge  " variant="brand" onclick={handleMergeTask}> </lightning-button>
+        </div>
+    </template>
+
+                                                                                              <!-- Style Modal -->
+    <template lwc:if={showStyleModal}>
+        <div class="slds-modal__header">
+            <div class="slds-text-heading_medium">
+                Styled Answer <lightning-icon icon-name="utility:palette" size="x-small" variant="brand"> </lightning-icon>
+            </div>
+        </div>
+        <div class="slds-modal__content rewritecontent">
+            <div class="slds-grid slds-grid_align-space">
+                <!-- Final Answer -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-card class="equal-height">
+                        <div class="slds-p-horizontal_small">
+                            <h3 class="slds-text-title_bold">Final Answer</h3>
+                        </div>
+                        <div class="scrollable large">
+                            <template if:false={showStyleDiffView}>
+                                <lightning-formatted-rich-text value={record.Final_Answer__c}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                            <template if:true={showStyleDiffView}>
+                                <lightning-formatted-rich-text value={diffedFinalAnswerResponse}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+                <!-- Styled Answer -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-card class="equal-height">
+                        <div class="slds-p-horizontal_small slds-grid slds-grid_vertical-align-center">
+                            <h3 class="slds-text-title_bold">Styled Answer</h3>
+                            <div class={} onclick={toggleDiffView}>
+                                <lightning-icon icon-name="utility:preview" size="x-small" onclick={toggleStyleDiffView}
+                                    title="View AI changes" class={stlyeDiffIconClass}>
+                                </lightning-icon>
+                            </div>
+                        </div>
+                        <div class="scrollable large">
+                            <template if:false={showStyleDiffView}>
+                                <lightning-formatted-rich-text value={styleGuideResponse}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                            <template if:true={showStyleDiffView}>
+                                <lightning-formatted-rich-text value={diffedStyledResponse}>
+                                </lightning-formatted-rich-text>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+            </div>
+        </div>
+        <div class="slds-modal__footer slds-align_absolute-center">
+            <lightning-button label="Cancel" onclick={handleCloseStyleModal}></lightning-button>
+             <lightning-button class="slds-var-m-left_small" label="Apply Changes and Save as Draft" variant="neutral" onclick={handleStyleApplySaveDraft}></lightning-button>
+            <lightning-button class="slds-var-m-left_small"  label="Apply Changes and Finalise" variant="brand" onclick={handleStyleApplyFinalise}></lightning-button>
+            <!-- <lightning-button class="slds-var-m-left_small" label="Apply Changes" variant="brand" onclick={handleStyleGuideResponse}></lightning-button> -->
+        </div>
+    </template>
+
+                                                            <!-- Post Style Confirmation Modal -->
+    <template if:true={showFinaliseModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small"
+            aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <div class="slds-modal__container WarniningModal">
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">Please Confirm</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_large">
+                    <p class="slds-text-align_center slds-text-heading_small">Answer has been styled. Would you like to Finalise this answer as well?</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Not Yet" onclick={handleCloseFinaliseModal}></lightning-button>
+                    <lightning-button class="slds-m-horizontal_small" label="Finalise" variant="brand" onclick={handleSave}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+                                                                            <!-- Spinner modal -->
+    <template if:true={isLoading}>
+        <div class="overlay">
+            <div class="spinner-wrapper">
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                <div class="spinner-message">{loadingMessage}</div>
+            </div>
+        </div>
+    </template>
+
+                                                                                <!-- Show Error Message if No Records Exist -->
+    <template if:true={noRecords}>
+         <lightning-card class="WarniningModal"> 
+            <div class="slds-p-around_medium slds-text-align_center ">
+                <p><strong>The RFP review has not been initiated yet.</strong></p>
+            </div>
+         </lightning-card> 
+    </template>
+
+
+                                                                                                     <!-- Finalised Table(Summary) Modal -->
+
+    <template if:true={showFinalisedTable}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-modal="true">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                        <div class="slds-col slds-size_1-of-3"></div>
+                
+                        <div class="slds-col slds-size_1-of-3 slds-text-align_center">
+                
+                            <h2 class="slds-text-heading_medium">Progress Summary<lightning-icon icon-name="standard:metrics"
+                                    size="small" class="slds-m-left_x-small"> </lightning-icon>
+                            </h2>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-text-align_right slds-p-left_large slds-p-left_medium  slds-p-left_small">
+                
+                            <div class="top-toolbar">
+                                <span class="selected-filter">{summaryFilter}</span>
+                                <lightning-button-menu alternative-text="Filter Questions" icon-name="utility:filterList"
+                                    onselect={handleSummaryFilterChange} class="filter-btn">
+                                    <lightning-menu-item value="Not Finalised" label="Not Finalised" disabled={isNotFinalisedDisabled}>
+                                    </lightning-menu-item>
+                                    <lightning-menu-item value="Finalised" label="Finalised" disabled={isFinalisedDisabled}>
+                                    </lightning-menu-item>
+                                    <lightning-menu-item value="Finalised by AI" label="Finalised by AI"
+                                        disabled={isFinalisedByAiDisabled}>
+                                    </lightning-menu-item>
+                                    <lightning-menu-item value="All" label="All" disabled={isAllDisabled}>
+                                    </lightning-menu-item>
+                                </lightning-button-menu>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <h2 class="slds-text-heading_medium">Progress Summary<lightning-icon icon-name="standard:metrics" size="small" class="slds-m-left_x-small"> </lightning-icon></h2> -->
+                </header>
+                <div class="slds-modal__content slds-p-around_medium table-container">
+                    <template if:true={analyticsLines}>
+                        <ul style="padding-left: 1.5rem; list-style-type: disc;">
+                            <template for:each={analyticsLines} for:item="line">
+                                <li key={line} style="margin-bottom: 0.25rem; white-space: pre-wrap;">
+                                    {line}
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table">
+                        <thead>
+                            <tr>
+                                <th class="col-question-number slds-text-align_center">Question Number</th>
+                                <th class="col-rfp-question slds-text-align_center">RFP Question</th>
+                                <!-- <template if:true={record.Sheet_Name__c}> <th class="slds-text-align_center">Sheet Name</th> </template> -->
+                                 <template if:true={record.Sheet_Name__c}> <th class="slds-text-align_center">Sheet Name</th> </template> 
+                                <th class="slds-text-align_center">Finalised</th>
+                                <th class="slds-text-align_center">Finalised By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- updated records to summaryRecords -->
+                            <template for:each={summaryRecords} for:item="item">
+                                <tr key={item.Id}>
+                                    <td class="col-question-number slds-text-align_center">
+                                        <a href="javascript:void(0);"
+                                        data-qid={item.Id}
+                                        onclick={handleQuestionClick}
+                                        style="text-decoration: underline; cursor: pointer;">
+                                            {item.RFP_Question_Number__c}
+                                        </a>
+                                    </td>
+                                    <td class="col-rfp-question">{item.RFP_Question__c}</td>
+                                    <template if:true={record.Sheet_Name__c}>
+                                     <!-- <template if:true={hasSheetNameColumn}>      -->
+                                    <td>{item.Sheet_Name__c}</td>
+                                    </template>
+                                    <td class="slds-text-align_center">
+                                        <span class={item.finalisedClass}>
+                                            {item.finalisedLabel}
+                                        </span>
+                                    </td>
+                                    <td class="slds-text-align_center">  <template if:true={item.IsFinalised__c}>{item.finalisedBy} </template></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Close" onclick={closeFinalisedTable}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+
+
+    <template if:true={showGenericModal}>
+    <section role="dialog" class="slds-modal slds-fade-in-open slds-modal_small">
+        <div class="slds-modal__container WarniningModal">
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{genericModalTitle}</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_large">
+                <template if:true={isCustomSlotBody}>
+                    <div data-id="modalBodySlot"></div>
+                </template>
+                <template if:false={isCustomSlotBody}>
+                    <div class="slds-text-align_center slds-text-heading_small" lwc:dom="manual" data-id="modalBodySlot"></div>
+                </template>
+            </div>
+            <footer class="slds-modal__footer footer-relative">
+                <template for:each={genericModalButtons} for:item="btn">
+                    <!-- <lightning-button
+                        key={btn.label}
+                        label={btn.label}
+                        variant={btn.variant}
+                        class="slds-m-horizontal_small"
+                        onclick={btn.action}
+                        disabled={btn.disabled}>
+                    </lightning-button>-->
+                    <lightning-button
+                        key={btn.label}
+                        label={btn.label}
+                        variant={btn.variant}
+                         class={btn.buttonClass}
+                        onclick={btn.action}
+                        disabled={btn.disabled}>
+                    </lightning-button>
+                </template>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>
+
+</template>

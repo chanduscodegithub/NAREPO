@@ -1174,7 +1174,7 @@
                                       <apex:outputPanel layout="none" rendered="{!!isCADPresent}">
                                           <tr >
                                               <td align="left" style="border:1px solid #000;padding-left:45px;border-right:0;font-size: 12px; font-family: Arial;" >
-                                                  Coronary Artery Disease (CAD)
+                                                  Coronary Artery Disease (VOM)
                                               </td>
                                               <td align="right" style="border:1px solid #000;border-left:0;font-size: 12px; font-family: Arial;text-align: center;word-break:break-all; white-space:nowrap;" colspan="2">
                                                   {!lineItem.CAD_VOM__c}
@@ -1358,7 +1358,7 @@
                                       <apex:outputPanel layout="none" rendered="{!!isCADPresent}">
                                           <tr >
                                               <td align="left" style="border:1px solid #000;padding-left:45px;border-right:0;font-size: 12px; font-family: Arial;">
-                                                  Coronary Artery Disease (CAD)
+                                                  Coronary Artery Disease (VOM)
                                               </td>
                                               <td align="right" style="border:1px solid #000;border-left:0;font-size: 12px; font-family: Arial;text-align: center;" colspan="2">
                                                   {!lineItem.CAD_VOM__c}
@@ -1543,7 +1543,7 @@
                                       <apex:outputPanel layout="none" rendered="{!!isCADPresent}">
                                           <tr >
                                               <td align="left" style="border:1px solid #000;padding-left:45px;border-right:0;font-size: 12px; font-family: Arial;" colspan="4" >
-                                                  Coronary Artery Disease (CAD)
+                                                  Coronary Artery Disease (VOM)
                                               </td>
                                               <td align="right" style="border:1px solid #000;border-left:0;font-size: 12px; font-family: Arial;text-align: center;word-break:break-all; white-space:nowrap;">
                                                   {!lineItem.CAD_VOM__c}
@@ -3591,7 +3591,7 @@
                   
                   <tr>
                       <td align="left" style="width:80%; border:1px solid #000; padding-left:35px; border-right:0; display: flex; justify-content: space-between; align-items: center;">
-                          <span>UHC Virtual Visits</span>
+                          <span>UHC 24/7 Virtual Visits</span>
                           <span>
                               <apex:outputLabel escape="false" 
                                                 rendered="{!IF(soldCaseDetails.sccData.UHC_Virtual_Visits_Write_In__c!=null,true,false)}" 
@@ -3781,7 +3781,7 @@
                             {!soldCaseDetails.sccData.Employee_Assistance_Program_Name__c}
                         </td>
                     </tr>
-                    <tr >
+                    <tr>
                         <td align="left" style="border:1px solid #000;padding-left:10px;border-right:none" >
                             <b><span>Standard Clinical Offering:</span></b>
                         </td>
@@ -3857,7 +3857,7 @@
                             <span>Standard Communications</span>
                         </td>
                         <td align="Center" style="border:1px solid #000;border-left:0;">
-                            Yes
+                            {!soldCaseDetails.sccData.Surest_Standard_Communications__c}
                         </td>
                     </tr>
                     <tr>
@@ -3865,7 +3865,7 @@
                             <span>Surest Member Services and Surest Clinical Advocacy</span>
                         </td>
                         <td align="Center" style="border:1px solid #000;border-left:0; border-bottom:0;">
-                            Yes
+                            {!soldCaseDetails.sccData.Surest_Member_Services__c}
                         </td>
                     </tr>
               </table>
@@ -3875,14 +3875,14 @@
                         <td align="left" style="border:1px solid #000;padding-left:10px;border-right:none;" >
                             <b><span>Optional Programs:</span></b>
                         </td>
-                        <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
+                        <td align="left" style="border:1px solid #000;width:17%;padding-left:2px;">
                             <b><span>PIM Implementation Lead Time</span></b>
                         </td>
                         
-                        <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
+                        <td align="left" style="border:1px solid #000;width:17%;padding-left:2px;">
                              <b><span>Dual Indicator</span></b>
                         </td>
-                        <td align="left" style="border:1px solid #000;width:18%;padding-left:2px;">
+                        <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
                              <b><span>Validation</span></b>
                         </td>
                  
@@ -3892,18 +3892,18 @@
                             <td align="left" style="border:1px solid #000;padding-left:20px;border-right:0px;">
                                 <span>{!field.fieldLabel}</span>
                             </td>
-                            <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
+                            <td align="left" style="border:1px solid #000;width:17%;padding-left:2px;">
                                 <apex:outputText value="{!field.productValue}" />
                             </td>
-                            <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
+                            <td align="left" style="border:1px solid #000;width:17%;padding-left:2px;">
                                 <apex:outputText rendered="{!field.isDual}" escape="false" value="Dual Product (Surest with UNET only)" />
                             </td>
-                            <td align="left" style="border:1px solid #000;width:18%;padding-left:2px;">
+                            <td align="left" style="border:1px solid #000;width:16%;padding-left:2px;">
                                 <apex:outputPanel rendered="{!field.fieldApiName == 'One_Pass_Select__c'}">
                                     {!soldCaseDetails.sccData.One_Pass_Select__c}
                                     <div>
                                         <apex:outputText rendered="{!NOT(ISBLANK(soldCaseDetails.sccData.One_Pass_Subsidized__c))}">
-                                            &nbsp;&nbsp;&nbsp;{!soldCaseDetails.sccData.One_Pass_Subsidized__c}
+                                            {!soldCaseDetails.sccData.One_Pass_Subsidized__c}
                                         </apex:outputText>
                                     </div>                                    
                                 </apex:outputPanel>

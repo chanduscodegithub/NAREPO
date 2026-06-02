@@ -24,6 +24,10 @@
     <aura:attribute name="sortAccountName" type="Boolean" default="true"/>
     <aura:attribute name="sortAccountType" type="Boolean" default="true"/>
     <aura:attribute name="sortAccountOwner" type="Boolean" default="true"/>
+    <!-- Added by Gurjot -->
+    <aura:attribute name="sortReferenceableAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortLRTAsc" type="Boolean" default="true"/>
+    
     <aura:attribute name="isDesktop" type="boolean" default="false"/>
     <aura:attribute name="lastSortField" type="String" default=""/>
     <aura:attribute name="isGenericEventTriggered" type="Boolean" default="false"/>
@@ -41,6 +45,15 @@
     <aura:attribute name="sortMAStatus" type="Boolean" default="true"/>
     <aura:attribute name="sortMADispoMed" type="Boolean" default="true"/>
     
+    <!-- Added as a part of CR on 09th Oct 2024 -->
+    <aura:attribute name="existingClientCount" type="Integer" default="0"/> 
+    <aura:attribute name="totalMACount" type="Integer" default="0"/> 
+    <!-- CR changes ends -->
+    <!-- Added Vignesh 8/11/24 Start  -->
+    <aura:attribute name="prospectCount" type="Integer" default="0"/> 
+     <aura:attribute name="allAccountCount" type="Integer" default="0"/>
+    <aura:attribute name='allyearValue' type='Integer' /> 
+    <!-- Added Vignesh 8/11/24 End  -->
     <aura:handler name="Sorting_Mobile_Event" event="c:Sorting_Mobile_Event" action="{!c.sortFieldsMobile}"/>
     <aura:handler name="modalCmpCloseEvent" event="c:Model_Closing_Event" action="{!c.modelCloseComponentEvent}"/>
     <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
@@ -121,6 +134,10 @@
                                     </div>
                                 </div>
                                 <div class="slds-accordion__content">
+                                    <!-- Added as part of CR on 08th Oct 2024 -->
+                                    <div class="slds-text-body--large slds-p-bottom_medium slds-p-left_medium"><strong>{!$Label.c.Account_All_Accounts}&nbsp;{!v.allAccountCount}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {!$Label.c.Account_Total_Existing_Clients}&nbsp;{!v.existingClientCount}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {!$Label.c.Account_Total_Prospect}&nbsp;{!v.prospectCount} </strong></div>
+                                    <!-- End of CR Modification -->
+                                    
                                     <aura:if isTrue="{!v.AccountsAndMAEmptyList}">
                                         <!--Empty List-->
                                         <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout">
@@ -129,17 +146,25 @@
                                                     <th class="slds-is-sortable slds-text-title--caps" scope="col" style="padding:0.5rem 0.5rem;">
                                                         <div class="slds-truncate" title="Account Name"><b>{!$Label.c.Account_Name}</b></div>    
                                                     </th>
+                                                    <!-- Added by Gurjot -->
+                                                    <th class="slds-is-sortable slds-text-title--caps" scope="col" style="padding:0.5rem 0.5rem;">
+                                                        <div class="slds-truncate" title="Referenceable Client"><b>{!$Label.c.Account_Referenceable_Client}</b></div>    
+                                                    </th>
                                                     <th class="slds-is-sortable slds-text-title--caps" scope="col">
                                                         <div class="slds-truncate" title="Account Type"><b>{!$Label.c.Account_Type}</b></div>
                                                     </th>
                                                     <th class="slds-is-sortable slds-text-title--caps" scope="col">
                                                         <div class="slds-truncate" title="Owner"><b>{!$Label.c.Owner}</b></div>
                                                     </th>
+                                                    <!-- Added by Gurjot -->
+                                                    <th class="slds-is-sortable slds-text-title--caps" scope="col">
+                                                        <div class="slds-truncate" title="LRT (Most Recent Score)"><b>{!$Label.c.Account_LRT_Most_Recent_Score}</b></div>
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td colspan="3">
+                                                    <td colspan="5">
                                                         <div class="slds-text-align--center">{!$Label.c.Accounts_Current_Rel_No_Record_Found}</div>
                                                     </td>
                                                 </tr>
@@ -164,6 +189,26 @@
                                                                             <span class="slds-truncate" title="Account Name"><b>{!$Label.c.Account_Name}</b></span>
                                                                             <div class="slds-icon_container">
                                                                                 <aura:if isTrue="{!v.sortAccountName}">
+                                                                                    <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                                                    <aura:set attribute="else">
+                                                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                                                    </aura:set>
+                                                                                </aura:if>
+                                                                            </div>
+                                                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                                        </a>                         
+                                                                    </div>
+                                                                </th>
+                                                                <!-- Added By Gurjot 
+                                                                     Ticket :- Consultant Dashboard Firm
+                                                                     Date :- 17th Oct 2024 -->
+                                                                <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                                                    <div class="slds-cell-fixed">
+                                                                        <a onclick="{!c.sortFields}" data-record="AccountFirm__r.Client_Reference_Status__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                                            <span class="slds-assistive-text">Sort </span>
+                                                                            <span class="slds-truncate" title="Referenceable Client"><b>{!$Label.c.Account_Referenceable_Client}</b></span>
+                                                                            <div class="slds-icon_container">
+                                                                                <aura:if isTrue="{!v.sortReferenceableAsc}">
                                                                                     <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
                                                                                     <aura:set attribute="else">
                                                                                         <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
@@ -209,6 +254,27 @@
                                                                         </a>                                                                
                                                                     </div>
                                                                 </th>
+                                                                <!-- Added By Gurjot 
+                                                                     Ticket :- Consultant Dashboard Firm
+                                                                     Date :- 17th Oct 2024 -->
+                                                                <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                                                    <div class="slds-cell-fixed">
+                                                                        <a onclick="{!c.sortFields}" data-record="AccountFirm__r.NPS__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                                            <span class="slds-assistive-text">Sort </span>
+                                                                            <span class="slds-truncate" title="{!$Label.c.Account_LRT_Most_Recent_Score}"><b>{!$Label.c.Account_LRT_Most_Recent_Score} ({!v.allyearValue})</b></span>
+                                                                            <div class="slds-icon_container">
+                                                                                <aura:if isTrue="{!v.sortLRTAsc}">
+                                                                                    <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                                                    <aura:set attribute="else">
+                                                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                                                    </aura:set>
+                                                                                </aura:if>
+                                                                            </div>
+                                                                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                                                        </a>                                                                
+                                                                    </div>
+                                                                </th>
+                                                                
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -246,6 +312,9 @@
                                     </div>
                                 </div>
                                 <div class="slds-accordion__content">
+                                    <!-- Added as part of CR on 08th Oct 2024 -->
+                                    <div class="slds-text-body--large slds-p-bottom_medium slds-p-left_medium"><strong> {!$Label.c.Account_Total_Membership_Activities}&nbsp;{!v.totalMACount} </strong></div>
+                                    <!-- End of CR Modification -->
                                     <aura:if isTrue="{!v.MembershipActivityEmptyList}">
                                         <!--Empty List-->
                                         <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table--fixed-layout">

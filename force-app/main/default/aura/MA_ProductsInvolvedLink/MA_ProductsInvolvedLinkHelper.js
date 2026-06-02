@@ -1,4 +1,42 @@
-({
+({ 
+    deleteProductLineDate: function(component, event) {
+        var action = component.get("c.deleteProdLineData");
+        action.setParams({
+            "productLine":component.get("v.productTypeRemoved"),
+            "oppId" : component.get("v.MA_ProductsInvolvedObj").OppId
+        });  
+        action.setCallback(this, function(response) {
+            console.log('hello')
+            if (response.getState() == "SUCCESS") {
+                ({
+                    showToast : function(component, event, helper) {
+                        var toastEvent = $A.get("e.force:showToast");
+                        toastEvent.setParams({
+                            title: "Success",
+                            message: "Product Lineitems deleted successfully.",
+                            type: "success"
+                        });
+                        toastEvent.fire();
+                    }
+                })
+                
+            }else{
+                ({
+                    showToast : function(component, event, helper) {
+                        var toastEvent = $A.get("e.force:showToast");
+                        toastEvent.setParams({
+                            title: "Error",
+                            message: "Something went wrong on deletion of Product Lineitems.",
+                            type: "error",
+                            mode: "sticky" // stays until closed
+                        });
+                        toastEvent.fire();
+                    }
+                })
+            }
+        });
+        $A.enqueueAction(action);
+    },
     fetchPickListVal: function(component, fieldName, elementId) {
         var action = component.get("c.getSelectedList");
         action.setParams({

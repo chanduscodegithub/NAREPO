@@ -209,14 +209,14 @@ public class renewalChecklistCls_Test {
         //renewalChecklistCls.userRole();
         renewalChecklistCls.fetchData(showAll);
         renewalChecklistCls.fetchOppLnItemsData(accList[0].Id, showAll,'SS 2024');
-        renewalChecklistCls.sceValidation(accList[0].Id, showAll,'SS 2024');
+        renewalChecklistCls.sceValidation(accList[0].Id,null, showAll,'SS 2024');
         //renewalChecklistCls.saveRenewalData(rc,accList[0].Id,'SS 2024');
-        renewalChecklistCls.sceValidation(accList[1].Id, showAll,'SS 2024');
+        renewalChecklistCls.sceValidation(accList[1].Id,null, showAll,'SS 2024');
         
         showAll = false;
         renewalChecklistCls.fetchData(showAll);
         renewalChecklistCls.fetchOppLnItemsData(accList[0].Id, showAll,'SS 2024');
-        renewalChecklistCls.sceValidation(accList[0].Id, showAll,'SS 2024');
+        renewalChecklistCls.sceValidation(accList[0].Id,null, showAll,'SS 2024');
         Test.stopTest();
         
         
@@ -227,18 +227,26 @@ public class renewalChecklistCls_Test {
         Boolean showAll = true;
         List<Account> accList = [SELECT Id,Name FROM Account LIMIT 2];
         Renewal_Checklist__c rc  = [SELECT Id,Name FROM Renewal_Checklist__c LIMIT 1];
+        Renewal_Checklist__c inputData = new Renewal_Checklist__c(
+            Additional_Comments__c = 'New Record'
+        );
+        List<String> emails = new List<String>{ 'test@example.com' };
+            
         Map<String,String>paraMap = new Map<String,String>();
         paraMap.put('Offshore_Provisions__c','Yes');
         system.assertEquals(accList.size(),2);
         
         OpportunityLineItem[] oppItemList = [SELECT Id,Product_Line__c FROM OpportunityLineItem LIMIT 3];
-
-        //renewalChecklistCls.saveRenewalData(rc,accList[1].Id,'SS 2024');
-        renewalChecklistCls.sceValidation(accList[1].Id, showAll,'SS 2024');
+        renewalChecklistCls.userRole();
+        renewalChecklistCls.saveRenewalData(inputData,accList[1].Id,'SS 2026');
+        List<renewalChecklistCls.EmailOption> results = renewalChecklistCls.getValidationEmails(accList[1].Id);
+		renewalChecklistCls.sendChecklistToSelectedEmails(accList[1].Id, emails,showAll,'SS 2024');
+        renewalChecklistCls.sceValidation(accList[1].Id, null,showAll,'SS 2024');
+        renewalChecklistCls.sceValidation(accList[1].Id, null,showAll,'SS 2023');
         renewalChecklistCls.sortProductsList(oppItemList);
         
         showAll = false;
-        renewalChecklistCls.sceValidation(accList[1].Id, showAll,'SS 2024');
+        renewalChecklistCls.sceValidation(accList[1].Id,null, showAll,'SS 2024');
     }
 
 }

@@ -10,7 +10,8 @@ import PRODUCT_DISPLAY_ORDER from '@salesforce/schema/PIM_Product_Stage__c.Produ
 import { NavigationMixin } from 'lightning/navigation';
 
 import PRODUCT_NAME from '@salesforce/schema/PIM_Product_Stage__c.Product_Name_Stage__c';
-const FIELDS = [PRODUCT_NAME,PRODUCT_DISPLAY_ORDER];
+import Product_Change_Type__c from '@salesforce/schema/PIM_Product_Stage__c.Product_Change_Type__c';
+const FIELDS = [PRODUCT_NAME,PRODUCT_DISPLAY_ORDER,Product_Change_Type__c];
 
 
 export default class PimProductChangeType extends NavigationMixin(LightningElement) {
@@ -77,7 +78,7 @@ export default class PimProductChangeType extends NavigationMixin(LightningEleme
         this.isLoading = true;
 
        // updateProductOnPublish({stageRecordId: this.recordId,isListView: false})
-        updateProductsBulk({ stageIds: [this.recordId], isListView: false,selectedFilter:this.selectedFilter })
+        updateProductsBulk({ stageIds: [this.recordId], isListView: false,selectedFilter:this.pimStageRecord.data.fields.Product_Change_Type__c.value })
             .then(result => {
                 if (!result || result.successCount !== 1) {
                     throw new Error(result?.message || 'Update failed.');

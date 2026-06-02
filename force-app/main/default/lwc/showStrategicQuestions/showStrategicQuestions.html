@@ -1,0 +1,195 @@
+<template>
+
+    <template if:true={menuisOpen}>
+        <div>
+            <div class="slds-modal__header">
+                <div class="slds-grid">
+                     <div class="slds-col slds-size_2-of-12 slds-align_absolute-center">
+                         <img src={uhcLogo} alt="UHC Logo" class="uhc-logo">
+                    </div>
+                    <div class="slds-col slds-size_8-of-12 slds-m-top_small">
+                        <p class="STRheadingSize slds-text-heading_medium"><strong>{rfpName}</strong> </p>
+                        <p class="slds-text-heading_small slds-align_absolute-center"><em>Strategic Questions Feedback</em></p>
+                    </div>
+                     <div class="slds-col slds-size_2-of-12 slds-grid slds-grid_align-end slds-grid_vertical-align-center slds-p-right_large">
+                         <lightning-icon icon-name="standard:opportunity" alternative-text="Strategy memo"
+                            title="Membership Activity" class="icon-hover-effect" onclick={handleIconClicktoMA}>
+                        </lightning-icon>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Content -->
+
+            <div class="slds-modal__content slds-p-around_small">
+
+                <lightning-accordion allow-multiple-sections-open active-section-name={activeSection}>
+
+                    <!-- Strategic Questions Accordion -->
+                    <lightning-accordion-section name="strategic" label="Strategic Questions" class="accLabel">
+                        <template if:true={isFeedbackAvailable}>
+                        <template if:false={isStrategicReviewCompleted}>
+                            <lightning-button label="Save" variant="brand" onclick={handleSaveStrategicAnswers}
+                                disabled={isBatchRunning} slot="actions"></lightning-button>
+                            <lightning-button label="Proceed to AI Review" variant="brand"
+                                class="slds-m-horizontal_xx-small" onclick={handleProceedToNextSteps}
+                                disabled={isBatchRunning} slot="actions">
+                            </lightning-button>
+                        </template>
+                        <template if:true={isStrategicReviewCompleted}>
+                            <lightning-button variant="brand" label="Proceed to review console"
+                                icon-name="utility:agent_astro" icon-position="left"
+                                onclick={handleStratQuestion} disabled={isBatchRunning} slot="actions">
+                            </lightning-button>
+                        </template>
+                        </template>
+                        <div class="slds-text-color_weak slds-text-body_small">
+                            👇 Click a question below to view or edit the Proposal Writer Response.
+                        </div>
+                        <div class="scroll-container">
+                            <template if:true={records}>
+                                <template for:each={records} for:item="rec">
+                                    <div key={rec.Id} class="slds-p-vertical_x-small slds-border_bottom">
+                                        <div class="icon-hover-effect question-header slds-text-title_bold slds-grid slds-grid_vertical-align-center"
+                                            data-id={rec.Id} onclick={handleToggleAnswer}>
+                                            <lightning-icon icon-name={rec.iconName} size="x-small"
+                                                alternative-text="Toggle Answer" class="slds-m-right_x-small">
+                                            </lightning-icon>
+                                            <div>
+                                                <strong>{rec.RFP_Question_Number__c}</strong> {rec.RFP_Question__c}
+                                            </div>
+                                        </div>
+
+                                        <template if:true={rec.showAnswer}>
+                                            <lightning-textarea data-id={rec.Id} value={rec.displayAnswer}
+                                                label="Answer" onchange={handleAnswerChange} disabled={isStrategicReviewCompleted}>
+                                            </lightning-textarea>
+                                        </template>
+                                    </div>
+                                </template>
+                            </template>
+                            <template if:false={records}>
+                                <p>No strategic questions available.</p>
+                            </template>
+                        </div>
+                    </lightning-accordion-section>
+
+
+                    <!-- Feedback Accordion (Open by default) -->
+                    <lightning-accordion-section name="feedback" label="Feedback">
+                        <template if:true={feedbackData}>
+                            <div class="table-container">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Strategy Point</th>
+                                            <th>Assessment Rating</th>
+                                            <th>Question Number Addressed</th>
+                                            <th class="notes-header">Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={feedbackData} for:item="item">
+                                            <tr key={item.key}>
+                                                <td>
+                                                    <div class="slds-grid slds-p-around_none slds-align-middle">
+                                                        <lightning-helptext content={item.derivedFrom}></lightning-helptext>
+                                                        <span class="slds-m-left_small">{item.strategyPoint}</span>                                                        
+                                                    </div>
+                                                </td>
+                                                <td class={item.assessmentClass}>{item.assessmentRating}</td>
+                                                <td> {item.questionNumberString}</td>
+                                                <td class="notes-column">{item.notes}</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                        <!--<template if:false={feedbackData}>
+                            <p class="slds-p-around_medium">No feedback data available.</p>
+                        </template>-->
+                        <template if:true={isFeedbackEmpty}>
+                                <div class="slds-p-around_medium slds-text-align_center slds-theme_alert-texture slds-theme_warning slds-box slds-text-heading_small slds-text-color_default" style="font-weight:bold;">
+                                    Please Reprocess the Strategy Check to view the Feedback
+                                </div>
+                        </template>
+                    </lightning-accordion-section>
+
+                    <!-- Summary Accordion -->
+                    <lightning-accordion-section name="summary" label="Summary" class="accLabel">
+                        <div class="MheadingSize slds-p-around_small">
+                            {summaryText}
+                        </div>
+                    </lightning-accordion-section>
+                </lightning-accordion>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="slds-modal__footer slds-align_absolute-center">
+                <lightning-button variant="neutral" label="Re-Process Strategy check" icon-name="utility:refresh"
+                    icon-position="left" onclick={handleReprocessStrategy} disabled={isBatchRunning}>
+                </lightning-button>
+            </div>
+
+        </div>
+    </template>
+
+    <template if:true={callChildCmp}>
+        <c-ai-review2 record-id-child={recordId} object-api-name-child={objectApiName} is-child=true
+            onbacktoparent={handleGoingBacktoMainMenu}></c-ai-review2>
+    </template>
+
+    <!-- Spinner modal -->
+    <template if:true={isLoading}>
+        <div class="overlay">
+            <div class="spinner-wrapper">
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                <div class="spinner-message">{loadingMessage}</div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Show Error Message if No Records Exist -->
+    <template if:true={noRecords}>
+        <lightning-card class="Norecords">
+            <div class="slds-p-around_medium slds-text-align_center">
+                <p><strong>There are no Strategic Questions for this RFP.</strong></p>
+            </div>
+        </lightning-card>
+    </template>
+
+
+    <template if:true={showGenericModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_x-small">
+            <div class="slds-modal__container WarniningModal">
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">{genericModalTitle}</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <template if:true={isReasonModal}>
+                        <div class="slds-align_absolute-center">
+                            <lightning-radio-group name="reprocessingReason"
+                                label="Please select a reason for Reprocessing the Strategy-Check"
+                                options={reasonOptions} value={selectedReason} onchange={handleReasonChange}>
+                            </lightning-radio-group>
+                        </div>
+                    </template>
+
+                    <template if:false={isReasonModal}>
+                        <div class="slds-text-align_center slds-text-heading_small" lwc:dom="manual" data-id="modalBodySlot"></div>
+                    </template>
+                </div>
+                <footer class="slds-modal__footer">
+                    <template for:each={genericModalButtons} for:item="btn">
+                        <lightning-button key={btn.label} class="slds-m-horizontal_small" label={btn.label}
+                            variant={btn.variant} onclick={btn.action}>
+                        </lightning-button>
+                    </template>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+</template>

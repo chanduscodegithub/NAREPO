@@ -10,14 +10,15 @@ public class Contact_Accounts_ClassTest {
         bulkTestData.ContactUHGTestData();
         bulkTestData.BGHContactTestData();
         bulkTestData.opportunityTestData();
+        
         Id conid = [SELECT ID FROM CONTACT WHERE FirstName ='test acconsultiongfirm1'].ID;
         Contact_Accounts_Class.queryRelatedAccounts(conid,pageName, columnName, sortType);
         Contact_Accounts_Class.queryRelatedAccounts(null,pageName, columnName, sortType);
         
         User readOnlyUser = [Select id from user where username = 'uhgDevReadOnly@crmit.com' Limit 1];
         try{
-            string b =[SELECT Id FROM Opportunity WHERE Name='Test Opportunity' LIMIT 1].Id;
-            system.debug('b@@@@'+b);
+           // string b =[SELECT Id FROM Opportunity WHERE Name='Test Opportunity' LIMIT 1].Id;
+           // system.debug('b@@@@'+b);
             system.runAs(readOnlyUser){
                 Test.startTest();
                 Contact_Accounts_Class.queryRelatedAccounts(conid,pageName, columnName, sortType); 

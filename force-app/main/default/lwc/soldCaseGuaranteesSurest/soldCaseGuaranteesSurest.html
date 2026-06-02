@@ -193,6 +193,58 @@
                 </table>
                 <table class="slds-table slds-no-row-hover" style="width:100%;">
                     <template if:true={isSurestProductMed}>
+                        <tr>
+                            <td class="border-bottom">
+                                <div class="slds-grid slds-grid--vertical-align-center">
+                                    <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small">
+                                        <span><b>Implementation Guarantees</b></span>
+                                    </div>
+                                    <div class="slds-col slds-size_3-of-5 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
+                                        <span style="white-space:break-spaces;word-break:break-word;">
+                                            <template if:false={enableEdit}>
+                                                <div class="slds-grid slds-grid--vertical-align-center" style="margin-left:8%;">
+                                                    <div class="slds-col slds-size_3-of-8 " style="width:16rem; text-align: right;">
+                                                        <template if:true={soldCaseDataCopy.Surest_Implementation_Guarantees__c}>
+                                                            {soldCaseDataCopy.Surest_Implementation_Guarantees__c}
+                                                        </template>
+                                                    </div>
+                                                    <div class="slds-col slds-size_1-of-8 " style="width:2.5rem;">
+                                                    </div>
+                                                    <div class="slds-col slds-size_3-of-8 " style="text-align: right;">
+                                                        <template if:true={soldCaseDataCopy.Surest_Implementation_Guarantees_WriteIn__c}>
+                                                            {soldCaseDataCopy.Surest_Implementation_Guarantees_WriteIn__c}
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <template if:true={enableEdit}>
+                                                <div class="slds-grid slds-grid--vertical-align-center" style="margin-left:8%;">
+                                                    <div class="slds-col slds-size_3-of-8" style="width:16rem;">
+                                                        <lightning-combobox class="slds-text-align_left" name="Sold_Case_Checklist__c.Surest_Implementation_Guarantees__c" variant="label-hidden"
+                                                            value={soldCaseDataCopy.Surest_Implementation_Guarantees__c} placeholder="Select an Option"
+                                                            options={picklistValues} onchange={FieldChangeHandler}>
+                                                        </lightning-combobox>
+                                                    </div>
+                                                    <div class="slds-col slds-size_1-of-8 " style="width:2.5rem;">
+                                                    </div>
+                                                    <div class="slds-col slds-size_3-of-8 ">
+                                                        <lightning-input type="text" variant="label-hidden"
+                                                            name="Sold_Case_Checklist__c.Surest_Implementation_Guarantees_WriteIn__c"
+                                                            value={soldCaseDataCopy.Surest_Implementation_Guarantees_WriteIn__c}
+                                                            onchange={FieldChangeHandler} max-length="25">
+                                                        </lightning-input>
+                                                    </div>
+                                                </div>
+                                                
+                                            </template>
+                                        </span>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-p-around_xx-small slds-text-align_right">
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                         <template for:each={otherCustomGuaranteeMedLst} for:item="otherCustomGuarantee"
                             for:index="index">
                             <tr key={otherCustomGuarantee.value}>

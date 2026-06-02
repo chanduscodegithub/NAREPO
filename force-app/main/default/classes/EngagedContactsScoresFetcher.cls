@@ -77,6 +77,5 @@ public with sharing class EngagedContactsScoresFetcher {
             return 0;
         }
     }
-    
 
 }

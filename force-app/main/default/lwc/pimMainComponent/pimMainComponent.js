@@ -36,6 +36,9 @@ export default class PimMainComponent extends LightningElement {
     get changeInProduct() {
         return this.productChangeType === 'Change in Product';
     }
+    get deactivation() {
+        return this.productChangeType === 'Deactivation';
+    }
 
     get newProduct() {
         return this.productChangeType === 'New Product';

@@ -12,10 +12,8 @@ import getEBDDocumentsForAccount from '@salesforce/apex/EBDController.getEBDDocu
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { CloseActionScreenEvent } from 'lightning/actions';
-import TIME_ZONE from '@salesforce/i18n/timeZone';
 
 export default class EbdMainComp extends LightningElement {
-    userTimeZone = TIME_ZONE;
     //@track anticipatedDetailsDataCopy;
     @track showConfirmModalForClear = false;
     @track showConfirmModalForValidation = false;
@@ -112,7 +110,7 @@ export default class EbdMainComp extends LightningElement {
     this.isLoading = true;
 
     updateSCEValidationInfo({ companyId: this.recordId })
-        .then(() => generateAndUploadEBDDocument({ companyId: this.recordId,ebdId: this.ebdId }))
+        .then(() => generateAndUploadEBDDocument({ companyId: this.recordId, ebdId: this.ebdId }))
         .then(() => {
             return refreshApex(this.wiredEbdDataResult);
         })

@@ -77,7 +77,7 @@ public without sharing class SoldChecklistHandler {
                                       Bridge2Health_Vision__c, Account.Call_Site_Type__c,Account.Claim_Site_Type__c,Account.Clinical_Site_Type__c, Incumbent_Primary_Pharmacy__c, Incumbent_Primary_Dental__c,
                                       Incumbent_Primary_Vision__c, Incumbent_Primary_Pharmacy__r.Name, Incumbent_Primary_Dental__r.Name, Incumbent_Primary_Vision__r.Name,
                                       Account.TopMarket1__c, Account.TopMarket1Records__c, Account.TopMarket2__c, Account.TopMarket2Records__c, Account.TopMarket3__c, Account.TopMarket3Records__c,
-                                      Account.TopMarket4__c, Account.TopMarket4Records__c, Account.TopMarket5__c, Account.TopMarket5Records__c, Account.UMR_Client_Platform__c, Account.CVGAccount__r.Name 
+                                      Account.TopMarket4__c, Account.TopMarket4Records__c, Account.TopMarket5__c, Account.TopMarket5Records__c, Account.UMR_Client_Platform__c, Account.CVGAccount__r.Name,owner.email,createdby.email
                                       FROM Opportunity 
                                       WHERE Id=: recordId WITH USER_MODE]; 
         ow.oppdata = OppDatarec;
@@ -114,7 +114,7 @@ public without sharing class SoldChecklistHandler {
         }
         
         String soql = 'SELECT ' + String.join(fieldList, ',') +
-            ' ,IPM__r.Name FROM Sold_Case_Checklist__c' +
+            ' ,IPM__r.Name,IPM__r.Email FROM Sold_Case_Checklist__c' +
             ' WHERE Membership_Activity__c = :recordId' +
             ' LIMIT 1';
         
@@ -139,7 +139,7 @@ public without sharing class SoldChecklistHandler {
         Congenital_Heart_Disease__c,Transplant_TRS_COE__c,Non_Extra_Contractual_Transplant__c,HealtheNote_Reminders__c,Physical_Health_Network__c,Physical_Health_Chiro_Clinical_Support__c,
         Asthma_VOM__c,Diabetes_VOM__c,Congestive_Heart_Failure_VOM__c,CAD_VOM__c,COPD_VOM__c,Cancer_Support_Program_VOM__c,Kidney_Solutions_VOM__c,
         Kidney_Resource_Services_VOM__c,MNRP__c,MNRP_DME__c,MNRP_Lab__c,MNRP_Default_of_Billed_Charges__c,
-                                                            Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
+        Facility_R_C__c,ENRP__c,ENRP_Default_of_Billed_Charge__c,Non_standard_Comments__c,MNRP_Percentage__c,MNRP_DME_Percentage__c,MNRP_Lab_Percentage__c,
         MNRP_Dfault_of_Billd_Chrges_Percentage__c,Facility_R_C_Percentage__c,ENRP_Percentage__c,ENRP_Dfault_of_Billd_Chrges_Percentage__c,MNRP_DME_Nonstd_Percentage__c,
         MNRP_Lab_Nonstd_Percentage__c,MNRP_Default_Nonstd_Percentage__c,Physician_R_C_OON__c,Physician_R_C_OON_Percentage__c,
         
@@ -148,6 +148,7 @@ public without sharing class SoldChecklistHandler {
         Vital_Medication_program_Opt_in_Opt_out__c,
         Price_Edge_Opt_in__c,
         If_Fully_Insured_include_quoted_Rx_plan__c,
+        Pharmacy_Carve_Out_DropDown__c,
         
         /* Flex */
         Flex_WriteIn__c, Flex_Options__c,
@@ -763,6 +764,7 @@ update sccUpdateList;
 system.debug('updatedSoldCaseData '+updatedSoldCaseData);
 system.debug('auditTrailListToInsert '+auditTrailListToInsert);*/
         system.debug('opplineitem = '+opplineitem);
+        system.debug('updatedSoldCaseDataBariatric_Resource_Services__c = '+updatedSoldCaseData.Bariatric_Resource_Services__c);
         system.debug('updatedSoldCaseData = '+updatedSoldCaseData);
         system.debug('Updateddata = '+Updateddata);
         system.debug('accupdate = '+accupdate);

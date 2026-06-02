@@ -56,9 +56,9 @@
         <name>STD_or_LTD_0</name>
         <label>STD or LTD &gt; 0</label>
         <locationX>182</locationX>
-        <locationY>2123</locationY>
+        <locationY>2423</locationY>
         <defaultConnector>
-            <targetReference>STD_or_LTD_less_than_or_equal_to_0</targetReference>
+            <targetReference>UHC_Pet_Insurance_FIGO_0</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -88,14 +88,14 @@
         <name>STD_or_LTD_less_than_or_equal_to_0</name>
         <label>STD or LTD less than or equal to 0</label>
         <locationX>182</locationX>
-        <locationY>2423</locationY>
+        <locationY>2123</locationY>
         <defaultConnector>
-            <targetReference>UHC_Pet_Insurance_FIGO_0</targetReference>
+            <targetReference>STD_or_LTD_0</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>IF_STD_or_LTD_less_than_or_equal_to_0</name>
-            <conditionLogic>or</conditionLogic>
+            <conditionLogic>(1 AND 2 ) OR (3 OR 4)</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Company__r.UHC_STD_Members__c</leftValueReference>
                 <operator>LessThanOrEqualTo</operator>
@@ -108,6 +108,20 @@
                 <operator>LessThanOrEqualTo</operator>
                 <rightValue>
                     <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Company__r.UHC_STD_Members__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Company__r.UHC_LTD_Members__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -147,7 +161,7 @@
         <locationX>182</locationX>
         <locationY>1823</locationY>
         <defaultConnector>
-            <targetReference>STD_or_LTD_0</targetReference>
+            <targetReference>STD_or_LTD_less_than_or_equal_to_0</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -465,7 +479,7 @@
         <locationX>50</locationX>
         <locationY>1931</locationY>
         <connector>
-            <targetReference>STD_or_LTD_0</targetReference>
+            <targetReference>STD_or_LTD_less_than_or_equal_to_0</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -580,9 +594,9 @@
         <name>Update_Disability_Insurance_No</name>
         <label>Update Disability Insurance No</label>
         <locationX>50</locationX>
-        <locationY>2531</locationY>
+        <locationY>2231</locationY>
         <connector>
-            <targetReference>UHC_Pet_Insurance_FIGO_0</targetReference>
+            <targetReference>STD_or_LTD_0</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -604,9 +618,9 @@
         <name>Update_Disability_Insurance_Yes</name>
         <label>Update Disability Insurance Yes</label>
         <locationX>50</locationX>
-        <locationY>2231</locationY>
+        <locationY>2531</locationY>
         <connector>
-            <targetReference>STD_or_LTD_less_than_or_equal_to_0</targetReference>
+            <targetReference>UHC_Pet_Insurance_FIGO_0</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -826,5 +840,5 @@
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
 </Flow>

@@ -1334,7 +1334,7 @@ TBD
                                     <apex:outputPanel layout="none" rendered="{!!isCADPresent}">
                                         <tr >
                                             <td align="left" style="border:1px solid #000;padding-left:45px;border-right:0;" >
-                                                Coronary Artery Disease (CAD)
+                                                Coronary Artery Disease (VOM)
                                             </td>
                                             <td align="right" style="border:1px solid #000;border-left:0">
                                                 {!lineItem.CAD_VOM__c}
@@ -3066,7 +3066,7 @@ ENRP Default Percentage of Billed Charges
                     
                     <tr >
                         <td align="left" style="border:1px solid #000;padding-left:35px;border-right:0;" >
-                            UHC Virtual Visits
+                            UHC 24/7 Virtual Visits
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
                             {!soldCaseDetails.sccData.Virtual_Visits__c}
@@ -3192,7 +3192,13 @@ ENRP Default Percentage of Billed Charges
             <br/><br/>
 
             <apex:outputPanel layout="none" rendered="{!showCPWSection}">
-                <table  cellspacing="0" cellpadding="0" class="detailTable" style="width:100%;" >
+                <table  cellspacing="0" cellpadding="0" class="detailTable" style="width:100%; table-layout:fixed;" >
+                    <colgroup>
+                        <col style="width:50%;" />
+                        <col style="width:17%;" />
+                        <col style="width:17%;" />
+                        <col style="width:16%;" />
+                    </colgroup>
                     <tr>
                         <td colspan="4" style="color:#fff;background: #4F81BD;padding: 5px;font-weight: bold;font-size: 16px;border:1px solid #000;">
                             Surest Sold Case Checklist
@@ -3377,7 +3383,7 @@ ENRP Default Percentage of Billed Charges
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
-                            Yes
+                            {!soldCaseDetails.sccData.Surest_Standard_Communications__c}
                         </td>
                     </tr>
                     <tr>
@@ -3389,7 +3395,7 @@ ENRP Default Percentage of Billed Charges
                         <td align="right" style="border:1px solid #000;border-left:0;border-right:0;">
                         </td>
                         <td align="right" style="border:1px solid #000;border-left:0">
-                            Yes
+                            {!soldCaseDetails.sccData.Surest_Member_Services__c}
                         </td>
                     </tr>
                     <tr >
@@ -3650,7 +3656,8 @@ ENRP Default Percentage of Billed Charges
                 </tr>
                 <tr >
                     <td align="left" style="border:1px solid #000;border-right:0px;font-weight:bold;" >
-                        HI/PR Leased Network
+                        HI/PR Leased Network<br/>
+                        <span style='color:#ff0000;font-weight:normal;'>HI/PR Leased Network is not Available for Surest</span>
                     </td>
                     <td align="right" style="border-bottom:1px solid #000;border-right:1px solid #000;">
                         {!soldCaseDetails.sccData.Leased_Network__c}
@@ -3822,6 +3829,19 @@ ENRP Default Percentage of Billed Charges
                             <apex:outputPanel layout="none" rendered="{!isMedicalSold}">
                                 <tr>
                                     <td align="left" width="30%"  style="border:1px solid #000;border-right:0px;padding-left: 35px;" >
+                                        Implementation Guarantees 
+                                    </td>
+                                    <td align="right" style="border-bottom:1px solid #000;border-right:1px solid #000;">
+                                        <div style="word-wrap: break-word;width:45%;min-height:20px;float:left;margin:0;padding:0;text-align:left;">
+                                            {!soldCaseDetails.sccData.Implementation_Guarantees__c}
+                                        </div>
+                                        <div style="width:45%;min-height:20px;float:right;margin:0;padding:0;text-align:right;">
+                                            {!soldCaseDetails.sccData.Implementation_Guarantees_WriteIn__c}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" width="30%"  style="border:1px solid #000;border-right:0px;padding-left: 35px;" >
                                         Other Custom Guarantee 
                                     </td>
                                     <td align="right" style="border-bottom:1px solid #000;border-right:1px solid #000;">
@@ -3985,6 +4005,19 @@ ENRP Default Percentage of Billed Charges
                         </apex:variable> -->
                         <apex:variable rendered="true" value="" var="tempOuter5">
                             <apex:outputPanel layout="none" rendered="{!isSurestProductMed}">
+                                <tr>
+                                    <td align="left" width="30%"  style="border:1px solid #000;border-right:0px;padding-left: 35px;" >
+                                        Implementation Guarantees 
+                                    </td>
+                                    <td align="right" style="border-bottom:1px solid #000;border-right:1px solid #000;">
+                                        <div style="width:45%;min-height:20px;float:left;margin:0;padding:0;text-align:left;">
+                                            {!soldCaseDetails.sccData.Surest_Implementation_Guarantees__c}
+                                        </div>
+                                        <div style="width:45%;min-height:20px;float:right;margin:0;padding:0;text-align:right;">
+                                            {!soldCaseDetails.sccData.Surest_Implementation_Guarantees_WriteIn__c}
+                                        </div>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td align="left" width="30%"  style="border:1px solid #000;border-right:0px;padding-left: 35px;" >
                                         Other Custom Guarantee 

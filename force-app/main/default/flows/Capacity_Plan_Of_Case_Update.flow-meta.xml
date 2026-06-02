@@ -958,9 +958,6 @@
         <label>myDecision26</label>
         <locationX>50</locationX>
         <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>myDecision28</targetReference>
-        </defaultConnector>
         <defaultConnectorLabel>default</defaultConnectorLabel>
         <rules>
             <name>myRule_27</name>
@@ -976,34 +973,6 @@
                 <targetReference>myRule_27_A1</targetReference>
             </connector>
             <label>Role = UMR Client Manager</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <processMetadataValues>
-            <name>index</name>
-            <value>
-                <numberValue>11.0</numberValue>
-            </value>
-        </processMetadataValues>
-        <name>myDecision28</name>
-        <label>myDecision28</label>
-        <locationX>50</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>default</defaultConnectorLabel>
-        <rules>
-            <name>myRule_29</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>formula_myRule_29</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>myRule_29_A1</targetReference>
-            </connector>
-            <label>Role = SBC</label>
         </rules>
     </decisions>
     <decisions>
@@ -1232,7 +1201,7 @@
                 <stringValue>IF(ISNULL([Staff_Assignment__c].Start_Date__c),today() -1,[Staff_Assignment__c].Start_Date__c -1)</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_5_myRule_3_A1_6636918807</name>
+        <name>formula_5_myRule_3_A1_1111132664</name>
         <dataType>Date</dataType>
         <expression>IF(ISNULL({!myVariable_current.Start_Date__c}),today() -1,{!myVariable_current.Start_Date__c} -1)</expression>
     </formulas>
@@ -1243,7 +1212,7 @@
                 <stringValue>[Staff_Assignment__c].Staff_User_Assignment__c.LastName  +&apos; &apos; + [Staff_Assignment__c].Staff_User_Assignment__c.FirstName </stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_8_myRule_7_A1_7072085123</name>
+        <name>formula_8_myRule_7_A1_4005004556</name>
         <dataType>String</dataType>
         <expression>{!myVariable_current.Staff_User_Assignment__r.LastName}  +&apos; &apos; + {!myVariable_current.Staff_User_Assignment__r.FirstName}</expression>
     </formulas>
@@ -1341,19 +1310,7 @@
         <dataType>Boolean</dataType>
         <expression>ISPICKVAL({!myVariable_current.Role_on_Case__c} , &apos;UMR Client Manager&apos;)  &amp;&amp;(ISCHANGED({!myVariable_current.Role_on_Case__c}) ||  ISNEW() )</expression>
     </formulas>
-    <formulas>
-        <processMetadataValues>
-            <name>originalFormula</name>
-            <value>
-                <stringValue>ISPICKVAL([Staff_Assignment__c].Role_on_Case__c , &apos;Specialty Benefits Consultant&apos;)  &amp;&amp;(ISCHANGED([Staff_Assignment__c].Role_on_Case__c) ||  ISNEW() )
-</stringValue>
-            </value>
-        </processMetadataValues>
-        <name>formula_myRule_29</name>
-        <dataType>Boolean</dataType>
-        <expression>ISPICKVAL({!myVariable_current.Role_on_Case__c} , &apos;Specialty Benefits Consultant&apos;)  &amp;&amp;(ISCHANGED({!myVariable_current.Role_on_Case__c}) ||  ISNEW() )</expression>
-    </formulas>
-    <interviewLabel>Capacity_Plan_Of_Case_Update-18_InterviewLabel</interviewLabel>
+    <interviewLabel>Capacity_Plan_Of_Case_Update-25_InterviewLabel</interviewLabel>
     <label>Capacity Plan -% Of Case Update &amp; Service AMT Update</label>
     <processMetadataValues>
         <name>ObjectType</name>
@@ -2144,90 +2101,6 @@
         <label>Update % Of Case</label>
         <locationX>2700</locationX>
         <locationY>200</locationY>
-        <connector>
-            <targetReference>myDecision28</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <processMetadataValues>
-                <name>implicit</name>
-                <value>
-                    <booleanValue>true</booleanValue>
-                </value>
-            </processMetadataValues>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>myVariable_current.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <processMetadataValues>
-                <name>dataType</name>
-                <value>
-                    <stringValue>Number</stringValue>
-                </value>
-            </processMetadataValues>
-            <processMetadataValues>
-                <name>isRequired</name>
-                <value>
-                    <booleanValue>false</booleanValue>
-                </value>
-            </processMetadataValues>
-            <processMetadataValues>
-                <name>leftHandSideLabel</name>
-                <value>
-                    <stringValue>% of case</stringValue>
-                </value>
-            </processMetadataValues>
-            <processMetadataValues>
-                <name>leftHandSideReferenceTo</name>
-                <value>
-                    <stringValue></stringValue>
-                </value>
-            </processMetadataValues>
-            <processMetadataValues>
-                <name>rightHandSideType</name>
-                <value>
-                    <stringValue>Number</stringValue>
-                </value>
-            </processMetadataValues>
-            <field>of_case__c</field>
-            <value>
-                <numberValue>1.0</numberValue>
-            </value>
-        </inputAssignments>
-        <object>Staff_Assignment__c</object>
-    </recordUpdates>
-    <recordUpdates>
-        <processMetadataValues>
-            <name>evaluationType</name>
-            <value>
-                <stringValue>always</stringValue>
-            </value>
-        </processMetadataValues>
-        <processMetadataValues>
-            <name>extraTypeInfo</name>
-        </processMetadataValues>
-        <processMetadataValues>
-            <name>isChildRelationship</name>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </processMetadataValues>
-        <processMetadataValues>
-            <name>reference</name>
-            <value>
-                <stringValue>[Staff_Assignment__c]</stringValue>
-            </value>
-        </processMetadataValues>
-        <processMetadataValues>
-            <name>referenceTargetField</name>
-        </processMetadataValues>
-        <name>myRule_29_A1</name>
-        <label>Update % Of Case</label>
-        <locationX>2900</locationX>
-        <locationY>200</locationY>
         <filterLogic>and</filterLogic>
         <filters>
             <processMetadataValues>
@@ -2359,7 +2232,7 @@
             </processMetadataValues>
             <field>Case_Management_End_Date__c</field>
             <value>
-                <elementReference>formula_5_myRule_3_A1_6636918807</elementReference>
+                <elementReference>formula_5_myRule_3_A1_1111132664</elementReference>
             </value>
         </inputAssignments>
         <object>Service_AMT__c</object>
@@ -2492,7 +2365,7 @@
             </processMetadataValues>
             <field>Staff_assignment_list_search__c</field>
             <value>
-                <elementReference>formula_8_myRule_7_A1_7072085123</elementReference>
+                <elementReference>formula_8_myRule_7_A1_4005004556</elementReference>
             </value>
         </inputAssignments>
         <object>Staff_Assignment__c</object>

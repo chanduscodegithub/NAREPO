@@ -21,7 +21,8 @@ import { CurrentPageReference } from 'lightning/navigation';
 import { fireEvent } from 'c/pubsub';
 import { CloseActionScreenEvent } from 'lightning/actions';  //Added by Vignesh
 import TIMEZONE from '@salesforce/i18n/timeZone';
-
+import getValidationEmails from '@salesforce/apex/renewalChecklistCls.getValidationEmails';
+import sendEmailWithPDF from '@salesforce/apex/EmailSCCbySalesSurestTeam.sendEmailWithPDF';
 import sccStaticResource from '@salesforce/resourceUrl/SCC_Static_Resource';
 
 export default class SoldCheckMainComp extends LightningElement {
@@ -83,6 +84,9 @@ export default class SoldCheckMainComp extends LightningElement {
     @api eServices;
     @track isCM = false;
     @track showCPWSection = false;
+    @track updatedBySales = false;
+    @track updatedByIPM =false;
+    @track SalesOrIPM ='Sales';
 
     //added below variables for audit trail - start
     loggedInUserId;
@@ -136,6 +140,8 @@ export default class SoldCheckMainComp extends LightningElement {
         //console.log(`Result = ${JSON.stringify(result)}`);
         this.resultSoldchecklist = result;
         if (result.data) {
+            this.updatedByIPM =false;
+            this.updatedBySales =false;
             let data = result.data;
             let opplineitemarray = [];
             let medirecarray = [];
@@ -161,7 +167,8 @@ export default class SoldCheckMainComp extends LightningElement {
             this.isTradSoldOther = data.isTradSoldOther;
             this.isSurestSoldOther = data.isSurestSoldOther;
             //------------SAMARTH------------
-            this.soldCaseObjectData = data.sccData;
+            this.soldCaseObjectData = { ...data.sccData };
+            
             this.sccHoverHelpData = data.sccHoverHelp;
             //console.log('sccHoverHelpData ' + JSON.stringify(this.sccHoverHelpData[0]['Indicate_Vendor__c'].split(';')));
             //------------SAMARTH------------
@@ -198,7 +205,6 @@ export default class SoldCheckMainComp extends LightningElement {
             } else {
                 this.bridge2healthOptOutVisionValue = '';
             }
-
 
             // if(this.isSurestProductMed || (this.meddispValue == 'Transfer In' || this.meddispValue == 'Spin-Off')){
             //     this.showCPWSection = true;
@@ -1431,13 +1437,114 @@ export default class SoldCheckMainComp extends LightningElement {
     Cancel() {
         this.showSaveCancel = false;
         this.onCancelPharmacyProd = false;
+        this.isLoad = false;
         this.onCancel = false;
-        this.ClientDataRecord = Object.assign({}, this.ClientDataRecordBackup);
-        this.Opplineitemrecords = Object.assign({}, this.oppLineItemsRecordsBackup);
-        setTimeout(() => {
-            this.onCancel = true;
-            this.onCancelPharmacyProd = true;
-        }, 300);
+        refreshApex(this.resultSoldchecklist)
+            .then(() => {
+                this.isLoad = true;
+                setTimeout(() => {
+                    this.onCancel = true;
+                    this.onCancelPharmacyProd = true;
+                }, 3000);
+            })
+
+        //this.handleRefreshButton();
+        //     this.showSaveCancel = false;
+        //     this.onCancelPharmacyProd = false;
+        //     this.onCancel = false;
+        //    // this.ClientDataRecord = Object.assign({}, this.ClientDataRecordBackup);
+        //     //this.Opplineitemrecords = Object.assign({}, this.oppLineItemsRecordsBackup);
+        //     setTimeout(() => {
+        //         this.onCancel = true;
+        //         this.onCancelPharmacyProd = true;
+        //     }, 300);
+        //      refreshApex(this.resultSoldchecklist)
+        //      .then(() => {
+        //         // this.soldCaseObjectData = { ...this.soldCaseObjectData };
+        //         // const child = this.template.querySelector('c-sold-case-clinical-program');
+        //         // if (child) {
+        //         //     child.refreshChildData();
+        //         // }
+        //      })
+        //     .catch(error => {
+        //         this.isLoad = true;
+        //         this.dispatchEvent(
+        //             new ShowToastEvent({
+        //                 title: 'Error refreshing data',
+        //                 message: error.body.message,
+        //                 variant: 'error'
+        //             })
+        //         );
+        //     });
+    }
+
+  @track showEmailModal = false;
+  @track emails = [];
+  selectedEmails = [];
+   handleEmailPopUp(){
+        this.showEmailModal = true;
+
+            getValidationEmails({ accId: this.ClientDataRecord.AccountId })
+                .then(result => {
+                    this.emails = result;
+                    this.selectedEmails = result.map(emailOption => emailOption.value);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+    }
+    closeModal() {
+        this.showEmailModal = false;
+    }
+
+    handleSelection(event) {
+        this.selectedEmails = event.detail.value;
+    }
+    sendReport() {
+        console.log('Selected emails:', this.selectedEmails);
+        if (!this.selectedEmails || this.selectedEmails.length === 0) {
+            this.showToast('Error', 'Please select at least one email', 'error');
+            return;
+        }
+        this.commonValidation(); 
+        this.closeModal(); 
+    }
+
+    async commonValidation() {
+        this.isLoad = false;
+        await this.disableEditButton();
+        await sendEmailWithPDF({ salesorIPM:this.SalesOrIPM,recordId: this.ClientDataRecord.Id, accountName: this.ClientDataRecord.Account.Name, oppName: this.ClientDataRecord.Name, effectiveDate: this.ClientDataRecord.EffectiveDate__c, selectedEmails: this.selectedEmails })
+            .then((results) => {
+                
+                const event = new ShowToastEvent({
+                    title: 'Success',
+                    message: 'Email has been sent Successfully',
+                    variant: 'success',
+                    mode: 'dismissable'
+                });
+                this.dispatchEvent(event);
+                // var now = new Date();
+                // let editfielddetails;
+                // this.generalProductDetails['Completed_by_Sales__c'] = true;
+                //  editfielddetails = [{ fieldedited: 'Completed_by_Sales__c', fieldvalue: true },
+                //  { fieldedited: 'Last_email_sent_by_sales__c', fieldvalue: now }];
+                // const ClientDetailRecord = new CustomEvent("progressvaluechange", {
+                //   detail: editfielddetails
+                // });
+
+                // this.dispatchEvent(ClientDetailRecord);
+                this.isLoad = true;
+            })
+            .catch((error) => {
+                console.log('sceValidation  error----> ' + JSON.stringify(error));
+                const event = new ShowToastEvent({
+                    variant: 'error',
+                    title: 'ERROR',
+                    message: 'Error while sending Email. Please contact your administrator',
+                });
+                this.dispatchEvent(event);
+                this.isLoad = true;
+            })
     }
 
     clientdataupdate(event) {
@@ -1455,6 +1562,30 @@ export default class SoldCheckMainComp extends LightningElement {
 
 
         eventdata.forEach(item => {
+           if (item.fieldedited === 'Completed_by_Sales__c') {
+                this.updatedBySales = item.fieldvalue === true;
+                this.SalesOrIPM ='Sales';
+            }
+            else if (
+                item.fieldedited === 'Last_email_sent_by_sales__c' &&
+                this.updatedBySales !== false 
+            ) {
+                this.updatedBySales = true;
+                this.SalesOrIPM ='Sales';
+            }
+
+             if (item.fieldedited === 'Completed_by_IPM__c') {
+                this.updatedByIPM = item.fieldvalue === true;
+                this.SalesOrIPM ='IPM';
+            }
+            else if (
+                item.fieldedited === 'Completed_by_IPM__c' &&
+                this.updatedByIPM !== false 
+            ) {
+                this.updatedByIPM = true;
+                this.SalesOrIPM ='IPM';
+            }
+
             if (item.fieldedited === 'Passport_Connect_with_Harvard_Pilgrim__c') {
                 if (item.fieldvalue === 'No') {
                     //Clearing out Harvard Pilgrim – Total Membership & Harvard Pilgrim – Employee Only When Passport_Connect_with_Harvard_Pilgrim__c is choosen as No.
@@ -1641,10 +1772,23 @@ export default class SoldCheckMainComp extends LightningElement {
  */
 
     handleRefreshButton() {
-        // Refresh just the wired data, not the whole page
+        // this.onCancelPharmacyProd = false;
+        // this.onCancel = false;
+        // this.ClientDataRecord = Object.assign({}, this.ClientDataRecordBackup);
+        // this.Opplineitemrecords = Object.assign({}, this.oppLineItemsRecordsBackup);
+        // setTimeout(() => {
+        //     this.onCancel = true;
+        //     this.onCancelPharmacyProd = true;
+        // }, 300);
         this.isLoad = false;
+         this.onCancel = false;
         refreshApex(this.resultSoldchecklist)
          .then(() => {
+            // this.soldCaseObjectData = { ...this.soldCaseObjectData };
+            // const child = this.template.querySelector('c-sold-case-clinical-program');
+            // if (child) {
+            //     child.refreshChildData();
+            // }
             this.isLoad = true;
             this.dispatchEvent(
                 new ShowToastEvent({
@@ -1653,6 +1797,10 @@ export default class SoldCheckMainComp extends LightningElement {
                     variant: 'success'
                 })
             );
+             setTimeout(() => {
+            this.onCancel = true;
+            this.onCancelPharmacyProd = true;
+        }, 3000);
             })
             .catch(error => {
                 this.isLoad = true;
@@ -1669,6 +1817,29 @@ export default class SoldCheckMainComp extends LightningElement {
         //     this.isLoad = true;
         // }, 3000);
 
+    }
+
+    handleSave(){
+        if(this.showCPWSection == true && this.updatedBySales == true){
+            this.SalesOrIPM ='Sales';
+            this.handleEmailPopUp(); 
+        }
+        else{
+            if(this.updatedByIPM || this.updatedBySales){
+               // this.SalesOrIPM = this.updatedByIPM ?'IPM':'Sales';
+               let listEmails = [];
+               listEmails.push(this.ClientDataRecord.Owner.Email);
+               listEmails.push(this.ClientDataRecord.CreatedBy.Email); 
+               if(this.soldCaseObjectData.IPM__r!=undefined)
+               listEmails.push(this.soldCaseObjectData.IPM__r.Email);
+
+                this.selectedEmails =listEmails;//['veera.nandimandalam@crmit.com'];
+                this.sendReport();
+            }
+            else
+            this.disableEditButton()
+        }
+       
     }
 
     async disableEditButton() {
@@ -1688,9 +1859,6 @@ export default class SoldCheckMainComp extends LightningElement {
 
         const validateGeneralComp = this.template.querySelector('c-sold-case-general-comp');
         let isAllGeneralInputsValid = validateGeneralComp.validateForm();
-
-        // const validateClinicalPrgmComp = this.template.querySelector('c-sold-case-clinical-program');
-        // let isAllClinicalPrgmInputsValid = validateClinicalPrgmComp.validateForm();
 
         //console.log('getupdateddata in main JS?????' + getupdateddata);
         if (isAllDetailInputsValid && isAllNetworkInputsValid && isAllGeneralInputsValid && isAllLineitemProductsInputsValid) {
@@ -1844,6 +2012,8 @@ export default class SoldCheckMainComp extends LightningElement {
             //console.log(`auditTrailListToInsert ${JSON.stringify(auditTrailListToInsert)}`)
 
             //--------- code added for SoldCase Audit Trail - end -----------
+
+        console.log(JSON.stringify(this.UpdatedClientDetialData));
             UpdateClientData({
                 Updateddata: this.UpdatedClientDetialData,
                 accupdate: this.AccountdetailData,
@@ -1853,6 +2023,8 @@ export default class SoldCheckMainComp extends LightningElement {
             })
                 .then(result => {
                     if (result) {
+                        this.updatedByIPM =false;
+                        this.updatedBySales =false;
                         //console.log('after update Result' + JSON.stringify(result));
                         refreshApex(this.resultSoldchecklist);
                         this.dispatchEvent(

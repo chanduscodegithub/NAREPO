@@ -1,0 +1,76 @@
+<template>
+
+    <template if:true={isLoading}>
+        <div class="overlay" style="position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;">
+            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+        </div>
+    </template>
+
+    <lightning-quick-action-panel header={accountName}>
+
+     <div class="slds-p-around_medium">
+
+    <div class="slds-grid slds-wrap slds-gutters">
+
+        <!-- Direct Marketing Stage -->
+        <div class="slds-col slds-size_1-of-2">
+            <lightning-combobox 
+                label="Direct Marketing Stage"
+                value={directMarketingStage}
+                options={stageOptions}
+                onchange={handleChange}
+                data-field="Direct_Marketing_Stage__c">
+            </lightning-combobox>
+        </div>
+
+        <!-- Company Tier -->
+        <div class="slds-col slds-size_1-of-2">
+            <lightning-combobox 
+                label="Company Tier (Medical)"
+                value={companyTier}
+                options={tierOptions}
+                onchange={handleChange}
+                data-field="Company_Tier_Medical__c">
+            </lightning-combobox>
+        </div>
+
+        <!-- Last Action Taken -->
+        <div class="slds-col slds-size_1-of-2">
+            <lightning-textarea 
+                label="Last Action Taken"
+                value={lastAction}
+                onchange={handleChange}
+                data-field="Last_Action_Taken__c">
+            </lightning-textarea>
+        </div>
+
+        <!-- Next Action -->
+        <div class="slds-col slds-size_1-of-2">
+            <lightning-textarea 
+                label="Next Action to be Taken"
+                value={nextAction}
+                onchange={handleChange}
+                data-field="Next_Action_to_be_Taken__c">
+            </lightning-textarea>
+        </div>
+
+    </div>
+
+</div>
+
+        <!-- Footer Buttons -->
+        <div class="slds-modal__footer">
+            <lightning-button variant="brand" label="Update" onclick={handleSave}></lightning-button>
+        </div>
+
+    </lightning-quick-action-panel>
+</template>

@@ -64,9 +64,9 @@ public with sharing class ClientSurveyCtrl {
         /*Datetime now = Datetime.now();
 Integer offset = UserInfo.getTimezone().getOffset(now);
 Datetime local = now.addSeconds(offset/1000);*/
-      accDetails.SCE_Validation_DateTime__c =datetime.now();
-         SceCMValidation.updatingServiceAMTFields(accDetails.Id,accDetails.SCE_Validation_DateTime__c);
-        SceCMValidation.updatingNATeamMemberFields(accDetails.Id,accDetails.SCE_Validation_DateTime__c);
+        accDetails.SCE_Validation_DateTime__c =datetime.now();
+        SceCMValidation.updatingServiceAMTFields(accDetails.Id,accDetails.SCE_Validation_DateTime__c);  //Added Vignesh CR - 3847
+        SceCMValidation.updatingNATeamMemberFields(accDetails.Id,accDetails.SCE_Validation_DateTime__c); //Added Vignesh CR - 3847
         //SceCMValidation.saveSCEValidation(accDetails);
         //update accDetails;
         account returnAcc =SceCMValidation.saveSCEValidation(accDetails);
@@ -168,13 +168,16 @@ Datetime local = now.addSeconds(offset/1000);*/
                 Boolean isclientManagersCheck = false;
                 Boolean issurestClientManagersCheck = false;
                 Boolean isspecialtyClientManagersCheck = false;
+                Boolean isumrClientManagersCheck = false; //Added Vignesh - 18/08/25
                 Boolean isCMLoggedin =false;
                 Boolean isSBCMLoggedin =false;
                 Boolean isSCMLoggedin =false;
+                Boolean isUMRLoggedin = false;
                 
                 List<Account> accountsWithAMT = [ SELECT Id, Name,(SELECT Id, Contact_Role__c, Primary__c, First_Name__c, Last_Name__c, Case_Management_End_Date__c, Email__c,Case_Management_Start_Date__c
                     FROM Service_AMT__r WHERE company__c = :accId AND ((Case_Management_End_Date__c = null OR Case_Management_End_Date__c >= TODAY) AND Case_Management_Start_Date__c <= TODAY)) FROM Account WHERE Id = :accId WITH USER_MODE];
-                               
+                system.debug('accountsWithAMT>>'+ accountsWithAMT.size());
+                system.debug('accountsWithAMT11>>'+ accountsWithAMT);
                 
                 if (!accountsWithAMT.isEmpty()) {
                     for (Service_AMT__c record : accountsWithAMT[0].Service_AMT__r) {
@@ -183,22 +186,30 @@ Datetime local = now.addSeconds(offset/1000);*/
                         if (role == 'Client Manager') {
                             wrapper.clientManagers.add(record);
                             isclientManagersCheck = true;
-                            if(record.Email__c==currentUserEmail){
+                            if(String.isNotBlank(record.Email__c) && currentUserEmail.contains(record.Email__c)){
                                 isCMLoggedin =true;
                             }
                             
                         } else if (role == 'Surest Client Manager') {
                             wrapper.surestClientManagers.add(record);
                             issurestClientManagersCheck = true;
-                            if(record.Email__c==currentUserEmail){
+                            if(String.isNotBlank(record.Email__c) && currentUserEmail.contains(record.Email__c)){
                                 isSCMLoggedin =true;
+                            }
+                        }
+                        
+                        else if (role == 'UMR Client Manager') {   //Added Vignesh - 18/08/25
+                            wrapper.umrClientManagers.add(record);
+                            isumrClientManagersCheck = true;
+                            if(String.isNotBlank(record.Email__c) && currentUserEmail.contains(record.Email__c)){
+                                isUMRLoggedin =true;
                             }
                         }
                         
                         else if (role == 'Specialty Benefits Client Manager') {
                             wrapper.specialtyClientManagers.add(record);
                             isspecialtyClientManagersCheck = true;
-                            if(record.Email__c==currentUserEmail){
+                            if(String.isNotBlank(record.Email__c) && currentUserEmail.contains(record.Email__c)){
                                 isSBCMLoggedin =true;
                             }
                         }
@@ -210,11 +221,13 @@ Datetime local = now.addSeconds(offset/1000);*/
                     workitem.isCMLoggedin = isCMLoggedin;
                     workitem.isSBCMLoggedin = isSBCMLoggedin;
                     workitem.isSCMLoggedin = isSCMLoggedin;
+                    workitem.isUMRLoggedin = isUMRLoggedin;//Added Vignesh - 18/08/25
                     workitem.isclientManagersCheck = isclientManagersCheck;
                     workitem.isspecialtyClientManagersCheck = isspecialtyClientManagersCheck;
                     workitem.issurestClientManagersCheck = issurestClientManagersCheck;
-                }
-            
+                    workitem.isumrClientManagersCheck = isumrClientManagersCheck;  //Added Vignesh - 18/08/25
+                }           
+                
                 //Added Vignesh - 25/06/25 CS 2026
                 Boolean iscmsceCheck = false;
                 Boolean issurestCmsceCheck = false;
@@ -263,7 +276,7 @@ Datetime local = now.addSeconds(offset/1000);*/
                     workitem.iscmsceCheck = iscmsceCheck;
                     workitem.isspecialtybenefitsSceCheck = isspecialtybenefitsSceCheck;
                     workitem.issurestCmsceCheck = issurestCmsceCheck;
-                } 
+                }
                 
             } 
             
@@ -712,8 +725,6 @@ Datetime local = now.addSeconds(offset/1000);*/
     /** ****SHRUTI****END**** **/
     
     
-    
-    
     //Added Vignesh CR - 3847
     public class AMTRoleWrapper {
         @AuraEnabled 
@@ -722,10 +733,15 @@ Datetime local = now.addSeconds(offset/1000);*/
         public List<Service_AMT__c> surestClientManagers { get; set; }
         @AuraEnabled 
         public List<Service_AMT__c> specialtyClientManagers { get; set; }
+        
+        @AuraEnabled   //Added Vignesh - 18/08/25
+        public List<Service_AMT__c> umrClientManagers { get; set; }
+        
         public AMTRoleWrapper() {
             clientManagers = new List<Service_AMT__c>();
             specialtyClientManagers = new List<Service_AMT__c>();
             surestClientManagers = new List<Service_AMT__c>();
+            umrClientManagers = new List<Service_AMT__c>();  //Added Vignesh - 18/08/25
             
             cmSce = new List<CM_Account_Team_History__c>();
             surestCmSce = new List<CM_Account_Team_History__c>();
@@ -738,14 +754,12 @@ Datetime local = now.addSeconds(offset/1000);*/
         @AuraEnabled 
         public Boolean isspecialtyClientManagersCheck { get; set; }
         
-        
         @AuraEnabled 
         public Boolean iscmsceCheck { get; set; }
         @AuraEnabled 
         public Boolean issurestCmsceCheck { get; set; }
         @AuraEnabled 
-        public Boolean isspecialtybenefitsSceCheck { get; set; }
-        
+        public Boolean isspecialtybenefitsSceCheck { get; set; }        
         @AuraEnabled 
         public List<CM_Account_Team_History__c> cmSce { get; set; }
         @AuraEnabled 
@@ -821,15 +835,18 @@ Datetime local = now.addSeconds(offset/1000);*/
         public Boolean issurestClientManagersCheck { get; set; }
         @AuraEnabled 
         public Boolean isspecialtyClientManagersCheck { get; set; }
+        @AuraEnabled 
+        public Boolean isumrClientManagersCheck { get; set; }   //Added Vignesh - 18/08/25
         
-         @AuraEnabled 
+        @AuraEnabled 
         public Boolean isCMLoggedin { get; set; }       
         @AuraEnabled 
         public Boolean isSBCMLoggedin { get; set; }
         @AuraEnabled 
         public Boolean isSCMLoggedin { get; set; }
-        
-        
+        @AuraEnabled 
+        public Boolean isUMRLoggedin { get; set; }  
+
         @AuraEnabled 
         public Boolean isCmsceLoggedin { get; set; }       
         @AuraEnabled 
@@ -844,6 +861,7 @@ Datetime local = now.addSeconds(offset/1000);*/
         @AuraEnabled 
         public Boolean isspecialtybenefitsSceCheck { get; set; }
        
+        
     }
     
     public class contactsAndRecordTypeId {

@@ -47,16 +47,25 @@ trigger MA_MATeamRecreationFieldUpdate on Opportunity (after update,after insert
     }
     
     if(Trigger.isBefore && Trigger.isInsert){
+            //OpportunityTriggerHandler.setSurestFlag(Trigger.new,null);
+
         //OpportunityTriggerHandler.populateSalesDebriefOnInsert(Trigger.New);
     }
     
     if(Trigger.isBefore && Trigger.isUpdate){
         OpportunityTriggerHandler.populateSalesDebriefOnBeforeUpdate(Trigger.New, Trigger.oldMap);
-        OpportunityTriggerHandler.validateOpp(Trigger.new, Trigger.oldMap);
+    //OpportunityTriggerHandler.setSurestFlag(Trigger.new, Trigger.oldMap);
+
+        //OpportunityTriggerHandler.validateOpp(Trigger.new, Trigger.oldMap);
+        
     }
     
     if (Trigger.isAfter && Trigger.isUpdate) {
         OpportunityTriggerHandler.afterUpdate(Trigger.new, Trigger.oldMap);
+    }
+    
+     if(Trigger.isBefore){
+        ProactiveRenewalService.process(Trigger.new, Trigger.oldMap);
     }
     
     /*if(Trigger.isAfter && Trigger.isUpdate){

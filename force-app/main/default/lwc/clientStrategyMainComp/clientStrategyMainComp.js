@@ -219,7 +219,7 @@ export default class ClientStrategyMainComp extends LightningElement {
                 else if (quest.Type__c == 'Textbox') {
                     quest.isTextField = true;
                 }
-                else if (quest.Type__c == 'SmallText') { //22/09
+                else if (quest.Type__c == 'SmallText') {  //22/09
                     quest.isSmallTextField = true;
                 }
                 else if (quest.Type__c == 'Percentage') {
@@ -234,9 +234,9 @@ export default class ClientStrategyMainComp extends LightningElement {
                 //For populating field value in UI - Iterating actual data list
                     if (this.questionAndAnswerRecords != null && this.questionAndAnswerRecords != undefined) {
                         Object.keys(this.questionAndAnswerRecords).forEach((fieldApi) => {
-                            if (fieldApi == 'Important_Features_Write_In__c') {
+                         /*   if (fieldApi == 'Important_Features_Write_In__c') {
                                 this.importantfeatureCompWriteIn = this.questionAndAnswerRecords[fieldApi];
-                            }
+                            }  */ //25/09
                             if (fieldApi == 'GLP_1_Reqs_Write_In__c') {
                                 this.glp1ObesityCompWriteIn = this.questionAndAnswerRecords[fieldApi];
                             }
@@ -253,7 +253,7 @@ export default class ClientStrategyMainComp extends LightningElement {
                                 this.valueStorySuppCompWriteIn = this.questionAndAnswerRecords[fieldApi];
                             }
 
-                            if (quest.Api__c == fieldApi) { //22/09
+                            if (quest.Api__c == fieldApi) {
                                 if (quest.isPicklistField || quest.isTextField || quest.isSmallTextField || quest.isPercentageField) {
                                     quest.recordValue = this.questionAndAnswerRecords[fieldApi];
                                    // console.log('quest.recordValuecurrecy>>'+quest.recordValue);
@@ -592,12 +592,12 @@ export default class ClientStrategyMainComp extends LightningElement {
                 this.questionAndAnswerData.forEach((quest, index) => {
                     let tempString = '';
 
-                    if (quest.Api__c == 'Important_Network_features__c') {
+                 /*   if (quest.Api__c == 'Important_Network_features__c') {
                         if (quest.recordValue != null && quest.recordValue != undefined) {
                             this.importantfeatureCompValue = quest.recordValue;
                             this.importantfeatureCompwriteInValue = (quest.writeInValue) ? ` - ${quest.writeInValue}` : '';
                         }
-                    }
+                    }  */  //25/09
 
                     if (quest.Api__c == 'GLP_1_obesity_management_reqs__c') {
                         if (quest.recordValue != null && quest.recordValue != undefined) {
@@ -788,13 +788,26 @@ export default class ClientStrategyMainComp extends LightningElement {
             .then(result => {
                 console.log('result11',JSON.stringify(this.result));
                 if (result && result.length > 0) {
-                    const startMonth = result[0].Start_Month__c;
+                 /*   const startMonth = result[0].Start_Month__c;
                     const endMonth   = result[0].End_Month__c;
 
                     let strategyYear;
                     if (currentMonth >= startMonth && currentMonth <= endMonth) {
                         strategyYear = currentYear + 1;
                     } else {
+                        strategyYear = currentYear;
+                    }  */
+
+                    //26/09
+                    const startDateStr = result[0].Start_Date__c; 
+                    const startDate = new Date(startDateStr);
+
+                    let strategyYear;
+                    if (today >= startDate) {
+                        // If today is on/after the start date → roll forward
+                        strategyYear = currentYear + 1;
+                    } else {
+                        // Otherwise keep current year
                         strategyYear = currentYear;
                     }
 
@@ -961,22 +974,29 @@ handleModalConfirm() {
 
    //unanswered question ui highlighted
     highlightUnansweredFields() {
+        
+        
         let listOfValueFacttor =['How important are the following factors when this client assesses the overall value of UnitedHealthcare?','Affordability_programs__c', 'Behavioral_health_programs__c', 'Client_experience_and_support__c', 'Clinical_management_programs__c',
     'Data_analysis_and_reporting__c', 'Fees_and_credits__c', 'Guarantees__c', 'Integration_across_programs__c', 'Member_experience_and_engagement__c', 'Network_design__c', 'Network_discounts__c',
     'Pharmacy_programs__c', 'Plan_design__c', 'Wellness_programs__c', 'Network_Access__c', 'Brand_Image__c', 'Innovation__c', 'Product_breadth__c', 'Administrative_capabilities__c', 'ESG_Issues__c'];
 
-        let benefitDesignandCostShare = ['Benefit Design & Cost Share Strategies', 'CDHP_full_replacement__c', 'Voluntary_benefits__c', 'Value_based_benefits__c', 'Quality_Cost_tiering__c', 'POS_tiering__c', 'Reference_based_pricing__c', 'Intermittent_workforce__c',
-    'Employee_affordability__c', 'Co_Pay_insurance__c', 'ICHRA_plan__c']
+    let benefitDesignandCostShare = ['Benefit Design & Cost Share Strategies - Group 1', 'CDHP_full_replacement__c', 'Voluntary_benefits__c', 'Value_based_benefits__c', 'Quality_Cost_tiering__c', 'POS_tiering__c', 'Reference_based_pricing__c'] //22/09
+
+    let benefitDesignandCostShareGroup2 = ['Benefit Design & Cost Share Strategies - Group 2', 'Intermittent_workforce__c', 'Employee_affordability__c', 'Co_Pay_insurance__c', 'ICHRA_plan__c'] //22/09
 
     let networkDesignStrag = ['Network Design Strategies', 'Virtual_First_Solution__c', 'Traditional_PCP_Coordinated_Care__c', 'Site_of_Care_Steerage__c', 'Direct_Contracting_with_a_Provider__c', 
     'Advanced_Primary_Care_Strategy__c', 'Streamlined_Narrow_Networks__c', 'ACO_Centric_Networks__c', 'Prioritized_Access__c']
 
-    let clinicalWellbeingStrag = ['Clinical, Wellbeing & Engagement Strategies', 'Healthy_workplace__c',
-    'On_site_near_site_clinics__c', 'Onsite_health_specialist__c', 'Cancer_Screening_and_Support_Programs__c', 'Medication_assisted_weight_loss__c', 'Women_s_health_solutions__c', 'Concierge_advocacy__c',
-    'Tools_technologies__c', 'Engagement_Platform_Adoption__c', 'Digital_condition_mgmt__c', 'Diversity_equity_and_inclusion__c', 'LGBTQ_support__c', 'Social_Determinants_of_Health__c', 'Health_Equity__c']
+    let clinicalWellbeingStrag = ['Clinical, Wellbeing & Engagement Strategies - Group 1', 'Healthy_workplace__c', 'On_site_near_site_clinics__c', 'Onsite_health_specialist__c', 'Cancer_Screening_and_Support_Programs__c', 'Medication_assisted_weight_loss__c', 'Women_s_health_solutions__c'] //22/09
 
-    let pharmacyStrag = ['Pharmacy Strategies', 'Preventive_drug_lists__c', 'Prescription_savings_outreach__c', 'Point_of_Sale_Rebates__c', 'Critical_affordability_drug_lists__c', 
-    'Cash_price_into_member_benefit__c', 'Affordability_solutions__c', 'Stop_loss_cover_for_high_cost_therapy__c', 'Transparent_non_traditional_PBM__c', 'Biosimilar_steerage__c', 'Specialty_Pharmacy_carve_out__c']
+    let clinicalWellbeingStragGroup2 = ['Clinical, Wellbeing & Engagement Strategies - Group 2', 'Concierge_advocacy__c', 'Tools_technologies__c', 'Engagement_Platform_Adoption__c', 'Digital_condition_mgmt__c'] //22/09
+
+    let clinicalWellbeingStragGroup3 = ['Clinical, Wellbeing & Engagement Strategies - Group 3', 'Diversity_equity_and_inclusion__c', 'LGBTQ_support__c', 'Social_Determinants_of_Health__c', 'Health_Equity__c'] //22/09
+
+
+    let pharmacyStrag = ['Pharmacy Strategies - Group 1', 'Preventive_drug_lists__c', 'Prescription_savings_outreach__c', 'Point_of_Sale_Rebates__c', 'Critical_affordability_drug_lists__c', 'Cash_price_into_member_benefit__c'] //22/09
+
+    let pharmacyStragGroup2 = ['Pharmacy Strategies - Group 2', 'Affordability_solutions__c', 'Stop_loss_cover_for_high_cost_therapy__c', 'Transparent_non_traditional_PBM__c', 'Biosimilar_steerage__c', 'Specialty_Pharmacy_carve_out__c']  //22/09
 
     let pharmacyElementRx = ['How important are the following pharmacy elements to the client when evaluating the Rx solution?', 'Integrated_plan_administration__c', 'Member_experience_integration__c', 'Member_savings_opportunities__c', 'Integrated_benefits_provider__c', 'Integrated_Med_Pharmacy_digital__c', 'Electronic_prescribing_integration__c', 
     'Integrated_specialty_management__c', 'Specialty_pharmacy_network_solution__c']
@@ -1022,6 +1042,14 @@ handleModalConfirm() {
                 }
                 }
 
+                if(benefitDesignandCostShareGroup2.includes(field)){  //22/09
+                const questionEl = this.template.querySelector(`[data-question-api="${benefitDesignandCostShareGroup2[0]}"]`);
+                if (questionEl) {
+                    questionEl.classList.add("highlight-question");
+                }
+                }
+
+
                 if(networkDesignStrag.includes(field)){
                 const questionEl = this.template.querySelector(`[data-question-api="${networkDesignStrag[0]}"]`);
                 if (questionEl) {
@@ -1036,8 +1064,29 @@ handleModalConfirm() {
                 }
                 }
 
+                if(clinicalWellbeingStragGroup2.includes(field)){  //22/09
+                const questionEl = this.template.querySelector(`[data-question-api="${clinicalWellbeingStragGroup2[0]}"]`);
+                if (questionEl) {
+                    questionEl.classList.add("highlight-question");
+                }
+                }
+
+                if(clinicalWellbeingStragGroup3.includes(field)){  //22/09
+                const questionEl = this.template.querySelector(`[data-question-api="${clinicalWellbeingStragGroup3[0]}"]`);
+                if (questionEl) {
+                    questionEl.classList.add("highlight-question");
+                }
+                }
+
                 if(pharmacyStrag.includes(field)){
                 const questionEl = this.template.querySelector(`[data-question-api="${pharmacyStrag[0]}"]`);
+                if (questionEl) {
+                    questionEl.classList.add("highlight-question");
+                }
+                }
+
+                if(pharmacyStragGroup2.includes(field)){  //22/09
+                const questionEl = this.template.querySelector(`[data-question-api="${pharmacyStragGroup2[0]}"]`);
                 if (questionEl) {
                     questionEl.classList.add("highlight-question");
                 }
@@ -1067,6 +1116,7 @@ handleModalConfirm() {
                 if(measurementStrag.includes(field)){
                 const questionEl = this.template.querySelector(`[data-question-api="${measurementStrag[0]}"]`);
                 if (questionEl) {
+                    console.log('ifnside');
                     questionEl.classList.add("highlight-question");
                 }
                 }
@@ -1079,9 +1129,11 @@ handleModalConfirm() {
                 }
 
                 if(incentiveAmount.includes(field)){
+                    console.log('ammountind>>',JSON.stringify(incentiveAmount));
                 const questionEl = this.template.querySelector(`[data-question-api="${incentiveAmount[0]}"]`);
+                
                 if (questionEl) {
-                    
+                    console.log('ifnside1111');
                     questionEl.classList.add("highlight-question");
                   //  questionEl.setCustomValidity("This Field is Mandatory");
                   //  questionEl.reportValidity();
@@ -1192,7 +1244,7 @@ handleModalConfirm() {
         if (event.target.dataset.labelval == 'Write In') {
             this.questionAndAnswerRecords[event.target.dataset.writein] = event.target.value;
 
-            if (event.target.dataset.writein == 'Important_Features_Write_In__c') {
+          /*  if (event.target.dataset.writein == 'Important_Features_Write_In__c') {
                 if (event.target.value != null && event.target.value != undefined && event.target.value != '') {
                     this.importantfeatureCompwriteInValue = (event.target.value) ? ` - ${event.target.value}` : '';
                 }
@@ -1200,7 +1252,7 @@ handleModalConfirm() {
                     this.importantfeatureCompwriteInValue = '';
                 }
                 //this.medTopCompwriteInValue = event.target.value;
-            }
+            }   */  //25/09
 
              if (event.target.dataset.writein == 'GLP_1_Reqs_Write_In__c') {
                 if (event.target.value != null && event.target.value != undefined && event.target.value != '') {
@@ -1273,17 +1325,18 @@ handleModalConfirm() {
      
             //Added for Depends question data remove
             if (quest.Api__c == event.target.dataset.api && quest.Type__c != 'Textbox') {
-                if ((currentValue == 'For treatment of obesity' || currentValue == 'Yes') && (quest.Write_In__c != null && quest.Write_In__c != '' && quest.Write_In__c != undefined)) {
+                if (((currentValue && currentValue.includes('For treatment of obesity')) || currentValue === 'Yes') && (quest.Write_In__c != null && quest.Write_In__c != '' && quest.Write_In__c != undefined)) {
                     
                 }
                 else {
                     this.questionAndAnswerRecords[quest.Write_In__c] = ''; //Clear Write In value in backend 
                 }
             }
-            console.log('apic>>',event.target.dataset.api )
+
+            //Added for Clearing Depends question data
             if (quest.Api__c == event.target.dataset.api && quest.Type__c != 'Textbox') {
                if (currentValue == 'No' && quest.Api__c == 'Wellness_program_offered__c') {
-                    let fieldsToClear = [ 'Program_administrator_vendor__c', 'Wellness_program_duration__c', 'Wellness_program_offered_to__c',
+                    const fieldsToClear = [ 'Program_administrator_vendor__c', 'Wellness_program_duration__c', 'Wellness_program_offered_to__c',
                 'Participation_in_wellness_program__c', 'Non_UHC_Optum_wellness_reasons__c', 'Max_annual_employee_reward__c', 'Max_annual_spouse_partner_reward__c',
                 'How_are_Rewards_distributed__c', 'Other_reward_distribution_method__c','Earned_Full_Incentive__c','Earned_Partial_Incentive__c', 'Did_Not_Earn_Incentive__c'
             ];
@@ -1295,6 +1348,7 @@ handleModalConfirm() {
 
                 } 
             }
+
 
             let flag123 = false;
             if (quest.Write_In__c != null && quest.Write_In__c != undefined) {
@@ -1362,7 +1416,7 @@ handleModalConfirm() {
     }
 
     //display the sub-section in ui
-    renderedCallback(){  //22/09
+   renderedCallback(){  //22/09
         if (!this.isLoad) {
 
             if (this.questionAndAnswerData != null && this.questionAndAnswerData != undefined) {
@@ -1397,8 +1451,8 @@ handleModalConfirm() {
                     }
                 }
 
-
-               else if (quest.Api__c === 'Client_attitude_on_engagement__c') {
+               //25/09
+               else if (quest.Api__c === 'Communication_resource_available__c') {
                     let tempString = `Communication Strategies`;
                     //firstClass.innerHTML = tempString;
                     if (firstClass) {
@@ -1423,16 +1477,17 @@ handleModalConfirm() {
                         this.printDataList[index].otherContent = tempString;
                     }
                 }
-
+               //25/09
                else if (quest.Api__c === 'Competitive_landscape_updated__c') {
-                    let tempString = `Competitive Landscape`;
+                    let tempString = `Update Competitive Landscape Section in Merit`;
                     //firstClass.innerHTML = tempString;
                     if (firstClass) {
                         firstClass.innerHTML = tempString;
                     }
-                    let noteString = `<br/><span style="font-size:12px; color:#666;">As part of this documentation project, please review and update the “Competitive Landscape” sections in the “Details” tab of the account record to be sure the correct medical, specialty and other product vendors are displayed.</span>`;
-
+                    let noteString = `<br/><span style="font-size:12px; color:#666;">As part of this documentation, please review and update the “Competitive Landscape” sections in Merit. To locate, click on the “Details” tab of this account record in Merit.  Then, be sure the correct medical, specialty and other product vendors/carriers are displayed. Update as needed.</span>`;
+                    if (firstClass) {
                     firstClass.innerHTML = tempString + noteString;
+                    }
                     if (this.printDataList.length > 0 && this.printDataList.length != null && this.printDataList.length != undefined
                         && this.printDataList[index] != null && this.printDataList[index] != undefined) {
                         this.printDataList[index].otherContent = tempString;   // + " - Note: Keep this updated quarterly";

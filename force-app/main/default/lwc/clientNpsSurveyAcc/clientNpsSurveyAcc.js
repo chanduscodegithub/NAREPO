@@ -525,7 +525,7 @@ export default class ClientNpsSurveyChild extends NavigationMixin(LightningEleme
                 //this.deleteMsgContent = 'To remove the contact from the Client Survey but to keep the contact record as active, click on the “Remove from the Survey” button. If the contact is no longer active and needs to be removed both from the survey and inactivated on the company record, click on the “Remove from the Survey and Inactivate” button.';
                 this.recordTobeDeleted = eventData;
                 //Added Vignesh - CR 3847 Error Msg
-                this.sceDeleteMsg = `SCEs: Do not remove survey contacts provided by other business partners  `;
+                this.sceDeleteMsg = `SCEs: Do not remove survey contacts provided by other business partners,- `;
                 this.sceDeleteMsg1 =' unless mutually agreed upon by the specific partner that nominated the contact for the Client Survey. '
                 this.deleteMsgContent = 'To remove the contact from the Client Survey but to keep the contact record as active, click on the “Remove from the Survey” button. If the contact is no longer active and needs to be removed both from the survey and inactivated on the company record, click on the “Remove from the Survey and Inactivate” button.'
               

@@ -12,6 +12,7 @@ import sdFutureYear from '@salesforce/label/c.Sales_Debrief_Future_Year';
 import sdNotConfigured from '@salesforce/label/c.Sales_Debrief_Not_Configured';
 
 import { checkForAdvocacySolutionsAgainstUMR } from './helper';
+
 /****************Shruti*******************Start*/
 import sdOverridePicklistNoneCD from '@salesforce/label/c.Sales_Debrief_Override_None_For_CD';
 import sdOverridePicklistNoneCM from '@salesforce/label/c.Sales_Debrief_Override_None_For_CM';
@@ -114,9 +115,6 @@ export default class salesDebriefComp extends LightningElement {
     isSpecialtyProductsPresent = false;
     // isSpecialtyProductsPresentWithDisposition = false;
     salesDebriefType;
-//Added
-    hasUnsavedChanges = false;
-
 
     isPharmacyOpportunityPresent;
     pharmacySalesDebriefValue;
@@ -144,9 +142,8 @@ export default class salesDebriefComp extends LightningElement {
     /****************Shruti*******************End*/
 
     connectedCallback() {
-        this.getSalesDebriefRecords();  
+        this.getSalesDebriefRecords();
     }
-
 
     /*Data is returned from apex. 
     It is manipulated into properly structured JSON 
@@ -227,7 +224,7 @@ export default class salesDebriefComp extends LightningElement {
                     this.areQuestionsConfigured = false;
                 }
 
-                this.validUserRole = this.dataFromApex.validUserRole;
+                this.validUserRole = (this.dataFromApex.validUserRole!=undefined || this.dataFromApex.validUserRole != null)? this.dataFromApex.validUserRole:false;
                 this.salesDebriefPicklistValue = this.opportunityData.Sales_Debrief__c; //checkbox value calculated in flow
 
                 if (this.salesDebriefPicklistValue == 'N/A' || !this.areQuestionsConfigured || !this.validUserRole || this.salesDebriefPicklistValue == null || this.salesDebriefPicklistValue == undefined || this.salesDebriefPicklistValue == '') {
@@ -289,7 +286,7 @@ export default class salesDebriefComp extends LightningElement {
                         }
                     }
 
-                    else if (parseInt(this.effectiveDateYear) > parseInt(this.currentYear)) {
+                    else if (parseInt(this.effectiveDateYear) >= parseInt(this.currentYear)) {
                         //future year
                         setTimeout(() => {
                             this.template.querySelector('.alternateMessageClass span').innerHTML = '';
@@ -678,7 +675,11 @@ export default class salesDebriefComp extends LightningElement {
 
                                     //Altering labels of table component questions
                                     if (quest.Question__c == 'In the end, how competitive were we in each of the following areas based on the carrier listed above? Answer this question based on consultant or direct client perception.') {
+                                        if(lab == 'Competitive Financial guarantees'){
+                                            alteredLabel = 'Financial guarantees (e.g., trend or discount)'; 
+                                        }else{
                                         alteredLabel = lab.replace('Competitive ', '');
+                                    }
                                     }
                                     else if (quest.Question__c == "What best describes the consultant's presentation of our content to the employer in the following areas?") {
                                         alteredLabel = lab.replace('Consultant ', '');
@@ -1172,6 +1173,9 @@ export default class salesDebriefComp extends LightningElement {
                             Object.keys(this.questionAndAnswerRecords).forEach((rec) => {
                                 if (apiFieldSet.includes(rec)) {
                                     let labelVal = Object.keys(this.labelVsApiMap).find(key => this.labelVsApiMap[key] === rec);
+                                    if (labelVal === 'Competitive Financial guarantees') {
+                                        labelVal = 'Competitive Financial guarantees (e.g., trend or discount)';
+                                    }
                                     let tempString2 = `<b>${labelVal} -</b> ${this.questionAndAnswerRecords[rec]}<br/>`;
                                     tempArrayofObjects2.push({
                                         'api': rec,
@@ -1304,17 +1308,27 @@ export default class salesDebriefComp extends LightningElement {
             question.recordValue = '';
         }
 
-        if ((question.Api__c == 'Relationship_with_employer_before_RFP__c' || question.Api__c == 'Consultant_meeting_RFP__c' || question.Api__c == 'Medical_SVPs_engagement_before_RFP__c')
-            && this.oppRecType != 'CD') {
+         if (question.Api__c == 'Medical_SVPs_engagement_before_RFP__c' && this.oppRecType != 'CD') {
             question.renderThisQuestion = false;
             question.recordValue = '';
 
-            if (this.questionAndAnswerRecords != null && this.questionAndAnswerRecords != undefined) {
-                this.questionAndAnswerRecords[question.Api__c] = '';
+        }
+
+        if (question.Api__c == 'Consultant_meeting_RFP__c' || question.Api__c == 'Relationship_with_employer_before_RFP__c') {
+            if( this.oppRecType == 'CD'|| this.salesDebriefPicklistValue == 'Specialty Only') {
+                question.renderThisQuestion = true;
+            }
+            else{
+                question.renderThisQuestion = false;
+                question.recordValue = '';
+
+                if (this.questionAndAnswerRecords != null && this.questionAndAnswerRecords != undefined) {
+                    this.questionAndAnswerRecords[question.Api__c] = '';
+                }
             }
         }
 
-        if (question.Api__c == 'Consultant_meeting_RFP__c' && this.oppRecType == 'CD') {
+        if (question.Api__c == 'Consultant_meeting_RFP__c') {
             if (['Direct, Target Marketing', 'UHC - Direct, No Consultant'].includes(this.opportunityData?.Primary_Consulting_Firm__r?.Name)) {
                 question.renderThisQuestion = false;
             }
@@ -1354,7 +1368,8 @@ export default class salesDebriefComp extends LightningElement {
                 }
             }
             if (question.Api__c === 'Surest_Interest__c' || question.Api__c === 'Surest_Value_Proposition_Presented__c' || question.Api__c === 'Surest_outcome_tied_to_the_UHC_Medical__c' || question.Api__c === 'Non_traditional_health_plans_evaluated__c' || question.Api__c === 'Surest_Network_Discount_Position_Impact__c') {
-                if ((strategy === '2 - Level 2, Complete Financial Proposal' || strategy === '3a - Level 3a, Financial Proposal and Full Questionnaire' || strategy === '3b - Level 3b, Financial Proposal and Full Questionnaire with UHC and/or UMR') || salesDebriefRecord['Financial_Offer_for_Surest__c'] == 'Yes') {
+                if ((strategy === '2 - Level 2, Complete Financial Proposal' || strategy === '3a - Level 3a, Financial Proposal and Full Questionnaire' || strategy === '3b - Level 3b, Financial Proposal and Full Questionnaire with UHC and/or UMR') || 
+                     strategy === '4 - Level 4 - Traditional (UHC/UMR) RFP with Surest - add Surest competitive differentiators only' || strategy === '5 - Level 5 - Traditional (UHC/UMR) RFP with Surest - answer where Surest platform varies from traditiona' || salesDebriefRecord['Financial_Offer_for_Surest__c'] == 'Yes') {
                     question.renderThisQuestion = true;
                 }
                 else {
@@ -1480,12 +1495,14 @@ export default class salesDebriefComp extends LightningElement {
                 
         }
     }
-
+isSurestDouble =false;
     surestInfo(question, index) {
+        
         if (question.Year__c > this.YEAR) {
             let firstClass = this.template.querySelector(`[data-apiclass="${question.Question__c}"]`);
             if (firstClass != null && firstClass != undefined) {
                 if (question.Section_Name__c == 'Surest Questions' && this.hasSurest && question.displaySection) {
+                    this.isSurestDouble =true;
                     let tempString = '';
                    // tempString += `<b>Surest Strategy</b> - ${this.surestStrategy} <br/> <b>Surest Stage</b> - ${this.surestStage} <br/> <b>Surest - Offer Strategy</b> - ${this.surestOfferStrategy}`;
                    tempString += `<b>Surest Strategy</b> - ${this.surestStrategy} <br/>`;
@@ -1510,6 +1527,7 @@ export default class salesDebriefComp extends LightningElement {
                 if (question.Api__c == 'Other_factors_impacting_Surest_Deal__c') {
                     let tempString = '';
                     if(this.surestStrategy == '0 - N/A, No Surest response provided' || this.surestStrategy == '4 - Level 4 - Traditional (UHC/UMR) RFP with Surest - add Surest competitive differentiators only' || this.surestStrategy == '5 - Level 5 - Traditional (UHC/UMR) RFP with Surest - answer where Surest platform varies from traditional' || this.surestStrategy == '6 - Level 6, Surest already in place'){
+                        if(!this.isSurestDouble){
                         tempString += `<b>Surest Strategy</b> - ${this.surestStrategy} <br/>`;
                         if (!this.surestStrategy && this.surestStage) {
                             tempString += `<span style="color: red;">Action required</span>: Complete the Surest strategy in the Membership Activity Details tab. <br/>`;
@@ -1521,6 +1539,10 @@ export default class salesDebriefComp extends LightningElement {
                             tempString += `<span style="color: red;">Action required</span>: Complete the Surest stage in the Membership Activity Details tab. <br/>`;
                         }    
                         tempString += `<b>Surest - Offer Strategy</b> - ${this.surestOfferStrategy} <br/> <b>Closed Reason #1 (Surest) </b> - ${this.surestClosedReason}`;
+                        }
+                        else{
+                            tempString = ` <b>Closed Reason #1 (Surest) </b> - ${this.surestClosedReason}`;
+                        }
                     }
                     else{
                         tempString = `<b>Closed Reason #1 (Surest) </b> - ${this.surestClosedReason}`;
@@ -1675,7 +1697,7 @@ export default class salesDebriefComp extends LightningElement {
     }
 
     displayQuad4Section(question){
-        if (question.Section_Name__c == 'Quad4' && this.oppRecType == 'CD' && this.hasQuad4) {
+        if (question.Section_Name__c == 'Quad4' && this.hasQuad4) {
             question.renderThisQuestion = true;
         }
         else {
@@ -2100,8 +2122,6 @@ export default class salesDebriefComp extends LightningElement {
     for insertion or updation of records*/
     @api
     handleSave() {
-        
-        this.hasUnsavedChanges = false;
         this.isLoad = true;
         this.isEditMode = false;
 
@@ -2126,7 +2146,6 @@ export default class salesDebriefComp extends LightningElement {
                     variant: 'success'
                 });
                 this.dispatchEvent(event);
-
                 this.dispatchEvent(new CustomEvent('notifysave'));
             })
             .catch((error) => {

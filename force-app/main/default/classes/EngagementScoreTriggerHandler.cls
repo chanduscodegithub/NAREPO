@@ -18,29 +18,24 @@ public with sharing class EngagementScoreTriggerHandler {
             return null;
         }
         Map<String, Object> result = new Map<String, Object>();
-        String engagementLastRun = 'Never';
+        String engagementLastRun = '';
         string utcDatetimeString ='';
         Integer activityCount = 0;
         
         // Fetch the most recent Engagement_Summary__c record
-       
+        Engagement_Summary__c summary = [SELECT CreatedDate 
+                                         FROM Engagement_Summary__c
+                                         WHERE Company__c = :accountId
+                                         ORDER BY CreatedDate DESC 
+                                         LIMIT 1];
         
-        List<Engagement_Summary__c> summaries = [
-            SELECT CreatedDate
-            FROM Engagement_Summary__c
-            WHERE Company__c = :accountId
-            ORDER BY CreatedDate DESC
-            LIMIT 1
-        ];
-        
-        if (!summaries.isEmpty()) {
-            Engagement_Summary__c summary = summaries[0];
+        if (summary != null) {
             engagementLastRun = summary.CreatedDate.format('MMM dd, yyyy, hh:mm a');
             
             DateTime utcDatetime = summary.CreatedDate;
             utcDatetime = utcDatetime.addSeconds(UserInfo.getTimeZone().getOffset(utcDatetime) / 1000);
             utcDatetimeString = utcDatetime.format('MMM dd, yyyy, hh:mm a');
-            system.debug('summary.CreatedDate'+summary.CreatedDate);
+
             // Query ActivityHistory records where ActivityDate is after the summary CreatedDate Activity_Date__c
             activityCount = [SELECT COUNT() 
                              FROM Activity_History__c 

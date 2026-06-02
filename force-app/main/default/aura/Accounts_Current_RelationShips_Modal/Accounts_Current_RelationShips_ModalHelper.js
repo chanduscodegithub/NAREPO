@@ -17,7 +17,7 @@
         action.setParams({
             "accountId" : Child_Data.accountId,
             "columnName" : 'AccountFirm__r.Name',
-         	"columnName1" : 'Opportunity.Name',
+            "columnName1" : 'Opportunity.Name',
             "sortType" : 'ASC'
         });
         action.setCallback(this,function(response){
@@ -26,7 +26,26 @@
             }
             var state = response.getState();
             if(state == "SUCCESS") {
-                
+                var contactAccountList  = response.getReturnValue();
+                for(var j=0;j<contactAccountList.accountContactRel.length;j++){
+                            if(contactAccountList.CSRList.length>0){
+                                for(var i=0;i<contactAccountList.CSRList.length;i++){
+                                    if(contactAccountList.CSRList[i].Account__c ==contactAccountList.accountContactRel[j].Account.Id){
+                                        contactAccountList.accountContactRel[j].Account.NPS__c =contactAccountList.CSRList[i].LikelihoodtoRecommendScore__c;
+                                    }
+                                }
+                            }                       
+                        }
+                 for(var j=0;j<contactAccountList.accountandMembershipActivity.length;j++){
+                    if(contactAccountList.CSRList.length>0){
+                        for(var i=0;i<contactAccountList.CSRList.length;i++){
+                            if(contactAccountList.CSRList[i].Account__c ==contactAccountList.accountandMembershipActivity[j].AccountFirm__r.Id){
+                                contactAccountList.accountandMembershipActivity[j].AccountFirm__r.NPS__c =contactAccountList.CSRList[i].LikelihoodtoRecommendScore__c;
+                            }
+                        }
+                    }                       
+                }
+                component.set('v.allyearValue',response.getReturnValue().yearValue) ;                
                 if(response.getReturnValue().accountandMembershipActivity != null && response.getReturnValue().accountandMembershipActivity.length > 0) {
                     component.set('v.accountDataArray', response.getReturnValue().accountandMembershipActivity);
                     component.set('v.allRecordsList', component.get('v.accountDataArray'));
@@ -77,6 +96,27 @@
                         cf1["Owner"] = {};
                         cf1["RecordType"] = {};
                         
+                        // Added By Gurjot
+                       if(response[i].Account.RecordType.DeveloperName === 'Existing_Client'){
+                            cf1["NPS__c"] = response[i].Account.NPS__c;
+                        } else {
+                             cf1["NPS__c"] = '';
+                        }
+                        
+                        
+                        // Modifying Values to display on UI and display on Referenceable Field
+                        if(response[i].Account.Client_Reference_Status__c === 'Red - Not Currently Suitable'){
+                            cf1["Client_Reference_Status__c"] = 'Red';
+                        }else if(response[i].Account.Client_Reference_Status__c === 'Green - Good Reference'){
+                            cf1["Client_Reference_Status__c"] = 'Green';
+                        }else if(response[i].Account.Client_Reference_Status__c === 'Yellow - Possible Reference (with qualifications)'){
+                            cf1["Client_Reference_Status__c"] = 'Yellow';
+                        }else if(response[i].Account.Client_Reference_Status__c === 'Unwilling to Provide Reference'){
+                            cf1["Client_Reference_Status__c"] = 'Unwilling';
+                        }else {
+                            cf1["Client_Reference_Status__c"] = '';
+                        }
+                        
                         var cf2 = cf1.Owner;
                         cf2["Id"] = response[i].Account.Owner.Id;
                         cf2["Name"] = response[i].Account.Owner.Name;
@@ -89,18 +129,79 @@
                     } 
                     
                     if(finalACR.length > 0){
-                        var junctionRec = component.get('v.allRecordsList');
-                        var entireList = junctionRec.concat(finalACR);
+                        //var junctionRec = component.get('v.allRecordsList'); //Commented on 5th Nov by Gurjot
+                        //var entireList = junctionRec.concat(finalACR);	//Commented on 5th Nov by Gurjot
+                        finalACR.sort(function(a,b){
+                            var t1 = a['AccountFirm__r']['Name'] == b['AccountFirm__r']['Name'],
+                                t2 = a['AccountFirm__r']['Name'] > b['AccountFirm__r']['Name'];
+                            return t1? 0: (true?-1:1)*(t2?-1:1);
+                        });
+                        console.log('entireList-->>'+finalACR);
+                        component.set('v.accountDataArray', finalACR);
+                    }
+                    
+                }
+                //Added if condition on 5th Nov by Gurjot
+                if(component.get('v.allRecordsList') !=null){
+                    // Handling accountandMembershipActivity if accountContactRel is empty
+                    var junctionRec = component.get('v.allRecordsList');
+                    var finalJunction = [];
+                    for(var i = 0 ; i < junctionRec.length; i++){
+                        var cfData = {};
+                        
+                        cfData["Id"] = junctionRec[i].Id;
+                        cfData["AccountFirm__c"] = junctionRec[i].AccountFirm__c;
+                        cfData["AccountFirm__r"] = {};
+                        var cf1 = cfData.AccountFirm__r;
+                        cf1["Id"] = junctionRec[i].AccountFirm__r.Id;
+                        cf1["Name"] = junctionRec[i].AccountFirm__r.Name;
+                        cf1["Owner"] = {};
+                        cf1["RecordType"] = {};
+                        
+                        //Added By Gurjot
+                       if(junctionRec[i].AccountFirm__r.RecordType.DeveloperName === 'Existing_Client'){
+                            cf1["NPS__c"] = junctionRec[i].AccountFirm__r.NPS__c;
+                        } else {
+                            cf1["NPS__c"] = '';
+                        }  
+                         
+                        //Added By Gurjot
+                        if(junctionRec[i].AccountFirm__r.Client_Reference_Status__c === 'Red - Not Currently Suitable'){
+                            cf1["Client_Reference_Status__c"] = 'Red';
+                        }else if(junctionRec[i].AccountFirm__r.Client_Reference_Status__c === 'Green - Good Reference'){
+                            cf1["Client_Reference_Status__c"] = 'Green';
+                        }else if(junctionRec[i].AccountFirm__r.Client_Reference_Status__c === 'Yellow - Possible Reference (with qualifications)'){
+                            cf1["Client_Reference_Status__c"] = 'Yellow';
+                        }else if(junctionRec[i].AccountFirm__r.Client_Reference_Status__c === 'Unwilling to Provide Reference'){
+                            cf1["Client_Reference_Status__c"] = 'Unwilling';
+                        }else {
+                            cf1["Client_Reference_Status__c"] = '';
+                        }
+                        
+                        var cf2 = cf1.Owner;
+                        cf2["Id"] = junctionRec[i].AccountFirm__r.Owner.Id;
+                        cf2["Name"] = junctionRec[i].AccountFirm__r.Owner.Name;
+                        
+                        var cf3 = cf1.RecordType;
+                        cf3["Id"] = '';
+                        cf3["Name"] = '';
+                        if(junctionRec[i].AccountFirm__r.RecordType !== null && junctionRec[i].AccountFirm__r.RecordType !== undefined){
+                            cf3["Name"] = junctionRec[i].AccountFirm__r.RecordType.Name;
+                        }                   
+                        
+                        finalJunction.push(cfData); 
+                    }
+                    
+                    if(finalJunction.length > 0){
+                        var junctionRec = component.get('v.accountDataArray');
+                        var entireList = junctionRec.concat(finalJunction);
                         entireList.sort(function(a,b){
                             var t1 = a['AccountFirm__r']['Name'] == b['AccountFirm__r']['Name'],
                                 t2 = a['AccountFirm__r']['Name'] > b['AccountFirm__r']['Name'];
                             return t1? 0: (true?-1:1)*(t2?-1:1);
                         });
-                        console.log('entireList-->>'+entireList);
                         component.set('v.accountDataArray', entireList);
                     }
-                    
-                }else{
                     component.set('v.AccountsAndMAEmptyList', true);
                 }
                 
@@ -149,8 +250,10 @@
         $A.enqueueAction(action);
     },
     
+    // Modified below function By Gurjot 
+    // Ticket :- Consultant Dashboard Firm
+    // Date :- 17th Oct 2024 -->
     sortAcc : function(component, event, sortOnField, fieldSortOrder, orderToBeSorted){
-        
         var spinner1 = component.find("spinner");
         $A.util.removeClass(spinner1, 'slds-hide');
         
@@ -160,11 +263,13 @@
         var appletIcon = component.find("appletIcon");
         $A.util.addClass(appletIcon, 'slds-hide');
         
-        setTimeout(function(){
+        // Commented By Gurjot for resolving spinner issue
+        /*setTimeout(function(){
+            console.log('Time-out>>');
             $A.util.addClass(spinner1, 'slds-hide');
             $A.util.addClass(spinner2, 'slds-hide');
             $A.util.removeClass(appletIcon, 'slds-hide');
-        }, 500);
+        }, 500);*/
         
         if(sortOnField != 'Name'){
             var key2 = '';
@@ -172,6 +277,10 @@
                 key2 = 'RecordType';
             }else if(sortOnField === 'Owner'){
                 key2 = 'Owner';
+            }else if(sortOnField === 'AccountFirm__r.Client_Reference_Status__c'){
+                key2 = 'Client_Reference_Status__c';
+            }else if(sortOnField === 'AccountFirm__r.NPS__c'){
+                key2 = 'NPS__c';
             }
             if((orderToBeSorted != undefined) || (orderToBeSorted != null)){
                 if(orderToBeSorted === "DESC"){
@@ -183,10 +292,20 @@
                 }
             }else{
                 if(component.get('v.'+fieldSortOrder)){
-                    this.getSortedListHelper(component, event, 'AccountFirm__r', key2, 'Name');
+                    if(sortOnField === 'AccountFirm__r.Client_Reference_Status__c' || sortOnField === 'AccountFirm__r.NPS__c'){
+                        this.getSortedListHelperNew(component, event, 'AccountFirm__r','', key2,'asc');
+                    }else{
+                        this.getSortedListHelper(component, event, 'AccountFirm__r', key2, 'Name');
+                    }
+                    
                     component.set('v.'+fieldSortOrder, false);
                 }else{
-                    this.getSortedListHelper(component, event, 'AccountFirm__r', key2, 'Name', true);
+                    if(sortOnField === 'AccountFirm__r.Client_Reference_Status__c' || sortOnField === 'AccountFirm__r.NPS__c'){
+                        this.getSortedListHelperNew(component, event, 'AccountFirm__r','', key2);
+                    }else{
+                        this.getSortedListHelper(component, event, 'AccountFirm__r', key2, 'Name', true);
+                    }
+                    
                     component.set('v.'+fieldSortOrder, true);
                 }
             }
@@ -209,6 +328,43 @@
                 }
             }
         }
+        $A.util.addClass(spinner1, 'slds-hide');
+        $A.util.addClass(spinner2, 'slds-hide');
+        $A.util.removeClass(appletIcon, 'slds-hide');
+    },
+    
+    // Added By Gurjot for sorting LRT field and Referenceable columns and handling null
+    // Ticket :- Consultant Dashboard Firm
+    // Date :- 17th Oct 2024
+    getSortedListHelperNew : function(component, event, prop, prop2, key, reverse){
+        
+        let isReverse = reverse === 'asc' ? 1 : -1;
+        
+        var sortField = key;
+        var records = component.get('v.accountDataArray');
+        if(prop2 === ''){
+            records.sort(function(a,b){
+                a = a[prop][key] ? a[prop][key] : ''; // Handle null values
+                b = b[prop][key] ? b[prop][key] : '';
+                
+                return a > b ? 1 * isReverse : -1 * isReverse;
+            }); 
+        }else{
+            records.sort(function(a,b){
+                var aValue = a[prop][prop2][key];
+                var bValue = b[prop][prop2][key];
+                
+                // Determine if the values are numbers or strings
+                if (typeof aValue === 'number' && typeof bValue === 'number') {
+                    return (aValue - bValue) * (sortAsc ? 1 : -1);
+                } else {
+                    return (aValue > bValue ? 1 : -1) * (sortAsc ? 1 : -1);
+                }
+            });
+        }
+        
+        component.set('v.accountDataArray', records);
+        
     },
     
     getSortedListHelper : function(component, event, prop, prop2, key, reverse){

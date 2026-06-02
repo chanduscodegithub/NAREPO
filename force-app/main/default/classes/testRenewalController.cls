@@ -23,7 +23,7 @@ public class testRenewalController {
             opp.Disposition_Medical__c = 'Sold';
             //opp.Existing_Members_Risk_Outcome_Medical__c = 'Retained';
             opp.Proactive_Renewal_Additional_Info__c = 'Medical Contract WAS Extended for at Least 2 Years';
-            opp.Closed_Reason_1_Medical__c = 'Dead';
+            opp.Closed_Reason_1_Medical__c = 'Programs: Other';
             opp.Employees_in_the_Proposal_Medical__c = 5;
             opp.Members_in_the_Proposal_Medical__c = 6;
             opp.Members_QUOTED_in_the_Proposal_Medical__c = 7;

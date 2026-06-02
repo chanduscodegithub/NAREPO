@@ -1,0 +1,103 @@
+<template>
+    <lightning-quick-action-panel header="Initiate RFP Review">
+        <template if:false={showMainContent}>
+            <div class="slds-p-around_medium">
+                <div class="slds-notify slds-notify_alert slds-theme_warning" role="alert" if:true={errorMessage}>
+                    <span class="slds-assistive-text">Warning</span>
+                    <span class="slds-icon_container slds-m-right_x-small">
+                        <lightning-icon icon-name="utility:warning" size="x-small"></lightning-icon>
+                    </span>
+                    <h2>{errorMessage}</h2>
+                </div>
+                <template if:false={errorMessage}>
+                    <p class="slds-text-body_regular">
+                        No file content found for this RFP. Please upload a file and try again.
+                    </p>
+                </template>
+            </div>
+            <div slot="footer" class="slds-p-horizontal_medium slds-align_absolute-center">
+                <lightning-button 
+                    label="Cancel" 
+                    onclick={handleConfirmation} 
+                    data-value="cancel">
+                </lightning-button>
+            </div>
+        </template>
+
+        <template if:true={showMainContent}>
+            <template if:false={isProcessing}>
+                <div class="slds-p-around_medium">
+                    <div class="slds-media slds-media_center slds-m-bottom_medium">
+                        <div class="slds-media__body">
+                            <h3 class="slds-text-heading_small">
+                                <img src={docxImageUrl} alt="DOCX Icon" class="slds-avatar slds-avatar_large" />
+                                {fileName}
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="slds-text-body_regular slds-text-color slds-m-left_xx-large">
+                        <p>
+                            Are you sure you want to initiate the RFP review? Please confirm to continue. You will receive an email notification once the RFP review is complete.
+                        </p>
+                    </div>
+                </div>
+                <div slot="footer" class="slds-p-horizontal_medium">
+                    <lightning-button 
+                        label="Cancel" 
+                        onclick={handleConfirmation} 
+                        class="slds-m-right_small"
+                        data-value="cancel">
+                    </lightning-button>
+                     <lightning-button 
+                        label="Continue" 
+                        variant="brand"
+                        onclick={handleConfirmation} 
+                        data-value="confirm"
+                        disabled={isContinueDisabled}>
+                    </lightning-button>
+                </div>
+            </template>
+        </template>
+
+        <template if:true={isProcessing}>
+            <div class="slds-p-around_medium">
+                <div class="slds-align_absolute-center slds-m-bottom_medium">
+                    <lightning-spinner 
+                        alternative-text="Processing..." 
+                        size="large">
+                    </lightning-spinner>
+                </div>
+                <div class="slds-text-longform">
+                    <p class="slds-text-heading_small slds-m-bottom_x-small slds-text-color_inverse">
+                        Digitization in Progress
+                    </p>
+                    
+                    <template if:true={processingComplete}>
+                        <div class="slds-m-top_small">
+                            <lightning-icon 
+                                icon-name="utility:success" 
+                                size="small" 
+                                class="slds-icon-text-success">
+                            </lightning-icon>
+                            <span class="slds-m-left_x-small slds-text-color_success">
+                                Processing completed successfully
+                            </span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+                                                                                    <!-- Spinner modal -->
+    <template if:true={isLoading}>
+        <div class="overlay">
+            <div class="spinner-wrapper">
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                <div class="spinner-message">{loadingMessage}</div>
+            </div>
+        </div>
+    </template>
+
+    </lightning-quick-action-panel>
+</template>

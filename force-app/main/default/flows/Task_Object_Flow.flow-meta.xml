@@ -307,9 +307,9 @@
             </conditions>
             <conditions>
                 <leftValueReference>$Record.CreatedBy.IsActive</leftValueReference>
-                <operator>EqualTo</operator>
+                <operator>NotEqualTo</operator>
                 <rightValue>
-                    <booleanValue>true</booleanValue>
+                    <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -355,7 +355,7 @@
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Not_same</name>
-            <conditionLogic>1 AND (2 OR 3) AND 4</conditionLogic>
+            <conditionLogic>1 AND (2 OR 3 OR 4 OR 5) AND 6 AND 7</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.CreatedById</leftValueReference>
                 <operator>NotEqualTo</operator>
@@ -378,10 +378,31 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>$Record.CreatedBy.IsActive</leftValueReference>
+                <leftValueReference>$Record.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <booleanValue>true</booleanValue>
+                    <stringValue>Enhancement Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Retro Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.IsActive</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedById</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>0056A000000oB7OQAU</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -401,7 +422,7 @@
         <defaultConnectorLabel>FALSE_If status not Completed</defaultConnectorLabel>
         <rules>
             <name>TRUE_If_status_not_Completed</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>(1 OR 3 OR 4) AND 2</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Status</leftValueReference>
                 <operator>NotEqualTo</operator>
@@ -414,6 +435,20 @@
                 <operator>IsChanged</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Retro Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Enhancement Completed</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -577,7 +612,10 @@
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Completed_Date__c</leftValueReference>
-                <operator>EqualTo</operator>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
             </conditions>
             <conditions>
                 <leftValueReference>$Record.Completed_Date__c</leftValueReference>
@@ -653,7 +691,7 @@
         <defaultConnectorLabel>FALSE_Status Closed</defaultConnectorLabel>
         <rules>
             <name>TRUE_Status_Closed</name>
-            <conditionLogic>(1 OR 3) AND 2</conditionLogic>
+            <conditionLogic>(1 OR 3 OR 4 OR 5) AND 2</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Status</leftValueReference>
                 <operator>EqualTo</operator>
@@ -673,6 +711,20 @@
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Closed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Enhancement Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Retro Completed</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -738,6 +790,7 @@
             <label>TRUE_New Task Creation</label>
         </rules>
     </decisions>
+    <description>Added #3815 CR  -- 27/02/25</description>
     <environments>Default</environments>
     <formulas>
         <name>AssigbTheFieldUpdateFormula</name>
@@ -765,7 +818,13 @@
     <formulas>
         <name>IsNewFormula</name>
         <dataType>Boolean</dataType>
-        <expression>ISNEW() &amp;&amp;  (ISPICKVAL({!$Record.Status} , &apos;Completed&apos;) || ISPICKVAL({!$Record.Status} , &apos;Closed&apos;))</expression>
+        <expression>ISNEW() &amp;&amp;  
+( 
+    ISPICKVAL({!$Record.Status}, &apos;Completed&apos;) || 
+    ISPICKVAL({!$Record.Status}, &apos;Closed&apos;) || 
+    ISPICKVAL({!$Record.Status}, &apos;Retro Completed&apos;) || 
+    ISPICKVAL({!$Record.Status}, &apos;Enhancement Completed&apos;) 
+)</expression>
     </formulas>
     <formulas>
         <name>IssueTaskNotificationFormula</name>
@@ -976,6 +1035,21 @@
         <connector>
             <targetReference>Check_if_assigned_to_and_created_by_not_same</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Enhancement Completed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Retro Completed</stringValue>
+            </value>
+        </filters>
         <inputAssignments>
             <field>Status</field>
             <value>

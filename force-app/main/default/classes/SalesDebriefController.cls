@@ -118,8 +118,7 @@ public with sharing class SalesDebriefController {
 
         // Override access if the the logged in user is System Administrator
         if( !rsdd.validUserRole ){
-            // added WITH USER_MODE
-            rsdd.validUserRole = ( [ SELECT ID FROM User WHERE Id =: loggedInUserId AND Profile.Name IN :( System.Label.Sales_Debrief_Profile_Access.split(';') ) WITH USER_MODE ].size() > 0 );
+            rsdd.validUserRole = ( [ SELECT ID FROM User WHERE Id =: loggedInUserId AND Profile.Name IN :( System.Label.Sales_Debrief_Profile_Access.split(';') ) ].size() > 0 );
         }
 
         // Override edit access when Reconciliation_Complete_Record_Locked__c is checked

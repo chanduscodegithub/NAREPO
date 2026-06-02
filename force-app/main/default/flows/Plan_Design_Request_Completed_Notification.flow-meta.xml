@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Email Alert to Record Creator when status is changed to completed</description>
+        <name>Email_Alert_to_Record_Creator</name>
+        <label>Email Alert to Record Creator</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <actionName>Plan_Design_Request__c.PlanCompletedBenefitStrategist</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Plan_Design_Request__c.PlanCompletedBenefitStrategist</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_Cancellation_Email</name>
+        <label>Send Cancellation Email</label>
+        <locationX>314</locationX>
+        <locationY>431</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>recipientAddresses</name>
+            <value>
+                <collectionElements>
+                    <stringValue>keerthi_gaddam@uhc.com</stringValue>
+                </collectionElements>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>ccAddresses</name>
+            <value>
+                <collectionElements>
+                    <stringValue>keerthi.gaddam@crmit.com</stringValue>
+                </collectionElements>
+                <collectionElements>
+                    <stringValue>keerthi_gaddam@uhc.com</stringValue>
+                </collectionElements>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>composeEmailContent</name>
+            <value>
+                <stringValue>True</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>Subject</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>&lt;p&gt;&lt;strong style=&quot;font-size: 14px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;*** PLAN DESIGN REQUEST CANCELLED NOTIFICATION ***&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;The following Plan Design has been cancelled by the Sales Team:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;Plan Design Request:&lt;/strong&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;a href=&quot;{!RecordLink}&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(11, 11, 247);&quot;&gt;{!$Record.Name}&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;Company: &lt;/strong&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;{!$Record.Membership_Activity_Name__r.Account.Name}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;Membership Activity Name: &lt;/strong&gt;&lt;a href=&quot;{!MA_Link}&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(11, 11, 247);&quot;&gt;{!$Record.Membership_Activity_Name__r.Name}&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;Surest SVP Involved: &lt;/strong&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;{!$Record.Membership_Activity_Name__r.Surest_SVP_Involved__c}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;color: rgb(0, 0, 0); font-family: sans-serif; font-size: 12px;&quot;&gt;Benefit Strategist:&lt;/strong&gt;&lt;span style=&quot;color: rgb(0, 0, 0); font-family: sans-serif; font-size: 12px;&quot;&gt; {!BenefitName}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;color: rgb(0, 0, 0); font-family: sans-serif; font-size: 12px;&quot;&gt;Pricing Analyst:&lt;/strong&gt;&lt;span style=&quot;color: rgb(0, 0, 0); font-family: sans-serif; font-size: 12px;&quot;&gt; {!PricingAnalyst}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;Cancellation Reason: &lt;/strong&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif; color: rgb(0, 0, 0);&quot;&gt;{!$Record.Cancellation_Reason__c}&lt;/span&gt;&lt;/p&gt;</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>useLineBreaks</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <offset>0</offset>
+        <versionString>2.0.1</versionString>
+    </actionCalls>
+    <apiVersion>60.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Completed_Or_Cancelled_Notification</name>
+        <label>Completed Or Cancelled Notification</label>
+        <locationX>314</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Completed_Notification</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_Alert_to_Record_Creator</targetReference>
+            </connector>
+            <label>Completed Notification</label>
+        </rules>
+        <rules>
+            <name>Cancelled_Notification</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Cancelled</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Cancellation_Email</targetReference>
+            </connector>
+            <label>Cancelled Notification</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>BenefitName</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.User__r.FirstName} &amp; &quot; &quot;&amp; {!$Record.User__r.LastName}</expression>
+    </formulas>
+    <formulas>
+        <name>MA_Link</name>
+        <dataType>String</dataType>
+        <expression>LEFT($Api.Partner_Server_URL_260, FIND(&quot;/services&quot;, $Api.Partner_Server_URL_260)) 
+&amp; &quot;/&quot; &amp; $Record.Membership_Activity_Name__r.Id</expression>
+    </formulas>
+    <formulas>
+        <name>PricingAnalyst</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.Pricing_Analyst__r.FirstName} &amp; &quot; &quot; &amp; {!$Record.Pricing_Analyst__r.LastNAme}</expression>
+    </formulas>
+    <formulas>
+        <name>RecordLink</name>
+        <dataType>String</dataType>
+        <expression>LEFT($Api.Partner_Server_URL_260, FIND(&quot;/services&quot;, $Api.Partner_Server_URL_260)) 
+&amp; &quot;/&quot; &amp; $Record.Id</expression>
+    </formulas>
+    <formulas>
+        <name>Subject</name>
+        <dataType>String</dataType>
+        <expression>&quot;Plan Design Request Cancelled - &quot; &amp; {!$Record.Membership_Activity_Name__r.Account.Name}</expression>
+    </formulas>
+    <interviewLabel>Plan Design Request Completed Notification {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Plan Design Request Completed Notification</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Completed_Or_Cancelled_Notification</targetReference>
+        </connector>
+        <filterLogic>1 AND (2 OR 3)</filterLogic>
+        <filters>
+            <field>Status__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Cancelled</stringValue>
+            </value>
+        </filters>
+        <object>Plan_Design_Request__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>

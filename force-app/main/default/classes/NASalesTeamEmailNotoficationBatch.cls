@@ -13,7 +13,7 @@ global with sharing class NASalesTeamEmailNotoficationBatch implements Database.
         
         System.debug('NA Sales Team Batch Apex for clearing out CM SCE and VPCR/RVP - START');
         
-        String query = 'Select Id, Name,Future_CM_VPCR_RVP__c,Future_CM_VPCR_RVP_Start_Date__c,Future_CM_SCE__c,Future_CM_SCE_Start_Date__c,CM_SCE__c,CMVPCRRVP__c,Future_CM_VPCR_RVP__r.Name,Future_CM_VPCR_RVP__r.LastName,Future_CM_SCE__r.Name,Future_CM_SCE__r.LastName, (Select Id,Case_Management_End_Date__c, Role__c, Last_Name__c,user__c, Name from CM_Account_Team_Historys__r where (Role__c = \'CM VPCR/RVP\' OR Role__c = \'CM SCE\' OR Role__c = \'Surest CM SCE\' OR Role__c = \'Surest CM SVP\' OR Role__c = \'Specialty Benefits SCE\')) from Account where (Future_CM_SCE_Start_Date__c != null OR Future_CM_VPCR_RVP_Start_Date__c != null)';
+        String query = 'Select Id,Future_Specialty_SCE_Start_Date__c,Specialty_SCE__c, Future_Specialty_SCE__c,Name,Future_CM_VPCR_RVP__c,Future_CM_VPCR_RVP_Start_Date__c,Future_CM_SCE__c,Future_CM_SCE_Start_Date__c,CM_SCE__c,CMVPCRRVP__c,Future_CM_VPCR_RVP__r.Name,Future_CM_VPCR_RVP__r.LastName,Future_CM_SCE__r.Name,Future_CM_SCE__r.LastName, (Select Id,Case_Management_End_Date__c, Role__c, Last_Name__c,user__c, Name from CM_Account_Team_Historys__r where (Role__c = \'CM VPCR/RVP\' OR Role__c = \'CM SCE\' OR Role__c = \'Surest CM SCE\' OR Role__c = \'Surest CM SVP\' OR Role__c = \'Specialty Benefits SCE\')) from Account where (Future_Specialty_SCE_Start_Date__c !=null OR Future_CM_SCE_Start_Date__c != null OR Future_CM_VPCR_RVP_Start_Date__c != null)';
         
         System.debug('Query '+query);
         return Database.getQueryLocator(query);        
@@ -98,10 +98,14 @@ toBeMailSent = true;
                 boolean isCurrentCMSCE =false;
                 boolean isCurrentSpecialtySCE =false;
                 boolean isCurrentVPCR =false;
+                boolean isCMSCERoleExist =false;
                 for(CM_Account_Team_History__c naSalesTeamRec : naSalesTeamDataList) {
+                    if((naSalesTeamRec.Role__c == 'CM SCE' || naSalesTeamRec.Role__c == 'Surest CM SCE' || naSalesTeamRec.Role__c == 'Surest CM SVP') ) {
+                        isCMSCERoleExist =true;
+                    }
                     Date endDate = naSalesTeamRec.Case_Management_End_Date__c;
                     if(endDate != null && Date.today() <= endDate){
-                        if((naSalesTeamRec.Role__c == 'CM SCE' || naSalesTeamRec.Role__c == 'Surest CM SCE' || naSalesTeamRec.Role__c == 'Surest CM SVP' || naSalesTeamRec.Role__c == 'Specialty Benefits SCE') ) {
+                        if((naSalesTeamRec.Role__c == 'CM SCE' || naSalesTeamRec.Role__c == 'Surest CM SCE' || naSalesTeamRec.Role__c == 'Surest CM SVP') ) {
                             isCurrentCMSCE =true;
                         }
                         if((naSalesTeamRec.Role__c == 'Specialty Benefits SCE') ) {
@@ -145,9 +149,15 @@ toBeMailSent = true;
                         } else if(naSalesTeamRec.Role__c == 'Specialty Benefits SCE' && accDataObj.Future_Specialty_SCE__c != null){
                             if(!isCurrentSpecialtySCE){
                                 isDataAvailable = true;
-                                accObj.Specialty_SCE__c = accDataObj.Future_Specialty_SCE__c; 
+                                accObj.Specialty_SCE__c = accDataObj.Future_Specialty_SCE__c;
+                                 if(!isCMSCERoleExist){
+                                    accObj.CM_SCE__c = accDataObj.Future_Specialty_SCE__c; 
+                                }
                                 accObj.Future_Specialty_SCE__c = null;
-                                accObj.Future_Specialty_SCE_Start_Date__c = null;                   
+                                accObj.Future_Specialty_SCE_Start_Date__c = null;
+                                if(!isCMSCERoleExist){
+                                    accObj.CM_SCE__c = accDataObj.Future_Specialty_SCE__c; 
+                                }
                             }
                         }
                         System.debug('isDataAvailable-'+isDataAvailable);

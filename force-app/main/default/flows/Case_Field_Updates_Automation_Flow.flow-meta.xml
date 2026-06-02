@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Assign_to_SBS_Mailbox</name>
+        <label>Assign to SBS Mailbox</label>
+        <locationX>182</locationX>
+        <locationY>395</locationY>
+        <defaultConnector>
+            <targetReference>Long_Term_Issue</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Assign_to_SBS_Mailbox_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Profile.Name</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>CSI Administrator</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>SBS Support</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>getService_Mailbox_Queue</targetReference>
+            </connector>
+            <label>Assign to SBS Mailbox IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>IsCreate_or_IsUpdate</name>
+        <label>IsCreate or IsUpdate</label>
+        <locationX>336</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>Updating_Issue_Description</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>IsUpdate True</defaultConnectorLabel>
+        <rules>
+            <name>IsNew_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_to_SBS_Mailbox</targetReference>
+            </connector>
+            <label>IsNew True</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Long_Term_Issue</name>
+        <label>Long Term Issue</label>
+        <locationX>182</locationX>
+        <locationY>803</locationY>
+        <defaultConnector>
+            <targetReference>Updating_Issue_Description</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Long_Term_Issue_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Quality</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_field_LongTermIssue</targetReference>
+            </connector>
+            <label>Long Term Issue IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>PHI_Case_Checked</name>
+        <label>PHI Case Checked</label>
+        <locationX>765</locationX>
+        <locationY>1403</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>PHI_Case_Checked_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.PHI_Case__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.PHI_Case__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Issue_Description_as_Blank</targetReference>
+            </connector>
+            <label>PHI Case Checked IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>PHI_Case_not_Checked</name>
+        <label>PHI Case not Checked</label>
+        <locationX>567</locationX>
+        <locationY>1295</locationY>
+        <defaultConnector>
+            <targetReference>PHI_Case_Checked</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>PHI Case not Checked IsFalse</defaultConnectorLabel>
+        <rules>
+            <name>PHI_Case_not_Checked_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>PHIcaseNotCheck</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Issue_Description_not_Blank</targetReference>
+            </connector>
+            <label>PHI Case not Checked IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Updating_Issue_Description</name>
+        <label>Updating Issue Description</label>
+        <locationX>336</locationX>
+        <locationY>1187</locationY>
+        <defaultConnector>
+            <targetReference>PHI_Case_not_Checked</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Updating Issue Description IsFalse</defaultConnectorLabel>
+        <rules>
+            <name>Updating_Issue_Description_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>NewPHIcaseFalse</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>update_Issue_Description_with_Description_value</targetReference>
+            </connector>
+            <label>Updating Issue Description IsTrue</label>
+        </rules>
+    </decisions>
+    <description>This process automates the assignment of SBS support cases, categorizes quality cases as long-term issues, and populates the ‘Issue Description’ field on a case.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>IsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <name>NewPHIcaseFalse</name>
+        <dataType>Boolean</dataType>
+        <expression>AND( ISNEW(), {!$Record.PHI_Case__c} = FALSE, LEN({!$Record.Description}) &gt; 0)</expression>
+    </formulas>
+    <formulas>
+        <name>PHIcaseNotCheck</name>
+        <dataType>Boolean</dataType>
+        <expression>(({!$Record.PHI_Case__c} = FALSE) &amp;&amp; (ISCHANGED({!$Record.PHI_Case__c}))) &amp;&amp; (ISCHANGED({!$Record.Description}) || LEN({!$Record.Description}) &gt; 0)</expression>
+    </formulas>
+    <interviewLabel>Case Field Updates - Automation Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Case Field Updates - Automation Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>getService_Mailbox_Queue</name>
+        <label>getService_Mailbox_Queue</label>
+        <locationX>50</locationX>
+        <locationY>503</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Case_Owner_as_ServiceMailQueue</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Type</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Queue</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Service_Mailbox_Queue</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Group</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Case_Owner_as_ServiceMailQueue</name>
+        <label>Case Owner as ServiceMailQueue</label>
+        <locationX>50</locationX>
+        <locationY>611</locationY>
+        <connector>
+            <targetReference>Long_Term_Issue</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>getService_Mailbox_Queue.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Issue_Description_as_Blank</name>
+        <label>Issue Description as Blank</label>
+        <locationX>633</locationX>
+        <locationY>1511</locationY>
+        <inputAssignments>
+            <field>Extended_Description__c</field>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Issue_Description_not_Blank</name>
+        <label>Issue Description not Blank</label>
+        <locationX>369</locationX>
+        <locationY>1403</locationY>
+        <inputAssignments>
+            <field>Extended_Description__c</field>
+            <value>
+                <elementReference>$Record.Description</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_field_LongTermIssue</name>
+        <label>Update field LongTermIssue</label>
+        <locationX>50</locationX>
+        <locationY>911</locationY>
+        <connector>
+            <targetReference>Updating_Issue_Description</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Long_Term_Issue__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>update_Issue_Description_with_Description_value</name>
+        <label>update Issue Description with Description value</label>
+        <locationX>105</locationX>
+        <locationY>1295</locationY>
+        <inputAssignments>
+            <field>Extended_Description__c</field>
+            <value>
+                <elementReference>$Record.Description</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>210</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>IsCreate_or_IsUpdate</targetReference>
+        </connector>
+        <object>Case</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

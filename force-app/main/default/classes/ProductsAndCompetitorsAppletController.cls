@@ -14,7 +14,7 @@ public without sharing class ProductsAndCompetitorsAppletController {
                                                                                                        prevSalesStage, currentSalesStage, productsAndCompetitorsWrapperClassObj.productsAppletWrapperClassObj, opportunityObj, isReadOnly); 
             }
             
-            productsAndCompetitorsWrapperClassObj.BuyupProductList =ProductsSearchController.getPicklistvalues('OpportunityLineItem','Buyup_Product_Selection__c');
+            productsAndCompetitorsWrapperClassObj.BuyupProductList = ProductsSearchController.getPicklistvalues('OpportunityLineItem','Buyup_Product_Selection__c');
             return productsAndCompetitorsWrapperClassObj;    
         }catch(AuraHandledException ex){
             System.debug('Exception in Save '+ex.getMessage());

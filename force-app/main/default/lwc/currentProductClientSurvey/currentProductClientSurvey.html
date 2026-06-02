@@ -1,3 +1,10 @@
+<!--
+  @description       : 
+  @author            : Spoorthy
+  @group             : 
+  @last modified on  : 02-05-2024
+  @last modified by  : Spoorthy
+-->
 <template>
     <p style='margin: 0px 0px 15px 15px;'>
         <b>SCE’s only</b> - Validate the products held by the client. Click the “Edit” button to make changes, and use
@@ -374,9 +381,9 @@
             </tbody>
         </table>
         <div>
-            <p style='text-align: center;padding: 11px;'><i>Required Questions For UMR Clients Only</i>
+            <p style='text-align: center;padding: 11px;'><i>Required Questions For UMR Clients Only</i> <!--Added Vignesh -->
                 <lightning-helptext
-                    content="Please make sure to record a Yes/No response for all products listed below – you will not be able to complete the final validation at the bottom of this form if there are any blanks in the Products section.">
+                    content="Please make sure you document a response for the products listed below. You will not be able to complete the final validation at the bottom of this form if there are any blanks in the Product section.">
                 </lightning-helptext>
             </p>
         </div>
@@ -398,14 +405,13 @@
                             readonly={isEdit}>
                         </lightning-combobox>
                     </td>
-                </tr> -->
-                <!-- Added Vignesh 21/04/25 - CR 3847 -->
-            <!--    <tr>                  
+                </tr> --> <!-- Added Vignesh 21/04/25 - CR 3847 --> 
+            <!--   <tr>                      
                     <td>
                         UHC/UMR Member Service and Tools
                      <template if:true={isRequired}>
                             <abbr title="required" class="slds-required">*</abbr>
-                        </template> 
+                        </template>     
                     </td>
                     <td>
 
@@ -415,19 +421,35 @@
                             onchange={updateChanges} readonly={isEdit}>
                         </lightning-combobox>
                     </td>
-                </tr> -->
-                <tr>                  
+                </tr>  -->
+
+                <tr>   <!-- Added Vignesh 21/04/25 - CR 3847 -->                    
                     <td>
                         Member Service Vendor
                      <template if:true={isReq}>
                             <abbr title="required" class="slds-required">*</abbr>
-                        </template> 
+                        </template>
                     </td>
                     <td>
-
-                        <lightning-combobox placeholder=" " data-name="Member_Service_Vendor__c"
+                        <lightning-combobox placeholder="N/A" data-name="Member_Service_Vendor__c"
                             variant="label-hidden" options={Member_Service_Vendor__c}
-                            value={ProductMix__c.Member_Service_Vendor__c}
+                            class="memberServiceAndTools" value={ProductMix__c.Member_Service_Vendor__c}
+                            onchange={updateChanges} readonly={isEdit}>
+                        </lightning-combobox>
+                    </td>
+                </tr>
+
+                <tr>              
+                    <td>
+                        Member Digital Tools Vendor
+                     <template if:true={isReq}>
+                            <abbr title="required" class="slds-required">*</abbr>
+                        </template>
+                    </td>
+                    <td>
+                        <lightning-combobox placeholder="N/A" data-name="Member_Digital_Tools_Vendor__c"
+                            variant="label-hidden" options={Member_Digital_Tools_Vendor__c}
+                            class="memberServiceAndTools" value={ProductMix__c.Member_Digital_Tools_Vendor__c}
                             onchange={updateChanges} readonly={isEdit}>
                         </lightning-combobox>
                     </td>
@@ -469,9 +491,8 @@
                     </h2>
                 </header>
 
-                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    The Product section needs to be completed before you can validate. Please ensure that a “Yes” or
-                    “No” response is recorded for each product in this section and validate once you've made the updates
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">  <!-- Added vignesh -->
+                    The Product section must be completed before you can proceed with validation. Please ensure that a response is recorded for each product in this section, and validate only after all updates have been made.
                 </div>
                 <div class="slds-modal__footer">
                     <button class="slds-button slds-button_brand" onclick={closeModal} title="OK">OK</button>

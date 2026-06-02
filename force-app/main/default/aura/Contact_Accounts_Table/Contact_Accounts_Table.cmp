@@ -2,6 +2,11 @@
     <aura:attribute name="accountConsultant" type="String[]"/>
     <aura:attribute name="accConsulatantIndex" type="Integer"/>
     <aura:attribute name="accConsulatantTableColumns" type="boolean"/>
+    <aura:attribute name="referenceableLabel" type="String" /> <!-- Added By Gurjot -->
+    <aura:attribute name="lrtLabel" type="String" /> <!-- Added By Gurjot -->
+    <aura:attribute name="allLRTValue" type="Integer"/>  <!-- Added 25/11/24 -->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> <!-- Added By Gurjot -->
     
     <tr class="slds-hint-parent">
         <td class="" data-label="Company Primary">
@@ -16,13 +21,28 @@
                 <a data-record="{!v.accountConsultant.AccountId}" onclick="{!c.navToRecord}">{!v.accountConsultant.Account.Name}</a>
             </div>
         </td>
+        <!-- Added By Gurjot -->
+        <td data-label="Referenceable Client">
+            <div class="slds-truncate" title="{!v.referenceableLabel}">
+                {!v.referenceableLabel}
+            </div>
+        </td>
+        <!-- END -->
 		<td data-label="Company Type">
             <div class="slds-truncate" title="{!v.accountConsultant.Account.RecordType.Name}">
                 {!v.accountConsultant.Account.RecordType.Name}
             </div>
-        </td><td data-label="Owner">
+        </td>
+        <td data-label="Owner">
             <div class="slds-truncate" title="{!v.accountConsultant.Account.Owner.Name}">{!v.accountConsultant.Account.Owner.Name}
             </div>
         </td>
+        <!-- Added By Gurjot -->
+        <td data-label="LRT">
+            <div class="slds-truncate" title="{!v.accountConsultant.Account.NPS__c}">
+                 {!v.lrtLabel}
+            </div>
+        </td>
+        <!-- END -->
     </tr>
 </aura:component>

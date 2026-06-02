@@ -14,7 +14,7 @@
                 <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleCancel}
                     icon-name="action:remove">
                 </lightning-button>
-                <template if:true={lastYearChecklist}>
+                <template if:true={lastYearDataExists}>
                     <lightning-button variant="brand" label="Copy last year’s data" class="slds-m-left_x-small"
                         onclick={handleCopyCPW} icon-name="utility:file">
                     </lightning-button>
@@ -55,7 +55,7 @@
                                     <span>Policy Number</span>
                                 </div>
                                 <div
-                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
                                     {policyNumbers}
                                 </div>
                             </div>
@@ -69,7 +69,7 @@
                                     <span>Policy Name</span>
                                 </div>
                                 <div
-                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right">
+                                    class="slds-col slds-size_1-of-4 slds-p-around_xx-small slds-text-align_right slds-cell-wrap">
                                     {policyNames}
                                 </div>
                             </div>
@@ -135,7 +135,7 @@
                             <th style="width:18%">PIM Implementation Lead Time</th>
                             <th style="width:16%">Dual Indicator</th>
                             <th style="width:16%">Last Year’s Validation</th>
-                            <th style="width:16%">Next Year’s Validation</th>
+                            <th style="width:16%">Current Year’s Validation</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -205,7 +205,10 @@
                         </td>
                         <td class="slds-text-align_left"></td>
                         <td class="slds-text-align_left"></td>
-                        <td class="slds-text-align_left">Yes</td>
+                        <td class="slds-text-align_left">
+                            <template if:true={lastYearChecklist.Specialty_Guidance_Program_CPSurest__c}>
+                                <span>{lastYearChecklist.Specialty_Guidance_Program_CPSurest__c}</span>
+                            </template></td>
                         <td class="slds-text-align_left">
                                     Yes
                         </td>
@@ -297,153 +300,95 @@
                         </td>
                         <td class="slds-text-align_left"></td>
                         <td class="slds-text-align_left"></td>
-                        <td class="slds-text-align_left">Yes</td>
+                        <td class="slds-text-align_left">
+                            <template if:true={lastYearChecklist.Optum_Behavioral_Network__c}>
+                                <span>{lastYearChecklist.Optum_Behavioral_Network__c}</span>
+                            </template></td>
                         <td class="slds-text-align_left">
                                     Yes
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                                    <span>Optum Physical Health Network</span>
+                              <span>Optum Physical Health Network</span>
                         </td>
                         <td class="slds-text-align_left"></td>
                         <td class="slds-text-align_left"></td>
-                        <td class="slds-text-align_left">Yes</td>
                         <td class="slds-text-align_left">
-                                    Yes
+                            <template if:true={lastYearChecklist.Optum_Physical_Health_Network__c}>
+                                <span>{lastYearChecklist.Optum_Physical_Health_Network__c}</span>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Optum_Physical_Health_Network__c}>
+                                  <span>{renewalChecklistData.Optum_Physical_Health_Network__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox data-api="Optum_Physical_Health_Network__c" variant="label-hidden"
+                                            value={renewalChecklistData.Optum_Physical_Health_Network__c}
+                                            options={picklistValues} onchange={handleChange}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
                         </td>
                     </tr>
                     <tr>
-                      <td class="left">
-                                  <span>Standard Communications</span>
-                              </td>
-                        <td class="slds-text-align_left"></td>
-                        <td class="slds-text-align_left"></td>
-                        <td class="slds-text-align_left">Yes</td>
-                        <td class="slds-text-align_left">
-                                  Yes
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="left">
-                                  <span>Surest Member Services and Surest Clinical Advocacy</span>
-                                </td>
-                        <td class="slds-text-align_left"></td>
-                        <td class="slds-text-align_left"></td>
-                        <td class="slds-text-align_left">Yes</td>
-                        <td class="slds-text-align_left">
-                                  Yes
-                             
-                      </td>
-                    </tr>
-                    <!-- <tr>
                         <td class="left">
-                            <div class="slds-grid slds-grid--vertical-align-center"
-                                style="width:100%;">
-                                <div class="slds-col slds-size_2-of-6 slds-p-around_xx-small">
-                                    <b><span>Optional Programs:</span></b>
-                                </div>
-                                <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small" style="text-align: center;">
-                                    <b><span> Implementation Lead Time</span></b>
-                                </div>
-                                <div
-                                    class="slds-col slds-size_1-of-6 slds-p-around_xx-small" style="text-align: center;">
-                                </div>
-                                <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small" style="text-align: center;">
-                                    <b><span>Last Year’s Validation</span></b>
-                                </div>
-                                <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small" style="text-align: center;">
-                                    <b><span>Next Year’s Validation</span></b>
-                                </div>
-                            </div>
+                              <span>Standard Communications</span>
                         </td>
-                    </tr> -->
-                        
-
-                    <!-- <template for:each={checklistDisplayData} for:item="item">
-                      <tr key={item.label}>
-                          <td class="left">
-                              <div class="slds-grid slds-grid_vertical-align-center border-bottom">
-                  
-                                  <div class={item.labelClass}>
-                                      <span>{item.label}</span>
-                                  </div>
-                                  <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small slds-text-align_center">
-                                      <template if:true={item.productValue}>
-                                      <span class="slds-text-body_regular">{item.productValue}</span>
-                                      </template>
-                                  </div>
-                                  <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small slds-text-align_center">
-                                    <template if:true={item.isDual}>
-                                        <span class="slds-text-body_regular">Dual Product (Surest with UNET only)</span>
-                                    </template>
-                                    <template if:false={item.isDual}>
-                                        <span></span>
-                                    </template>
-                                  </div>
-                                  <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small slds-text-align_center">
-                                      <span class="slds-text-body_regular">
-                                          {item.lastYearValue}
-                                      </span>
-                                  </div>
-                                  <div class={item.mainClass}>
-                                      <template if:false={isEdit}>
-                                          <template if:true={item.value}>
-                                              <span>{item.value}</span>
-                                          </template>
-                                      </template>
-                                      <template if:true={isEdit}>
-                                          <template if:true={item.readonly}>
-                                              <span>{item.value}</span>
-                                          </template>
-                                          <template if:false={item.readonly}>
-                                            <span class="slds-text-align_left" style="padding-top: 5px;">
-                                              <lightning-combobox data-api={item.name}  variant="label-hidden"  value={item.value}  options={item.options}  onchange={handleChange}>
-                                              </lightning-combobox>
-                                            </span>
-                                          </template>
-                                      </template>
-                                  </div>
-                  
-                                  <template if:true={item.relatedField}>
-                                      <div class="slds-col slds-size_1-of-6 slds-p-around_xx-small slds-text-align_right">
-                                          <template if:false={isEdit}>
-                                              <span>{item.relatedField.value}</span>
-                                          </template>
-                                          <template if:true={isEdit}>
-                                              <template if:true={item.relatedField.readonly}>
-                                                  <span>{item.relatedField.value}</span>
-                                              </template>
-                                              <template if:false={item.relatedField.readonly}>
-                                                <span class="slds-text-align_left" style="padding-top: 5px;">
-                                                  <lightning-combobox  data-api={item.relatedField.name}  variant="label-hidden"  value={item.relatedField.value}  options={extraOnePassValues}  onchange={handleChange}>
-                                                  </lightning-combobox>
-                                                </span>
-                                                </template>
-                                          </template>
-                                      </div>
-                                  </template>
-
-                              </div>
-                          </td>
-                      </tr>
-                  </template> -->
-                <!-- </table> -->
-                  <!-- Scrollable Optional Programs Section -->
-                    <!-- <div class="optional-wrapper">
-                        <table class="slds-table slds-no-row-hover">
-
-                            <thead>
-                                <tr>
-                                    <th style="width:35%">Optional Programs:</th>
-                                    <th style="width:18%">PIM Implementation Lead Time</th>
-                                    <th style="width:16%">Dual Indicator</th>
-                                    <th style="width:16%">Last Year’s Validation</th>
-                                    <th style="width:16%">Next Year’s Validation</th>
-                                </tr>
-                            </thead> -->
-
-                            <!-- <tbody> -->
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">
+                            <template if:true={lastYearChecklist.Surest_Standard_Communications__c}>
+                                <span>{lastYearChecklist.Surest_Standard_Communications__c}</span>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Surest_Standard_Communications__c}>
+                                  <span>{renewalChecklistData.Surest_Standard_Communications__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox data-api="Surest_Standard_Communications__c" variant="label-hidden"
+                                            value={renewalChecklistData.Surest_Standard_Communications__c}
+                                            options={picklistValues} onchange={handleChange}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                              <span>Surest Member Services and Surest Clinical Advocacy</span>
+                        </td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left"></td>
+                        <td class="slds-text-align_left">
+                            <template if:true={lastYearChecklist.Surest_Member_Services__c}>
+                                <span>{lastYearChecklist.Surest_Member_Services__c}</span>
+                            </template>
+                        </td>
+                        <td class="slds-text-align_left">
+                              <template if:false={isEdit}>
+                                <template if:true={renewalChecklistData.Surest_Member_Services__c}>
+                                  <span>{renewalChecklistData.Surest_Member_Services__c}</span>
+                                </template>
+                              </template>
+                              <template if:true={isEdit}>
+                                    <span class="slds-text-align_left" style="padding-top: 5px;">
+                                        <lightning-combobox data-api="Surest_Member_Services__c" variant="label-hidden"
+                                            value={renewalChecklistData.Surest_Member_Services__c}
+                                            options={picklistValues} onchange={handleChange}>
+                                        </lightning-combobox>
+                                    </span>
+                              </template>
+                        </td>
+                    </tr>
                     <tr>
                         <td class="left" colspan="5">   
                             <b><span>Optional Programs:</span></b>
@@ -468,7 +413,12 @@
 
                                         <td class="slds-text-align_left">
                                             <template if:true={item.lastYearValue}>
-                                                {item.lastYearValue}
+                                              <div>  {item.lastYearValue}  </div>
+                                               <template if:true={item.lastYearRelatedField}>
+                                                    <div class="slds-m-top_x-small">
+                                                        {item.lastYearRelatedField}
+                                                    </div>
+                                                </template>
                                             </template>
                                         </td>
 
@@ -482,12 +432,21 @@
                                                     {item.value}
                                                 </template>
                                                 <template if:false={item.readonly}>
+                                                    <!-- <select class="slds-select"  data-api={item.name} value={item.value}
+                                                        onchange={handleChange}>
+                                                        <option value=""> Select an option</option>
+                                                        <template for:each={item.options} for:item="opt">
+                                                            <option key={opt.value} value={opt.value}>
+                                                                {opt.label}
+                                                            </option>
+                                                        </template>
+                                                    </select> -->
                                                     <lightning-combobox
                                                         data-api={item.name}
                                                         variant="label-hidden"
                                                         value={item.value}
                                                         options={item.options}
-                                                        onchange={handleChange}>
+                                                        onchange={handleChange} dropdown-alignment="auto">
                                                     </lightning-combobox>
                                                 </template>
                                             </template>
@@ -502,12 +461,21 @@
                                                         {item.relatedField.value}
                                                     </template>
                                                     <template if:false={item.relatedField.readonly}>
+                                                        <!-- <select class="slds-select"  data-api={item.relatedField.name} value={item.relatedField.value}
+                                                            onchange={handleChange}>
+                                                            <option value=""> Select an option</option>
+                                                            <template for:each={extraOnePassValues} for:item="opt">
+                                                                <option key={opt.value} value={opt.value}>
+                                                                    {opt.label}
+                                                                </option>
+                                                            </template>
+                                                        </select> -->
                                                         <lightning-combobox
                                                             data-api={item.relatedField.name}
                                                             variant="label-hidden"
                                                             value={item.relatedField.value}
                                                             options={extraOnePassValues}
-                                                            onchange={handleChange}>
+                                                            onchange={handleChange} dropdown-alignment="auto">
                                                         </lightning-combobox>
                                                     </template>
                                                 </template>
@@ -519,9 +487,28 @@
                                 </template>
                             </tbody>
                         </table>
-                    </div>
+                </div>
+             <template if:true={isEdit}>
+            <div class="slds-float_right slds-m-right_large slds-m-top_x-small slds-m-bottom_x-small">
+                <lightning-button label="Cancel" class="slds-m-left_x-small" onclick={handleCancel}
+                    icon-name="action:remove">
+                </lightning-button>
+                <lightning-button variant="brand" label="Save" class="slds-m-left_x-small" onclick={handleSave}
+                    icon-name="utility:save">
+                </lightning-button>
             </div>
+            </template>
+            <template if:true={hideEdit}>
+                <div class="slds-float_right slds-m-top_x-small">
+                    <lightning-button variant="brand" label="Edit" class="slds-m-left_x-small"
+                        onclick={handleCPW} icon-name="action:edit">
+                    </lightning-button>
+                </div>
+            </template>
+            </div>
+           
         </div>
+        <br>
         <template if:true={showCopyPopup}>
             <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">

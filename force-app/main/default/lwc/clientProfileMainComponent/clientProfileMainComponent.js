@@ -290,7 +290,6 @@ export default class ClientPlanMainComponent extends LightningElement {
                     this.clientSurveyResultData = clientProfileData.getClientSurveyResultData;
                 }
             }
-            console.log('clientSurveyResultData',JSON.stringify(this.clientSurveyResultData));
             if (clientProfileData.hasOwnProperty('medList')) {
                 let medListData = clientProfileData.medList;
                 if (!this.isListEmpty(medListData)) {

@@ -3,8 +3,8 @@
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
-        <name>Update_Flag_to_False_1</name>
-        <label>Update Flag to False 1</label>
+        <name>Change_Flag_to_False</name>
+        <label>Change Flag to False</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -36,13 +36,13 @@
         </assignmentItems>
     </assignments>
     <decisions>
-        <name>Check_if_update_on_QuickPublish</name>
-        <label>Check if update on QuickPublish</label>
+        <name>Update_Status_only_when_there_is_a_Change</name>
+        <label>Update Status only when there is a Change</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Update_Change_type</name>
+            <name>Stage_order_Change</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Skip_Status_Update_c__c</leftValueReference>
@@ -51,13 +51,27 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Change_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>No Change</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Display_Order_Stage__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Update_Status_and_Change_type</targetReference>
             </connector>
-            <label>Update Change type</label>
+            <label>Stage order Change</label>
         </rules>
         <rules>
-            <name>Update_Flag_to_False</name>
+            <name>Change_Flag_to_False_1</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Skip_Status_Update_c__c</leftValueReference>
@@ -67,9 +81,9 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Flag_to_False_1</targetReference>
+                <targetReference>Change_Flag_to_False</targetReference>
             </connector>
-            <label>Update Flag to False</label>
+            <label>Change Flag to False</label>
         </rules>
     </decisions>
     <description>Update PIM Status and Change type on Change of Display Order so that user can review and publish</description>
@@ -99,23 +113,8 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Check_if_update_on_QuickPublish</targetReference>
+            <targetReference>Update_Status_only_when_there_is_a_Change</targetReference>
         </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Product_Display_Order_Stage__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Product_Change_Type__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>No Change</stringValue>
-            </value>
-        </filters>
         <object>PIM_Product_Stage__c</object>
         <recordTriggerType>Update</recordTriggerType>
         <triggerType>RecordBeforeSave</triggerType>

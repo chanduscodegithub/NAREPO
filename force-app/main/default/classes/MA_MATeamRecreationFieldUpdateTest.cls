@@ -11,7 +11,7 @@ public class MA_MATeamRecreationFieldUpdateTest {
         
         User u = new User(
             ProfileId = [SELECT Id FROM Profile WHERE Name = 'System Administrator'].Id, FirstName = 'FirstName',
-            LastName = 'LastName', Username = 'puser000@crmit.com' + System.currentTimeMillis(),
+            LastName = 'LastName', Username = 'puser000@crmit.com' + System.currentTimeMillis(), Position__c = 'Test User',
             Email = 'puser000@crmit.com', CompanyName = 'TEST', Title = 'title', TimeZoneSidKey = 'America/Los_Angeles', 
             Alias = 'alias', EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US');
         insert u;

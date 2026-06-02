@@ -13,8 +13,8 @@
     sortFields : function(component, event, helper) {
         var selectedItem = event.currentTarget;
         var fieldNameToBeSorted = selectedItem.dataset.record;
-        
-        var fieldItagsWithAuraAttrMap = '{"AccountFirm__r.Name":"sortAccountName","RecordType":"sortAccountType","Owner":"sortAccountOwner"}';
+        // Modified By Gurjot 
+        var fieldItagsWithAuraAttrMap = '{"AccountFirm__r.Name":"sortAccountName","AccountFirm__r.Client_Reference_Status__c":"sortReferenceableAsc","RecordType":"sortAccountType","Owner":"sortAccountOwner","AccountFirm__r.NPS__c":"sortLRTAsc"}'; //Modified By Gurjot
         var sortFieldCompNameMap = JSON.parse(fieldItagsWithAuraAttrMap);
         var sortFieldCompName = sortFieldCompNameMap[fieldNameToBeSorted];
         
@@ -36,9 +36,12 @@
     },
     
     openSortingPopup : function(component, event, helper){
+        // Modified By Gurjot 
         var fieldsToSort = [{"fieldName":"AccountFirm__r.Name","fieldDisplayName":"Account Name","fieldOrder":component.get("v.sortAccountName")},
+                            {"fieldName":"AccountFirm__r.Client_Reference_Status__c","fieldDisplayName":"Referenceable Client","fieldOrder":component.get("v.sortReferenceableAsc")},
                             {"fieldName":"AccountFirm__r.RecordType.Name","fieldDisplayName":"Account Type","fieldOrder":component.get("v.sortAccountType")},
-                            {"fieldName":"AccountFirm__r.Owner.Name","fieldDisplayName":"Owner","fieldOrder":component.get("v.sortAccountOwner")}
+                            {"fieldName":"AccountFirm__r.Owner.Name","fieldDisplayName":"Owner","fieldOrder":component.get("v.sortAccountOwner")},
+                            {"fieldName":"AccountFirm__r.NPS__c","fieldDisplayName":"LRT (Most Recent Score)","fieldOrder":component.get("v.sortLRTAsc")}
                            ];       
         $A.createComponents([["c:Panel_Component_Sorting",{attribute:true,'FieldsToSort':fieldsToSort,'lastSortField':component.get("v.lastSortField"),'isChildComponent':true}]],
                             function(newCmp, status){ 
@@ -66,7 +69,8 @@
         var fieldNameToBeSorted = event.getParam('fieldNameToBeSorted');
         component.set("v.lastSortField",fieldNameToBeSorted);
         var orderToBeSorted = event.getParam('orderToBeSorted');
-        var fieldItagsWithAuraAttrMap = '{"AccountFirm__r.Name":"sortAccountName","AccountFirm__r.RecordType.Name":"sortAccountType","AccountFirm__r.Owner.Name":"sortAccountOwner"}';
+        // Modified By Gurjot 
+        var fieldItagsWithAuraAttrMap = '{"AccountFirm__r.Name":"sortAccountName","AccountFirm__r.Client_Reference_Status__c":"sortReferenceableAsc","AccountFirm__r.RecordType.Name":"sortAccountType","AccountFirm__r.Owner.Name":"sortAccountOwner","AccountFirm__r.NPS__c":"sortLRTAsc"}'; //Modified By Gurjot
         var sortFieldCompNameMap = JSON.parse(fieldItagsWithAuraAttrMap);
         var sortFieldCompName = sortFieldCompNameMap[fieldNameToBeSorted]; 
         if(orderToBeSorted === "DESC"){

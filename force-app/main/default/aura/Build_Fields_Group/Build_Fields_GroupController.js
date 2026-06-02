@@ -113,7 +113,6 @@
             percentageFeildVal = percentageFeildVal/100;
             component.set('v.MAFeildValue',percentageFeildVal);
         }
-        console.log('fields',JSON.stringify(component.get('v.fields')));
         
     },
     selectWriter : function(component, event, helper) {
@@ -358,13 +357,13 @@
             }
             if(isFocus){
                 setTimeout(function(){ 
-                    var feildSetId = component.find("feildSetId");  
+                    var feildSetId = component.find("feildSetId");   
                     if(feildSetId!=undefined)
-                    if(component.get('v.fields.fieldPath') == 'Proactive_Renewal_Underwriter__c'){
-                        feildSetId.focusInupt();
-                    }else{
-                        feildSetId.focus();
-                    }
+                        if(component.get('v.fields.fieldPath') == 'Proactive_Renewal_Underwriter__c' ){
+                            feildSetId.focusInupt();
+                        }else{
+                            feildSetId.focus();
+                        }
                 }, 600);	  
             }else{
                 $A.util.removeClass(component.find("editDiv"),'err-bkg');

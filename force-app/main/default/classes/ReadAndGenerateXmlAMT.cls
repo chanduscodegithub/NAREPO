@@ -17,7 +17,7 @@ public with sharing class ReadAndGenerateXmlAMT {
         List<Decimal> roleSortOrder = new List<Decimal>();
         List<String> toAvoidDuplicatesIdRole = new List<String>();
         List<String> toAvoidDuplicatesRole = new List<String>();
-        Map<String, String> roleAliasMap = new Map<String, String>();
+        
         AMT_Reference_Guide_Role_Responsibility__mdt[] roleRespData = [SELECT Role__c,Responsibility__c,Sorting_Order__c FROM AMT_Reference_Guide_Role_Responsibility__mdt];
         for (AMT_Reference_Guide_Role_Responsibility__mdt roleResp : roleRespData) {
             if(roleResp != null && roleResp.Role__c != null){
@@ -41,10 +41,7 @@ public with sharing class ReadAndGenerateXmlAMT {
             system.debug('accQuery--'+accQuery);
         }else{
             for (Service_Amt__C eachServiceAmt : referenceGuideAmtList) {
-                
-              // roleInServiceAmt.add(eachServiceAmt.Contact_Role__c+'&&'+eachServiceAmt.Id);
-                roleInServiceAmt.add(getContactRoleLabel(eachServiceAmt.Contact_Role__c) + '&&' + eachServiceAmt.Id);
-
+                roleInServiceAmt.add(eachServiceAmt.Contact_Role__c+'&&'+eachServiceAmt.Id);
                 idObjectMap.put(eachServiceAmt.Id, eachServiceAmt);
             }
         }
@@ -62,9 +59,7 @@ public with sharing class ReadAndGenerateXmlAMT {
         
         if(referenceGuideAmtListFinal.size() > 0){
             for(Service_Amt__c selectedServiceAmt : referenceGuideAmtListFinal){
-                //String roleName = selectedServiceAmt.Contact_Role__c;
-                String roleName = getContactRoleLabel(selectedServiceAmt.Contact_Role__c);
-
+                String roleName = selectedServiceAmt.Contact_Role__c;
                 roleSortOrder.add(roleOrderMap.get(roleName));
             }
             system.debug('roleSortOrder1=='+roleSortOrder);
@@ -372,7 +367,6 @@ string query ='Select CM_SCE__r.UserRole.Name,CM_SCE__r.Name,CM_SCE__r.Phone,CM_
         templateWrapper.CUSTOM_OBJECT_MAP = IConstantsTemplate.CUSTOM_OBJECT_MAP;        
         templateWrapper.OBJECT_FILTER_RECORDS = IConstantsTemplate.OBJECT_FILTER_RECORDS;
         templateWrapper.roleRespMap = roleRespMap;
-        System.debug('roleRespMap'+roleRespMap);
         
         return templateWrapper;       
     }
@@ -519,7 +513,7 @@ string query ='Select CM_SCE__r.UserRole.Name,CM_SCE__r.Name,CM_SCE__r.Phone,CM_
         System.debug('matcher '+m);
         
         Map<String,Set<String>> objectItagesMap = new Map<String,Set<String>>();
-        Map<String, String> contactRoleLabelMap = new Map<String, String>();
+        
         while (m.find()) {
             String itag = m.group();    
             
@@ -568,20 +562,7 @@ string query ='Select CM_SCE__r.UserRole.Name,CM_SCE__r.Name,CM_SCE__r.Phone,CM_
         
         return objectItagesMap;
     }   
-    //
-  public static String getContactRoleLabel(String apiName) {
-    Schema.DescribeFieldResult fieldResult = Service_AMT__c.Contact_Role__c.getDescribe();
-    List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
     
-    for (Schema.PicklistEntry entry : picklistValues) {
-        if (entry.getValue() == apiName) {
-            return entry.getLabel(); 
-        }
-    }
-    return apiName; 
-}
-
-
     public class SOQLqueryWrapper {
         @AuraEnabled
         public string finalSOQLquery { get;set; }  

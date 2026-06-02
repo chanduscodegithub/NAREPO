@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Associate_Default_Consultant</name>
+        <label>Associate Default Consultant</label>
+        <locationX>50</locationX>
+        <locationY>1223</locationY>
+        <actionName>Associate_RemoveDefaultConsultantForMA</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>accId</name>
+            <value>
+                <elementReference>$Record.Account.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>currVal</name>
+            <value>
+                <elementReference>$Record.Does_this_Oppty_Risk_Involve_Consultant__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>isNew</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Associate_RemoveDefaultConsultantForMA</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Create_National_Account_Records_for_MA_1</name>
+        <label>Create National Account Records for MA 1</label>
+        <locationX>314</locationX>
+        <locationY>839</locationY>
+        <actionName>CreateCompetitorRecordsForMA</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Associate_Remove_Default_Consultant_for_MA</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>inputParams</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>CreateCompetitorRecordsForMA</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Create_National_Account_Records_for_MA_Action</name>
+        <label>Create National Account Records for MA Action</label>
+        <locationX>50</locationX>
+        <locationY>731</locationY>
+        <actionName>CreateCompetitorRecordsForMA</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Associate_Remove_Default_Consultant_for_MA</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>inputParams</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>CreateCompetitorRecordsForMA</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Remove_Default_Consultant</name>
+        <label>Remove Default Consultant</label>
+        <locationX>314</locationX>
+        <locationY>1331</locationY>
+        <actionName>Associate_RemoveDefaultConsultantForMA</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>accId</name>
+            <value>
+                <elementReference>$Record.Account.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>currVal</name>
+            <value>
+                <elementReference>$Record.Does_this_Oppty_Risk_Involve_Consultant__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>isNew</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>oldVal</name>
+            <value>
+                <elementReference>oldvalue</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Associate_RemoveDefaultConsultantForMA</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>62.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Associate_Remove_Default_Consultant_for_MA</name>
+        <label>Associate/Remove Default Consultant for MA</label>
+        <locationX>248</locationX>
+        <locationY>1115</locationY>
+        <defaultConnector>
+            <targetReference>Change_of_Does_this_Oppty_Risk_Involve_Consultant</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>New_MA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>isNewMAConsultantNo</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Associate_Default_Consultant</targetReference>
+            </connector>
+            <label>New MA</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Change_of_Does_this_Oppty_Risk_Involve_Consultant</name>
+        <label>Change of Does this Oppty\Risk Involve Consultant</label>
+        <locationX>446</locationX>
+        <locationY>1223</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Change_of_Does_this_Oppty_Risk_Involve_Consultant_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Does_this_Oppty_Risk_Involve_Consultant__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Remove_Default_Consultant</targetReference>
+            </connector>
+            <label>Change of Does this Oppty\Risk Involve Consultant IsTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Create_Competitors_for_Membership_Activity</name>
+        <label>Create Competitors for Membership Activity</label>
+        <locationX>248</locationX>
+        <locationY>623</locationY>
+        <defaultConnector>
+            <targetReference>On_Change_Product_Type</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>For_new_MA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsCreatedbyQA</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_National_Account_Records_for_MA_Action</targetReference>
+            </connector>
+            <label>For new MA</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>MA_CM_VP_VPCR_RVP_SCE_SCE_Player_Coach_Status_Open</name>
+        <label>MA CM VP/VPCR-RVP/SCE/SCE Player-Coach Status Open</label>
+        <locationX>248</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Create_Competitors_for_Membership_Activity</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_MA_Status_Open_isTrue</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Open</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>MA_Update_field_from_Account</targetReference>
+            </connector>
+            <label>If MA Status Open isTrue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>On_Change_Product_Type</name>
+        <label>On Change Product Type</label>
+        <locationX>446</locationX>
+        <locationY>731</locationY>
+        <defaultConnector>
+            <targetReference>Associate_Remove_Default_Consultant_for_MA</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>On_Change_Product_Type_IsTrue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Product_Type_Involved_in_Opp__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_National_Account_Records_for_MA_1</targetReference>
+            </connector>
+            <label>On Change Product Type IsTrue</label>
+        </rules>
+    </decisions>
+    <description>Flow updates MA Fields from related Account,  Manage Default Consultant for MA and Creates &apos;MA Competitor&apos; Record.
+
+1) When a new record is created, calls a Flow ‘MACM VP/VPCR-RVP/SCE/SCE Player-CoachUpdateifStatusisOpen 2’ which will eventually update the new MA record with values from associated Account. 
+2) Creates &apos;MA Competitors&apos; record for National Accounts.
+3) Associate or Delete &quot;UHC - Direct, No Consultant&quot; based on the value of Does this Oppty\Risk Involve Consultant. the &quot;UHC - Direct, No Consultant&quot; Consultant.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>IsCreatedbyQA</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(ISNEW(),{!$Record.Is_Created_by_QA__c} = false)</expression>
+    </formulas>
+    <formulas>
+        <name>isNewMAConsultantNo</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(ISNEW(),ISPICKVAL({!$Record.Does_this_Oppty_Risk_Involve_Consultant__c} , &apos;No&apos;) )</expression>
+    </formulas>
+    <formulas>
+        <name>oldvalue</name>
+        <dataType>String</dataType>
+        <expression>PRIORVALUE({!$Record.Does_this_Oppty_Risk_Involve_Consultant__c} )</expression>
+    </formulas>
+    <interviewLabel>Update MA Fields from related Account, Manage Default Consultant for MA and Create &apos;MA Competitor&apos; Record {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update MA Fields from related Account, Manage Default Consultant for MA and Create &apos;MA Competitor&apos; Record</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>122</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>MA_CM_VP_VPCR_RVP_SCE_SCE_Player_Coach_Status_Open</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>MA_Update_field_from_Account</name>
+        <label>MA Update field from Account</label>
+        <locationX>116</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>Create_Competitors_for_Membership_Activity</targetReference>
+        </connector>
+        <flowName>MACM_VP_VPCR_RVP_SCE_SCE_Player_CoachUpdateifStatusisOpen</flowName>
+        <inputAssignments>
+            <name>AccountId</name>
+            <value>
+                <elementReference>$Record.Account.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>MAId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </subflows>
+</Flow>

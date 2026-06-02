@@ -298,12 +298,10 @@ public class SoldCaseCheckListPrintCtrlTest {
         Test.startTest();
         //List<Opportunity> oppList = SoldCaseChecklistTestUtil.createSoldCaseData(); 
         //system.debug('oppList ---> '+oppList);
-        Opportunity opp=[SELECT Id,Name FROM Opportunity WHERE Name='Test Opportunity insert Record'];
+        Opportunity opp=[SELECT Id,Name,EffectiveDate__c,Product_Type_Involved_in_Opp__c FROM Opportunity WHERE Name='Test Opportunity insert Record'];
         //Opportunity opp = createTestData();
         Test.setCurrentPageReference(new PageReference('Page.SoldCaseCheckListPrint')); 
         System.currentPageReference().getParameters().put('Id', opp.Id);
-        
-        
         
         Sold_Case_Checklist__c scc = new Sold_Case_Checklist__c();
         scc.Name = 'Test Scc';
@@ -326,11 +324,26 @@ public class SoldCaseCheckListPrintCtrlTest {
         String x = obj3.hqAddress;
         
         SoldCaseCheckListPrintCtrl sccp = new SoldCaseCheckListPrintCtrl();
+        SoldCaseCheckListPrintCtrl ctrl = new SoldCaseCheckListPrintCtrl();
+        String expectedToday = System.today().month() + '/' + System.today().day() + '/' + System.today().year();
+        System.assertEquals(expectedToday, ctrl.getFormattedDate());
+        
+        // getFormattedEffectiveDate
+        String effDate = opp.EffectiveDate__c.month() + '/' + opp.EffectiveDate__c.day() + '/' + opp.EffectiveDate__c.year();
+        System.assertEquals(effDate, ctrl.getFormattedEffectiveDate());
+        
+        // getWordFileName
+        String expectedName = 'SC Letter_' + opp.Name.replaceAll('[\\.,&\\+\\/\\-]', '_');
+        System.assertEquals(expectedName, ctrl.getWordFileName());
+        
+        // getOtherBuyProductsMA
+        String expectedOtherBuy = String.valueOf(
+            opp.Product_Type_Involved_in_Opp__c.contains('Other Buy Up Programs')
+        );
+        System.assertEquals(expectedOtherBuy, ctrl.getOtherBuyProductsMA());
         Test.stopTest();  
         system.assertNotEquals(null, sccp.offset);
         system.assertNotEquals(null, sccp.hqAddress);
         
     }
-    
-
 }

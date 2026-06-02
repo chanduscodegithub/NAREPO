@@ -1,0 +1,153 @@
+<!--template>
+    <lightning-card title="Engagement Score">
+        <div class="slds-m-around_medium">
+            <template if:true={lastRunFormatted}>
+                <p><strong>Last Run:</strong> {lastRunFormatted}</p>
+            </template>
+            <lightning-button 
+                label="Calculate Engagement Score"
+                variant="brand"
+                onclick={handleClick}
+                disabled={isProcessing}>
+            </lightning-button>
+        </div>
+    </lightning-card>
+</template-->
+
+<!--template>
+    <div class="custom-container">
+<div class="slds-p-around_medium lgc-bg"><lightning-button-icon icon-name="utility:bookmark"  variant="brand" alternative-text="Bookmark" class="slds-m-left_xx-small" title="Bookmark"></lightning-button-icon></div>
+<span class="title">Engagement Score</span>
+        <template if:true={lastRunFormatted}>
+            <span class="last-run"><strong>Last Run:</strong> {lastRunFormatted}</span>
+        </template>
+        <lightning-button 
+            label="Calculate Engagement Score"
+            variant="brand"
+            onclick={handleClick}
+            disabled={isProcessing}
+            class="action-button">
+        </lightning-button>
+    </div>
+</template-->
+
+<!--template>
+    <div class="c-container">
+        <lightning-layout horizontal-align="spread">
+            <lightning-layout-item padding="around-small">
+<div class="slds-p-left_medium lgc-bg"><lightning-button-icon icon-name="utility:bookmark"  variant="brand" alternative-text="Bookmark" class="slds-m-left_xx-small" title="Bookmark"></lightning-button-icon><span class=" slds-p-left_small slds-text-heading--small">Engagement Score</span></div>
+
+            </lightning-layout-item>
+            <lightning-layout-item padding="around-small">
+              <template if:true={lastRunFormatted}>
+            <span class=" slds-p-right_x-small"><strong>Last Run:</strong> {lastRunFormatted}</span>
+        </template>
+        <lightning-button 
+            label="Calculate Engagement Score"
+            variant="brand"
+            onclick={handleClick}
+            disabled={isProcessing}
+            class="action-button slds-p-right_x-small">
+        </lightning-button>
+            </lightning-layout-item>
+            
+        </lightning-layout>
+    </div>
+</template-->
+
+
+<template>
+    <div class=" spinner-container">
+    <div class="c-container">
+        <lightning-layout horizontal-align="spread" >
+            <lightning-layout-item padding="around-small">
+<div class="slds-p-left_medium lgc-bg">
+    <div class=" slds-p-around_xx-small slds-text-color_weak "><span  class="slds-text-body_regular" >Last Run: <span style="color:#9e0059">{lastRunFormatted}</span> </span></div> 
+    <div class=" slds-p-around_xx-small slds-text-color_weak "><span  class="slds-text-body_regular">Next Run: <span style="color:#0a9396">{nextRunFormatted}</span></span></div>
+</div>
+
+            </lightning-layout-item>
+            
+            <lightning-layout-item padding="around-small">
+             <div class="slds-p-around_xx-small">
+            <!--lightning-button-icon icon-name="standard:metrics"  variant="brand" alternative-text="Bookmark" class="slds-p-around_xx-small"    title="Bookmark"></lightning-button-icon-->
+
+        <!--lightning-button 
+            label="Calculate Engagement Score"
+            variant="brand"
+            onclick={handleClick}
+            disabled={isProcessing}
+            class="action-button slds-p-right_x-small">
+        </lightning-button-->
+
+
+        <button class={generateButtonClass} onclick={handleOpenModal} disabled={isProcessing} title="A summary of the engagement across contacts for this account accompanied by insights and recommendations.">
+                            <lightning-icon class="slds-p-right_x-small" icon-name="utility:agent_astro" size="small" alternative-text="Agent Astro"></lightning-icon>
+                            <span class="button-text">Engagement Summary</span>
+                        </button>
+          <!-- <button class="db_button" title="View Engagement Dashboard">
+            <a href="https://uhcmerit--st.sandbox.lightning.force.com/analytics/dashboard/0FKdh0000002CGPGA2?pageId=b1ef6fbe-cc9e-4937-862c-c6a5ff513abf"  target="_blank" class="dashboard-button"> <lightning-icon class="icon-class-db" icon-name= "standard:metrics" size="medium" alternative-text="Agent Astro"></lightning-icon>
+            </a>
+          </button>               -->
+       
+
+        </div> 
+            </lightning-layout-item>
+
+
+            <lightning-layout-item padding="around-small">
+             
+        <lightning-button 
+
+            label="Calculate Engagement Score"
+            variant="brand-outline"
+            onclick={openConfirmationModal}
+            disabled={isProcessing}
+            class=" slds-p-right_x-small">
+        </lightning-button>
+         <template if:true={lastRunFormatted}>
+            <div class="activities-class"><span class="">Activities Since Last Run: <strong>{activityCount}</strong> </span></div>
+        </template>
+            </lightning-layout-item>
+            
+        </lightning-layout>
+    </div>
+    <!-- Confirmation Modal -->
+<template if:true={isConfirmationModalOpen}>
+    <section role="dialog" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">Confirm Action</h2>
+                <!-- <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                        onclick={closeConfirmationModal} 
+                        title="Close"> -->
+                    <!-- <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon> -->
+                <!-- </button> -->
+            </header>
+
+            <!-- Modal Body -->
+            <div class="slds-modal__content slds-p-around_medium">
+                <p>This will recalculate the Engagement Score and refresh the Engagement Summary.<BR> Would you like to proceed?</p>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={closeConfirmationModal}>Cancel</button>
+                <button class="slds-button slds-button_brand" onclick={handleClick}>Confirm</button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>
+
+
+ <template if:true={isModalOpen}>
+    <c-engagement-summary-component key={refreshKey}   record-id={recordId} onnotify={handleCloseModal} onrefreshparent={handleRefreshFromChild} ></c-engagement-summary-component>
+ </template>
+
+ <template if:true={isProcessing}>
+    <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+</template>
+    </div>
+</template>

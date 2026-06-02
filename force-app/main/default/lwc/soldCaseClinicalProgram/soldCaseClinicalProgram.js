@@ -33,8 +33,8 @@ export default class SoldCaseClinicalProgram extends LightningElement {
     }
     set soldCaseObjectData(value) {
         this.soldCaseDataCopy = Object.assign({}, value);
-        this.soldCaseDefaultValues = Object.assign({}, value);
-        this.setDefaultPicklistValues();
+       // this.soldCaseDefaultValues = Object.assign({}, value);
+       // this.setDefaultPicklistValues();
         this.loadChecklistMetadata();      
     }
 
@@ -96,6 +96,17 @@ export default class SoldCaseClinicalProgram extends LightningElement {
     handleSectionToggle(event) {
         const openSections = event.detail.openSections;
     }
+
+    // @api
+    // async refreshChildData() {
+    //     try {
+    //         // Await the async metadata loading
+    //         await this.loadChecklistMetadata();
+            
+    //     } catch (error) {
+    //         console.error('Error during child refresh:', error);
+    //     }
+    // }
 
     connectedCallback(){
         this.accRecordId = this.masterData.Account.Id;
@@ -166,6 +177,10 @@ export default class SoldCaseClinicalProgram extends LightningElement {
     
 
     setDefaultPicklistValues() {
+        let defaultsApplied = false;
+         if (!this.soldCaseDefaultValues) {
+            this.soldCaseDefaultValues = {};
+        }
         const defaultValue = 'Yes';
         const fieldsToDefault = [
             'Transplant_Resource_Services__c',
@@ -177,21 +192,33 @@ export default class SoldCaseClinicalProgram extends LightningElement {
             'Optum_Physical_Health_Network__c',
             'Optum_Behavioral_Network__c',
             'Surest_Standard_Communications__c',
-            'Surest_Member_Svcs_Clinical_Advocacy__c'
+            'Surest_Member_Services__c'
         ];
-    
+        this.soldCaseDefaultValues['Id'] =this.soldCaseDataCopy['Id'];
         fieldsToDefault.forEach(field => {
             if (!this.soldCaseDataCopy[field]) {
                 this.soldCaseDataCopy[field] = defaultValue;
-            }
-            if (!this.soldCaseDefaultValues[field]) {
                 this.soldCaseDefaultValues[field] = defaultValue;
+                defaultsApplied = true;
             }
+            // if (!this.soldCaseDefaultValues[field]) {
+            //     this.soldCaseDefaultValues[field] = defaultValue;
+            // }
         });
-
-        setTimeout(() => {
-            this.handleDefaultValueSave();
-        }, 0);
+        if (!this.soldCaseDataCopy['Calm_Health__c']) {
+            this.soldCaseDefaultValues['Calm_Health__c'] = 'Yes';
+        }
+        if (!this.soldCaseDataCopy['Clinical_Prgm_2nd_MD__c']) {
+            this.soldCaseDefaultValues['Clinical_Prgm_2nd_MD__c'] = 'Yes - Sold';
+        }
+        if (this.soldCaseDataCopy['One_Pass_Select__c'] == 'No - Term' || this.soldCaseDataCopy['One_Pass_Select__c'] == 'No - N/A') {
+            this.soldCaseDefaultValues['One_Pass_Subsidized__c'] = '';
+        }
+        if (defaultsApplied) {
+            setTimeout(() => {
+                this.handleDefaultValueSave();
+            }, 0);
+         }
 
 
     }
@@ -202,9 +229,11 @@ export default class SoldCaseClinicalProgram extends LightningElement {
         const readOnlyFlags = {};
         const isDual = {};
         const productFieldValues = {};
+       //console.log('opplineitemcopy  ---> ' + JSON.stringify(this.opplineitemcopy));
 
-        if (Array.isArray(this.opplineitemcopy)) {
-            this.opplineitemcopy.forEach(item => {
+        // if (Array.isArray(this.opplineitemcopy)) {
+            const items = Object.values(this.opplineitemcopy || {});
+            items.forEach(item => {
                 const fieldName = this.productCodeChecklistMap[item.ProductCode];
                 if (!fieldName) return;
 
@@ -226,12 +255,9 @@ export default class SoldCaseClinicalProgram extends LightningElement {
                         fieldvalue: 'Yes - Sold'
                     });
                     readOnlyFlags[fieldName] = true;
-                } else {
-                    readOnlyFlags[fieldName] = false;
                 }
-
             });
-        }
+        // }
 
         this.displayConfig.forEach(({ field }) => {
             if (!updatedSoldCaseDataCopy.hasOwnProperty(field)) {
@@ -239,7 +265,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
             }
         });
 
-         console.log('productInfoMap  ---> ' + JSON.stringify(this.productInfoMap));
+         //console.log('productInfoMap  ---> ' + JSON.stringify(this.productInfoMap));
 
         Object.entries(this.productCodeChecklistMap).forEach(([productCode, fieldName]) => {
             const product = this.productInfoMap?.[productCode];
@@ -251,10 +277,10 @@ export default class SoldCaseClinicalProgram extends LightningElement {
         
         });
 
-       // updatedSoldCaseDataCopy.Coronary_Artery_Disease_Management__c ||= 'No';
+        //updatedSoldCaseDataCopy.Coronary_Artery_Disease_Management__c ||= 'No';
         updatedSoldCaseDataCopy.Calm_Health__c ||= 'Yes';
         updatedSoldCaseDataCopy.Clinical_Prgm_2nd_MD__c ||= 'Yes - Sold';
-        if(updatedSoldCaseDataCopy.One_Pass_Select__c == ''){
+        if(updatedSoldCaseDataCopy.One_Pass_Select__c == '' || updatedSoldCaseDataCopy.One_Pass_Select__c == 'No - Term' || updatedSoldCaseDataCopy.One_Pass_Select__c == 'No - N/A'){
             updatedSoldCaseDataCopy.One_Pass_Subsidized__c = '';    
         }
         this.soldCaseDataCopy = updatedSoldCaseDataCopy;
@@ -268,6 +294,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
                 });
             }
         });
+        this.readOnlyFlags = { ...readOnlyFlags };
         readOnlyFlags['Calm_Health__c'] = true;
         this.readOnlyFlags = readOnlyFlags;
         this.isDual = isDual;
@@ -408,9 +435,7 @@ export default class SoldCaseClinicalProgram extends LightningElement {
             };
         });
         
-        console.log('Checklist display data (readonly check):', 
-        this.checklistDisplayData.map(i => `${i.label}: ${i.readonly}`).join(', ')
-        );
+        //console.log('Checklist display data (readonly check):', this.checklistDisplayData.map(i => `${i.label}: ${i.readonly}`).join(', '));
     }
 
     @track policyListSurestRec;

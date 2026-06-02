@@ -352,7 +352,8 @@ export default class CompetitiveLandscapeAddvendorModal extends LightningElement
               'Account__c': this.accId,
               // 'Hub_vendor__c': item.Hub_vendor__c,
               // 'Point_Solution__c': item.Point_Solution__c,
-              'Name': item.AccountName + ' - ' + product.value,
+              //'Name': item.AccountName + ' - ' + product.value,
+              'Name': item.AccountName,
               'CompetitorAccount__r': {
                 'Name': item.AccountName,
                 'Id': item.Id

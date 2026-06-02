@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : Spoorthy
  * @group             : 
- * @last modified on  : 11-19-2024
+ * @last modified on  : 11-22-2024
  * @last modified by  : Spoorthy
 **/
 import { api,track,wire,LightningElement } from 'lwc';
@@ -347,21 +347,24 @@ export default class SurestPaymentIntegrity extends LightningElement {
                         fieldvalue: ''
                     });
                 }
+            
                 if (event.target.value.length == 0) {
-                    this.soldCaseDataCopy['Surest_Pre_Pay__c'] = '';
-                    this.soldCaseDataCopy['Surest_Post_Pay__c'] = '';
-                    this.soldCaseDataCopy['Surest_Subrogation__c'] = '';
-                    this.soldCaseDataCopy['Surest_Coordination_of_Benefits__c'] = '';
-                    this.soldCaseDataCopy['Surest_CTV_Audit__c'] = '';
-                   
-                    this.soldCaseDataCopy['Surest_Pre_Pay_Percentage__c'] = '';
-                    this.soldCaseDataCopy['Surest_Post_Pay_Percentage__c'] = '';
-                    this.soldCaseDataCopy['Surest_Subrogation_Percentage__c'] = '';
-                    this.soldCaseDataCopy['Surest_Coordination_of_Benefit_Percent__c'] = '';
-                    this.soldCaseDataCopy['Surest_CTV_Audit_Percentage__c'] = '';
-                    this.soldCaseDataCopy['Surest_Fraud_Waste_and_Abuse_Mgmt_prgrm__c'] = '';
-                    this.soldCaseDataCopy['Surest_Credit_Balance_Rcvry_Prgrm_Prcnt__c'] = '';
-                    this.soldCaseDataCopy['Surest_Subrogation_Services_Percentage__c'] = '';
+                    this.soldCaseDataCopy = {
+                        ...this.soldCaseDataCopy,
+                        Surest_Pre_Pay__c: '',
+                        Surest_Post_Pay__c: '',
+                        Surest_Subrogation__c: '',
+                        Surest_Coordination_of_Benefits__c: '',
+                        Surest_CTV_Audit__c: '',
+                        Surest_Pre_Pay_Percentage__c: '',
+                        Surest_Post_Pay_Percentage__c: '',
+                        Surest_Subrogation_Percentage__c: '',
+                        Surest_Coordination_of_Benefit_Percent__c: '',
+                        Surest_CTV_Audit_Percentage__c: '',
+                        Surest_Fraud_Waste_and_Abuse_Mgmt_prgrm__c: '',
+                        Surest_Credit_Balance_Rcvry_Prgrm_Prcnt__c: '',
+                        Surest_Subrogation_Services_Percentage__c: ''
+                    };
 
                    this.editfielddetails.push({
                             fieldedited: 'Sold_Case_Checklist__c.Surest_Pre_Pay__c',

@@ -11,7 +11,7 @@ import rfpQuesNoFormat from '@salesforce/label/c.RFP_Question_No_Format_Instruct
 
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class StrategyMemoPoc extends LightningElement {
-    //@track isprintclick = false;
+    isfromprint =false;
     @track memoWireResult;
     isLoading = true;
     memoLoaded = false;
@@ -185,7 +185,7 @@ export default class StrategyMemoPoc extends LightningElement {
             //     this.isButtonVisibile = false;
             // }
             //this.isButtonVisible = this.isEditAllowed && !this.isRFPUser;
-            if(this.isRFPUser){
+            if(this.isRFPUser || !this.strategyInfo.hasEditAccess){
                  this.isButtonVisibile = false;
             }
             else if(this.isEditAllowed)
@@ -810,13 +810,10 @@ export default class StrategyMemoPoc extends LightningElement {
             //selectedValues: this.selectedCheckboxes
         })
             .then(() => {
-                //if(!this.isprintclick)
+                if(!this.isfromprint)
                 this.showToast('Success', 'Strategy Memo Saved successfully', 'success');
                 this.isEditMode = false;
-                /*if (this.isprintclick) {
-                    this.handleclickPrint2();
-                    this.isprintclick = false;
-                }*/
+               
                 return refreshApex(this.memoWireResult);
             })
             .then((result) => {
@@ -831,6 +828,10 @@ export default class StrategyMemoPoc extends LightningElement {
                 this.showToast('Error', 'Failed to save Strategy Memo', 'error');
             })
             .finally(() => {
+                 if(this.isfromprint){
+                    this.handleClickPrint2();
+                    this.isfromprint =false;
+                    }
                 this.isLoading = false;
             });
     }
@@ -868,22 +869,27 @@ export default class StrategyMemoPoc extends LightningElement {
         return plainText;
     }
 
-   /* handleClickPrint() {
-        this.isprintclick = true;
-         if(this.strategyInfo.stageMedical !== 'Notified'){
+    handleClickPrint() {
+        this.isfromprint = true;
+        if(this.strategyInfo.stageMedical == 'Notified' || !this.strategyInfo.hasEditAccess){
+            this.isfromprint = false;
+            this.handleClickPrint2();
+        }else if(this.strategyInfo.stageMedical != 'Notified' && this.strategyInfo.hasEditAccess){
             this.handleSave();
         }
-        if(this.strategyInfo.stageMedical == 'Notified'){
-            this.isprintclick = false;
-            this.handleclickPrint2();
+    }
+    handleClickPrint2(){
+        if(!this.strategyMemo.Id){
+            this.showToast('Error', 'No Strategy Memo record has been created. Please edit and save to create one before printing.', 'error');
+            return;
         }
-    }*/
-    handleClickPrint(){
+
         getStrategyInformation({
             membershipActivityId: this.recordId
         })
             .then(result => {
                 let strategyInfo = result;
+                
                 console.log('result', result);
                 console.log('strategyInfo.Opportunity', strategyInfo.Opportunity)
                 //let relatedOpportunitiesInfo = strategyInfo.getRelatedOpportunities();
@@ -952,12 +958,20 @@ export default class StrategyMemoPoc extends LightningElement {
 
                                 // }
                                 if (['Vs_Aetna__c', 'Vs_Anthem__c', 'Vs_Blues__c', 'Vs_Cigna__c', 'Vs_Blues_Alt__c'].includes(key) &&
-                                    value !== null &&
                                     value !== undefined &&
-                                    value !== '' &&
-                                    !isNaN(value)) {
-                                    value = `${Number(value)}%`;
+                                    value !== null &&
+                                    value !== ''
+                                   
+                                ) {
+                                    const num = Number(value);
+
+                                    if (Number.isNaN(num)) {
+                                        value = '';
+                                    } else {
+                                        value = `${num}%`;
+                                    }
                                 }
+                                
                                 if (['Annual_Revenue__c'].includes(key) && value) {
                                     //value = `${value}%`;
                                     value = `$${value}`;
@@ -1630,4 +1644,208 @@ export default class StrategyMemoPoc extends LightningElement {
         }
         return '';
     }
+
+
+    convertHtmlToWordXml(html) {
+    if (!html) return '';
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    let result = '';
+
+    tempDiv.childNodes.forEach(node => {
+
+        if (node.nodeName === 'P') {
+            result += this.convertParagraph(node);
+        }
+
+          else if (node.nodeName === 'UL') {
+            result += this.convertUnorderedList(node);
+        }
+
+        else if (node.nodeName === 'OL') {
+            result += this.convertOrderedList(node);
+        }
+
+        // handle stray text
+        if (node.nodeType === 3 && node.textContent.trim()) {
+    result += `<w:p>${this.buildRun(node.textContent)}</w:p>`;
+}
+
+
+    });
+
+    return result;
+}
+
+convertUnorderedList(ulNode) {
+    let result = '';
+
+    ulNode.querySelectorAll(':scope > li').forEach(li => {
+
+        let content = '';
+
+        li.childNodes.forEach(child => {
+            content += this.convertInline(child);
+        });
+
+        result += `
+            <w:p>
+                <w:r>
+                    <w:t>• </w:t>
+                </w:r>
+                ${content}
+            </w:p>
+        `;
+    });
+
+    return result;
+}
+
+
+convertOrderedList(olNode) {
+    let result = '';
+    let index = 1;
+
+    olNode.querySelectorAll(':scope > li').forEach(li => {
+
+        let content = '';
+
+        li.childNodes.forEach(child => {
+            content += this.convertInline(child);
+        });
+
+        result += `
+            <w:p>
+                <w:r>
+                    <w:t>${index}. </w:t>
+                </w:r>
+                ${content}
+            </w:p>
+        `;
+
+        index++;
+    });
+
+    return result;
+}
+
+convertInline(node) {
+
+    if (node.nodeType === 3) {
+        return this.buildRun(node.textContent);
+    }
+
+    if (node.nodeName === 'B' || node.nodeName === 'STRONG') {
+        return this.buildRun(node.textContent, { bold: true });
+    }
+
+    if (node.nodeName === 'I' || node.nodeName === 'EM') {
+        return this.buildRun(node.textContent, { italic: true });
+    }
+
+    if (node.nodeName === 'SPAN') {
+        const color = this.extractColor(node.style.color);
+        return this.buildRun(node.textContent, { color });
+    }
+
+    return this.convertChildren(node);
+}
+
+
+convertChildren(node) {
+    let result = '';
+    node.childNodes.forEach(child => {
+        result += this.convertInline(child);
+    });
+    return result;
+}
+
+
+convertParagraph(pNode) {
+    let runs = '';
+
+    pNode.childNodes.forEach(child => {
+
+        // Plain text
+        if (child.nodeType === 3) {
+            runs += this.buildRun(child.textContent);
+        }
+
+        // Bold
+        if (child.nodeName === 'B' || child.nodeName === 'STRONG') {
+            runs += this.buildRun(child.textContent, { bold: true });
+        }
+
+        // Italic
+        if (child.nodeName === 'I' || child.nodeName === 'EM') {
+            runs += this.buildRun(child.textContent, { italic: true });
+        }
+
+        // Span with style
+        if (child.nodeName === 'SPAN') {
+            const color = this.extractColor(child.style.color);
+            const bold = child.querySelector('b');
+            const italic = child.querySelector('i');
+
+            runs += this.buildRun(child.textContent, {
+                color: color,
+                bold: !!bold,
+                italic: !!italic
+            });
+        }
+
+    });
+
+    return `<w:p>${runs}</w:p>`;
+}
+buildRun(text, options = {}) {
+    if (!text) return '';
+
+    let runProps = '';
+
+    if (options.bold) {
+        runProps += '<w:b/>';
+    }
+
+    if (options.italic) {
+        runProps += '<w:i/>';
+    }
+
+    if (options.color) {
+        runProps += `<w:color w:val="${options.color}"/>`;
+    }
+
+    if (runProps) {
+        runProps = `<w:rPr>${runProps}</w:rPr>`;
+    }
+
+    return `
+        <w:r>
+            ${runProps}
+            <w:t>${this.escapeXml(text)}</w:t>
+        </w:r>
+    `;
+}
+escapeXml(str) {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+extractColor(rgb) {
+    if (!rgb) return null;
+
+    const match = rgb.match(/\d+/g);
+    if (!match) return null;
+
+    return match.slice(0,3)
+        .map(x => Number(x).toString(16).padStart(2, '0'))
+        .join('')
+        .toUpperCase();
+}
+
 }

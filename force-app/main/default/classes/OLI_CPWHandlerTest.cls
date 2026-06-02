@@ -46,7 +46,13 @@ public class OLI_CPWHandlerTest {
             Sales_Stage_Dental__c = 'Notified', Disposition_Dental__c = 'Sold', Anticipated_Actual_Close_Date_Dental__c = Date.newInstance(2020, 5, 7), Closed_Reason_1_Dental__c = 'Network: Access',
             Sales_Stage_Vision__c = 'Notified', Disposition_Vision__c = 'Sold', Anticipated_Actual_Close_Date_Vision__c = Date.newInstance(2020, 5, 7), Closed_Reason_1_Vision__c= 'Network: Access',
             Sales_Stage_Pharmacy__c = 'Notified', Disposition_Pharmacy__c = 'Sold', Anticipated_Actual_Close_Date_Pharmacy__c = Date.newInstance(2020, 5, 7), Closed_Reason_1_Pharmacy__c= 'Network: Access',
-            Sales_Stage_Other__c = 'Notified', Anticipated_Actual_Close_Date_Other__c = Date.newInstance(2020, 5, 7), Closed_Reason_1_Other_Buy_Up_Programs__c= 'Network: Access'
+            Sales_Stage_Other__c = 'Notified', Anticipated_Actual_Close_Date_Other__c = Date.newInstance(2020, 5, 7), Closed_Reason_1_Other_Buy_Up_Programs__c= 'Network: Access',
+            Active_enrollment__c = 'Test Enrollment',
+            Communications_Intensity__c = 'Test Community',
+            Contributions__c = 'Test Contribution',
+            of_plans__c = 'Test',
+            Other__c = 'Test',
+            Plan_elimination__c ='Test'
        
         );
         insert opp;
@@ -99,7 +105,8 @@ public class OLI_CPWHandlerTest {
             TotalPrice = 100,
             PricebookEntryId = pbe.Id,
             Disposition_Other_Buy_Up_Programs__c = 'Sold',
-            Buyup_Product_Selection__c = 'Surest Only'
+            Buyup_Product_Selection__c = 'Surest Only',
+            Sales_Stage__c='Sold'
             
         );
         insert oli;
@@ -110,7 +117,7 @@ public class OLI_CPWHandlerTest {
 
         // Fetch data
         Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
-        OpportunityLineItem oli = [SELECT Id, Disposition_Other_Buy_Up_Programs__c
+        OpportunityLineItem oli = [SELECT Id, Disposition_Other_Buy_Up_Programs__c,Sales_Stage__c
                                    FROM OpportunityLineItem LIMIT 1];
 
         // -------------------------------------------------------

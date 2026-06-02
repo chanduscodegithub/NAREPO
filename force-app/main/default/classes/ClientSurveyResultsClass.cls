@@ -269,7 +269,7 @@ csrNetPromoterScore.add('');
                     List<ClientSurveyResults__c> csrList = new List<ClientSurveyResults__c>();
                     List<ClientSurveyResultsWrapper> csrList2 = new List<ClientSurveyResultsWrapper>();
                     String [] isYearAdded = new List<String>();
-                    csrList1 = [SELECT Id, Name,LikelihoodtoRecommendScore__c,NetPromoterType__c,OverallSatisfactionScore__c,Year__c,Surest_Net_Promoter_Type__c,Surest_Likelihood_to_Recommend_Score__c FROM ClientSurveyResults__c WHERE Account__c = :AccountId AND Type__c = :csrType AND Year__c != null WITH USER_MODE ORDER BY Year__c DESC,LastModifiedDate DESC];
+                    csrList1 = [SELECT Id, Name,LikelihoodtoRecommendScore__c,NetPromoterType__c,OverallSatisfactionScore__c,Year__c,Surest_Likelihood_to_Recommend_Score__c,Surest_Net_Promoter_Type__c FROM ClientSurveyResults__c WHERE Account__c = :AccountId AND Type__c = :csrType AND Year__c != null WITH USER_MODE ORDER BY Year__c DESC,LastModifiedDate DESC];
                     for(ClientSurveyResults__c csr : csrList1)
                     {
                         system.debug('isYearAdded : '+isYearAdded.contains(csr.Year__c));

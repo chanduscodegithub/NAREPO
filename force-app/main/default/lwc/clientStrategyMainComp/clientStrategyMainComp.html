@@ -15,6 +15,42 @@
     <!--      SPINNER     -->
 
    <template if:true={isUserAuthorized}>
+      <!--  <div class="slds-m-right_x-small" style="float:right">
+        
+            <template if:true={editAllowed}>
+                <template if:true={canEdit}>
+            <template if:false={isCompleted}>
+            <template if:false={isEditMode}>
+                    <lightning-button label="Mark as Complete" onclick={handleCompletionButton} icon-name="utility:check">
+                    </lightning-button>
+            </template>
+            </template>
+                </template></template>
+        </div>
+    
+        <template if:false={isEditMode}>
+            <div class="slds-grid slds-wrap">
+                <div class="" style="padding: 0.3rem 0.6rem;">
+                <span><b>Year</b></span>
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                <lightning-input type="text" name="year" label="Year"
+                    variant="label-hidden" value={selectedCycle} disabled>
+                </lightning-input>
+                </div>
+            </div>
+        </template>  -->
+
+       <!-- <template if:true={isEditMode}>
+            <div class="slds-grid slds-wrap">
+                <div class="" style="padding: 0.3rem 0.6rem;">
+                <span><b>Year</b></span>
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                <lightning-input type="text" name="year" label="Year" variant="label-hidden" value={selectedCycle} disabled></lightning-input>
+                </div>
+            </div>
+        </template>  -->  <!-- 22/09 -->
         <table style="width:100%; border-collapse:collapse;">
         <tr>
             <td style="padding: 0.3rem 0.6rem; width: 10%; white-space: nowrap;">
@@ -26,7 +62,8 @@
         </td>
 
             <td style="text-align: center; font-size: 22px; padding: 0rem 0.6rem; width: 70%;">
-                <b>Client Strategy Documentation Project</b>
+                <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client Strategy Documentation Project</b>
             </td>
 
             <!-- Mark as Complete Button -->
@@ -45,25 +82,8 @@
                     </template>
                 </td>
             </tr>
-        </table>    
+        </table>
 
-
-      <!--  <template if:true={isEditMode}>
-            <div class="slds-grid slds-wrap">
-                <div class="" style="padding: 0.3rem 0.6rem;">
-                <span><b>Year</b></span>
-                </div>
-                <div class="slds-col slds-size_2-of-12">
-               
-                <lightning-input type="text" name="year" label="Year" variant="label-hidden" value={selectedCycle} disabled></lightning-input>
-                </div>
-                
-                <div style="padding: 0.3rem 0.6rem; padding-left: 320px; font-size:22px;" >
-                    <span><b>Client Strategy Documentation Project</b></span>
-                </div>
-                
-            </div>
-        </template>   -->
         <!--   Completion Msg after mark as Completed     -->
         <template if:true={isCompleted}>
             <p class="incomplete-warning"> {label1.ClientStrategyCompletedMsg}</p>
@@ -132,8 +152,8 @@
             </div>
 
             <div class="slds-p-around_x-small">
-                <!--      Instruction Msg Text     -->  <!-- 22/09 -->
-                <p style="font-size:14px; color:#444; background-color: #f6f8e0;">
+                <!--      Instruction Msg Text     --> <!-- 22/09 -->
+                <p style="font-size:14px; color:#444;background-color: #f6f8e0;">
                     <strong>Instructions:</strong> {label2.ClientStrategyInstructionText}
                 </p>
 
@@ -492,7 +512,7 @@
                         </template>  
 
                         <template if:true={mainArray.Child_Component__c}>
-                            <div class={cssquestionclass} data-question-api={mainArray.Api__c}>
+                            <div class={cssquestionclass} data-question-api={mainArray.Question__c}>
                                 <!-- <b>Q: </b> --> {mainArray.Question__c}
                             </div>
                             <div class="slds-p-top_x-small answer-class">

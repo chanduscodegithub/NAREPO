@@ -142,7 +142,7 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
 
     @track showEmailModal = false;
     @track emails = [];
-    selectedEmails = [];
+    @track selectedEmails = [];
    
     @track lastYearChecklist;
     //---------------------Payment Integrety-----------------------------------//
@@ -1198,8 +1198,11 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
 
         getValidationEmails({ accId: this.accRecordData.accId })
             .then(result => {
-                this.emails = result;
-                this.selectedEmails = result.map(emailOption => emailOption.value);
+                this.emails = result.map(item => ({
+                label: item.label,
+                value: item.value
+            }));
+            this.selectedEmails = [...this.emails.map(e => e.value)];
             })
             .catch(error => {
                 console.error(error);
@@ -1210,7 +1213,7 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
     }
 
     handleSelection(event) {
-        this.selectedEmails = event.detail.value;
+        this.selectedEmails = [...event.detail.value];
         // const email = event.target.value;
 
         // if(event.target.checked){
@@ -1221,8 +1224,14 @@ export default class RenewalDetailTabComp extends NavigationMixin(LightningEleme
     }
     sendReport() {
         console.log('Selected emails:', this.selectedEmails);
-        if (!this.selectedEmails || this.selectedEmails.length === 0) {
-            this.showToast('Error', 'Please select at least one email', 'error');
+        if (!this.selectedEmails || this.selectedEmails.length == 0) {
+              const event = new ShowToastEvent({
+                    variant: 'error',
+                    title: 'ERROR',
+                    message: 'Please select at least one email',
+                });
+            this.dispatchEvent(event);
+           // this.showToast('Error', 'Please select at least one email', 'error');
             return;
         }
         this.closeModal(); 

@@ -110,6 +110,12 @@ export default class soldCaseVendorPartners extends LightningElement {
         console.log('enableEdit --- ' + this.enableEdit + '   disableButtons --- ' + this.disableButtons);
     }
 
+     @track picklistValues = [
+        { label: '', value: '' },
+        { label: 'Yes', value: 'Yes' },
+        { label: 'No', value: 'No' }
+    ];
+
     @track activeSections = [
         "Performance Guarantees and Credits/Allowances",
         "Guarantees - Traditional",
@@ -430,35 +436,36 @@ export default class soldCaseVendorPartners extends LightningElement {
         //------------------------------------SAMARTH SCC NB UPGRADE 2023------------------------------------
 
         //--------------------SOLD--------------------
-        if (this.meddispValue == 'Sold') {
+        // 
+        if (this.meddispValue == 'Sold' || this.meddispValue == 'Spin-Off' || this.meddispValue == 'Transfer In') {
             this.medSold = true;
         }
         else {
             this.medSold = false;
         }
 
-        if (this.dentdispValue == 'Sold') {
+        if (this.dentdispValue == 'Sold' || this.dentdispValue == 'Spin-Off' || this.dentdispValue == 'Transfer In') {
             this.dentSold = true;
         }
         else {
             this.dentSold = false;
         }
 
-        if (this.visiondispValue == 'Sold') {
+        if (this.visiondispValue == 'Sold' || this.visiondispValue == 'Spin-Off' || this.visiondispValue == 'Transfer In') {
             this.visSold = true;
         }
         else {
             this.visSold = false;
         }
 
-        if (this.pharmdispValue == 'Sold') {
+        if (this.pharmdispValue == 'Sold'|| this.pharmdispValue == 'Spin-Off' || this.pharmdispValue == 'Transfer In') {
             this.pharmSold = true;
         }
         else {
             this.pharmSold = false;
         }
 
-        if (this.otherProductsStatus == 'Sold') {
+        if (this.otherProductsStatus == 'Sold' || this.otherProductsStatus == 'Spin-Off' || this.otherProductsStatus == 'Transfer In') {
             this.otherSold = true;
         }
         else {

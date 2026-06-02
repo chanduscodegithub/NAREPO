@@ -8,6 +8,14 @@
     <aura:attribute name="sortAccountName" type="Boolean" default="true"/>
     <aura:attribute name="sortAccountType" type="Boolean" default="true"/>
     <aura:attribute name="sortAccountOwner" type="Boolean" default="true"/>
+    <!-- Added By Gurjot 
+		 Ticket :- Consultant Dashboard Firm
+		 Date :- 17th Oct 2024 -->
+    <aura:attribute name="sortReferenceableAsc" type="Boolean" default="true"/>
+    <aura:attribute name="sortLRTAsc" type="Boolean" default="true"/>
+    
+    <aura:attribute name='allyearValue' type='Integer' />
+    <!-- End -->
     <aura:attribute name="Child_Data" type="Object"/>
     <aura:attribute name="isDesktop" type="boolean" default="false"/>
     <aura:attribute name='page' type='Integer' />
@@ -98,6 +106,27 @@
                                             </a>                                            
                                             </div>
                                         </th>
+                                        <!-- Added By Gurjot 
+											 Ticket :- Consultant Dashboard Firm
+											 Date :- 17th Oct 2024 -->
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                            <div class="slds-cell-fixed">
+                                            <a onclick="{!c.sortFields}" data-record="AccountFirm__r.Client_Reference_Status__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                <span class="slds-assistive-text">Sort </span>
+                                                <span class="slds-truncate" title="Referenceable Client"><b>{!$Label.c.Account_Referenceable_Client}</b></span>
+                                                <div class="slds-icon_container">
+                                                    <aura:if isTrue="{!v.sortReferenceableAsc}">
+                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </div>
+                                                <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                            </a>
+                                            </div>
+                                        </th>
+                                        <!-- End -->
                                         <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
                                             <div class="slds-cell-fixed">
                                             <a onclick="{!c.sortFields}" data-record="RecordType" class="slds-th__action slds-text-link--reset" tabindex="0">
@@ -133,6 +162,27 @@
                                             </a>
                                             </div>
                                         </th>
+                                        <!-- Added By Gurjot 
+											 Ticket :- Consultant Dashboard Firm
+											 Date :- 17th Oct 2024 -->
+                                        <th class="slds-is-sortable slds-is-resizable slds-text-title--caps" scope="col">
+                                            <div class="slds-cell-fixed">
+                                            <a onclick="{!c.sortFields}" data-record="AccountFirm__r.NPS__c" class="slds-th__action slds-text-link--reset" tabindex="0">
+                                                <span class="slds-assistive-text">Sort </span>
+                                                <span class="slds-truncate" title="Account LRT (Most Recent Score)"><b>{!$Label.c.Account_LRT_Most_Recent_Score} ({!v.allyearValue})</b></span>
+                                                <div class="slds-icon_container">
+                                                    <aura:if isTrue="{!v.sortLRTAsc}">
+                                                        <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowdown" size="xx-small" alternativeText="Indicates approval"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon class="slds-icon slds-icon--x-small slds-icon-text-default slds-is-sortable__icon" iconName="utility:arrowup" size="xx-small" alternativeText="Indicates approval"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </div>
+                                                <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                                            </a>
+                                            </div>
+                                        </th>
+                                        <!-- End -->
                                     </tr>
                                 </thead>
                                 <tbody>

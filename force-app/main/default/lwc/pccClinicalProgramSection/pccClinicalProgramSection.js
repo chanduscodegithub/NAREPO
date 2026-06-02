@@ -16,6 +16,8 @@ export default class PccClinicalProgramSection extends LightningElement {
     @api policyNumbers;
     @api policyNames;
     @api existingProducts;
+    @api termingProducts;
+    @track draftChecklistData;
     @track renewalChecklistData;
     @track lastYearChecklist;
     clinicalPrgmToBackend = {};
@@ -24,6 +26,7 @@ export default class PccClinicalProgramSection extends LightningElement {
     @api selectedSalesSeason;
     @api accId;
     @track productInfoMap = {};
+    @track lastYearDataExists = false;
 
     label = {
         Renewal_Checklist_Additional_Information_instruction
@@ -44,6 +47,9 @@ export default class PccClinicalProgramSection extends LightningElement {
     }
     set lastYearRenewalChecklist(value) {
         this.lastYearChecklist = JSON.parse(JSON.stringify(value));
+        if (this.lastYearChecklist && typeof this.lastYearChecklist === 'object' && Object.keys(this.lastYearChecklist).length > 0) {
+            this.lastYearDataExists = true;
+        }
     }
 
     @track picklistValues = [
@@ -88,6 +94,7 @@ export default class PccClinicalProgramSection extends LightningElement {
 
     connectedCallback(){
         this.existingProductscopy = this.existingProducts;
+        this.termingProductscopy = this.termingProducts;
         this.getOtherBuyUpProductsInfo()
         .then(() => {
             this.loadChecklistMetadata();
@@ -158,7 +165,7 @@ export default class PccClinicalProgramSection extends LightningElement {
             'Optum_Physical_Health_Network__c',
             'Optum_Behavioral_Network__c',
             'Surest_Standard_Communications__c',
-            'Surest_Member_Svcs_Clinical_Advocacy__c'
+            'Surest_Member_Services__c'
         ];
     
         fieldsToDefault.forEach(field => {
@@ -193,6 +200,9 @@ export default class PccClinicalProgramSection extends LightningElement {
                 if (fieldName) {
                     this.renewalChecklistData[fieldName] = 'Yes - Sold';
                     this.clinicalPrgmToBackend[fieldName] = 'Yes - Sold';
+                    if (this.draftChecklistData) {
+                        this.draftChecklistData[fieldName] = 'Yes - Sold';
+                    }
                     soldFields.add(fieldName);
                     readOnlyFlags[fieldName] = true;
                 }
@@ -215,7 +225,7 @@ export default class PccClinicalProgramSection extends LightningElement {
                 this.renewalChecklistData[fieldName] = ''; // blank, editable
             }
         });
-
+        readOnlyFlags['Calm_Health__c'] = true;
         this.readOnlyFlags = readOnlyFlags;
         this.isDual = isDual;
         this.productFieldValues = productFieldValues;
@@ -224,13 +234,13 @@ export default class PccClinicalProgramSection extends LightningElement {
             ...this.renewalChecklistData, 
             //Coronary_Artery_Disease_Management__c: this.renewalChecklistData?.Coronary_Artery_Disease_Management__c || 'No',
             Calm_Health__c: this.renewalChecklistData?.Calm_Health__c || 'Yes',
-            CPW_2nd_MD__c: this.renewalChecklistData?.CPW_2nd_MD__c || ''
+            Clinical_Prgm_2nd_MD__c: this.renewalChecklistData?.Clinical_Prgm_2nd_MD__c || 'Yes - Sold'
         };
         this.clinicalPrgmToBackend = {
             ...this.clinicalPrgmToBackend, 
             //Coronary_Artery_Disease_Management__c: this.clinicalPrgmToBackend?.Coronary_Artery_Disease_Management__c || 'No',
             Calm_Health__c: this.clinicalPrgmToBackend?.Calm_Health__c || 'Yes',
-            CPW_2nd_MD__c: this.clinicalPrgmToBackend?.CPW_2nd_MD__c || ''
+            Clinical_Prgm_2nd_MD__c: this.clinicalPrgmToBackend?.Clinical_Prgm_2nd_MD__c || 'Yes - Sold'
         };
         this.handleDefaultValuesSave(this.clinicalPrgmToBackend);
         this.prepareChecklistDisplayData();
@@ -253,16 +263,25 @@ export default class PccClinicalProgramSection extends LightningElement {
 
     prepareChecklistDisplayData() {
         this.checklistDisplayData = this.displayConfig.map(item => {
-            const value = this.renewalChecklistData?.[item.field];
+           // const value = this.renewalChecklistData?.[item.field];
+            const sourceData = this.isEdit ? this.draftChecklistData : this.renewalChecklistData;
+            const value = sourceData?.[item.field];
             const readonly = this.readOnlyFlags?.[item.field] || false;
             const isOnePass = item.field === 'One_Pass_Select__c';
             const showRelatedField = isOnePass && (value === 'Yes - Sold' || value === 'Yes - Retained');
             const relatedField = showRelatedField ? {
-                value: this.renewalChecklistData?.One_Pass_Subsidized__c || '',
+                value: sourceData?.One_Pass_Subsidized__c || '',
                 name: 'One_Pass_Subsidized__c',
                 readonly: this.readOnlyFlags?.One_Pass_Subsidized__c || false
             } : null;
+            const lastYearValue = this.lastYearChecklist?.[item.field] || '';
 
+            const lastYearShowRelated =
+                isOnePass && (lastYearValue === 'Yes - Sold' || lastYearValue === 'Yes - Retained');
+
+            const lastYearRelatedField = lastYearShowRelated
+                ? this.lastYearChecklist?.One_Pass_Subsidized__c || ''
+                : null;
             // const options = item.yesNoOnly
             //     ? [
             //         { label: '', value: '' },
@@ -317,7 +336,8 @@ export default class PccClinicalProgramSection extends LightningElement {
                 readonly,
                 name: `${item.field}`,
                 relatedField,
-                lastYearValue: this.lastYearChecklist?.[item.field] || '',
+                lastYearValue,
+                lastYearRelatedField,
                 isDual: this.isDual?.[item.field] || false,
                 options: options,
                 productValue,
@@ -344,16 +364,7 @@ export default class PccClinicalProgramSection extends LightningElement {
         this.showCopyPopup = true;
     }
 
-    valueMapping = {
-        Field_API_Name1: {
-            'Old Value A': 'New Value A',
-            'Old Value B': 'New Value B'
-        },
-        Field_API_Name2: {
-            'Yes - Legacy': 'Yes',
-            'No - Legacy': 'No'
-        }
-    };
+    copyDataToBackend = {};
     confirmCopy() {
         const commonPicklistMapping = {
             'Yes - Sold': 'Yes - Direct with Surest',
@@ -361,32 +372,64 @@ export default class PccClinicalProgramSection extends LightningElement {
             'No - N/A': 'No',
             'No - Term': 'No'
         };
+        const progynyMapping = {
+            'Yes - Sold': 'Yes - Direct Contract Only',
+            'Yes - Retained': 'Yes - Direct Contract Only',
+            'No - N/A': 'No',
+            'No - Term': 'No'
+        };
         const fieldsWithCommonMapping = [
             'Canary_Surest_Disease_Management__c',
             'Ardynn_Surest_Cancer_Advocacy__c',
             'Pacify_Surest_Maternity__c',
-            'Pivot_Surest_Smoking_Cessation__c'
+            'Pivot_Surest_Smoking_Cessation__c',
+            'Progyny_Surest_Fertility__c'
         ];
         this.showCopyPopup = false;
 
         let updatedChecklist = { ...this.lastYearChecklist };
 
         fieldsWithCommonMapping.forEach(field => {
-            if (updatedChecklist[field] && commonPicklistMapping[updatedChecklist[field]]) {
-                updatedChecklist[field] = commonPicklistMapping[updatedChecklist[field]];
+            if (updatedChecklist[field]) {
+                if (field === 'Progyny_Surest_Fertility__c' && progynyMapping[updatedChecklist[field]]) {
+                    updatedChecklist[field] = progynyMapping[updatedChecklist[field]];
+                }
+                else if (commonPicklistMapping[updatedChecklist[field]]) {
+                    updatedChecklist[field] = commonPicklistMapping[updatedChecklist[field]];
+                }
             }
         });
-
-        this.renewalChecklistData = {
-            ...this.renewalChecklistData,
+        
+        this.termingProductscopy.forEach(item => {
+            let isNetNegative = item.Net_Results__c < 0;
+            let buyupValid = ['Surest Only', 'Surest & UNET'].includes(item.Buyup_Product_Selection__c);
+            if (item.ProductCode === 'TWS-REALAPL') {
+                buyupValid = true;
+            }
+            const fieldName = this.productCodeChecklistMap[item.ProductCode];
+            if (buyupValid && isNetNegative) {
+                if (fieldName) {
+                    updatedChecklist[fieldName] = 'No - Term';
+                    this.renewalChecklistData[fieldName] = 'No - Term';
+                    this.clinicalPrgmToBackend[fieldName] = 'No - Term';
+                }
+            }
+        });
+        if (!this.draftChecklistData) {
+            this.draftChecklistData = JSON.parse(JSON.stringify(this.renewalChecklistData));
+        }
+        this.draftChecklistData = {
+            ...this.draftChecklistData,
             ...updatedChecklist
         };
-
-        this.clinicalPrgmToBackend = {
+        this.copyDataToBackend = {
             ...this.clinicalPrgmToBackend,
             ...updatedChecklist
         };
-
+        // this.renewalChecklistData = {
+        //     ...this.renewalChecklistData,
+        //     ...updatedChecklist
+        // };
         this.setPCCFieldValues();
 
         this.showToast('Success', 'Last year data copied', 'success');
@@ -402,9 +445,11 @@ export default class PccClinicalProgramSection extends LightningElement {
         let fieldName = event.target.dataset.api;
         let clinicalPrgmObj = {};
         clinicalPrgmObj[event.target.dataset.api] = value;
-        this.renewalChecklistData[event.target.dataset.api] = value;
+
+        this.draftChecklistData[fieldName] = value;
+        //this.renewalChecklistData[event.target.dataset.api] = value;
         if (fieldName === 'One_Pass_Select__c') {
-            this.renewalChecklistData.One_Pass_Subsidized__c = '';
+            this.draftChecklistData.One_Pass_Subsidized__c = '';
             clinicalPrgmObj['One_Pass_Subsidized__c'] = '';
         }
         this.clinicalPrgmToBackend = { ...this.clinicalPrgmToBackend, ...clinicalPrgmObj };
@@ -418,22 +463,32 @@ export default class PccClinicalProgramSection extends LightningElement {
 
     handleCPW(event) {
         this.renewalChecklistData = JSON.parse(JSON.stringify(this.renewalChecklistData));
+        this.draftChecklistData = JSON.parse(JSON.stringify(this.renewalChecklistData));
         this.isEdit = true;
         const validationButton = new CustomEvent('hidevalidation', { detail: true});
         this.dispatchEvent(validationButton);
     }
 
     handleCancel(event) {
+        this.draftChecklistData = null;
+        this.clinicalPrgmToBackend = {};
+        this.isEdit = false;
         const cancelEvent = new CustomEvent('canceledit', { detail: {cancel : true, showValidation: false} });
         this.dispatchEvent(cancelEvent);
-        this.isEdit = false;
+        this.prepareChecklistDisplayData();
     }
 
     handleSave(event) {
+        this.renewalChecklistData = JSON.parse(JSON.stringify(this.draftChecklistData));
         this.clinicalPrgmToBackend.CPW__c =true;
+        this.clinicalPrgmToBackend = {
+            ...this.clinicalPrgmToBackend,
+            ...this.copyDataToBackend
+        };
         const clinicalProgram = new CustomEvent('clinicalprogramdata', { detail: { renewalData: this.renewalChecklistData, dataToBackend: this.clinicalPrgmToBackend, showValidation: false } });
         this.dispatchEvent(clinicalProgram);
         this.isEdit = false;
+        this.prepareChecklistDisplayData();
     }
 
 }

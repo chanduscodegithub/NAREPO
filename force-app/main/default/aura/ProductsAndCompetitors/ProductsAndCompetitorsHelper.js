@@ -788,7 +788,7 @@
             salesStage = component.get('v.SalesStage');
         }
 
-        if(productsObj.MA_Category == $A.get("$Label.c.Other_Buy_Up_Program") && salesStage == '' && productsObj.isSpecialityProduct){
+        if(productsObj.MA_Category == $A.get("$Label.c.Other_Buy_Up_Program") && (salesStage == '' || salesStage != 'Notified') && productsObj.isSpecialityProduct){
             var opportunityList = productsObj.opportunityLineList;
             var opportunitySpecialityList = productsObj.opportunitySpecialityLineList;
             var opportunityLineList = [...opportunityList, ...opportunitySpecialityList];
@@ -996,14 +996,12 @@
                             if (fieldVal === null || fieldVal === undefined || (typeof fieldVal === 'string' && fieldVal.trim().length === 0)) {
                                 this.showAlert(
                                     component,
-                                    'Please enter Existing Member Risk Outcome ('
-                                    +productType+"), as the Sales Stage is 'Notified' and "
-                                    +productType+' products are included with existing members involved (> 0).'
-                                   ,
+                                    'Existing Members Risk Outcome ('
+                                    +productType+
+                                    ') must be entered when Sales Stage is Notified and Existing Other Buy Up Members Involved in the Bid is greater than zero',
                                     alertType
                                 );
                                 return false;
-                            
                             }
                         }
                     }

@@ -24,8 +24,8 @@
     <aura:handler name="modalCmpCloseEvent3" event="c:Modal_Closing_RR_Event" action="{!c.modalClose}" />
     
     <aura:handler name="service_amt_Popup_table_event" event="c:Service_AMT_Search_Popup_Table_Event" action="{!c.addToServiceAMT}" />
-    <aura:handler name="checkIfPrimaryExistsEvnt" event="c:checkIfPrimaryExistsEvnt" action="{!c.checkPrimaryExist}" />
-    
+   <aura:handler name="checkIfPrimaryExistsEvnt" event="c:checkIfPrimaryExistsEvnt" action="{!c.checkPrimaryExist}" />
+     
     <aura:attribute name="scrollStyleForDevice" type="String" default="@media screen and (min-width: 320px) and (max-width: 1199px){.panel-content.scrollable{overflow-y: hidden !important;-webkit-overflow-scrolling: auto !important ;}}" />
     <aura:attribute name="isGenericEventTriggered" type="Boolean" default="false" />
     <aura:attribute name="ServiceAMTEmptyList" type="Boolean" default="false" />
@@ -82,7 +82,7 @@
     <aura:attribute name="roleWidth" type="String" />
     <aura:attribute name="startDateWidth" type="String" />
     <aura:attribute name="endDateWidth" type="String" />
-    <aura:attribute name="deleteIconHeaderWidth" type="String" />
+   <aura:attribute name="deleteIconHeaderWidth" type="String" />
     <aura:attribute name="highlightRow" type="String" default="white" />
     
     <aura:attribute name="isEditable" type="Boolean" default="true" />
@@ -134,7 +134,7 @@
             </div>
             <div class="slds-modal__content slds-p-around--medium">
                 <p class="slds-text-align--center">
-                    <aura:unescapedHtml value="{!v.promptMessageText}" /></p>
+                <aura:unescapedHtml value="{!v.promptMessageText}" /></p>
             </div>
             <div class="slds-modal__footer slds-theme--default">
                 <button class="slds-button slds-button--neutral"
@@ -202,10 +202,10 @@
                             <h2 class="slds-grid flex-alignCenter">
                                 <span class="slds-text-heading--small">{!v.appletHeader}&nbsp;</span>
                                 <aura:if isTrue="{!v.sobjectusedAccount}">
-                                    <div class="slds-is-relative helptext">
-                                        <c:tooltip helpLink="Help"
-                                                   helpText="This section will list the AMT members for the client.  Click the “Edit” button to update existing AMT members details. Click the “Add” button to add additional AMT members – please note that the Role and Policy fields are mandatory. The Inactive tab within this section will show all former AMT members associated with this client." />
-                                    </div>
+                                <div class="slds-is-relative helptext">
+                                    <c:tooltip helpLink="Help"
+                                               helpText="This section will list the AMT members for the client.  Click the “Edit” button to update existing AMT members details. Click the “Add” button to add additional AMT members – please note that the Role and Policy fields are mandatory. The Inactive tab within this section will show all former AMT members associated with this client." />
+                                </div>
                                 </aura:if>
                             </h2>
                         </div>
@@ -227,7 +227,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="slds-is-relative">
                 <div class="slds-section__content slds-p-top_none slds-is-relative">
                     <div class="slds-card__body slds-m-bottom_none">
@@ -248,7 +247,7 @@
                             </div>
                         </div>
                         <p style="color: #FF0000;font-size: 13px;font-weight: bold;margin: 3px 14px;">{!$Label.c.AMT_Instruction_Text}</p>
-                        
+              
                         <lightning:tabset aura:id="tabs" selectedTabId="{!v.selTabId}">
                             <!--onselect="{!c.tabSelected}"-->
                             <lightning:tab label="Active AMT List" id="one" onactive="{!c.handleActive }">
@@ -296,7 +295,7 @@
                                                         </div>
                                                     </th>
                                                     <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap"
-                                                        scope="col">
+                                                       scope="col">
                                                         <a onclick="{!c.sortFields}" data-record="First_Name__c"
                                                            class="slds-th__action slds-text-link--reset consultant-tab"
                                                            tabindex="1">
@@ -332,8 +331,8 @@
                                                     </th>
                                                     
                                                     
-                                                    
-                                                    <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap"
+                                                   
+                                                   <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap"
                                                         scope="col" style="{!'width:'+v.roleWidth}">
                                                         <a onclick="{!c.sortFields}" data-record="Contact_Role__c"
                                                            class="slds-th__action slds-text-link--reset consultant-tab"
@@ -369,23 +368,23 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <!-- Case 2424 (AMT - Sort by Role) End -->
+                                                                                  <!-- Case 2424 (AMT - Sort by Role) End -->
                                                     <!--<th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col" aria-label="Name" scope="col" style="{!'width:'+v.width150}">
                                                 <div class="slds-truncate"  title="Role">Role</div>
                                             </th>-->
-                                                    
-                                                    <!--<aura:if isTrue="{!v.sobjectusedAccount}"> 
+                                                  
+                                                   <!--<aura:if isTrue="{!v.sobjectusedAccount}"> 
                                                     <th aria-sort="none"
                                                                 class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col slds-cell-wrap"
                                                                 aria-label="Name"  required="true" scope="col">-->
-                                                    <!--Updated Column Name from 'MAIN CM/CMC/SAM' to 'Main Role and Help text Content for Case No: 00003464' ****SHRUTI****-->
-                                                    <!--<span style='float:left'>Main Role
+                                                                <!--Updated Column Name from 'MAIN CM/CMC/SAM' to 'Main Role and Help text Content for Case No: 00003464' ****SHRUTI****-->
+                                                                    <!--<span style='float:left'>Main Role
                                                                         <lightning:helptext style='position: relative;top: -4px;' content="{!$Label.c.MainRole_HelpText}"/>
                                                                     </span>
                                                             </th>
                                                     
                                                     </aura:if>-->
-                                                    
+                                                   
                                                     
                                                     <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap"
                                                         scope="col" style="{!'width:'+v.startDateWidth}">
@@ -462,51 +461,51 @@
                                                         </div>
                                                     </th>
                                                     <!-- Case 2424 (AMT - Sort by Role) START -->
-                                                    
-                                                    
+
+                                                     
                                                     <aura:if isTrue="{!v.sobjectusedAccount == false}">
-                                                        
-                                                        <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col" aria-label="Name" scope="col" style="width:15%;padding:10px">
-                                                            <div class="slds-truncate" title="Phone Number">Phone</div>
-                                                        </th>
-                                                        
+                                                         
+                                                  		<th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col" aria-label="Name" scope="col" style="width:15%;padding:10px">
+                                                			<div class="slds-truncate" title="Phone Number">Phone</div>
+                                            			</th>
+                                                       
                                                     </aura:if>
                                                     
+                                                 
+                                                        <aura:if isTrue="{!v.sobjectusedAccount}">
+                                                            
+                                                            <th aria-sort="none"
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
+                                                                aria-label="Name" required="true" scope="col" style='width:13%'>
+                                                                <div class="slds-truncate" title="Policy">Policy</div>
+                                                            </th>
+                                                            <th aria-sort="none" 
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
+                                                                aria-label="Name"  required="true" scope="col" style='width:9%'>
+                                                                <div class="slds-truncate" title="Order">Order</div>
+                                                            </th>
+                                                            <th aria-sort="none"
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
+                                                                aria-label="Name"  required="true" scope="col">
+                                                                <div class="slds-truncate" title="External">AMT<br/> External
+                                                                </div>
+                                                            </th>
+                                                            <th aria-sort="none"
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
+                                                                aria-label="Name"  required="true" scope="col">
+                                                                <div class="slds-truncate" title="ACIS Distribution">ACIS<br/> Distribution
+                                                                </div>
+                                                            </th>
+                                                            
+                                                        </aura:if>
                                                     
-                                                    <aura:if isTrue="{!v.sobjectusedAccount}">
-                                                        
-                                                        <th aria-sort="none"
-                                                            class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
-                                                            aria-label="Name" required="true" scope="col" style='width:13%'>
-                                                            <div class="slds-truncate" title="Policy">Policy</div>
-                                                        </th>
-                                                        <th aria-sort="none" 
-                                                            class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
-                                                            aria-label="Name"  required="true" scope="col" style='width:9%'>
-                                                            <div class="slds-truncate" title="Order">Order</div>
-                                                        </th>
-                                                        <th aria-sort="none"
-                                                            class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
-                                                            aria-label="Name"  required="true" scope="col">
-                                                            <div class="slds-truncate" title="External">AMT<br/> External
-                                                            </div>
-                                                        </th>
-                                                        <th aria-sort="none"
-                                                            class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
-                                                            aria-label="Name"  required="true" scope="col">
-                                                            <div class="slds-truncate" title="ACIS Distribution">ACIS<br/> Distribution
-                                                            </div>
-                                                        </th>
-                                                        
-                                                    </aura:if>
                                                     
-                                                    
-                                                    <th aria-sort="none" 
-                                                        class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col"
-                                                        aria-label="Name" scope="col" style="{!'width:'+v.deleteIconHeaderWidth}">
-                                                        &nbsp;
-                                                    </th>
-                                                    
+                                                     <th aria-sort="none" 
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col"
+                                                                aria-label="Name" scope="col" style="{!'width:'+v.deleteIconHeaderWidth}">
+                                                                &nbsp;
+                                                            </th>
+                                                   
                                                     
                                                 </tr>
                                             </aura:set>
@@ -528,7 +527,7 @@
                                                                          userRolePLValues="{!v.userRolePLValues}"
                                                                          contactRolePLValues="{!v.contactRolePLValues}"
                                                                          sobjectusedAccount="{!v.sobjectusedAccount}"
-                                                                         serviceAMTList = "{!v.activeAMTList}"
+                                                                          serviceAMTList = "{!v.activeAMTList}"
                                                                          highlightRole = "{!obj.bgcolorRole}"
                                                                          highlightPolicy="{!obj.bgcolorPolicy}"
                                                                          >
@@ -585,7 +584,7 @@
                                                         </div>
                                                     </th>
                                                     <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap"
-                                                        scope="col">
+                                                       scope="col">
                                                         <a onclick="{!c.sortFields}" data-record="First_Name__c"
                                                            class="slds-th__action slds-text-link--reset consultant-tab"
                                                            tabindex="1">
@@ -662,8 +661,8 @@
                                                 <div class="slds-truncate"  title="Role">Role</div>
                                             </th>-->
                                                     
-                                                    <!--aura:if isTrue="{!v.sobjectusedAccount}"> 
-                          <th aria-sort="none"
+                                                   <!--aura:if isTrue="{!v.sobjectusedAccount}"> 
+                 									<th aria-sort="none"
                                                                 class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col slds-cell-wrap"
                                                                 aria-label="Name"  required="true" scope="col">
                                                                     <span style='float:left'>Main Role
@@ -672,8 +671,8 @@
                                                             </th>
                                                     
                                                     </aura:if-->  
-                                                    
-                                                    
+                                                   
+                                                  
                                                     
                                                     <th class="slds-is-sortable slds-is-resizable slds-text-title--caps slds-cell-wrap"
                                                         scope="col" style="{!'width:'+v.startDateWidth}">
@@ -752,46 +751,46 @@
                                                     <!-- Case 2424 (AMT - Sort by Role) START -->
                                                     
                                                     
-                                                    <aura:if isTrue="{!v.sobjectusedAccount == false}">
-                                                        
-                                                        <th aria-sort="none"  class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col " aria-label="Name" scope="col" style="width:15%;padding:10px">
-                                                            <div class="slds-truncate" title="Phone Number">Phone</div>
-                                                        </th>
-                                                        
-                                                    </aura:if>
-                                                    
-                                                    
-                                                    <aura:if isTrue="{!v.sobjectusedAccount}">
-                                                        
-                                                        <th aria-sort="none"
-                                                            class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
-                                                            aria-label="Name"  required="true" scope="col" style='width:13%'>
-                                                            <div class="slds-truncate" title="Policy">Policy</div>
-                                                        </th>
-                                                        <th aria-sort="none" 
-                                                            class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
-                                                            aria-label="Name" required="true" scope="col" style='width:9%'>
-                                                            <div class="slds-truncate" title="Order">Order</div>
-                                                        </th>
-                                                        <th aria-sort="none" 
-                                                            class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
-                                                            aria-label="Name" required="true" scope="col" >
-                                                            <div class="slds-truncate" title="External">AMT <br/>External</div>
-                                                        </th>
-                                                        <th aria-sort="none" 
-                                                            class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
-                                                            aria-label="Name" required="true" scope="col" >
-                                                            <div class="slds-truncate" title="External">ACIS <br/>DISTRIBUTION</div>
-                                                        </th>
+                                                      <aura:if isTrue="{!v.sobjectusedAccount == false}">
+                                                         
+                                                  		<th aria-sort="none"  class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col " aria-label="Name" scope="col" style="width:15%;padding:10px">
+                                                			<div class="slds-truncate" title="Phone Number">Phone</div>
+                                            			</th>
                                                         
                                                     </aura:if>
                                                     
-                                                    <th aria-sort="none" 
-                                                        class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col"
-                                                        aria-label="Name" scope="col" style="{!'width:'+v.deleteIconHeaderWidth}">
-                                                        &nbsp;
-                                                    </th>
+                                                                 
+                                                        <aura:if isTrue="{!v.sobjectusedAccount}">
+                                                            
+                                                            <th aria-sort="none"
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
+                                                                aria-label="Name"  required="true" scope="col" style='width:13%'>
+                                                                <div class="slds-truncate" title="Policy">Policy</div>
+                                                            </th>
+                                                            <th aria-sort="none" 
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
+                                                                aria-label="Name" required="true" scope="col" style='width:9%'>
+                                                                <div class="slds-truncate" title="Order">Order</div>
+                                                            </th>
+                                                            <th aria-sort="none" 
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
+                                                                aria-label="Name" required="true" scope="col" >
+                                                                <div class="slds-truncate" title="External">AMT <br/>External</div>
+                                                            </th>
+                                                            <th aria-sort="none" 
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col "
+                                                                aria-label="Name" required="true" scope="col" >
+                                                                <div class="slds-truncate" title="External">ACIS <br/>DISTRIBUTION</div>
+                                                            </th>
+                                                           
+                                                        </aura:if>
                                                     
+                                                     <th aria-sort="none" 
+                                                                class="slds-is-sortable slds-is-resizable slds-text-title_caps non-sortable-col"
+                                                                aria-label="Name" scope="col" style="{!'width:'+v.deleteIconHeaderWidth}">
+                                                                &nbsp;
+                                                            </th>
+                                                   
                                                 </tr>
                                             </aura:set>
                                         </aura:if>
@@ -813,7 +812,7 @@
                                                                          userRolePLValues="{!v.userRolePLValues}"
                                                                          contactRolePLValues="{!v.contactRolePLValues}"
                                                                          sobjectusedAccount="{!v.sobjectusedAccount}"
-                                                                         showDelete = "false"
+                                                        				 showDelete = "false"
                                                                          serviceAMTList = "{!v.inActiveAMTList}"
                                                                          >
                                                     </c:Service_AMT_Table>
@@ -824,7 +823,7 @@
                                 </table>
                             </lightning:tab>
                         </lightning:tabset>
-                        
+                       
                     </div>
                 </div>
             </div>

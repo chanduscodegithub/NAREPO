@@ -166,6 +166,7 @@
                         label="UHC Hub" value={ProductMix__c.UHC_Hub__c}
                         options={uhcHubValues} onchange={handleInputChange}>
                     </lightning-combobox>
+
                     <!--------------------#3958------------------------------>
                     <template if:true={globalProductValues.data}>
                                 <lightning-dual-listbox data-id="Global_Products__c" name="Global Products"
@@ -175,6 +176,7 @@
                                 </lightning-dual-listbox>
                             </template>
                      <!--------------------#3958------------------------------>
+
 
 
 
@@ -268,13 +270,16 @@
                         value={ProductMix__c.UHC_Hub__c} read-only=true>
                         
                     </lightning-input>
-                    <!--------------------#3958------------------------------>
+
+
+                      <!--------------------#3958------------------------------>
                     <label for="gloProd" style="padding-top:5px;"
                                 class="slds-form-element__label slds-no-flex">Global Products</label>
                             <p style='border-bottom: 1px solid #ccc;padding-bottom: 10px;'>
                                 {ProductMix__c.Global_Products__c}</p>
                         </lightning-layout-item>
                         <!--------------------#3958------------------------------>
+                        <!-- </lightning-layout-item> -->
 
                         <lightning-layout-item class="layoutItemClass">
                             <lightning-input type="text" label="Pharmacy" value={ProductMix__c.Pharmacy__c}
@@ -1395,7 +1400,7 @@
                                 onchange={handleInputChange}>
                             </lightning-combobox> --> <!-- Added by Vignesh -->
                             <!-- <lightning-combobox data-id="UHC_UMR_Member_Service_and_Tools__c"
-                                name="UHC/UMR Member Service and Tools" label="UHC/UMR Member Service and Tools"
+                                name="Member Service Vendor" label="UHC/UMR Member Service and Tools"
                                 value={ProductMix__c.UHC_UMR_Member_Service_and_Tools__c}
                                 options={uhcUmrMemberServiceValues} onchange={handleInputChange}>
                             </lightning-combobox>  -->
@@ -1407,6 +1412,11 @@
                         </lightning-layout-item>
 
                         <lightning-layout-item class="layoutItemClass">
+                            <lightning-combobox data-id="Member_Digital_Tools_Vendor__c"
+                                name="Member Digital Tools Vendor" label="Member Digital Tools Vendor"
+                                value={ProductMix__c.Member_Digital_Tools_Vendor__c}
+                                options={memberdigitaltoolsvender} onchange={handleInputChange}>
+                            </lightning-combobox>
                             <!-- <lightning-combobox data-id="UMR_COBRA_Services__c" name="UMR COBRA Services"
                                 label="UMR COBRA Services" value={ProductMix__c.UMR_COBRA_Services__c}
                                 options={umrCobraValues} onchange={handleInputChange}>
@@ -1423,12 +1433,15 @@
                             </lightning-input> --> <!-- Added by Vignesh -->
                             <!-- <lightning-input type="text" label="UHC/UMR Member Service and Tools" class="readOnlyClass"
                                 value={ProductMix__c.UHC_UMR_Member_Service_and_Tools__c} read-only=true>
-                            </lightning-input>  -->  <!-- Added CR-3847 -->
+                                </lightning-input>  -->
                             <lightning-input type="text" label="Member Service Vendor" class="readOnlyClass"
                                 value={ProductMix__c.Member_Service_Vendor__c} read-only=true>
                             </lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item class="layoutItemClass">
+                            <lightning-input type="text" label="Member Digital Tools Vendor" class="readOnlyClass"
+                                value={ProductMix__c.Member_Digital_Tools_Vendor__c} read-only=true>
+                            </lightning-input>
                             <!-- <lightning-input type="text" label="UMR COBRA Services" class="readOnlyClass"
                                 value={ProductMix__c.UMR_COBRA_Services__c} read-only=true>
                             </lightning-input> -->  <!-- Added by Vignesh -->

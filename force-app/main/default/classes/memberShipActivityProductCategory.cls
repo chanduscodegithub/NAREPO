@@ -1,4 +1,20 @@
 public without sharing class memberShipActivityProductCategory {
+     @AuraEnabled
+    public static string deleteProdLineData(string productLine, string oppId) {
+        List<String> values = new List<String>();
+        for (String val : productLine.split(',')) {
+            val = val.trim();
+            
+            if (val.equalsIgnoreCase('Other Buy Up Programs')) {
+                values.add('Other');
+            } else {
+                values.add(val);
+            }
+        }
+        list<opportunityLineitem> oliList = [select id from opportunityLineitem where opportunityId=:oppId and Product_Line__c =:values];
+        delete oliList;
+        return 'Success';
+    }
     @AuraEnabled
     public static List < String > getselectOptions(sObject objObject, string fld) {
         system.debug('objObject --->' + objObject);
