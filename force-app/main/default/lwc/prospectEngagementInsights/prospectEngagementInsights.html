@@ -1,29 +1,315 @@
 <template>
     <lightning-card>
-        <div class="slds-p-around_medium">
+        <div class="slds-p-around_small">
+
+            <div slot="title" class="slds-align_absolute-center">
+                <h2 class="slds-text-heading_medium">Prospect AI Summary</h2>
+            </div>
             <template if:true={isLoading}>
                 <lightning-spinner alternative-text="Generating Summary">
                 </lightning-spinner>
             </template>
-            <div slot="title" class="slds-align_absolute-center">
-            <h2 class="slds-text-heading_medium">Prospect AI Summary</h2>
-        </div>
-            <!-- <lightning-button label="Generate Portfolio Summary" variant="brand" onclick={generateSummary}
-                disabled={isLoading}>
-            </lightning-button> -->
+            <template if:false={isLoading}>
+                <template if:true={hasBothTabs}>
+                    <lightning-tabset active-tab-value={activeTab} onselect={handleTabSelect} class="main-tabset">
+                        <lightning-tab label="SVP" value="svp">
+                            <template if:true={hasSvpTiles}>
+                                <div>
+                                    <template for:each={svpTiles} for:item="tile">
+                                        <div key={tile.svpId} class="tile svp-tile">
+                                            <!-- <c-prospect-tile tile-data={tile} onexpand={handleTileExpand}
+                                                ongenerateai={handleGenerateAI}>
+                                            </c-prospect-tile> -->
+                                            <p>Tile1</p>
+                                             <div class="tile-card">
+
+                                            <!-- Header -->
+                                            <div class="tile-header">
+                                                <div class="tile-header-left">
+                                                    <div class="avatar avatar-svp">{tile.initials}</div>
+                                                    <div>
+                                                        <div class="tile-name">{tile.userName}</div>
+                                                        <div class="tile-role">SVP Portfolio</div>
+                                                    </div>
+                                                </div>
+                                                <div class="score-badge">
+                                                    <div class="score-num">{tile.effectivenessScore}</div>
+                                                    <div class="score-lbl">Score</div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Metrics -->
+                                            <div class="metric-row">
+                                                <span class="metric-label">Total Engagements/Outreach:</span>
+                                                <span class="metric-val">{tile.totalEngagements}</span>
+                                            </div>
+
+                                            <div class="metric-row">
+                                                <span class="metric-label">Engagement Effectiveness Score:</span>
+                                                <span class="metric-val tbd">{tile.effectivenessScore}</span>
+                                            </div>
+
+                                            <div class="tile-divider"></div>
+
+                                            <!-- Top Accounts -->
+                                            <div class="metric-row">
+                                                <span class="metric-label">Top Engaged Accounts:</span>
+                                            </div>
+                                            <div class="tag-row">
+                                                <template for:each={tile.topAccounts} for:item="acct">
+                                                    <span key={acct.name} class="tag tag-top">
+                                                        {acct.name} ({acct.industry}, {acct.tier})
+                                                    </span>
+                                                </template>
+                                            </div>
+
+                                            <!-- Top Channels -->
+                                            <div class="metric-row">
+                                                <span class="metric-label">Top Channels:</span>
+                                                <template for:each={tile.topChannels} for:item="ch">
+                                                    <span key={ch} class="tag tag-channel-top">{ch}</span>
+                                                </template>
+                                            </div>
+
+                                            <!-- Contacts -->
+                                            <div class="metric-row">
+                                                <span class="metric-label">Contacts and Roles - most engaged:</span>
+                                                <span class="metric-val">{tile.contactsAndRoles}</span>
+                                            </div>
+
+                                            <div class="tile-divider"></div>
+
+                                            <!-- Low Accounts -->
+                                            <div class="metric-row">
+                                                <span class="metric-label">Low Engaged Accounts:</span>
+                                            </div>
+                                            <div class="tag-row">
+                                                <template for:each={tile.lowAccounts} for:item="acct">
+                                                    <span key={acct.name} class="tag tag-low">
+                                                        {acct.name} ({acct.industry})
+                                                    </span>
+                                                </template>
+                                            </div>
+
+                                            <!-- Low Channels -->
+                                            <div class="metric-row">
+                                                <span class="metric-label">Low Channels:</span>
+                                                <template for:each={tile.lowChannels} for:item="ch">
+                                                    <span key={ch} class="tag tag-channel-low">{ch}</span>
+                                                </template>
+                                            </div>
+
+                                            <!-- Channel Mix -->
+                                            <div class="metric-row">
+                                                <span class="metric-label">Channel Mix:</span>
+                                                <span class="metric-val">{tile.channelMix}</span>
+                                            </div>
+
+                                            <!-- AI Section -->
+                                            <div class="ai-section">
+                                                <template if:false={tile.aiLoading}>
+                                                    <template if:false={tile.aiSummary}>
+                                                        <button class="ai-btn"
+                                                                data-email={tile.userEmail}
+                                                                onclick={handleGenerateAI}>
+                                                            ✦ Generate AI Insights
+                                                        </button>
+                                                    </template>
+                                                    <template if:true={tile.aiSummary}>
+                                                        <div class="ai-label">✦ AI Insight Summary</div>
+                                                        <div class="ai-output">{tile.aiSummary}</div>
+                                                        <button class="ai-refresh"
+                                                                data-email={tile.userEmail}
+                                                                onclick={handleGenerateAI}>
+                                                            ↻ Refresh
+                                                        </button>
+                                                    </template>
+                                                    <template if:true={tile.aiError}>
+                                                        <div class="ai-error">{tile.aiError}</div>
+                                                    </template>
+                                                </template>
+                                                <template if:true={tile.aiLoading}>
+                                                    <div class="ai-loading">
+                                                        <lightning-spinner size="small"
+                                                            alternative-text="Generating">
+                                                        </lightning-spinner>
+                                                        <span>Generating AI insights…</span>
+                                                    </div>
+                                                </template>
+                                            </div>
+
+                                        </div><!-- /tile-card -->
+                                    </div>
+                                        </div>
+                                        <!-- <c-prospect-rollup tiles={svpTiles} tab-type="svp"
+                                            ongeneraterollup={handleGenerateRollup}>
+                                        </c-prospect-rollup> -->
+                                    </template>
+                                </div>
+
+                            </template>
+                            <template if:false={hasSvpTiles}>
+                                <div class="empty-state">
+                                    <p>No SVP portfolios available for your access level.</p>
+                                </div>
+                            </template>
+                        </lightning-tab>
+
+                        <lightning-tab label="Quad4" value="quad4">
+                        <template if:true={hasQuad4Tiles}>
+                            <div class={q4GridClass}>
+                                <template for:each={q4Tiles} for:item="tile">
+                                    <div key={tile.svpId} class="tile q4-tile">
+                                        <!-- <c-prospect-tile tile-data={tile} onexpand={handleTileExpand}
+                                            ongenerateai={handleGenerateAI}>
+                                        </c-prospect-tile> -->
+                                          <div class="tile-card">
+
+                                            <div class="tile-header">
+                                                <div class="tile-header-left">
+                                                    <div class="avatar avatar-q4">{tile.initials}</div>
+                                                    <div>
+                                                        <div class="tile-name">{tile.userName}</div>
+                                                        <div class="tile-role">Quad4 Team</div>
+                                                    </div>
+                                                </div>
+                                                <div class="score-badge">
+                                                    <div class="score-num">{tile.effectivenessScore}</div>
+                                                    <div class="score-lbl">Score</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="metric-row">
+                                                <span class="metric-label">Total Engagements/Outreach:</span>
+                                                <span class="metric-val">{tile.totalEngagements}</span>
+                                            </div>
+
+                                            <div class="metric-row">
+                                                <span class="metric-label">Engagement Effectiveness Score:</span>
+                                                <span class="metric-val tbd">{tile.effectivenessScore}</span>
+                                            </div>
+
+                                            <div class="tile-divider"></div>
+
+                                            <div class="metric-row">
+                                                <span class="metric-label">Top Engaged Accounts:</span>
+                                            </div>
+                                            <div class="tag-row">
+                                                <template for:each={tile.topAccounts} for:item="acct">
+                                                    <span key={acct.name} class="tag tag-top">
+                                                        {acct.name} ({acct.industry}, {acct.tier})
+                                                    </span>
+                                                </template>
+                                            </div>
+
+                                            <div class="metric-row">
+                                                <span class="metric-label">Top Channels:</span>
+                                                <template for:each={tile.topChannels} for:item="ch">
+                                                    <span key={ch} class="tag tag-channel-top">{ch}</span>
+                                                </template>
+                                            </div>
+
+                                            <div class="metric-row">
+                                                <span class="metric-label">Contacts and Roles - most engaged:</span>
+                                                <span class="metric-val">{tile.contactsAndRoles}</span>
+                                            </div>
+
+                                            <div class="tile-divider"></div>
+
+                                            <div class="metric-row">
+                                                <span class="metric-label">Low Engaged Accounts:</span>
+                                            </div>
+                                            <div class="tag-row">
+                                                <template for:each={tile.lowAccounts} for:item="acct">
+                                                    <span key={acct.name} class="tag tag-low">
+                                                        {acct.name} ({acct.industry})
+                                                    </span>
+                                                </template>
+                                            </div>
+
+                                            <div class="metric-row">
+                                                <span class="metric-label">Low Channels:</span>
+                                                <template for:each={tile.lowChannels} for:item="ch">
+                                                    <span key={ch} class="tag tag-channel-low">{ch}</span>
+                                                </template>
+                                            </div>
+
+                                            <div class="metric-row">
+                                                <span class="metric-label">Channel Mix:</span>
+                                                <span class="metric-val">{tile.channelMix}</span>
+                                            </div>
+
+                                            <div class="ai-section">
+                                                <template if:false={tile.aiLoading}>
+                                                    <template if:false={tile.aiSummary}>
+                                                        <button class="ai-btn"
+                                                                data-email={tile.userEmail}
+                                                                onclick={handleGenerateAI}>
+                                                            ✦ Generate AI Insights
+                                                        </button>
+                                                    </template>
+                                                    <template if:true={tile.aiSummary}>
+                                                        <div class="ai-label">✦ AI Insight Summary</div>
+                                                        <div class="ai-output">{tile.aiSummary}</div>
+                                                        <button class="ai-refresh"
+                                                                data-email={tile.userEmail}
+                                                                onclick={handleGenerateAI}>
+                                                            ↻ Refresh
+                                                        </button>
+                                                    </template>
+                                                    <template if:true={tile.aiError}>
+                                                        <div class="ai-error">{tile.aiError}</div>
+                                                    </template>
+                                                </template>
+                                                <template if:true={tile.aiLoading}>
+                                                    <div class="ai-loading">
+                                                        <lightning-spinner size="small"
+                                                            alternative-text="Generating">
+                                                        </lightning-spinner>
+                                                        <span>Generating AI insights…</span>
+                                                    </div>
+                                                </template>
+                                            </div>
+
+                                        </div><!-- /tile-card -->
+                                    </div>
+                                    </div>
+                                </template>
+                            </div>
+                            <!-- <c-prospect-rollup tiles={q4Tiles} tab-type="quad4" ongeneraterollup={handleGenerateRollup}>
+                            </c-prospect-rollup> -->
+                        </template>
+                        <template if:false={hasQuad4Tiles}>
+                            <div class="empty-state">
+                                <p>No Quad4 accounts available for your access level.</p>
+                            </div>
+
+                        </template>
+                        </lightning-tab>
+                    </lightning-tabset>
+
+                </template>
+            </template>
+
+
+
+
+
+
+
+            <!-- <lightning-pill
+            label="SVP Top Targets">
+        </lightning-pill> -->
+            <!-- <div class="filter-chip">
+    <span class="slds-pill__label">
+        Direct Marketing  Lead
+    </span>
+</div> -->
+
+            <!-- <lightning-combobox label="Direct Marketing Target" options={directMarketingOptions} value="" onchange={handleSelection}
+            class="slds-m-bottom_small"></lightning-combobox> -->
         </div>
 
 
-        <!-- <template if:true={summary}>
-             
-            <div class="slds-p-around_medium">
-                <lightning-formatted-rich-text value={summary}> </lightning-formatted-rich-text>
-            </div> 
-        </template> -->
-        <template if:true={errorMessage}>
-            <div class="slds-p-around_medium slds-text-color_error">
-                {errorMessage}
-            </div>
-        </template>
     </lightning-card>
 </template>
