@@ -12,9 +12,15 @@ public with sharing class ProspectEngagementInsightsController {
         @AuraEnabled
         public List<String> users;
         @AuraEnabled
-        public List<String> svpUsers     = new List<String>(); // SVP tile emails
+        public List<TileData> svpUsers     = new List<TileData>(); // SVP tile emails
         @AuraEnabled
-        public List<String> quad4Users   = new List<String>(); 
+        public List<TileData> quad4Users   = new List<TileData>(); 
+    }
+    public class TileData {
+        @AuraEnabled public String      name;
+        @AuraEnabled public String      email;
+        @AuraEnabled public String      accessType;   // SVP, Quad4, Both
+        @AuraEnabled public List<Id>    accountIds = new List<Id>();
     }
     
     @AuraEnabled 
@@ -31,12 +37,14 @@ public with sharing class ProspectEngagementInsightsController {
         accessresponse.fullAccess =access.Full_Access__c;
         accessresponse.canViewSVP = access.Is_SVP__c;
         accessresponse.canViewQuad4 = access.IS_Quad4__c;
-        accessresponse.defaultTeam = access.Is_SVP__c ? 'SVP' : 'Quad4';
+        accessresponse.defaultTeam = access.Full_Access__c ? 'SVP' : 'Quad4';
         Set<String> visibleEmails = new Set<String>();
         //Parse emails into visibileEMailsList from visibleTiles
         if(access.Full_Access__c){
-            for(Prospect_Insight_Access__mdt pr:[SELECT Email__c FROM   Prospect_Insight_Access__mdt  WHERE  Email__c != null]){
-                visibleEmails.add(pr.Email__c.trim().toLowercase());
+            for(Prospect_Insight_Access__mdt pr:[SELECT Visible_Tiles__c FROM   Prospect_Insight_Access__mdt]){
+                if(String.isNotBlank(pr.Visible_Tiles__c)){
+                    visibleEmails.addAll(pr.Visible_Tiles__c.split(','));
+                }
             }
         }
         else if(String.isNotBlank(access.Visible_Tiles__c)){
@@ -47,28 +55,85 @@ public with sharing class ProspectEngagementInsightsController {
                 }
             }
         }
-        if(!visibleEmails.isEmpty()){
-            for(Prospect_Insight_Access__mdt  pi:[SELECT  Email__c, Access_Type__c FROM    Prospect_Insight_Access__mdt WHERE   Email__c IN :visibleEmails])
-            {
-                String email = pi.Email__c.trim().toLowerCase();
-                String accessType = pi.Access_Type__c;
-                if(accessType =='SVP'){
-                    accessresponse.svpUsers.add(email);
-                }
-                else if(accessType =='QUAD4'){
-                    accessresponse.quad4Users.add(email);
-                }
-                else if (accessType == 'Both') {
-                // Person appears in both tabs
-                accessresponse.svpUsers.add(email);
-                accessresponse.quad4Users.add(email);
+        if(visibleEmails.isEmpty()) {
+            return accessresponse;
+        }
+        Set<String> svpLabels   = new Set<String>();
+        Set<String> quad4Labels = new Set<String>();
+        Map<String, Prospect_Insight_Access__mdt> emailToMdt = new Map<String, Prospect_Insight_Access__mdt>();
+        for(Prospect_Insight_Access__mdt  pi:[SELECT  Email__c, Access_Type__c,Label FROM    Prospect_Insight_Access__mdt WHERE   Email__c IN :visibleEmails]){
+            String email = pi.Email__c.trim().toLowerCase();    
+            emailToMdt.put(email, pi);
+            if(pi.Access_Type__c == 'SVP' || pi.Access_Type__c == 'FULL_ACCESS'){
+                svpLabels.add(pi.Label);
             }
-
+            if(pi.Access_Type__c == 'Quad4' || pi.Access_Type__c == 'FULL_ACCESS'){
+                quad4Labels.add(pi.Label);
             }
         }
-                return accessresponse;
+        if(emailToMdt.isEmpty()) return accessresponse;
+        Map<String, List<Id>> labelToAccountIds = new Map<String, List<Id>>();
+        if(!svpLabels.isEmpty()){
+            for(Account acc : [SELECT Id, SVP_Involved__c FROM Account WHERE SVP_Involved__c IN :svpLabels]){
+                String key = acc.SVP_Involved__c;
+                if(!labelToAccountIds.containsKey(key)) 
+                    labelToAccountIds.put(key, new List<Id>());
+                labelToAccountIds.get(key).add(acc.Id);
+            }
+        }
+        if(!quad4Labels.isEmpty()){
+            for(Account acc : [SELECT Id, Coveted_Account__c FROM Account 
+                               WHERE Coveted_Account__c IN :quad4Labels]){
+                                   String key = acc.Coveted_Account__c;
+                                   if(!labelToAccountIds.containsKey(key)) labelToAccountIds.put(key, new List<Id>());
+                                   labelToAccountIds.get(key).add(acc.Id);
+                               }
+        }
+        
+        for(String email : emailToMdt.keySet()){
+            Prospect_Insight_Access__mdt pi = emailToMdt.get(email);
+            String accessType = pi.Access_Type__c;
+            
+            TileData td   = new TileData();
+            td.name       = pi.Label;
+            td.email      = email;
+            td.accessType = accessType;
+            td.accountIds = labelToAccountIds.containsKey(pi.Label)
+                ? labelToAccountIds.get(pi.Label)
+                : new List<Id>();
+            
+            if(accessType == 'SVP' || accessType == 'Both'){
+                accessresponse.svpUsers.add(td);
+            }
+            if(accessType == 'Quad4' || accessType == 'Both'){
+                accessresponse.quad4Users.add(td);
+            }
+        }
+        
+        
+        
+        /*if(!visibleEmails.isEmpty()){
+for(Prospect_Insight_Access__mdt  pi:[SELECT  Email__c, Access_Type__c,Label FROM    Prospect_Insight_Access__mdt WHERE   Email__c IN :visibleEmails])
+{
+String email = pi.Email__c.trim().toLowerCase();
+String accessType = pi.Access_Type__c;
+if(accessType =='SVP'){
+accessresponse.svpUsers.add(email);
+}
+else if(accessType =='QUAD4'){
+accessresponse.quad4Users.add(email);
+}
+else if (accessType == 'Both') {
+// Person appears in both tabs
+accessresponse.svpUsers.add(email);
+accessresponse.quad4Users.add(email);
+}
+
+}
+}*/
+        return accessresponse;
     }
-   
+    
     @AuraEnabled
     public static List<Id> getAccountsForSurestOrQuad(){
         List<Id> accountIds = new List<Id>();
@@ -197,100 +262,6 @@ wp.finalContent =
 return wp;
 }*/
     
-// Method 1 — returns tab flags as a Map
-/*@AuraEnabled(cacheable=true)
-public static Map<String, Boolean> getAccessFlags() {
-    String currentEmail = UserInfo.getUserEmail();
-    List<Prospect_Insight_Access__mdt> records = [
-        SELECT Is_SVP__c, IS_Quad4__c, Full_Access__c
-        FROM   Prospect_Insight_Access__mdt
-        WHERE  Email__c = :currentEmail
-        WITH   USER_MODE
-        LIMIT  1
-    ];
-    Map<String, Boolean> flags = new Map<String, Boolean>{
-        'canViewSVP'   => false,
-        'canViewQuad4' => false,
-        'fullAccess'   => false
-    };
-    if (!records.isEmpty()) {
-        flags.put('canViewSVP',   records[0].Is_SVP__c   || records[0].Full_Access__c);
-        flags.put('canViewQuad4', records[0].IS_Quad4__c  || records[0].Full_Access__c);
-        flags.put('fullAccess',   records[0].Full_Access__c);
-    }
-    return flags;
-}
-
-// Method 2 — returns tile emails split by tab, no wrapper, no duplicates
-@AuraEnabled(cacheable=true)
-public static Map<String, List<String>> getTileUsers() {
-    String currentEmail = UserInfo.getUserEmail();
-
-     ── Get logged-in user's CMT record ── *
-    List<Prospect_Insight_Access__mdt> records = [
-        SELECT  Visible_Tiles__c,
-                Full_Access__c
-        FROM    Prospect_Insight_Access__mdt
-        WHERE   Email__c = :currentEmail
-        WITH    USER_MODE
-        LIMIT   1
-    ];
-
-    Map<String, List<String>> result = new Map<String, List<String>>{
-        'SVP'   => new List<String>(),
-        'Quad4' => new List<String>()
-    };
-
-    if (records.isEmpty()) return result;
-
-    Prospect_Insight_Access__mdt myRecord = records[0];
-
-    ── Parse visible emails into a Set — no duplicates ── 
-    Set<String> visibleEmails = new Set<String>();
-
-    if (myRecord.Full_Access__c) {
-        for (Prospect_Insight_Access__mdt r : [
-            SELECT Email__c
-            FROM   Prospect_Insight_Access__mdt
-            WHERE  Email__c != null
-            AND    Is_Active__c = TRUE
-        ]) {
-            visibleEmails.add(r.Email__c.trim().toLowerCase());
-        }
-    } else if (String.isNotBlank(myRecord.Visible_Tiles__c)) {
-        for (String e : myRecord.Visible_Tiles__c.split(',')) {
-            String cleaned = e.trim().toLowerCase();
-            if (String.isNotBlank(cleaned)) {
-                visibleEmails.add(cleaned); // Set handles duplicates
-            }
-        }
-    }
-
-    /* ── Look up Access_Type for each visible email ──
-       One query — routes each email to SVP or Quad4 list ── 
-    if (!visibleEmails.isEmpty()) {
-        for (Prospect_Insight_Access__mdt r : [
-            SELECT  Email__c,
-                    Access_Type__c
-            FROM    Prospect_Insight_Access__mdt
-            WHERE   Email__c IN :visibleEmails
-        ]) {
-            String email = r.Email__c.trim().toLowerCase();
-            String type  = r.Access_Type__c;
-
-            if (type == 'SVP') {
-                result.get('SVP').add(email);
-            } else if (type == 'Quad4') {
-                result.get('Quad4').add(email);
-            } else if (type == 'Both') {
-                result.get('SVP').add(email);
-                result.get('Quad4').add(email);
-            }
-        }
-    }
-
-    return result;
-}*/
     
     
     
