@@ -1,10 +1,14 @@
 public with sharing class ProspectEngagementInsightsController {
     
     public class AccessResponse {
-        @AuraEnabled
+        /*@AuraEnabled
         public Boolean canViewSVP;
         @AuraEnabled
-        public Boolean canViewQuad4;
+        public Boolean canViewQuad4;*/
+        @AuraEnabled
+        public Boolean canViewSvpTab;
+        @AuraEnabled
+        public Boolean canViewQuad4Tab;
         @AuraEnabled
         public Boolean fullAccess;
         @AuraEnabled
@@ -34,10 +38,41 @@ public with sharing class ProspectEngagementInsightsController {
             return accessresponse;
         }
         Prospect_Insight_Access__mdt access = accessList[0];
-        accessresponse.fullAccess =access.Full_Access__c;
+        Boolean isFull = access.Full_Access__c;
+        Boolean isSVP  = access.Is_SVP__c;
+        Boolean isQ4   = access.IS_Quad4__c;
+        
+        accessresponse.fullAccess       = isFull;
+       // accessresponse.canViewSVP       = isSVP;
+       // accessresponse.canViewQuad4     = isQ4;
+        accessresponse.canViewSvpTab    = isFull || isSVP;
+        accessresponse.canViewQuad4Tab  = isFull || isQ4;
+        accessresponse.defaultTeam      = (isFull || isSVP) ? 'SVP' : 'Quad4';
+        /*accessresponse.fullAccess =access.Full_Access__c;
         accessresponse.canViewSVP = access.Is_SVP__c;
-        accessresponse.canViewQuad4 = access.IS_Quad4__c;
+       accessresponse.canViewQuad4 = access.IS_Quad4__c;
+        accessresponse.canViewSvpTab = access.Is_SVP__c;
+        accessresponse.canViewQuad4Tab = access.IS_Quad4__c; 
         accessresponse.defaultTeam = access.Full_Access__c ? 'SVP' : 'Quad4';
+        if(access.Full_Access__c){
+            accessresponse.canViewSvpTab = true;
+            accessresponse.canViewQuad4Tab = true;
+        }
+        else{
+            accessresponse.canViewSvpTab = access.Is_SVP__c;
+            accessresponse.canViewQuad4Tab = access.IS_Quad4__c;
+        }
+        
+        if(access.Full_Access__c){
+            accessresponse.defaultTeam = 'SVP';
+        }
+        else if(access.Is_SVP__c){
+            accessresponse.defaultTeam = 'SVP';
+        }
+        else{
+            accessresponse.defaultTeam = 'Quad4';
+        }    */    
+        
         Set<String> visibleEmails = new Set<String>();
         //Parse emails into visibileEMailsList from visibleTiles
         if(access.Full_Access__c){
@@ -98,18 +133,30 @@ public with sharing class ProspectEngagementInsightsController {
             td.name       = pi.Label;
             td.email      = email;
             td.accessType = accessType;
-            td.accountIds = labelToAccountIds.containsKey(pi.Label)
-                ? labelToAccountIds.get(pi.Label)
-                : new List<Id>();
-            
-            if(accessType == 'SVP' || accessType == 'Both'){
+            td.accountIds = labelToAccountIds.containsKey(pi.Label)? labelToAccountIds.get(pi.Label) : new List<Id>();
+            /*if(accessType == 'SVP' || accessType == 'FULL_ACCESS'){
                 accessresponse.svpUsers.add(td);
             }
-            if(accessType == 'Quad4' || accessType == 'Both'){
+            if(accessType == 'Quad4' || accessType == 'FULL_ACCESS'){
+                accessresponse.quad4Users.add(td);
+            }*/
+            if(accessType == 'SVP'){
+                accessresponse.svpUsers.add(td);
+            }
+            else if(accessType == 'Quad4'){
+                accessresponse.quad4Users.add(td);
+            }
+            else if(accessType == 'FULL_ACCESS'){
+                accessresponse.svpUsers.add(td);
                 accessresponse.quad4Users.add(td);
             }
         }
+        System.debug('SVP USERS SIZE ==> ' + accessresponse.svpUsers.size());
+        System.debug('QUAD4 USERS SIZE ==> ' + accessresponse.quad4Users.size());
         
+        accessresponse.canViewSvpTab = !accessresponse.svpUsers.isEmpty();
+        
+        accessresponse.canViewQuad4Tab = !accessresponse.quad4Users.isEmpty();
         
         
         /*if(!visibleEmails.isEmpty()){
