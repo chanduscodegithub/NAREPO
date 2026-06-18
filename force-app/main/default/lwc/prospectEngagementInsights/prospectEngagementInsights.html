@@ -30,13 +30,34 @@
                             options={productOptions} onchange={handleChange} variant="label-hidden" disabled>
                         </lightning-combobox>
                     </div>
-                    <div class="filter-group">
+                    <!-- <div class="filter-group">
                         <span class="filter-label slds-p-left_small">
                             <i class="ti ti-target" aria-hidden="true"></i> Tier
                         </span>
                         <lightning-combobox class="slds-p-left_small slds-p-right_large" name="Company_Tier_Medical__c"
-                            placeholder="Choose Tier..." label="Tier" options={options} value={value}
+                            placeholder="Choose Tier" label="Tier" options={options} value={value}
                             onchange={handleChange} variant="label-hidden"></lightning-combobox>
+                    </div> -->
+
+                    <div class="filter-group">
+                        <span class="filter-label">Tier</span>
+                        <div class="user-dropdown-container" onmouseleave={handleTierMouseLeave}>
+                            <div class="users-trigger" onclick={toggleTierDropdown}>
+                                <span class="users-trigger-text">{selectedTiersLabel}</span>
+                                <lightning-icon icon-name="utility:chevrondown" size="x-small"></lightning-icon>
+                            </div>
+                            <template if:true={showTierDropdown}>
+                                <div class="dropdown">
+                                    <template for:each={tierOptions} for:item="tier">
+                                        <div key={tier.value} class="slds-p-around_x-small">
+                                            <lightning-input type="checkbox" label={tier.label}  checked={tier.selected}
+                                                data-value={tier.value} onchange={handleTierSelection}>
+                                            </lightning-input>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                     <div class="filter-group">
                         <span class="filter-label">
@@ -128,9 +149,9 @@
                                                     <!-- <template for:each={tile.summary.topEngagedAccounts} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                    <li>Acme Corp</li>
-                                                    <li>Horizon Group Corp</li>
-                                                    <li>Global tech Corp</li>
+                                                    <li>Acme Corp — Technology · Qualification</li>
+                                                    <li>Horizon — Healthcare · NegotiationGroup Corp</li>
+                                                    <li>Global tech Corp — Retail · Prospecting</li>
                                                 </ul>
                                             </div>
 
@@ -144,9 +165,11 @@
                                                     </span> Top Channels
                                                 </div>
                                                 <ul class="bullet-list bullet-list--green">
-                                                    <li>Meetings</li>
-                                                    <li>webinar</li>
-                                                    <li>Newsletters</li>
+                                                    <li> Mass Email: 100% completion rate. Strong potential for targeted
+                                                        outreach.</li>
+                                                    <li> Newsletters: 3% open and click-through rates. Most consistent
+                                                        engagement.</li>
+                                                    <li>Newsletters — 3% open rate</li>
 
                                                     <!-- <template for:each={tile.summary.topChannels} for:item="item">
                             <li key={item}>{item}</li>
@@ -166,8 +189,8 @@
                                                     Most Engaged Contacts
                                                 </div>
                                                 <ul class="bullet-list bullet-list--blue">
-                                                    <li>Jahn doe</li>
-                                                    <li>Mark smith doe</li>
+                                                    <li>Jahn doe - Vp finance</li>
+                                                    <li>Mark smith doe - CFO</li>
                                                     <li>Lisa Ray doe</li>
                                                     <!-- <template for:each={tile.summary.contacts} for:item="item">
                             <li key={item}>{item}</li>
@@ -187,9 +210,9 @@
                                                     <!-- <template for:each={tile.summary.lowEngagedAccounts} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                    <li>Jahn doe</li>
-                                                    <li>Mark smith doe</li>
-                                                    <li>Lisa Ray doe</li>
+                                                    <li>Jahn doe — Retail · Prospecting</li>
+                                                    <li>Mark smith doe — Finance · Prospecting</li>
+                                                    <li>Lisa Ray doe — Insurance · Prospecting</li>
                                                 </ul>
                                             </div>
 
@@ -203,9 +226,9 @@
                                                     </span> Low Channels
                                                 </div>
                                                 <ul class="bullet-list bullet-list--red">
-                                                    <li>Linkeidn</li>
-                                                    <li>webinar</li>
-                                                    <li>Newsletters</li>
+                                                    <li>Linkeidn — 0.4% engagement</li>
+                                                    <li>webinar — 6.25% attendance</li>
+                                                    <li>Newsletters — 0% response</li>
                                                     <!-- <li>LinkedIn</li>
                                                 <li>Mails</li> -->
                                                     <!-- <template for:each={tile.summary.lowChannels} for:item="item">
@@ -227,7 +250,7 @@
     </div>-->
                                             <div class="tile-section">
                                                 <div class="section-head section-head--blue">
-                                                     <span class="arrow">
+                                                    <span class="arrow">
                                                         <lightning-icon icon-name="utility:justify_text" size="x-small"
                                                             class="icon-blue"></lightning-icon>
                                                     </span>
@@ -263,7 +286,7 @@
                                                     <div class="summary-card-head">
                                                         <!-- <lightning-icon icon-name="utility:einstein" size="x-small"
                                                             class="icon-gray"></lightning-icon> -->
-                                                                <span class="summary-spark">✦</span>
+                                                        <span class="summary-spark">✦</span>
 
                                                         <span>AI Summary</span>
                                                     </div>
@@ -422,7 +445,7 @@
     </div>-->
                                             <div class="tile-section">
                                                 <div class="section-head section-head--blue">
-                                                     <span class="arrow">
+                                                    <span class="arrow">
                                                         <lightning-icon icon-name="utility:justify_text" size="x-small"
                                                             class="icon-blue"></lightning-icon>
                                                     </span>
@@ -458,7 +481,7 @@
                                                     <div class="summary-card-head">
                                                         <!-- <lightning-icon icon-name="utility:einstein" size="x-small"
                                                             class="icon-gray"></lightning-icon> -->
-                                                                <span class="summary-spark">✦</span>
+                                                        <span class="summary-spark">✦</span>
 
                                                         <span>AI Summary</span>
                                                     </div>
