@@ -10,21 +10,11 @@ public with sharing class ProspectEngagementInsightsController {
         public String defaultTeam;
         @AuraEnabled
         public List<String> users;
-       /* @AuraEnabled
-        public List<TileData> svpUsers     = new List<TileData>(); // SVP tile emails
-        @AuraEnabled
-        public List<TileData> quad4Users   = new List<TileData>(); */
          @AuraEnabled
         public List<String> svpLabels1    = new List<String>(); // SVP tile emails
         @AuraEnabled
         public List<String> quad4Labels1   = new List<String>();
     }
-   /* public class TileData {
-        @AuraEnabled public String      name;
-        @AuraEnabled public String      email;
-        @AuraEnabled public String      accessType;   // SVP, Quad4, Both
-        @AuraEnabled public List<Id>    accountIds = new List<Id>();
-    }*/
     @AuraEnabled 
     public static AccessResponse getUserInfo(){
         String  currentEmail = UserInfo.getUserEmail();
@@ -40,8 +30,8 @@ public with sharing class ProspectEngagementInsightsController {
         Boolean isSVP  = access.Is_SVP__c;
         Boolean isQ4   = access.IS_Quad4__c;
         accessresponse.fullAccess       = isFull;
-        accessresponse.canViewSvpTab    = isFull || isSVP;
-        accessresponse.canViewQuad4Tab  = isFull || isQ4;
+        //accessresponse.canViewSvpTab    = isFull || isSVP || !svpLabels.isEmpty();
+        //accessresponse.canViewQuad4Tab  = isFull || isQ4 || !quad4Labels.isEmpty();
         accessresponse.defaultTeam      = (isFull || isSVP) ? 'SVP' : 'Quad4';
         Set<String> visibleEmails = new Set<String>();
         //Parse emails into visibileEMailsList from visibleTiles
@@ -78,60 +68,27 @@ public with sharing class ProspectEngagementInsightsController {
         }
         System.debug('svpLabels'+svpLabels);
         System.debug('quad4Labels'+quad4Labels);
-        List<String> svpLabels1 = new List<String>(svpLabels);
+       List<String> svpLabels1 = new List<String>(svpLabels);
        List<String> quad4Labels1 = new List<String>(quad4Labels);
+       accessresponse.svpLabels1 =svpLabels1 ;
+       accessresponse.quad4Labels1 =quad4Labels1;
+       accessresponse.canViewSvpTab =isFull || isSVP || !svpLabels.isEmpty();
+       accessresponse.canViewQuad4Tab = isFull || isQ4 || !quad4Labels.isEmpty();
 
-          accessresponse.svpLabels1 =svpLabels1 ;
-        accessresponse.quad4Labels1 =quad4Labels1;
-
-        /*if(emailToMdt.isEmpty())
-            return accessresponse;
-        Map<String, List<Id>> labelToAccountIds = new Map<String, List<Id>>();
-        if(!svpLabels.isEmpty()){
-            for(Account acc : [SELECT Id, SVP_Involved__c FROM Account WHERE SVP_Involved__c IN :svpLabels]){
-                String key = acc.SVP_Involved__c;
-                if(!labelToAccountIds.containsKey(key)) 
-                    labelToAccountIds.put(key, new List<Id>());
-                labelToAccountIds.get(key).add(acc.Id);
-            }
-        }
-        if(!quad4Labels.isEmpty()){
-            for(Account acc : [SELECT Id, Coveted_Account__c FROM Account 
-                               WHERE Coveted_Account__c IN :quad4Labels]){
-                                   String key = acc.Coveted_Account__c;
-                                   if(!labelToAccountIds.containsKey(key)) 
-                                       labelToAccountIds.put(key, new List<Id>());
-                                   labelToAccountIds.get(key).add(acc.Id);
-                               }
-        }
-        
-        for(String email : emailToMdt.keySet()){
-            Prospect_Insight_Access__mdt pi = emailToMdt.get(email);
-            String accessType = pi.Access_Type__c;
-            
-            TileData td   = new TileData();
-            td.name       = pi.Label;
-            td.email      = email;
-            td.accessType = accessType;
-            td.accountIds = labelToAccountIds.containsKey(pi.Label)? labelToAccountIds.get(pi.Label) : new List<Id>();
-            if(accessType == 'SVP'){
-                accessresponse.svpUsers.add(td);
-            }
-            else if(accessType == 'Quad4'){
-                accessresponse.quad4Users.add(td);
-            }
-            else if(accessType == 'FULL_ACCESS'){
-                accessresponse.svpUsers.add(td);
-                accessresponse.quad4Users.add(td);
-            }
-        }
-        System.debug('SVP USERS SIZE ==> ' + accessresponse.svpUsers.size());
-        System.debug('QUAD4 USERS SIZE ==> ' + accessresponse.quad4Users.size());
-        accessresponse.canViewSvpTab = !accessresponse.svpUsers.isEmpty();
-        accessresponse.canViewQuad4Tab = !accessresponse.quad4Users.isEmpty();*/
+       
         return accessresponse;
     }
-    
+    @AuraEnabled(cacheable=true)
+    public static List<String> getTierPicklistValues() {
+        List<String> values = new List<String>();
+        for (Schema.PicklistEntry entry : 
+             Account.Company_Tier_Medical__c.getDescribe().getPicklistValues()) {
+                 if (entry.isActive()) {
+                     values.add(entry.getValue());
+                 }
+             }
+        return values;
+    }
     @AuraEnabled
     public static Map<String, List<Id>> getAccountIdsPerUser(List<String> svpUserNames,List<String> quad4UserNames,List<String> tiers) {
         Map<String, List<Id>> accountIdsForEachUser = new Map<String, List<Id>>();
@@ -142,8 +99,8 @@ public with sharing class ProspectEngagementInsightsController {
             accountIdsForEachUser.put('QUAD4_'+s,new List<Id>());
         }
         if(!svpUserNames.isEmpty()){
-            for(Account a: [SELECT Id, Name, SVP_Involved__c FROM Account WHERE SVP_Top_10__c = true AND Direct_Marketing_Target__c = true AND SVP_Involved__c IN :svpUserNames AND Company_Tier_Medical__c IN :tiers with USER_MODE]){
-                accountIdsForEachUser.get('SVP_'+a.SVP_Involved__c).add(a.Id);
+            for(Account a: [SELECT Id, Name,Owner.Name FROM Account WHERE SVP_Top_10__c = true AND Direct_Marketing_Target__c = true AND Owner.Name IN :svpUserNames AND Company_Tier_Medical__c IN :tiers with USER_MODE]){
+                accountIdsForEachUser.get('SVP_'+a.Owner.Name).add(a.Id);
             }
         }
         if(!quad4UserNames.isEmpty()){
@@ -156,6 +113,77 @@ public with sharing class ProspectEngagementInsightsController {
     }
     
     @AuraEnabled
+    public static String getPromptDataForUser(List<Id> accountIds) {
+        try {
+            if (accountIds == null || accountIds.isEmpty()) return null;
+            String portfolioAccounts = String.join(accountIds, ',');
+            System.debug('portfolioAccounts ===> ' + portfolioAccounts);
+            // pass to Einstein prompt template
+            ConnectApi.WrappedValue portfolioValue = new ConnectApi.WrappedValue();
+            portfolioValue.value = portfolioAccounts;
+            
+            Map<String, ConnectApi.WrappedValue> inputParams =new Map<String, ConnectApi.WrappedValue>();
+            inputParams.put('Input:portfolioAccounts', portfolioValue);
+            
+            ConnectApi.EinsteinPromptTemplateGenerationsInput executeTemplateInput = new ConnectApi.EinsteinPromptTemplateGenerationsInput();
+            executeTemplateInput.additionalConfig =new ConnectApi.EinsteinLlmAdditionalConfigInput();
+            executeTemplateInput.isPreview   = false;
+            executeTemplateInput.inputParams = inputParams;
+            System.debug('Calling Einstein prompt for accounts: ' + portfolioAccounts);
+            ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generationsOutput = ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate('Engagement_Summary_Insights',executeTemplateInput);
+            if (generationsOutput != null && generationsOutput.generations != null && !generationsOutput.generations.isEmpty()) {
+                    String generatedText = generationsOutput.generations[0].text;
+                    System.debug('Generated JSON: ' + generatedText);
+                    return generatedText;
+                }
+            return null;
+            
+        } catch(Exception ex) {
+            System.debug('Error in getPromptDataForUser: ' + ex.getMessage() + ex.getStackTraceString());
+            throw new AuraHandledException(ex.getMessage());
+        }
+    }
+    
+    
+   @AuraEnabled
+public static String getOverallPortfolioSummary(String userSummariesJson) {
+    try {
+        ConnectApi.WrappedValue summaryValue = new ConnectApi.WrappedValue();
+        summaryValue.value = userSummariesJson;
+
+        Map<String, ConnectApi.WrappedValue> inputParams =
+            new Map<String, ConnectApi.WrappedValue>();
+        inputParams.put('Input:UserSummaries', summaryValue);
+
+        ConnectApi.EinsteinPromptTemplateGenerationsInput executeTemplateInput =
+            new ConnectApi.EinsteinPromptTemplateGenerationsInput();
+        executeTemplateInput.additionalConfig =
+            new ConnectApi.EinsteinLlmAdditionalConfigInput();
+        executeTemplateInput.isPreview = false;
+        executeTemplateInput.inputParams = inputParams;
+
+        ConnectApi.EinsteinPromptTemplateGenerationsRepresentation result =
+            ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate(
+                'Portfolio_Overall_Summary',
+                executeTemplateInput
+            );
+
+        if (result != null
+            && result.generations != null
+            && !result.generations.isEmpty()) {
+            return result.generations[0].text;
+        }
+        return null;
+    } catch(Exception ex) {
+        throw new AuraHandledException(ex.getMessage());
+    }
+}
+    
+    
+    
+}
+    
+   /* @AuraEnabled
     public static List<Id> getAccountsForSurestOrQuad(){
         List<Id> accountIds = new List<Id>();
         List<Account> accounts = new List<Account>();
@@ -166,9 +194,9 @@ public with sharing class ProspectEngagementInsightsController {
             accountIds.add(acc.Id);
         }
         return accountIds;
-    }
+    }*/
     
-    @AuraEnabled
+   /* @AuraEnabled
     public static PromptWrapperClass sendPortfolioEngagementPrompt() {
         PromptWrapperClass wp = new PromptWrapperClass();
         try {
@@ -227,7 +255,7 @@ public with sharing class ProspectEngagementInsightsController {
         @AuraEnabled
         public String finalContent;
     }
-    public class CustomException extends Exception {}
+    public class CustomException extends Exception {}*/
     
     /* @AuraEnabled
 public static PromptWrapperClass sendEngagementPrompt() {
@@ -282,8 +310,3 @@ wp.finalContent =
 
 return wp;
 }*/
-    
-    
-    
-    
-}

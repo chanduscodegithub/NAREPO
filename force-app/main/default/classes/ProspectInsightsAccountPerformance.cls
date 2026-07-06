@@ -19,6 +19,28 @@ public with sharing class ProspectInsightsAccountPerformance {
         
         //output.Prompt = 'Channel Performance Report for Account\n';
                 output.Prompt = 'Channel Performance Report for Portfolio\n';
+        
+        // ── ADD THIS BLOCK ──────────────────────────────────────────────
+        // Query account details and add to prompt
+        // ── ACCOUNT DETAILS ──────────────────────────────────────────────
+        /*Map<Id, Account> accountMap = new Map<Id, Account>([
+            SELECT Id, Name, Industry, Company_Tier_Medical__c
+            FROM Account
+            WHERE Id IN :accountIds
+            WITH USER_MODE
+        ]);
+        
+        if (!accountMap.isEmpty()) {
+            output.Prompt += '\nPortfolio Account Details:\n';
+            for (Account acc : accountMap.values()) {
+                output.Prompt += '- Account: ' + acc.Name
+                    + ' | Industry: ' + (acc.Industry != null ? acc.Industry : 'N/A')
+                    + ' | Tier: ' + (acc.Company_Tier_Medical__c != null ? acc.Company_Tier_Medical__c : 'N/A')
+                    + '\n';
+            }
+        }*/
+
+        // ── END
 
         
         

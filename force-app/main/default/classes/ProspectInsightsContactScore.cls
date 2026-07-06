@@ -12,7 +12,7 @@ public with sharing class ProspectInsightsContactScore {
         //output.Prompt = 'CONTACT SCORE CLASS HIT';
         
        // List<Contact> contacts = [SELECT Id, Name FROM Contact WHERE AccountId = :input.account.Id];
-                List<Contact> contacts = [SELECT Id, Name FROM Contact WHERE AccountId = :accountIds];
+                List<Contact> contacts = [SELECT Id, Name,Title FROM Contact WHERE AccountId = :accountIds];
 
         Set<Id> contactIds = new Set<Id>();
         Map<Id, String> contactNames = new Map<Id, String>();
