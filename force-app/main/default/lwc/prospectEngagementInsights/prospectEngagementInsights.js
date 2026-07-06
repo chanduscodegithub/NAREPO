@@ -36,8 +36,12 @@ export default class ProspectEngagementInsights extends LightningElement {
     @track overallSummarySVP   = '';
 @track overallSummaryQuad4 = '';
 
-get hasOverallSummary() {
-    return !!this.overallSummary;
+get hasOverallSummarySVP() {
+    return !!this.overallSummarySVP;
+}
+
+get hasOverallSummaryQuad4() {
+    return !!this.overallSummaryQuad4;
 }
 if (result) {
     this.overallSummary = result.trim();
@@ -98,6 +102,8 @@ if (result) {
             this.svpLabels = result.svpLabels1;
             this.quad4Labels = result.quad4Labels1;
             this.selectedUsers = [...this.currentLabels];
+            this.overallSummarySVP   = '';
+this.overallSummaryQuad4 = '';
             await this.loadAccountIds();
              await this.loadOverallSummary();
         }
@@ -138,10 +144,12 @@ if (result) {
 
         // fetch ONLY selected users with current filters
         await this.loadAccountIds();
-        this.overallSummary = '';
+        //  this.overallSummary = '';
+        this.overallSummarySVP   = '';
+        this.overallSummaryQuad4 = '';
 
             // step 1 — fetch per user tiles
-            await this.loadAccountIds();
+           
 
             // step 2 — overall summary from tileData
             await this.loadOverallSummary();
@@ -503,94 +511,103 @@ if (result) {
 
 
     // ── LOAD OVERALL SUMMARY ──────────────────────────────────────────────
-    async loadOverallSummary() {
-        try {
-            let userSummariesText = '';
+  async loadOverallSummary() {
+    try {
+        let svpText   = '';
+        let quad4Text = '';
 
-            for (const userKey of Object.keys(this.tileData)) {
-                const s = this.tileData[userKey];
-                if (!s) continue;
+        for (const userKey of Object.keys(this.tileData)) {
+            const s = this.tileData[userKey];
+            if (!s) continue;
 
-                const userName = userKey
-                    .replace('SVP_', '')
-                    .replace('QUAD4_', '');
-                const userType = userKey.startsWith('SVP_')
-                    ? 'SVP' : 'Quad4';
+            const userName = userKey
+                .replace('SVP_', '')
+                .replace('QUAD4_', '');
+            const isSVP = userKey.startsWith('SVP_');
 
-                userSummariesText += `\n${userType}: ${userName}\n`;
-                userSummariesText += `Total Engagements: ${s.totalEngagements || '0'}\n`;
-                userSummariesText += `WES: ${s.weightedEngagementScore || '0'}\n`;
-                userSummariesText += `Engagement Rate: ${s.engagementRate || '0%'}\n`;
+            let userText = '';
+            userText += `\n${isSVP ? 'SVP' : 'Quad4'}: ${userName}\n`;
+            userText += `Total Engagements: ${s.totalEngagements || '0'}\n`;
+            userText += `WES: ${s.weightedEngagementScore || '0'}\n`;
+            userText += `Engagement Rate: ${s.engagementRate || '0%'}\n`;
 
-                if (s.topChannels?.length) {
-                    userSummariesText += `Top Channels: ${
-                        s.topChannels
-                         .map(c => c.channel +
-                            ' (volume: ' + c.volume +
-                            ', response: ' + c.responseRate + ')')
-                         .join(', ')
-                    }\n`;
-                }
-
-                if (s.lowChannels?.length) {
-                    userSummariesText += `Low Channels: ${
-                        s.lowChannels
-                         .map(c => c.channel +
-                            ' (volume: ' + c.volume +
-                            ', response: ' + c.responseRate + ')')
-                         .join(', ')
-                    }\n`;
-                }
-
-                if (s.topEngagedAccounts?.length) {
-                    userSummariesText += `Top Accounts: ${
-                        s.topEngagedAccounts
-                         .map(a => a.name +
-                            ' (' + a.industry +
-                            ', ' + a.tier + ')')
-                         .join(', ')
-                    }\n`;
-                }
-
-                if (s.lowEngagedAccounts?.length) {
-                    userSummariesText += `Low Accounts: ${
-                        s.lowEngagedAccounts
-                         .map(a => a.name + ' - ' + a.reason)
-                         .join(', ')
-                    }\n`;
-                }
-
-                if (s.channelMix?.length) {
-                    userSummariesText += `Channel Mix: ${
-                        s.channelMix
-                         .map(m => m.label + ': ' + m.pct + '%')
-                         .join(', ')
-                    }\n`;
-                }
-
-                userSummariesText += '\n';
+            if (s.topChannels?.length) {
+                userText += `Top Channels: ${
+                    s.topChannels
+                     .map(c => c.channel +
+                        ' (volume: ' + c.volume +
+                        ', response: ' + c.responseRate + ')')
+                     .join(', ')
+                }\n`;
             }
-
-            if (!userSummariesText.trim()) {
-                console.log('No tile data for overall summary');
-                return;
+            if (s.lowChannels?.length) {
+                userText += `Low Channels: ${
+                    s.lowChannels
+                     .map(c => c.channel +
+                        ' (volume: ' + c.volume +
+                        ', response: ' + c.responseRate + ')')
+                     .join(', ')
+                }\n`;
             }
-
-            console.log('Overall summary input:', userSummariesText);
-
-            const result = await getOverallPortfolioSummary({
-                userSummariesJson: userSummariesText
-            });
-
-            if (result) {
-                this.overallSummary = result.trim();
-                console.log('Overall summary:', this.overallSummary);
+            if (s.topEngagedAccounts?.length) {
+                userText += `Top Accounts: ${
+                    s.topEngagedAccounts
+                     .map(a => a.name +
+                        ' (' + a.industry +
+                        ', ' + a.tier + ')')
+                     .join(', ')
+                }\n`;
             }
+            if (s.lowEngagedAccounts?.length) {
+                userText += `Low Accounts: ${
+                    s.lowEngagedAccounts
+                     .map(a => a.name + ' - ' + a.reason)
+                     .join(', ')
+                }\n`;
+            }
+            if (s.channelMix?.length) {
+                userText += `Channel Mix: ${
+                    s.channelMix
+                     .map(m => m.label + ': ' + m.pct + '%')
+                     .join(', ')
+                }\n`;
+            }
+            userText += '\n';
 
-        } catch(e) {
-            console.error('Error loading overall summary:', e.message);
+            // separate into SVP or Quad4
+            if (isSVP) {
+                svpText += userText;
+            } else {
+                quad4Text += userText;
+            }
         }
+
+        // call Einstein for SVP overall
+        if (svpText.trim()) {
+            console.log('SVP overall input:', svpText);
+            const svpResult = await getOverallPortfolioSummary({
+                userSummariesJson: svpText
+            });
+            if (svpResult) {
+                this.overallSummarySVP = svpResult.trim();
+            }
+        }
+
+        // call Einstein for Quad4 overall
+        if (quad4Text.trim()) {
+            console.log('Quad4 overall input:', quad4Text);
+            const quad4Result = await getOverallPortfolioSummary({
+                userSummariesJson: quad4Text
+            });
+            if (quad4Result) {
+                this.overallSummaryQuad4 = quad4Result.trim();
+            }
+        }
+
+    } catch(e) {
+        console.error('Error loading overall summary:', e.message);
     }
+}
 
 
 

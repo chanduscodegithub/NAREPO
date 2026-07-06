@@ -343,15 +343,26 @@
 
                                 </div>
                             </template>
+
                             <template if:false={filteredLabels.length}>
                                 <p>No users selected.</p>
                             </template>
                         </div>
-                        <!-- <template if:true={hasOverallSummary}> -->
-                           
-                        <!-- </template> -->
+                        <template if:true={hasOverallSummarySVP}>
+                            <div class="overall-card">
+                                <div class="overall-card-header">
+                                    <span class="summary-spark">✦</span>
+                                    <span>SVP Portfolio Rollup Summary</span>
+                                </div>
+                                <div class="overall-summary-text">
+                                    {overallSummarySVP}
+                                </div>
+                            </div>
+                        </template>
+
+
                     </lightning-tab>
-                     <template if:true={hasOverallSummary}>
+                    <!-- <template if:true={hasOverallSummary}>
             <div class="overall-card">
                 <div class="overall-card-header">
                     <span class="summary-spark">✦</span>
@@ -361,7 +372,7 @@
                     {overallSummary}
                 </div>
             </div>
-        </template>
+        </template> -->
                 </template>
                 <!--End of SVP Tab-->
                 <!-- Quad4 Tab -->
@@ -371,7 +382,7 @@
                                 <p class="no-tiles">No tiles available.</p>
                             </template> -->
                         <div class="tiles-grid">
-                            <template for:each={filteredLabels} for:item="tile">
+                             <template for:each={filteredLabels} for:item="tile">
                                 <div key={tile.label} class="tile-card">
 
                                     <div class="tile-header">
@@ -380,119 +391,144 @@
                                         </span>
                                     </div>
 
-                                    <div class="tile-body">
-                                        <div class="split-top">
-                                            <div class="metric-chip">
-                                                <span class="metric-val">2000</span>
-                                                <span class="metric-lbl">Total Engagements/Outreach</span>
+                                    <template if:true={tile.summary}>
+                                        <div class="tile-body">
+                                            <div class="split-top">
+                                                <div class="metric-chip">
+                                                    <span class="metric-val">{tile.summary.totalEngagements}</span>
+                                                    <span class="metric-lbl">Total Engagements/Outreach</span>
+                                                </div>
+                                                <div class="metric-chip">
+                                                    <span
+                                                        class="metric-val">{tile.summary.weightedEngagementScore}</span>
+                                                    <span class="metric-lbl">Engagement Effectiveness Score</span>
+                                                </div>
                                             </div>
-                                            <div class="metric-chip">
-                                                <span class="metric-val">100</span>
-                                                <span class="metric-lbl">Engagement Effectiveness Score</span>
-                                            </div>
-                                        </div>
-                                        <!-- Top Engaged Accounts -->
-                                        <div class="tile-section">
-                                            <div class="section-head section-head--green">
-                                                <span class="arrow">
-                                                    <lightning-icon icon-name="utility:arrowup" size="x-small"
-                                                        class="icon-green"></lightning-icon>
-                                                </span> Top Engaged Accounts
-                                            </div>
-                                            <ul class="bullet-list bullet-list--green">
-                                                <!-- <template for:each={tile.summary.topEngagedAccounts} for:item="item">
+                                            <!-- Top Engaged Accounts -->
+                                            <div class="tile-section">
+                                                <div class="section-head section-head--green">
+                                                    <span class="arrow">
+                                                        <lightning-icon icon-name="utility:arrowup" size="x-small"
+                                                            class="icon-green"></lightning-icon>
+                                                    </span> Top Engaged Accounts
+                                                </div>
+                                                <ul class="bullet-list bullet-list--green">
+                                                    <!-- <template for:each={tile.summary.topEngagedAccounts} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                <li>Acme Corp — Technology · Qualification</li>
-                                                <li>Horizon — Healthcare · NegotiationGroup Corp</li>
-                                                <li>Global tech Corp — Retail · Prospecting</li>
-                                            </ul>
-                                        </div>
-
-                                        <!-- Top Channels -->
-                                        <div class="tile-section">
-                                            <div class="section-head section-head--green">
-                                                <span class="arrow">
-                                                    <lightning-icon icon-name="utility:announcement" size="x-small"
-                                                        class="icon-green"></lightning-icon>
-
-                                                </span> Top Channels
+                                                    <!-- <li>Acme Corp — Technology · Qualification</li>
+                                                    <li>Horizon — Healthcare · NegotiationGroup Corp</li>
+                                                    <li>Global tech Corp — Retail · Prospecting</li> -->
+                                                    <template for:each={tile.summary.topEngagedAccounts} for:item="acc">
+                                                        <li key={acc.name}>{acc.name} — {acc.industry} · {acc.stage}
+                                                        </li>
+                                                    </template>
+                                                </ul>
                                             </div>
-                                            <ul class="bullet-list bullet-list--green">
-                                                <li> Mass Email: 100% completion rate. Strong potential for targeted
-                                                    outreach.</li>
-                                                <li> Newsletters: 3% open and click-through rates. Most consistent
-                                                    engagement.</li>
-                                                <li>Newsletters — 3% open rate</li>
 
-                                                <!-- <template for:each={tile.summary.topChannels} for:item="item">
+                                            <!-- Top Channels -->
+                                            <div class="tile-section">
+                                                <div class="section-head section-head--green">
+                                                    <span class="arrow">
+                                                        <lightning-icon icon-name="utility:announcement" size="x-small"
+                                                            class="icon-green"></lightning-icon>
+
+                                                    </span> Top Channels
+                                                </div>
+                                                <ul class="bullet-list bullet-list--green">
+                                                    <template for:each={tile.summary.topChannels} for:item="ch">
+                                                        <li key={ch.channel}>{ch.channel} — {ch.volume} ·
+                                                            {ch.responseRate}</li>
+                                                    </template>
+                                                    <!-- <li> Mass Email: 100% completion rate. Strong potential for targeted
+                                                        outreach.</li>
+                                                    <li> Newsletters: 3% open and click-through rates. Most consistent
+                                                        engagement.</li>
+                                                    <li>Newsletters — 3% open rate</li> -->
+
+                                                    <!-- <template for:each={tile.summary.topChannels} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                            </ul>
-                                        </div>
-
-                                        <div class="tile-section">
-                                            <div class="section-head section-head--blue">
-
-                                                <span class="arrow">
-                                                    <lightning-icon icon-name="utility:user" size="x-small"
-                                                        class="icon-blue"></lightning-icon>
-                                                </span>
-
-
-                                                Most Engaged Contacts
+                                                </ul>
                                             </div>
-                                            <ul class="bullet-list bullet-list--blue">
-                                                <li>Jahn doe - Vp finance</li>
-                                                <li>Mark smith doe - CFO</li>
-                                                <li>Lisa Ray doe</li>
-                                                <!-- <template for:each={tile.summary.contacts} for:item="item">
+
+                                            <div class="tile-section">
+                                                <div class="section-head section-head--blue">
+
+                                                    <span class="arrow">
+                                                        <lightning-icon icon-name="utility:user" size="x-small"
+                                                            class="icon-blue"></lightning-icon>
+                                                    </span>
+
+
+                                                    Most Engaged Contacts
+                                                </div>
+                                                <ul class="bullet-list bullet-list--blue">
+                                                    <template for:each={tile.summary.contacts} for:item="c">
+                                                        <li key={c.name}>
+                                                            <template if:true={c.name}>{c.name} -</template>
+                                                            <template if:true={c.title}> {c.title}-</template>
+                                                            <template if:true={c.Score}> {c.score}</template>
+                                                        </li>
+                                                    </template>
+                                                    <!-- <li>Jahn doe - Vp finance</li>
+                                                    <li>Mark smith doe - CFO</li>
+                                                    <li>Lisa Ray doe</li> -->
+                                                    <!-- <template for:each={tile.summary.contacts} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                            </ul>
-                                        </div>
-
-                                        <!-- Low Engaged Accounts -->
-                                        <div class="tile-section">
-                                            <div class="section-head section-head--red">
-                                                <span class="arrow">
-                                                    <lightning-icon icon-name="utility:arrowdown" size="x-small"
-                                                        class="icon-red"></lightning-icon>
-                                                </span> Low Engaged Accounts
+                                                </ul>
                                             </div>
-                                            <ul class="bullet-list bullet-list--red">
-                                                <!-- <template for:each={tile.summary.lowEngagedAccounts} for:item="item">
+
+                                            <!-- Low Engaged Accounts -->
+                                            <div class="tile-section">
+                                                <div class="section-head section-head--red">
+                                                    <span class="arrow">
+                                                        <lightning-icon icon-name="utility:arrowdown" size="x-small"
+                                                            class="icon-red"></lightning-icon>
+                                                    </span> Low Engaged Accounts
+                                                </div>
+                                                <ul class="bullet-list bullet-list--red">
+                                                    <template for:each={tile.summary.lowEngagedAccounts} for:item="acc">
+                                                        <li key={acc.name}>{acc.name} — {acc.industry} · {acc.reason}
+                                                        </li>
+                                                    </template>
+                                                    <!-- <template for:each={tile.summary.lowEngagedAccounts} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                <li>Jahn doe — Retail · Prospecting</li>
-                                                <li>Mark smith doe — Finance · Prospecting</li>
-                                                <li>Lisa Ray doe — Insurance · Prospecting</li>
-                                            </ul>
-                                        </div>
-
-                                        <!-- Low Channels -->
-                                        <div class="tile-section">
-                                            <div class="section-head section-head--red">
-                                                <span class="arrow">
-                                                    <lightning-icon icon-name="utility:warning" size="x-small"
-                                                        class="icon-red"></lightning-icon>
-
-                                                </span> Low Channels
+                                                    <!-- <li>Jahn doe — Retail · Prospecting</li>
+                                                    <li>Mark smith doe — Finance · Prospecting</li>
+                                                    <li>Lisa Ray doe — Insurance · Prospecting</li> -->
+                                                </ul>
                                             </div>
-                                            <ul class="bullet-list bullet-list--red">
-                                                <li>Linkeidn — 0.4% engagement</li>
-                                                <li>webinar — 6.25% attendance</li>
-                                                <li>Newsletters — 0% response</li>
-                                                <!-- <li>LinkedIn</li>
+
+                                            <!-- Low Channels -->
+                                            <div class="tile-section">
+                                                <div class="section-head section-head--red">
+                                                    <span class="arrow">
+                                                        <lightning-icon icon-name="utility:warning" size="x-small"
+                                                            class="icon-red"></lightning-icon>
+
+                                                    </span> Low Channels
+                                                </div>
+                                                <ul class="bullet-list bullet-list--red">
+                                                    <!-- <li>Linkeidn — 0.4% engagement</li>
+                                                    <li>webinar — 6.25% attendance</li>
+                                                    <li>Newsletters — 0% response</li> -->
+                                                    <template for:each={tile.summary.lowChannels} for:item="ch">
+                                                        <li key={ch.channel}>{ch.channel} — {ch.volume} ·
+                                                            {ch.responseRate}</li>
+                                                    </template>
+                                                    <!-- <li>LinkedIn</li>
                                                 <li>Mails</li> -->
-                                                <!-- <template for:each={tile.summary.lowChannels} for:item="item">
+                                                    <!-- <template for:each={tile.summary.lowChannels} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                            </ul>
-                                        </div>
+                                                </ul>
+                                            </div>
 
-                                        <!--Channel Mix-->
-                                        <!--<div class="channel-mix">
+                                            <!--Channel Mix-->
+                                            <!--<div class="channel-mix">
         <template for:each={tile.summary.channelMix} for:item="mix">
             <div key={mix.label} class="mix-row">
                 <span class="mix-label">{mix.label}</span>
@@ -503,62 +539,88 @@
             </div>
         </template>
     </div>-->
-                                        <div class="tile-section">
-                                            <div class="section-head section-head--blue">
-                                                <span class="arrow">
-                                                    <lightning-icon icon-name="utility:justify_text" size="x-small"
-                                                        class="icon-blue"></lightning-icon>
-                                                </span>
-                                                Channel Mix
-                                            </div>
-                                            <div class="channel-mix">
-                                                <div class="mix-row">
-                                                    <span class="mix-label">Email</span>
-                                                    <div class="mix-track">
-                                                        <div class="mix-fill" style="width:50%"></div>
-                                                    </div>
-                                                    <span class="mix-pct">50%</span>
+                                            <div class="tile-section">
+                                                <div class="section-head section-head--blue">
+                                                    <span class="arrow">
+                                                        <lightning-icon icon-name="utility:justify_text" size="x-small"
+                                                            class="icon-blue"></lightning-icon>
+                                                    </span>
+                                                    Channel Mix
                                                 </div>
-                                                <div class="mix-row">
-                                                    <span class="mix-label">Calls</span>
-                                                    <div class="mix-track">
-                                                        <div class="mix-fill" style="width:30%"></div>
-                                                    </div>
-                                                    <span class="mix-pct">30%</span>
-                                                </div>
-                                                <div class="mix-row">
-                                                    <span class="mix-label">Meetings</span>
-                                                    <div class="mix-track">
-                                                        <div class="mix-fill" style="width:20%"></div>
-                                                    </div>
-                                                    <span class="mix-pct">20%</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!--channel div tilesection close-->
-                                        <div class="tile-section">
-                                            <div class="summary-card">
-                                                <div class="summary-card-head">
-                                                    <!-- <lightning-icon icon-name="utility:einstein" size="x-small"
-                                                            class="icon-gray"></lightning-icon> -->
-                                                    <span class="summary-spark">✦</span>
+                                                <div class="channel-mix">
+                                                    <template for:each={tile.summary.channelMix} for:item="mix">
+                                                        <div key={mix.label} class="mix-row">
+                                                            <span class="mix-label">{mix.label} - </span>
+                                                            <span class="mix-pct">{mix.pct}%</span>
 
-                                                    <span>AI Summary</span>
-                                                </div>
-                                                <div class="summary-card-body">
-                                                    Strong email engagement. Focus on converting webinar invites to
-                                                    improve overall reach across key accounts.
+                                                            <!-- <span class="mix-label">{mix.label}</span>
+                            <div class="mix-track">
+                                <div class="mix-fill" ></div>
+                            </div>
+                            <span class="mix-pct">{mix.pct}%</span> -->
+                                                        </div>
+                                                    </template>
+                                                    <!-- <div class="mix-row">
+                                                        <span class="mix-label">{mix.label}</span>
+                                                        <div class="mix-track">
+                                                            <div class="mix-fill" style="width:50%"></div>
+                                                        </div>
+                                                        <span class="mix-pct">50%</span>
+                                                    </div>
+                                                    <div class="mix-row">
+                                                        <span class="mix-label">Calls</span>
+                                                        <div class="mix-track">
+                                                            <div class="mix-fill" style="width:30%"></div>
+                                                        </div>
+                                                        <span class="mix-pct">30%</span>
+                                                    </div>
+                                                    <div class="mix-row">
+                                                        <span class="mix-label">Meetings</span>
+                                                        <div class="mix-track">
+                                                            <div class="mix-fill" style="width:20%"></div>
+                                                        </div>
+                                                        <span class="mix-pct">20%</span>
+                                                    </div>-->
                                                 </div>
                                             </div>
+                                            <!--channel div tilesection close-->
+                                            <div class="tile-section">
+                                                <div class="summary-card">
+                                                    <div class="summary-card-head">
+                                                        <!-- <lightning-icon icon-name="utility:einstein" size="x-small"
+                                                            class="icon-gray"></lightning-icon> -->
+                                                        <span class="summary-spark">✦</span>
+
+                                                        <span>AI Summary</span>
+                                                    </div>
+                                                    <div class="summary-card-body">
+                                                        {tile.summary.summaryText}
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- <div>{tile.accountIds}</div> -->
                                         </div>
-                                        <!-- <div>{tile.accountIds}</div> -->
-                                    </div>
+                                    </template>
+
                                 </div>
                             </template>
+
                             <template if:false={filteredLabels.length}>
                                 <p>No users selected.</p>
                             </template>
                         </div>
+                        <template if:true={hasOverallSummaryQuad4}>
+                            <div class="overall-card">
+                                <div class="overall-card-header">
+                                    <span class="summary-spark">✦</span>
+                                    <span>Quad4 Portfolio Rollup Summary</span>
+                                </div>
+                                <div class="overall-summary-text">
+                                    {overallSummaryQuad4}
+                                </div>
+                            </div>
+                        </template>
                     </lightning-tab>
                 </template>
 
