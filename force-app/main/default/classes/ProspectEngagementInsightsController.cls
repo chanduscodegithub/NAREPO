@@ -10,7 +10,7 @@ public with sharing class ProspectEngagementInsightsController {
         public String defaultTeam;
         @AuraEnabled
         public List<String> users;
-         @AuraEnabled
+        @AuraEnabled
         public List<String> svpLabels1    = new List<String>(); // SVP tile emails
         @AuraEnabled
         public List<String> quad4Labels1   = new List<String>();
@@ -18,6 +18,31 @@ public with sharing class ProspectEngagementInsightsController {
     @AuraEnabled 
     public static AccessResponse getUserInfo(){
         String  currentEmail = UserInfo.getUserEmail();
+        User currentUser = [ SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId()];
+        if (currentUser.Profile.Name == 'System Administrator') {
+            AccessResponse response = new AccessResponse();
+            response.fullAccess = true;
+            response.canViewSvpTab = true;
+            response.canViewQuad4Tab = true;
+            response.defaultTeam = 'SVP';
+            // Populate all SVP and Quad4 labels
+            Set<String> svpLabels = new Set<String>();
+            Set<String> quad4Labels = new Set<String>();
+            for (Prospect_Insight_Access__mdt pi : [SELECT Label, Access_Type__c FROM Prospect_Insight_Access__mdt  ]) {
+                if (pi.Access_Type__c == 'SVP' ||
+                    pi.Access_Type__c == 'FULL_ACCESS') {
+                        svpLabels.add(pi.Label);
+                    }
+                if (pi.Access_Type__c == 'Quad4' ||
+                    pi.Access_Type__c == 'FULL_ACCESS') {
+                        quad4Labels.add(pi.Label);
+                    }
+            }
+            response.svpLabels1 = new List<String>(svpLabels);
+            response.quad4Labels1 = new List<String>(quad4Labels);
+            
+            return response;
+        }
         List<Prospect_Insight_Access__mdt> accessList = [SELECT Visible_Tiles__c,Is_SVP__c,IS_Quad4__c,Full_Access__c,Email__c,
                                                          Access_Type__c,Label From Prospect_Insight_Access__mdt 
                                                          where Email__c =:currentEmail with USER_MODE Limit 1];
@@ -35,7 +60,7 @@ public with sharing class ProspectEngagementInsightsController {
         accessresponse.defaultTeam      = (isFull || isSVP) ? 'SVP' : 'Quad4';
         Set<String> visibleEmails = new Set<String>();
         //Parse emails into visibileEMailsList from visibleTiles
-        if(access.Full_Access__c){
+        if(access.Full_Access__c ){
             for(Prospect_Insight_Access__mdt pr:[SELECT Visible_Tiles__c FROM   Prospect_Insight_Access__mdt]){
                 if(String.isNotBlank(pr.Visible_Tiles__c)){
                     visibleEmails.addAll(pr.Visible_Tiles__c.split(','));
@@ -68,14 +93,12 @@ public with sharing class ProspectEngagementInsightsController {
         }
         System.debug('svpLabels'+svpLabels);
         System.debug('quad4Labels'+quad4Labels);
-       List<String> svpLabels1 = new List<String>(svpLabels);
-       List<String> quad4Labels1 = new List<String>(quad4Labels);
-       accessresponse.svpLabels1 =svpLabels1 ;
-       accessresponse.quad4Labels1 =quad4Labels1;
-       accessresponse.canViewSvpTab =isFull || isSVP || !svpLabels.isEmpty();
-       accessresponse.canViewQuad4Tab = isFull || isQ4 || !quad4Labels.isEmpty();
-
-       
+        List<String> svpLabels1 = new List<String>(svpLabels);
+        List<String> quad4Labels1 = new List<String>(quad4Labels);
+        accessresponse.svpLabels1 =svpLabels1 ;
+        accessresponse.quad4Labels1 =quad4Labels1;
+        accessresponse.canViewSvpTab =isFull || isSVP || !svpLabels.isEmpty();
+        accessresponse.canViewQuad4Tab = isFull || isQ4 || !quad4Labels.isEmpty();
         return accessresponse;
     }
     @AuraEnabled(cacheable=true)
@@ -99,12 +122,12 @@ public with sharing class ProspectEngagementInsightsController {
             accountIdsForEachUser.put('QUAD4_'+s,new List<Id>());
         }
         if(!svpUserNames.isEmpty()){
-            for(Account a: [SELECT Id, Name,Owner.Name FROM Account WHERE SVP_Top_10__c = true AND Direct_Marketing_Target__c = true AND Owner.Name IN :svpUserNames AND Company_Tier_Medical__c IN :tiers with USER_MODE]){
+            for(Account a: [SELECT Id, Name,Owner.Name FROM Account WHERE  Direct_Marketing_Target__c = true AND Owner.Name IN :svpUserNames AND Company_Tier_Medical__c IN :tiers with USER_MODE]){
                 accountIdsForEachUser.get('SVP_'+a.Owner.Name).add(a.Id);
             }
         }
         if(!quad4UserNames.isEmpty()){
-            for(Account a: [SELECT Id, Name, Coveted_Account__c  FROM Account WHERE SVP_Top_10__c = true AND Direct_Marketing_Target__c = true AND Coveted_Account__c  IN :quad4UserNames AND Company_Tier_Medical__c IN :tiers with USER_MODE]){
+            for(Account a: [SELECT Id, Name, Coveted_Account__c  FROM Account WHERE  Coveted_Account__c  IN :quad4UserNames AND Company_Tier_Medical__c IN :tiers with USER_MODE]){
                 accountIdsForEachUser.get('QUAD4_'+a.Coveted_Account__c ).add(a.Id);
             }
         }
@@ -112,25 +135,36 @@ public with sharing class ProspectEngagementInsightsController {
         
     }
     
+    
     @AuraEnabled
-    public static String getPromptDataForUser(List<Id> accountIds) {
+    public static String getPromptDataForUser(List<Id> accountIds, Integer dateRange) {
         try {
             if (accountIds == null || accountIds.isEmpty()) return null;
             String portfolioAccounts = String.join(accountIds, ',');
             System.debug('portfolioAccounts ===> ' + portfolioAccounts);
-            // pass to Einstein prompt template
+            // calculate filter date
+            //  Integer days = (dateRange != null && dateRange > 0) ? dateRange : 700;
+            // String filterDateStr = String.valueOf(Date.today().addDays(-days));
+            // System.debug('days ===> ' + days);
+            // build input params — no duplicates
+            Map<String, ConnectApi.WrappedValue> inputParams = new Map<String, ConnectApi.WrappedValue>();
             ConnectApi.WrappedValue portfolioValue = new ConnectApi.WrappedValue();
             portfolioValue.value = portfolioAccounts;
-            
-            Map<String, ConnectApi.WrappedValue> inputParams =new Map<String, ConnectApi.WrappedValue>();
-            inputParams.put('Input:portfolioAccounts', portfolioValue);
-            
-            ConnectApi.EinsteinPromptTemplateGenerationsInput executeTemplateInput = new ConnectApi.EinsteinPromptTemplateGenerationsInput();
-            executeTemplateInput.additionalConfig =new ConnectApi.EinsteinLlmAdditionalConfigInput();
+            inputParams.put('Input:portfolioAccounts', portfolioValue); // ← only once
+            /*ConnectApi.WrappedValue dateRangeValue = new ConnectApi.WrappedValue();
+dateRangeValue.value = String.valueOf(days);
+inputParams.put('Input:dateRange', dateRangeValue); // ← for Apex classes*/
+            /*ConnectApi.WrappedValue filterDateValue = new ConnectApi.WrappedValue();
+filterDateValue.value = filterDateStr;
+inputParams.put('Input:filterStartDate', filterDateValue); // ← for Apex classes*/
+            ConnectApi.EinsteinPromptTemplateGenerationsInput executeTemplateInput =
+            new ConnectApi.EinsteinPromptTemplateGenerationsInput();
+            executeTemplateInput.additionalConfig = new ConnectApi.EinsteinLlmAdditionalConfigInput();
             executeTemplateInput.isPreview   = false;
             executeTemplateInput.inputParams = inputParams;
             System.debug('Calling Einstein prompt for accounts: ' + portfolioAccounts);
-            ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generationsOutput = ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate('Engagement_Summary_Insights',executeTemplateInput);
+            ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generationsOutput =
+            ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate('Engagement_Summary_Insights', executeTemplateInput );
             if (generationsOutput != null && generationsOutput.generations != null && !generationsOutput.generations.isEmpty()) {
                     String generatedText = generationsOutput.generations[0].text;
                     System.debug('Generated JSON: ' + generatedText);
@@ -139,125 +173,172 @@ public with sharing class ProspectEngagementInsightsController {
             return null;
             
         } catch(Exception ex) {
-            System.debug('Error in getPromptDataForUser: ' + ex.getMessage() + ex.getStackTraceString());
+            System.debug('Error: ' + ex.getMessage() + ex.getStackTraceString());
+            throw new AuraHandledException(ex.getMessage());
+        }
+    }
+    /*@AuraEnabled
+public static String getPromptDataForUser(List<Id> accountIds,Integer dateRange) {
+try {
+if (accountIds == null || accountIds.isEmpty()) return null;
+String portfolioAccounts = String.join(accountIds, ',');
+System.debug('portfolioAccounts ===> ' + portfolioAccounts);
+// pass to Einstein prompt template
+ConnectApi.WrappedValue portfolioValue = new ConnectApi.WrappedValue();
+portfolioValue.value = portfolioAccounts;
+ConnectApi.WrappedValue dateRangeValue = new ConnectApi.WrappedValue();
+dateRangeValue.value = String.valueOf(dateRange != null ? dateRange : 700);
+
+//Map<String, ConnectApi.WrappedValue> inputParams =new Map<String, ConnectApi.WrappedValue>();
+//inputParams.put('Input:portfolioAccounts', portfolioValue);
+Map<String, ConnectApi.WrappedValue> inputParams = new Map<String, ConnectApi.WrappedValue>();
+inputParams.put('Input:portfolioAccounts', portfolioValue);
+inputParams.put('Input:dateRange', dateRangeValue);
+
+String filterDateStr = Date.today().addDays(-(dateRange != null ? dateRange : 700)).format(); // e.g. "2026-06-07"
+
+ConnectApi.WrappedValue filterDateValue = new ConnectApi.WrappedValue();
+filterDateValue.value = filterDateStr;
+
+inputParams.put('Input:portfolioAccounts', portfolioValue);
+inputParams.put('Input:filterStartDate', filterDateValue);
+
+
+
+
+ConnectApi.EinsteinPromptTemplateGenerationsInput executeTemplateInput = new ConnectApi.EinsteinPromptTemplateGenerationsInput();
+executeTemplateInput.additionalConfig =new ConnectApi.EinsteinLlmAdditionalConfigInput();
+executeTemplateInput.isPreview   = false;
+executeTemplateInput.inputParams = inputParams;
+System.debug('Calling Einstein prompt for accounts: ' + portfolioAccounts);
+ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generationsOutput = ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate('Engagement_Summary_Insights',executeTemplateInput);
+if (generationsOutput != null && generationsOutput.generations != null && !generationsOutput.generations.isEmpty()) {
+String generatedText = generationsOutput.generations[0].text;
+System.debug('Generated JSON: ' + generatedText);
+return generatedText;
+}
+return null;
+
+} catch(Exception ex) {
+System.debug('Error in getPromptDataForUser: ' + ex.getMessage() + ex.getStackTraceString());
+throw new AuraHandledException(ex.getMessage());
+}
+}
+*/
+    
+    @AuraEnabled
+    public static String getOverallPortfolioSummary(String userSummariesJson) {
+        try {
+            ConnectApi.WrappedValue summaryValue = new ConnectApi.WrappedValue();
+            summaryValue.value = userSummariesJson;
+            
+            Map<String, ConnectApi.WrappedValue> inputParams =
+                new Map<String, ConnectApi.WrappedValue>();
+            inputParams.put('Input:UserSummaries', summaryValue);
+            
+            ConnectApi.EinsteinPromptTemplateGenerationsInput executeTemplateInput =
+                new ConnectApi.EinsteinPromptTemplateGenerationsInput();
+            executeTemplateInput.additionalConfig =
+                new ConnectApi.EinsteinLlmAdditionalConfigInput();
+            executeTemplateInput.isPreview = false;
+            executeTemplateInput.inputParams = inputParams;
+            
+            ConnectApi.EinsteinPromptTemplateGenerationsRepresentation result =
+                ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate(
+                    'Portfolio_Overall_Summary',
+                    executeTemplateInput
+                );
+            
+            if (result != null
+                && result.generations != null
+                && !result.generations.isEmpty()) {
+                    return result.generations[0].text;
+                }
+            return null;
+        } catch(Exception ex) {
             throw new AuraHandledException(ex.getMessage());
         }
     }
     
     
-   @AuraEnabled
-public static String getOverallPortfolioSummary(String userSummariesJson) {
-    try {
-        ConnectApi.WrappedValue summaryValue = new ConnectApi.WrappedValue();
-        summaryValue.value = userSummariesJson;
-
-        Map<String, ConnectApi.WrappedValue> inputParams =
-            new Map<String, ConnectApi.WrappedValue>();
-        inputParams.put('Input:UserSummaries', summaryValue);
-
-        ConnectApi.EinsteinPromptTemplateGenerationsInput executeTemplateInput =
-            new ConnectApi.EinsteinPromptTemplateGenerationsInput();
-        executeTemplateInput.additionalConfig =
-            new ConnectApi.EinsteinLlmAdditionalConfigInput();
-        executeTemplateInput.isPreview = false;
-        executeTemplateInput.inputParams = inputParams;
-
-        ConnectApi.EinsteinPromptTemplateGenerationsRepresentation result =
-            ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate(
-                'Portfolio_Overall_Summary',
-                executeTemplateInput
-            );
-
-        if (result != null
-            && result.generations != null
-            && !result.generations.isEmpty()) {
-            return result.generations[0].text;
-        }
-        return null;
-    } catch(Exception ex) {
-        throw new AuraHandledException(ex.getMessage());
-    }
-}
-    
-    
     
 }
-    
-   /* @AuraEnabled
-    public static List<Id> getAccountsForSurestOrQuad(){
-        List<Id> accountIds = new List<Id>();
-        List<Account> accounts = new List<Account>();
-        //Id userId = UserInfo.getUserId();
-        String currentUserName = UserInfo.getName();
-        accounts = [Select id,name from Account where SVP_Involved__c = :currentUserName OR Coveted_Account__c = :currentUserName with USER_MODE];
-        for(ACcount acc:accounts){
-            accountIds.add(acc.Id);
-        }
-        return accountIds;
-    }*/
-    
-   /* @AuraEnabled
-    public static PromptWrapperClass sendPortfolioEngagementPrompt() {
-        PromptWrapperClass wp = new PromptWrapperClass();
-        try {
-            List<Id> accountIds = getAccountsForSurestOrQuad();
-            String accountIdsString = String.join(new List<String>((List<String>)accountIds),',');
-            System.debug('Portfolio Account Ids: ' + accountIds);
-            if(accountIds == null || accountIds.isEmpty()) {
-                throw new CustomException('No accounts found for the current user.' );
-            }
-            Map<String,Object> portfolioInput = new Map<String,Object>();
-            portfolioInput.put('accountIds',accountIds);
-            ConnectApi.WrappedValue portfolioValue = new ConnectApi.WrappedValue();
-            portfolioValue.value = accountIdsString;
-            Map<String, ConnectApi.WrappedValue> inputParams = new Map<String, ConnectApi.WrappedValue>();
-            inputParams.put( 'Input:PortfolioAccounts', portfolioValue);
-            System.debug('PI TC portfolioAccounts....' +inputParams);
-            // System.debug('PI TC portfolioAccounts portfolioAccounts....' +portfolioAccounts);
-            
-            
-            ConnectApi.EinsteinPromptTemplateGenerationsInput executeTemplateInput =new ConnectApi.EinsteinPromptTemplateGenerationsInput();
-            executeTemplateInput.additionalConfig = new ConnectApi.EinsteinLlmAdditionalConfigInput();
-            executeTemplateInput.isPreview = false;
-            executeTemplateInput.inputParams = inputParams;
-            System.debug('Before Portfolio Prompt Call');
-            System.debug('portfolioValue.value ==> ' + portfolioValue.value);
-            // ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generationsOutput = ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate 'Prospect_Engagement_Summary',executeTemplateInput);
-            ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generationsOutput = 
-                ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate('Prospect_Engagement_Summary',executeTemplateInput);
-            System.debug('After Portfolio Prompt Call');
-            if(generationsOutput != null &&  generationsOutput.generations != null &&  !generationsOutput.generations.isEmpty()) {
-                ConnectApi.EinsteinLLMGenerationItemOutput response = generationsOutput.generations[0];
-                String generatedText = response.text;
-                System.debug('Generated Portfolio Summary: ' + generatedText);
-                wp.finalContent = generatedText;
-            } else {
-                throw new CustomException(
-                    'No generations found in Portfolio Prompt output.'
-                );
-            }
-            
-        } catch(CustomException ce) {
-            wp.finalContent = 'Custom Exception: ' + ce.getMessage();
-        } catch(Exception ex) {
-            
-            wp.finalContent = 'General Exception: ' + ex.getMessage();
-            System.debug( 'Portfolio Prompt Error: ' +ex.getMessage());
-        }
-        System.debug('FINAL AI RESPONSE =====>');
-        System.debug(wp.finalContent);
-        
-        return wp;
-    }
-    
-    
-    public class PromptWrapperClass {
-        @AuraEnabled
-        public String finalContent;
-    }
-    public class CustomException extends Exception {}*/
-    
-    /* @AuraEnabled
+
+/* @AuraEnabled
+public static List<Id> getAccountsForSurestOrQuad(){
+List<Id> accountIds = new List<Id>();
+List<Account> accounts = new List<Account>();
+//Id userId = UserInfo.getUserId();
+String currentUserName = UserInfo.getName();
+accounts = [Select id,name from Account where SVP_Involved__c = :currentUserName OR Coveted_Account__c = :currentUserName with USER_MODE];
+for(ACcount acc:accounts){
+accountIds.add(acc.Id);
+}
+return accountIds;
+}*/
+
+/* @AuraEnabled
+public static PromptWrapperClass sendPortfolioEngagementPrompt() {
+PromptWrapperClass wp = new PromptWrapperClass();
+try {
+List<Id> accountIds = getAccountsForSurestOrQuad();
+String accountIdsString = String.join(new List<String>((List<String>)accountIds),',');
+System.debug('Portfolio Account Ids: ' + accountIds);
+if(accountIds == null || accountIds.isEmpty()) {
+throw new CustomException('No accounts found for the current user.' );
+}
+Map<String,Object> portfolioInput = new Map<String,Object>();
+portfolioInput.put('accountIds',accountIds);
+ConnectApi.WrappedValue portfolioValue = new ConnectApi.WrappedValue();
+portfolioValue.value = accountIdsString;
+Map<String, ConnectApi.WrappedValue> inputParams = new Map<String, ConnectApi.WrappedValue>();
+inputParams.put( 'Input:PortfolioAccounts', portfolioValue);
+System.debug('PI TC portfolioAccounts....' +inputParams);
+// System.debug('PI TC portfolioAccounts portfolioAccounts....' +portfolioAccounts);
+
+
+ConnectApi.EinsteinPromptTemplateGenerationsInput executeTemplateInput =new ConnectApi.EinsteinPromptTemplateGenerationsInput();
+executeTemplateInput.additionalConfig = new ConnectApi.EinsteinLlmAdditionalConfigInput();
+executeTemplateInput.isPreview = false;
+executeTemplateInput.inputParams = inputParams;
+System.debug('Before Portfolio Prompt Call');
+System.debug('portfolioValue.value ==> ' + portfolioValue.value);
+// ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generationsOutput = ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate 'Prospect_Engagement_Summary',executeTemplateInput);
+ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generationsOutput = 
+ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate('Prospect_Engagement_Summary',executeTemplateInput);
+System.debug('After Portfolio Prompt Call');
+if(generationsOutput != null &&  generationsOutput.generations != null &&  !generationsOutput.generations.isEmpty()) {
+ConnectApi.EinsteinLLMGenerationItemOutput response = generationsOutput.generations[0];
+String generatedText = response.text;
+System.debug('Generated Portfolio Summary: ' + generatedText);
+wp.finalContent = generatedText;
+} else {
+throw new CustomException(
+'No generations found in Portfolio Prompt output.'
+);
+}
+
+} catch(CustomException ce) {
+wp.finalContent = 'Custom Exception: ' + ce.getMessage();
+} catch(Exception ex) {
+
+wp.finalContent = 'General Exception: ' + ex.getMessage();
+System.debug( 'Portfolio Prompt Error: ' +ex.getMessage());
+}
+System.debug('FINAL AI RESPONSE =====>');
+System.debug(wp.finalContent);
+
+return wp;
+}
+
+
+public class PromptWrapperClass {
+@AuraEnabled
+public String finalContent;
+}
+public class CustomException extends Exception {}*/
+
+/* @AuraEnabled
 public static PromptWrapperClass sendEngagementPrompt() {
 PromptWrapperClass wp = new PromptWrapperClass();
 
