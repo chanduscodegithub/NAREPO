@@ -1,12 +1,10 @@
 import { LightningElement, track, wire } from 'lwc';
-//import sendPortfolioEngagementPrompt from '@salesforce/apex/ProspectEngagementInsightsController.sendPortfolioEngagementPrompt';
 import getUserInfo from '@salesforce/apex/ProspectEngagementInsightsController.getUserInfo';
 import getAccountIdsPerUser from '@salesforce/apex/ProspectEngagementInsightsController.getAccountIdsPerUser'
-//import getPromptForTile from '@salesforce/apex/ProspectEngagementInsightsController.getPromptForTile';
-//import getFilteredAccountsForTiles from '@salesforce/apex/ProspectEngagementInsightsController.getFilteredAccountsForTiles';
 import getTierPicklistValues from '@salesforce/apex/ProspectEngagementInsightsController.getTierPicklistValues';
 import getPromptDataForUser from '@salesforce/apex/ProspectEngagementInsightsController.getPromptDataForUser';
 import getOverallPortfolioSummary from '@salesforce/apex/ProspectEngagementInsightsController.getOverallPortfolioSummary';
+import getAISummaryForUser from '@salesforce/apex/ProspectEngagementInsightsController.getAISummaryForUser';
 export default class ProspectEngagementInsights extends LightningElement {
     @track isLoading = false;
     @track loadingMessage = '';
@@ -22,7 +20,6 @@ export default class ProspectEngagementInsights extends LightningElement {
     selectVal = 'svp';
     selectDateVal = '30';
     @track showTierDropdown = false;
-    // @track selectedTiers = ['1 - Whales', '2 - Top Priority'];
     @track accountIdsPerUser = {};
     @track tierOptions = [];
     @track selectedTiers = [];
@@ -39,16 +36,13 @@ export default class ProspectEngagementInsights extends LightningElement {
     expandedTiles = {};
     @track effectiveFrom = '';
     @track effectiveTo = '';
-
-
     @track showSummaryModal = false;
     @track selectedSummary = '';
-
+    @track aiSummaryMap = {};
     handleSummaryClick(event) {
         this.selectedSummary = event.currentTarget.dataset.summary;
         this.showSummaryModal = true;
     }
-
     closeSummaryModal() {
         this.showSummaryModal = false;
         this.selectedSummary = '';
@@ -64,13 +58,14 @@ export default class ProspectEngagementInsights extends LightningElement {
     //         [label]: !this.expandedTiles[label]
     //     };
     // }
-    handleEffectiveFromChange() {
-        this.effectiveFrom = e.detail.value;
+    handleEffectiveFromChange(event) {
+        this.effectiveFrom = event.detail.value;
 
 
     }
-    handleEffectiveToChange() {
-        this.effectiveTo = e.detail.value;
+
+    handleEffectiveToChange(event) {
+        this.effectiveTo = event.detail.value;
 
 
     }
@@ -85,11 +80,37 @@ export default class ProspectEngagementInsights extends LightningElement {
         return this.quad4Labels && this.quad4Labels.length > 1;
     }
 
-    handleSvpViewToggle(event) {
+    async handleSvpViewToggle(event) {
         this.svpViewMode = event.currentTarget.dataset.view;
+        if (this.svpViewMode === 'overall' && !this.overallStatsSVP) {
+            this.isLoading = true;
+            this.loadingMessage = 'Generating SVP overall summary...';
+            try {
+                await this.loadOverallSummarySVP();
+            } catch (e) {
+                this.errorMessage = 'Failed to load SVP overall summary: ' + (e.body?.message || e.message);
+                console.error(e);
+            } finally {
+                this.isLoading = false;
+                this.loadingMessage = '';
+            }
+        }
     }
-    handleQuadViewToggle(event) {
+    async handleQuadViewToggle(event) {
         this.quadViewMode = event.currentTarget.dataset.view;
+        if (this.quadViewMode === 'overall' && !this.overallStatsQuad4) {
+            this.isLoading = true;
+            this.loadingMessage = 'Generating Quad4 overall summary...';
+            try {
+                await this.loadOverallSummaryQuad4();
+            } catch (e) {
+                this.errorMessage = 'Failed to load Quad4 overall summary: ' + (e.body?.message || e.message);
+                console.error(e);
+            } finally {
+                this.isLoading = false;
+                this.loadingMessage = '';
+            }
+        }
     }
     get isQuadUsersView() {
         return this.quadViewMode === 'users';
@@ -174,7 +195,7 @@ export default class ProspectEngagementInsights extends LightningElement {
         this.effectiveTo = today.toISOString().split('T')[0];
 
         const twoYearsAgo = new Date();
-        twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+        twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 1);
         this.effectiveFrom = twoYearsAgo.toISOString().split('T')[0];
 
         // this.isLoading = true;
@@ -193,7 +214,8 @@ export default class ProspectEngagementInsights extends LightningElement {
             this.overallSummaryQuad4 = '';
             await this.loadAccountIds();
             await this.loadTileData();
-            await this.loadOverallSummary();
+            await this.loadAISummary();
+            // await this.loadOverallSummary();
         }
         catch (e) {
             this.errorMessage = 'Failed to load access info: ' + e.body?.message || e.message;
@@ -253,14 +275,16 @@ export default class ProspectEngagementInsights extends LightningElement {
             this.loadingMessage = 'Preparing AI insights...';
             this.tileData = {};
             this.accountIdsPerUser = {};
+            this.aiSummaryMap = {};
             this.overallSummarySVP = '';
             this.overallSummaryQuad4 = '';
             this.overallStatsSVP = null;
             this.overallStatsQuad4 = null;
             await this.loadAccountIds();
             await this.loadTileData();
+            await this.loadAISummary();
             this.loadingMessage = 'Generating portfolio summary...';
-            await this.loadOverallSummary();
+            //await this.loadOverallSummary();
         } catch (e) {
             console.error('Error generating summary:', e);
         }
@@ -322,8 +346,8 @@ export default class ProspectEngagementInsights extends LightningElement {
             }
             const result = await getPromptDataForUser({
                 accountIds,
-                effectiveFrom: this.effectiveFrom,
-                effectiveTo: this.effectiveTo
+                startDate: this.effectiveFrom,
+                endDate: this.effectiveTo
                 // dateRange: parseInt(this.selectDateVal) || 1000
             });
             if (result) {
@@ -334,6 +358,95 @@ export default class ProspectEngagementInsights extends LightningElement {
         this.tileData = tempTileData;
         //this.tileData = tempTileData;
     }
+   /* async loadAISummary() {
+
+        const tempSummary = { ...this.aiSummaryMap };
+
+        const userKeys = Object.keys(this.accountIdsPerUser)
+            .filter(key =>
+                this.activeTab === 'SVP'
+                    ? key.startsWith('SVP_')
+                    : key.startsWith('QUAD4_')
+            );
+
+        const promises = userKeys.map(async userKey => {
+
+            const accountIds = this.accountIdsPerUser[userKey];
+
+            const result = await getAISummaryForUser({
+
+                accountIds,
+
+                startDate: this.effectiveFrom,
+
+                endDate: this.effectiveTo
+
+            });
+            let parsed = result;
+
+            if (typeof result === 'string') {
+                const clean = result
+                    .replace(/```json/g, '')
+                    .replace(/```/g, '')
+                    .trim();
+
+                parsed = JSON.parse(clean);
+            }
+
+            tempSummary[userKey] =
+                this.buildNarrativeSummary(parsed.AI_Narrative_Summary__c);
+
+            //tempSummary[userKey]=result;
+
+        });
+
+        await Promise.all(promises);
+
+        this.aiSummaryMap = tempSummary;
+
+    }*/
+   async loadAISummary() {
+    const tempSummary = { ...this.aiSummaryMap };
+
+    const userKeys = Object.keys(this.accountIdsPerUser)
+        .filter(key => this.activeTab === 'SVP' ? key.startsWith('SVP_') : key.startsWith('QUAD4_'));
+
+    const promises = userKeys.map(async (userKey) => {
+        try {
+            const accountIds = this.accountIdsPerUser[userKey];
+            if (!accountIds?.length) {
+                tempSummary[userKey] = '';
+                return;
+            }
+
+            const result = await getAISummaryForUser({
+                accountIds,
+                startDate: this.effectiveFrom,
+                endDate: this.effectiveTo
+            });
+
+            if (!result) {
+                tempSummary[userKey] = '';
+                return;
+            }
+
+            let parsed = result;
+            if (typeof result === 'string') {
+                const clean = result.replace(/```json/g, '').replace(/```/g, '').trim();
+                parsed = JSON.parse(clean);
+            }
+
+            tempSummary[userKey] = this.buildNarrativeSummary(parsed?.AI_Narrative_Summary__c);
+        } catch (e) {
+            console.error('AI summary failed for', userKey, e);
+            tempSummary[userKey] = '';
+        }
+    });
+
+    await Promise.all(promises);
+    //this.aiSummaryMap = tempSummary;
+    this.aiSummaryMap = { ...tempSummary };
+}
 
 
 
@@ -358,7 +471,9 @@ export default class ProspectEngagementInsights extends LightningElement {
                 weightedEngagementScore: parsed.weightedEngagementScore || '',
                 engagementRate: parsed.engagementRate || '',
                 //summaryText: parsed.summaryText || '',
-                summaryText: this.formatSummary(parsed.summaryText || ''),
+                //summaryText: this.formatSummary(parsed.summaryText || ''),
+                // summaryText: this.buildNarrativeSummary(parsed.AI_Narrative_Summary__c),
+
                 topChannels: parsed.Engagement_Channels_and_Performance__c?.['Top Performing Channels'] || [],
                 lowChannels: parsed.Engagement_Channels_and_Performance__c?.['Low Performing Channels'] || [],
                 topEngagedAccounts: parsed.topEngagedAccounts || [],
@@ -434,6 +549,7 @@ export default class ProspectEngagementInsights extends LightningElement {
                     label: label,
                     accountIds: this.accountIdsPerUser[key] || [],
                     summary: this.tileData[key] || null,
+                    aiSummary: this.aiSummaryMap[key] || '',
                     isExpanded: false,
                     summaryClass: this.expandedTiles[label] ? 'summary-card expanded' : 'summary-card',
                     iconName: this.expandedTiles[label] ? 'utility:minimize_window' : 'utility:expand_alt'
@@ -620,12 +736,13 @@ export default class ProspectEngagementInsights extends LightningElement {
             try {
                 await this.loadAccountIds();
                 await this.loadTileData();
-                if (
-                    (this.activeTab === 'SVP' && !this.overallSummarySVP) ||
-                    (this.activeTab === 'Quad4' && !this.overallSummaryQuad4)
-                ) {
-                    await this.loadOverallSummary();
-                }
+                await this.loadAISummary();
+                // if (
+                //     (this.activeTab === 'SVP' && !this.overallSummarySVP) ||
+                //     (this.activeTab === 'Quad4' && !this.overallSummaryQuad4)
+                // ) {
+                //     //await this.loadOverallSummary();
+                // }
                 // await this.loadOverallSummary();
             } catch (e) {
                 console.error('Error on tab change:', e);
@@ -636,8 +753,95 @@ export default class ProspectEngagementInsights extends LightningElement {
     }
 
 
+    async loadOverallSummarySVP() {
+        const allSvpIds = Object.entries(this.accountIdsPerUser)
+            .filter(([key]) => key.startsWith('SVP_'))
+            .flatMap(([, ids]) => ids);
+
+        if (!allSvpIds.length) return;
+
+        const svpCardResult = await getPromptDataForUser({
+            accountIds: allSvpIds,
+            startDate: this.effectiveFrom,
+            endDate: this.effectiveTo
+        });
+        if (svpCardResult) {
+            const parsed = this.parseTileData(svpCardResult, 'SVP_OVERALL');
+            if (parsed) this.overallStatsSVP = parsed;
+        }
+
+        const svpText = this.buildSummaryText('SVP_');
+        if (svpText.trim()) {
+            const svpResult = await getOverallPortfolioSummary({ userSummariesJson: svpText });
+            //if (svpResult) this.overallSummarySVP = svpResult.trim();
+            if (svpResult) this.overallSummarySVP = this.parseOverallSummary(svpResult);
+        }
+    }
+
+    async loadOverallSummaryQuad4() {
+        const allQuad4Ids = Object.entries(this.accountIdsPerUser)
+            .filter(([key]) => key.startsWith('QUAD4_'))
+            .flatMap(([, ids]) => ids);
+
+        if (!allQuad4Ids.length) return;
+
+        const quad4CardResult = await getPromptDataForUser({
+            accountIds: allQuad4Ids,
+            startDate: this.effectiveFrom,
+            endDate: this.effectiveTo
+        });
+        if (quad4CardResult) {
+            const parsed = this.parseTileData(quad4CardResult, 'QUAD4_OVERALL');
+            if (parsed) this.overallStatsQuad4 = parsed;
+        }
+
+        const quad4Text = this.buildSummaryText('QUAD4_');
+        if (quad4Text.trim()) {
+            const quad4Result = await getOverallPortfolioSummary({ userSummariesJson: quad4Text });
+            //if (quad4Result) this.overallSummaryQuad4 = quad4Result.trim();
+            if (quad4Result) this.overallSummaryQuad4 = this.parseOverallSummary(quad4Result);
+        }
+    }
+
+    buildSummaryText(prefix) {
+        let text = '';
+        for (const userKey of Object.keys(this.tileData)) {
+            if (!userKey.startsWith(prefix)) continue;
+            const s = this.tileData[userKey];
+            if (!s) continue;
+
+            const userName = userKey.replace('SVP_', '').replace('QUAD4_', '');
+            const isSVP = prefix === 'SVP_';
+
+            let userText = `\n${isSVP ? 'SVP' : 'Quad4'}: ${userName}\n`;
+            userText += `Total Engagements: ${s.totalEngagements || '0'}\n`;
+            userText += `WES: ${s.weightedEngagementScore || '0'}\n`;
+            userText += `Engagement Rate: ${s.engagementRate || '0%'}\n`;
+
+            if (s.topChannels?.length) {
+                userText += `Top Channels: ${s.topChannels.map(c => c.channel + ' (volume: ' + c.volume + ', response: ' + c.responseRate + ')').join(', ')}\n`;
+            }
+            if (s.lowChannels?.length) {
+                userText += `Low Channels: ${s.lowChannels.map(c => c.channel + ' (volume: ' + c.volume + ', response: ' + c.responseRate + ')').join(', ')}\n`;
+            }
+            if (s.topEngagedAccounts?.length) {
+                userText += `Top Accounts: ${s.topEngagedAccounts.map(a => a.name + ' (' + a.industry + ', ' + a.tier + ')').join(', ')}\n`;
+            }
+            if (s.lowEngagedAccounts?.length) {
+                userText += `Low Accounts: ${s.lowEngagedAccounts.map(a => a.name + ' - ' + a.reason).join(', ')}\n`;
+            }
+            if (s.channelMix?.length) {
+                userText += `Channel Mix: ${s.channelMix.map(m => m.label + ': ' + m.pct + '%').join(', ')}\n`;
+            }
+            userText += '\n';
+            text += userText;
+        }
+        return text;
+    }
+
+
     // ── LOAD OVERALL SUMMARY ──────────────────────────────────────────────
-    async loadOverallSummary() {
+    /*async loadOverallSummary() {
         try {
 
 
@@ -768,23 +972,371 @@ export default class ProspectEngagementInsights extends LightningElement {
         } catch (e) {
             console.error('Error loading overall summary:', e.message);
         }
+    }*/
+
+
+    // buildNarrativeSummary(narrative) {
+    //     if (!narrative) return '';
+
+    //     const sections = [];
+
+    //     if (narrative.Cultivated_vs_New_Accounts__c) {
+    //         const n = narrative.Cultivated_vs_New_Accounts__c;
+    //         sections.push(this.section('Cultivated vs. New Accounts', [
+    //             n.recommendation,
+    //             n.supportingDataPoint,
+    //             n.actionStep ? `Next step: ${n.actionStep}` : ''
+    //         ]));
+    //     }
+
+    //     if (narrative.Outreach_Pattern_That_Works__c) {
+    //         const n = narrative.Outreach_Pattern_That_Works__c;
+    //         sections.push(this.section('The Outreach Pattern That\'s Working', [
+    //             n.stepOne ? `1. ${n.stepOne}` : '',
+    //             n.stepTwo ? `2. ${n.stepTwo}` : '',
+    //             n.stepThree ? `3. ${n.stepThree}` : '',
+    //             n.trigger ? `Trigger: ${n.trigger}` : '',
+    //             n.actionStep ? `Next step: ${n.actionStep}` : ''
+    //         ]));
+    //     }
+
+    //     if (narrative.Accounts_Falling_Behind_Peers__c?.accounts?.length) {
+    //         const list = narrative.Accounts_Falling_Behind_Peers__c.accounts
+    //             .map(a => `- ${a.name} (${a.industry}, ${a.tier}): ${a.likelyReason} — ${a.actionStep}`);
+    //         sections.push(this.section('Accounts Falling Behind Peers', list));
+    //     }
+
+    //     if (narrative.Where_Effort_Is_Wasted__c) {
+    //         const n = narrative.Where_Effort_Is_Wasted__c;
+    //         sections.push(this.section('Where Effort Is Being Wasted', [
+    //             n.recommendation,
+    //             n.supportingDataPoint,
+    //             n.actionStep ? `Next step: ${n.actionStep}` : ''
+    //         ]));
+    //     }
+
+    //     if (narrative.Over_Contacted_Accounts__c?.accounts?.length) {
+    //         const list = narrative.Over_Contacted_Accounts__c.accounts
+    //             .map(a => `- ${a.name}: ${a.reason} — ${a.actionStep}`);
+    //         sections.push(this.section('Over-Contacted Accounts (Diminishing Returns)', list));
+    //     }
+
+    //     if (narrative.Priority_Accounts_to_Act_On_Now__c?.accounts?.length) {
+    //         const list = narrative.Priority_Accounts_to_Act_On_Now__c.accounts
+    //             .map(a => `- ${a.name}: ${a.whyNow}`);
+    //         sections.push(this.section('Priority Accounts to Act On Now', list));
+    //     }
+
+    //     if (narrative.Other_Ways_to_Improve_Outreach__c) {
+    //         const n = narrative.Other_Ways_to_Improve_Outreach__c;
+    //         sections.push(this.section('Other Ways to Improve Outreach', [
+    //             n.recommendation,
+    //             n.actionStep ? `Next step: ${n.actionStep}` : ''
+    //         ]));
+    //     }
+
+    //     if (narrative.Best_Near_Term_Opportunities__c?.accounts?.length) {
+    //         const list = narrative.Best_Near_Term_Opportunities__c.accounts
+    //             .map(a => `- ${a.name}: ${a.whyNow}`);
+    //         sections.push(this.section('Best Near-Term Opportunities', list));
+    //     }
+
+    //     if (narrative.One_Behavioral_Change_That_Matters_Most__c) {
+    //         const n = narrative.One_Behavioral_Change_That_Matters_Most__c;
+    //         sections.push(this.section('The One Behavioral Change That Matters Most', [
+    //             n.recommendation,
+    //             n.supportingDataPoint,
+    //             n.actionStep ? `Next step: ${n.actionStep}` : ''
+    //         ]));
+    //     }
+
+    //     return sections.join('<br><br>');
+    // }
+    
+
+    buildNarrativeSummary(narrative) {
+    if (!narrative) return '';
+
+    const sections = [];
+
+    if (narrative.Cultivated_vs_New_Accounts__c) {
+        const n = narrative.Cultivated_vs_New_Accounts__c;
+        sections.push(this.section('Cultivated vs. New Accounts', [
+            n.recommendation,
+            n.supportingDataPoint,
+            n.explanation,
+            n.actionStep ? `Next step: ${n.actionStep}` : ''
+        ]));
     }
 
+    if (narrative.Outreach_Pattern_That_Works__c) {
+        const n = narrative.Outreach_Pattern_That_Works__c;
+        sections.push(this.section('Outreach Pattern That Works', [
+            n.stepOne,
+            n.stepTwo,
+            n.stepThree,
+            n.trigger ? `Trigger: ${n.trigger}` : '',
+            n.explanation,
+            n.actionStep ? `Next step: ${n.actionStep}` : ''
+        ]));
+    }
 
-    formatSummary(text) {
-        if (!text) return '';
+    if (narrative.Confirmed_Active_vs_Quiet_Engagement__c) {
+        const n = narrative.Confirmed_Active_vs_Quiet_Engagement__c;
+        const lines = [];
 
+        if (n.confirmedActive?.length) {
+            lines.push('Confirmed Active:');
+            n.confirmedActive.forEach(a =>
+                lines.push(`${a.name} - ${a.evidence}`)
+            );
+        }
+
+        if (n.quietPassiveOnly?.length) {
+            lines.push('Quiet / Passive Only:');
+            n.quietPassiveOnly.forEach(a =>
+                lines.push(`${a.name} - ${a.reason || ''}`)
+            );
+        }
+
+        if (n.looksEngagedButUnconfirmed?.length) {
+            lines.push('Looks Engaged but Unconfirmed:');
+            n.looksEngagedButUnconfirmed.forEach(a =>
+                lines.push(`${a.name} - ${a.reason}`)
+            );
+        }
+
+        lines.push(n.explanation);
+
+        sections.push(this.section('Confirmed Active vs Quiet Engagement', lines));
+    }
+
+    if (narrative.Engagement_Commonality_Across_Accounts__c) {
+        const n = narrative.Engagement_Commonality_Across_Accounts__c;
+
+        sections.push(this.section('Common Engagement Patterns', [
+            `Rising Pattern: ${n.risingEngagementCommonPattern}`,
+            `Rising Accounts: ${(n.risingEngagementAccounts || []).join(', ')}`,
+            `Falling Pattern: ${n.fallingEngagementCommonPattern}`,
+            `Falling Accounts: ${(n.fallingEngagementAccounts || []).join(', ')}`,
+            n.explanation
+        ]));
+    }
+
+    if (narrative.Accounts_Falling_Behind_Peers__c?.accounts?.length) {
+        const list = [];
+
+        narrative.Accounts_Falling_Behind_Peers__c.accounts.forEach(a => {
+            list.push(`${a.name} (${a.industry}, ${a.tier})`);
+            list.push(a.metric);
+            list.push(a.likelyReason);
+            list.push(`Action: ${a.actionStep}`);
+        });
+
+        list.push(narrative.Accounts_Falling_Behind_Peers__c.explanation);
+
+        sections.push(this.section('Accounts Falling Behind Peers', list));
+    }
+
+    if (narrative.Where_Effort_Is_Wasted__c) {
+        const n = narrative.Where_Effort_Is_Wasted__c;
+
+        sections.push(this.section('Where Effort Is Wasted', [
+            n.recommendation,
+            n.supportingDataPoint,
+            n.explanation,
+            n.actionStep
+        ]));
+    }
+
+    if (narrative.Over_Contacted_Accounts__c) {
+
+        const list = [];
+
+        narrative.Over_Contacted_Accounts__c.accounts?.forEach(a => {
+            list.push(`${a.name}: ${a.reason}`);
+            list.push(`Action: ${a.actionStep}`);
+        });
+
+        list.push(narrative.Over_Contacted_Accounts__c.explanation);
+
+        sections.push(this.section('Over Contacted Accounts', list));
+    }
+
+    if (narrative.Negative_or_Zero_Engagement__c) {
+
+        const list = [];
+
+        narrative.Negative_or_Zero_Engagement__c.accounts?.forEach(a => {
+            list.push(`${a.name} - ${a.metric}`);
+            list.push(`Re-engagement: ${a.reengagementAction}`);
+        });
+
+        narrative.Negative_or_Zero_Engagement__c.contacts?.forEach(c => {
+            list.push(`${c.name} (${c.title})`);
+            list.push(`Score: ${c.score}`);
+            list.push(`Re-engagement: ${c.reengagementAction}`);
+        });
+
+        sections.push(this.section('Negative / Zero Engagement', list));
+    }
+
+    if (narrative.Priority_Accounts_to_Act_On_Now__c?.accounts?.length) {
+
+        const list = [];
+
+        narrative.Priority_Accounts_to_Act_On_Now__c.accounts.forEach(a => {
+            list.push(`${a.name}`);
+            list.push(a.metric);
+            list.push(a.whyNow);
+        });
+
+        sections.push(this.section('Priority Accounts To Act On Now', list));
+    }
+
+    if (narrative.Other_Ways_to_Improve_Outreach__c) {
+        const n = narrative.Other_Ways_to_Improve_Outreach__c;
+
+        sections.push(this.section('Other Ways To Improve Outreach', [
+            n.recommendation,
+            n.explanation,
+            n.actionStep
+        ]));
+    }
+
+    if (narrative.Best_Near_Term_Opportunities__c?.accounts?.length) {
+
+        const list = [];
+
+        narrative.Best_Near_Term_Opportunities__c.accounts.forEach(a => {
+            list.push(`${a.name}`);
+            list.push(a.whyNow);
+        });
+
+        sections.push(this.section('Best Near-Term Opportunities', list));
+    }
+
+    if (narrative.One_Behavioral_Change_That_Matters_Most__c) {
+        const n = narrative.One_Behavioral_Change_That_Matters_Most__c;
+
+        sections.push(this.section('One Behavioral Change That Matters Most', [
+            n.recommendation,
+            n.supportingDataPoint,
+            n.explanation,
+            n.actionStep
+        ]));
+    }
+
+    if (narrative.Direct_Marketing_Lead_Stage_Movement_Analysis) {
+        const n = narrative.Direct_Marketing_Lead_Stage_Movement_Analysis;
+
+        sections.push(this.section('Direct Marketing Lead Stage Movement Analysis', [
+            n.conclusion,
+            n.detailedExplanation
+        ]));
+    }
+
+    return sections.join('<br><br>');
+}
+
+    // section(title, lines) {
+    //     const cleaned = lines
+    //         .filter(Boolean)
+    //         .map(line => this.stripMarkdown(line))
+    //         .map(line => this.removeLeadingTitleEcho(line, title));
+
+    //     const body = cleaned.filter(Boolean).join('<br>');
+    //     return `<strong>${title}</strong><br>${body}`;
+    // }
+    section(title, lines) {
+        const cleaned = lines
+            .filter(Boolean)
+            .map(line => this.stripMarkdown(line))
+            .map(line => this.removeLeadingTitleEcho(line, title))
+            .map(line => this.stripLeadingPunctuation(line))
+            .filter(Boolean)
+            .map(line => `&#8226; ${line}`);
+
+        return `<strong>${title}</strong><br>${cleaned.join('<br>')}`;
+    }
+    stripMarkdown(text) {
+        if (!text) return text;
         return text
-            // Bold
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*\*(.*?)\*\*/g, '$1')  // remove **bold** markers, keep the text inside
+            .replace(/\*(.*?)\*/g, '$1');      // remove single *italic* markers too, just in case
+    }
 
-            // Bullet lines
-            .replace(/^- (.*)$/gm, '&#8226; $1')
+    stripLeadingPunctuation(text) {
+        if (!text) return text;
+        // removes any leading -, •, ., or whitespace the model added on its own
+        return text.replace(/^[\s\-•.]+/, '').trim();
+    }
+    removeLeadingTitleEcho(text, title) {
+        if (!text) return text;
+        // if the field starts by repeating the section title, strip that leading echo
+        const escapedTitle = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const pattern = new RegExp(`^${escapedTitle}\\s*`, 'i');
+        return text.replace(pattern, '').trim();
+    }
 
-            // Paragraphs
-            .replace(/\n\n/g, '<br><br>')
+    // formatSummary(text) {
+    //     if (!text) return '';
 
-            // Single line
-            .replace(/\n/g, '<br>');
+    //     return text
+    //         // Bold
+    //         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+
+    //         // Bullet lines
+    //         .replace(/^- (.*)$/gm, '&#8226; $1')
+
+    //         // Paragraphs
+    //         .replace(/\n\n/g, '<br><br>')
+
+    //         // Single line
+    //         .replace(/\n/g, '<br>');
+    // }
+
+    parseOverallSummary(rawResult) {
+        try {
+            let parsed;
+            if (typeof rawResult === 'string') {
+                const clean = rawResult.replace(/```json/g, '').replace(/```/g, '').trim();
+                parsed = JSON.parse(clean);
+            } else {
+                parsed = rawResult;
+            }
+            return this.buildOverallSummaryHtml(parsed);
+        } catch (e) {
+            console.error('Error parsing overall summary:', e);
+            return '';
+        }
+    }
+
+    buildOverallSummaryHtml(data) {
+        if (!data) return '';
+
+        const titles = {
+            Portfolio_Wide_Engagement_Patterns__c: 'Portfolio-Wide Engagement Patterns',
+            Month_Over_Month_Shifts__c: 'Month-Over-Month Shifts',
+            Industries_Tiers_Engaging_Well__c: 'Industries and Tiers Engaging Well by Channel',
+            Industries_Not_Engaging_Well__c: 'Industries Not Engaging Well by Channel',
+            High_Effectiveness_Lower_Effort__c: 'High Effectiveness with Lower Effort',
+            Volume_vs_Diminishing_Returns__c: 'Volume vs. Diminishing Returns',
+            Optimal_Cadence_Stage_Movement__c: 'Optimal Cadence for Stage Movement'
+        };
+
+        const sections = [];
+        for (const key of Object.keys(titles)) {
+            const section = data[key];
+            if (!section) continue;
+
+            const points = (section.insufficientData
+                ? [section.insight || 'Insufficient data to confirm this.']
+                : (section.points || [])
+            ).filter(Boolean).map(p => this.stripMarkdown(p));
+
+            sections.push(this.section(titles[key], points));
+        }
+        return sections.join('<br><br>');
     }
 }
