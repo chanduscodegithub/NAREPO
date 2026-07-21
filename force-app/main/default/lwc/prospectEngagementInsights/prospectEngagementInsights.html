@@ -134,7 +134,7 @@
                 <!--Tabset-->
 
                 <lightning-tabset active-tab-value={activeTab} onselect={handleTabChange}>
-                     <!-- Quad4 Tab -->
+                    <!-- Quad4 Tab -->
                     <template if:true={showQuad4Tab}>
 
                         <lightning-tab label="Quad4" value="Quad4" onactive={handleTabChange}>
@@ -407,8 +407,7 @@
 
 
                                                             <div class="summary-card-body">
-                                                                <lightning-formatted-rich-text
-                                                                    value={tile.aiSummary}>
+                                                                <lightning-formatted-rich-text value={tile.aiSummary}>
                                                                 </lightning-formatted-rich-text>
 
                                                             </div>
@@ -620,7 +619,7 @@
                                 </template>
                             </template>
                         </lightning-tab>
-                    </template>  
+                    </template>
                     <!-- SVP Tab -->
                     <template if:true={showSVPTab}>
 
@@ -923,8 +922,7 @@
 
 
                                                             <div class="summary-card-body">
-                                                                <lightning-formatted-rich-text
-                                                                    value={tile.aiSummary}>
+                                                                <lightning-formatted-rich-text value={tile.aiSummary}>
                                                                 </lightning-formatted-rich-text>
 
                                                             </div>
@@ -1153,8 +1151,49 @@
             </div>
         </template> -->
                     </template>
+
                     <!--End of SVP Tab-->
-                   
+                    <template if:true={showOverallTab}>
+
+                        <lightning-tab label="Overall Summary" value="OVERALL">
+
+                            <template if:true={overallPortfolioLoading}>
+
+                                <lightning-spinner alternative-text="Loading" size="medium">
+                                </lightning-spinner>
+
+                            </template>
+
+                            <template if:true={hasOverallPortfolioSummary}>
+
+                                <div class="overall-card">
+
+                                    <div class="overall-card-header">
+
+                                        <span class="summary-spark">
+                                            ✦
+                                        </span>
+
+                                        <span>
+                                            Overall Portfolio Summary
+                                        </span>
+
+                                    </div>
+
+                                    <div class="overall-summary-text">
+
+                                        <lightning-formatted-rich-text value={overallPortfolioSummary}>
+                                        </lightning-formatted-rich-text>
+
+                                    </div>
+
+                                </div>
+
+                            </template>
+
+                        </lightning-tab>
+
+                    </template>
 
                 </lightning-tabset>
 

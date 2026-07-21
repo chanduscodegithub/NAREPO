@@ -6,12 +6,11 @@ import getPromptDataForUser from '@salesforce/apex/ProspectEngagementInsightsCon
 import getOverallPortfolioSummary from '@salesforce/apex/ProspectEngagementInsightsController.getOverallPortfolioSummary';
 import getAISummaryForUser from '@salesforce/apex/ProspectEngagementInsightsController.getAISummaryForUser';
 
-export default class ProspectEngagementInsights extends LightningElement {
-
+export default class ProspectEngagementInsights
+    extends LightningElement {
     // ── STATE ──────────────────────────────────────────────────
     @track isLoading = false;
     @track loadingMessage = '';
-    @track sections = [];
     @track canViewSvpTab = false;
     @track canViewQuad4Tab = false;
     @track activeTab = 'SVP';
@@ -38,8 +37,9 @@ export default class ProspectEngagementInsights extends LightningElement {
     @track selectedSummary = '';
     @track aiSummaryMap = {};
     @track isDirty = false;
+    @track overallPortfolioSummary = '';
+    @track overallPortfolioLoading = false;
 
-    // non-tracked — no re-render needed
     selectVal = 'svp';
     selectDateVal = '30';
     expandedTiles = {};
@@ -50,14 +50,12 @@ export default class ProspectEngagementInsights extends LightningElement {
 
     // ── LIFECYCLE ──────────────────────────────────────────────
     async connectedCallback() {
-        // set default dates first — before anything else
         const today = new Date();
-        this.effectiveTo = today.toISOString().split('T')[0];
-
+        this.effectiveTo =
+            today.toISOString().split('T')[0];
         const twoYearsAgo = new Date();
         twoYearsAgo.setFullYear(
-            twoYearsAgo.getFullYear() - 2
-        );
+            twoYearsAgo.getFullYear() - 2);
         this.effectiveFrom =
             twoYearsAgo.toISOString().split('T')[0];
 
@@ -65,30 +63,22 @@ export default class ProspectEngagementInsights extends LightningElement {
             this.isLoading = true;
             this.loadingMessage = 'Preparing AI insights...';
 
-            // load tier options and user info in parallel
-            // both are fast API calls — no dependency on each other
             await Promise.all([
                 this.loadTierOptions(),
                 this.loadUserInfo()
             ]);
 
-            // load account IDs — needs user info first
             await this.loadAccountIds();
 
-            // load tile data and AI summary in parallel
-            // both only need accountIdsPerUser which is now ready
-            this.loadingMessage = 'Generating AI insights...';
-            await Promise.all([
-                this.loadTileData(),
-                this.loadAISummary()
-            ]);
+            this.loadingMessage =
+                'Generating AI insights...';
 
-            // enable generate button after initial load
+            await this.loadAllTileData();
+
             this.isDirty = false;
 
         } catch (e) {
-            this.errorMessage =
-                'Failed to load: '
+            this.errorMessage = 'Failed to load: '
                 + (e.body?.message || e.message);
             console.error(e);
         } finally {
@@ -130,8 +120,7 @@ export default class ProspectEngagementInsights extends LightningElement {
                 selected: defaultSelected.includes(val)
             }));
             this.selectedTiers = values.filter(val =>
-                defaultSelected.includes(val)
-            );
+                defaultSelected.includes(val));
         } catch (e) {
             console.error('Error loading tiers:', e);
         }
@@ -141,22 +130,16 @@ export default class ProspectEngagementInsights extends LightningElement {
     async loadAccountIds() {
         try {
             const isSVP = this.activeTab === 'SVP';
-
             const svpUsers = isSVP
                 ? (this.selectedUsers.length
                     ? this.selectedUsers
                     : this.svpLabels)
                 : [];
-
             const quad4Users = !isSVP
                 ? (this.selectedUsers.length
                     ? this.selectedUsers
                     : this.quad4Labels)
                 : [];
-
-            console.log('activeTab:', this.activeTab);
-            console.log('svpUsers:', svpUsers);
-            console.log('quad4Users:', quad4Users);
 
             const result = await getAccountIdsPerUser({
                 svpUserNames: svpUsers,
@@ -164,133 +147,178 @@ export default class ProspectEngagementInsights extends LightningElement {
                 tiers: this.selectedTiers
             });
 
-            // merge — keep existing tab data intact
             this.accountIdsPerUser = {
                 ...this.accountIdsPerUser,
                 ...result
             };
-
-            console.log('Account IDs:',
-                JSON.stringify(this.accountIdsPerUser));
-
         } catch (e) {
             console.error('Error in loadAccountIds:', e);
             throw e;
         }
     }
 
-    // ── TILE DATA ──────────────────────────────────────────────
-    // runs all users in parallel — Promise.all per user
-    // updates tileData ONCE at end — one re-render only
-    async loadTileData() {
-        const userKeys = Object.keys(this.accountIdsPerUser)
+    // ── LOAD ALL TILE DATA ─────────────────────────────────────
+    // fires all users simultaneously
+    // each user handled by loadSingleUserData
+    async loadAllTileData() {
+        const userKeys = Object.keys(
+            this.accountIdsPerUser)
             .filter(key =>
                 this.activeTab === 'SVP'
                     ? key.startsWith('SVP_')
                     : key.startsWith('QUAD4_')
             );
 
-        const results = await Promise.all(
-            userKeys.map(async userKey => {
-                // skip if already loaded
-                if (this.tileData[userKey]) return null;
+        if (!userKeys.length) {
+            console.warn('No user keys for tab:',
+                this.activeTab);
+            return;
+        }
 
-                const accountIds =
-                    this.accountIdsPerUser[userKey];
-                if (!accountIds?.length) return null;
-
-                try {
-                    const result = await getPromptDataForUser({
-                        accountIds,
-                        startDate: this.effectiveFrom,
-                        endDate: this.effectiveTo
-                    });
-
-                    if (result) {
-                        return {
-                            key: userKey,
-                            summary: this.parseTileData(
-                                result, userKey)
-                        };
-                    }
-                } catch (e) {
-                    console.error(
-                        'Tile data failed for',
-                        userKey, e);
-                }
-                return null;
-            })
+        await Promise.all(
+            userKeys.map(userKey =>
+                this.loadSingleUserData(userKey))
         );
-
-        // batch update tileData once
-        // prevents multiple re-renders
-        const newTileData = { ...this.tileData };
-        results.forEach(r => {
-            if (r?.key) newTileData[r.key] = r.summary;
-        });
-        this.tileData = newTileData;
     }
 
-    // ── AI SUMMARY ─────────────────────────────────────────────
-    // runs all users in parallel
-    // updates aiSummaryMap ONCE at end — one re-render only
-    async loadAISummary() {
-        const userKeys = Object.keys(this.accountIdsPerUser)
-            .filter(key =>
-                this.activeTab === 'SVP'
-                    ? key.startsWith('SVP_')
-                    : key.startsWith('QUAD4_')
-            );
+    // ── SINGLE USER — card + AI simultaneously ─────────────────
+    async loadSingleUserData(userKey) {
+        if (this.tileData[userKey]) return;
 
-        const results = await Promise.all(
-            userKeys.map(async userKey => {
-                const accountIds =
-                    this.accountIdsPerUser[userKey];
-                if (!accountIds?.length) {
-                    return { key: userKey, summary: '' };
-                }
+        const accountIds =
+            this.accountIdsPerUser[userKey];
 
-                try {
-                    const result = await getAISummaryForUser({
+        if (!accountIds?.length) {
+            console.warn(
+                `No accounts for ${userKey} — skip`);
+            return;
+        }
+
+        console.log(`Loading ${userKey} — `
+            + `${accountIds.length} accounts`);
+
+        // ── fire both calls simultaneously ─────────────
+        let cardResult = null;
+        let aiResult = null;
+
+        try {
+            [cardResult, aiResult] =
+                await Promise.all([
+                    getPromptDataForUser({
                         accountIds,
                         startDate: this.effectiveFrom,
                         endDate: this.effectiveTo
-                    });
+                    }),
+                    // AI call — catch separately
+                    // card always shows even if AI fails
+                    getAISummaryForUser({
+                        accountIds,
+                        startDate: this.effectiveFrom,
+                        endDate: this.effectiveTo
+                    }).catch(e => {
+                        console.error(
+                            `AI call error ${userKey}:`,
+                            e.body?.message || e.message);
+                        return null;
+                    })
+                ]);
+        } catch (e) {
+            console.error(
+                `Promise.all failed ${userKey}:`,
+                e.message);
+            return;
+        }
 
-                    if (!result) {
-                        return { key: userKey, summary: '' };
-                    }
+        console.log(`${userKey} cardResult null:`,
+            cardResult === null);
+        console.log(`${userKey} aiResult null:`,
+            aiResult === null);
+        console.log(`${userKey} aiResult length:`,
+            aiResult?.length || 0);
+        console.log(`${userKey} aiResult first 200:`,
+            String(aiResult || '').slice(0, 200));
 
-                    let parsed = result;
-                    if (typeof result === 'string') {
-                        const clean = result
-                            .replace(/```json/g, '')
-                            .replace(/```/g, '')
-                            .trim();
-                        parsed = JSON.parse(clean);
-                    }
+        // ── parse card data ─────────────────────────────
+        let summary = null;
+        if (cardResult) {
+            try {
+                summary = this.parseTileData(
+                    cardResult, userKey);
+            } catch (e) {
+                console.error(
+                    `parseTileData failed ${userKey}:`,
+                    e.message);
+            }
+        }
 
-                    return {
-                        key: userKey,
-                        summary: this.buildNarrativeSummary(
-                            parsed?.AI_Narrative_Summary__c)
-                    };
+        // ── parse AI narrative ──────────────────────────
+        let aiSummary = '';
+        if (aiResult) {
+            const parsed = this.safeParseJSON(
+                aiResult, `aiSummary:${userKey}`);
 
-                } catch (e) {
+            console.log(`${userKey} parsed null:`,
+                parsed === null);
+            console.log(
+                `${userKey} has AI_Narrative:`,
+                !!parsed?.AI_Narrative_Summary__c);
+
+            if (parsed?.AI_Narrative_Summary__c
+                && typeof parsed.AI_Narrative_Summary__c
+                === 'object'
+                && Object.keys(
+                    parsed.AI_Narrative_Summary__c)
+                    .length > 0) {
+                try {
+                    aiSummary =
+                        this.buildNarrativeSummary(
+                            parsed.AI_Narrative_Summary__c
+                        );
+                    console.log(
+                        `${userKey} aiSummary length:`,
+                        aiSummary.length);
+                } catch (buildErr) {
                     console.error(
-                        'AI summary failed for',
-                        userKey, e);
-                    return { key: userKey, summary: '' };
+                        `buildNarrativeSummary `
+                        + `failed ${userKey}:`,
+                        buildErr.message);
                 }
-            })
-        );
+            } else {
+                if (!parsed) {
+                    console.warn(
+                        `${userKey} — JSON parse failed`);
+                } else if (!parsed.AI_Narrative_Summary__c) {
+                    console.warn(
+                        `${userKey} — `
+                        + `AI_Narrative_Summary__c missing`);
+                    console.warn('Keys in parsed:',
+                        Object.keys(parsed));
+                } else {
+                    console.warn(
+                        `${userKey} — `
+                        + `AI_Narrative_Summary__c empty`);
+                }
+            }
+        } else {
+            console.warn(
+                `${userKey} — aiResult null or empty`);
+        }
 
-        // batch update once — one re-render only
-        const newMap = { ...this.aiSummaryMap };
-        results.forEach(r => {
-            if (r) newMap[r.key] = r.summary;
-        });
-        this.aiSummaryMap = newMap;
+        // ── update UI immediately for this user ─────────
+        if (summary) {
+            this.tileData = {
+                ...this.tileData,
+                [userKey]: summary
+            };
+        }
+
+        // always update — empty = retry button shows
+        this.aiSummaryMap = {
+            ...this.aiSummaryMap,
+            [userKey]: aiSummary
+        };
+
+        console.log(`${userKey} — done`);
     }
 
     // ── GENERATE SUMMARY ───────────────────────────────────────
@@ -298,9 +326,9 @@ export default class ProspectEngagementInsights extends LightningElement {
         try {
             this.isLoading = true;
             this.isDirty = false;
-            this.loadingMessage = 'Preparing AI insights...';
+            this.loadingMessage =
+                'Preparing AI insights...';
 
-            // clear all data
             this.tileData = {};
             this.accountIdsPerUser = {};
             this.aiSummaryMap = {};
@@ -311,16 +339,14 @@ export default class ProspectEngagementInsights extends LightningElement {
 
             await this.loadAccountIds();
 
-            this.loadingMessage = 'Generating AI insights...';
+            this.loadingMessage =
+                'Generating AI insights...';
 
-            // tile data and AI summary in parallel
-            await Promise.all([
-                this.loadTileData(),
-                this.loadAISummary()
-            ]);
+            await this.loadAllTileData();
 
         } catch (e) {
-            console.error('Error generating summary:', e);
+            console.error(
+                'Error generating summary:', e);
         } finally {
             this.isLoading = false;
             this.loadingMessage = '';
@@ -329,10 +355,11 @@ export default class ProspectEngagementInsights extends LightningElement {
 
     // ── TAB CHANGE ─────────────────────────────────────────────
     async handleTabChange(event) {
-        const newTab =
-            event.target.value || event.detail?.value;
+        if (this.activeTab === 'OVERALL' && !this.overallPortfolioSummary) {
+            await this.loadOverallPortfolioSummary();
+        }
+        const newTab = event.target.value || event.detail?.value;
         if (!newTab || newTab === this.activeTab) return;
-
         this.activeTab = newTab;
         this.showDropdown = false;
         this.isDirty = true;
@@ -340,8 +367,6 @@ export default class ProspectEngagementInsights extends LightningElement {
         this.selectedUsers = this.activeTab === 'SVP'
             ? [...this.svpLabels]
             : [...this.quad4Labels];
-
-        console.log('Tab changed to:', this.activeTab);
 
         const labelsForTab = this.activeTab === 'SVP'
             ? this.svpLabels : this.quad4Labels;
@@ -356,16 +381,41 @@ export default class ProspectEngagementInsights extends LightningElement {
             this.isLoading = true;
             try {
                 await this.loadAccountIds();
-                // parallel on tab change too
-                await Promise.all([
-                    this.loadTileData(),
-                    this.loadAISummary()
-                ]);
+                await this.loadAllTileData();
             } catch (e) {
-                console.error('Error on tab change:', e);
+                console.error(
+                    'Tab change error:', e);
             } finally {
                 this.isLoading = false;
             }
+        }
+    }
+
+    // ── RETRY AI SUMMARY ───────────────────────────────────────
+    async handleRetryAISummary(event) {
+        const userKey =
+            event.currentTarget.dataset.userkey;
+        if (!userKey) return;
+
+        console.log(`Retrying AI for ${userKey}`);
+
+        // save card data before retry
+        const savedTile = this.tileData[userKey];
+
+        // temporarily remove so loadSingleUserData runs
+        const newTileData = { ...this.tileData };
+        delete newTileData[userKey];
+        this.tileData = newTileData;
+
+        // retry this one user
+        await this.loadSingleUserData(userKey);
+
+        // restore card data if retry lost it
+        if (!this.tileData[userKey] && savedTile) {
+            this.tileData = {
+                ...this.tileData,
+                [userKey]: savedTile
+            };
         }
     }
 
@@ -373,19 +423,17 @@ export default class ProspectEngagementInsights extends LightningElement {
     async handleSvpViewToggle(event) {
         this.svpViewMode =
             event.currentTarget.dataset.view;
-
         if (this.svpViewMode === 'overall'
             && !this.overallStatsSVP) {
             this.isLoading = true;
             this.loadingMessage =
-                'Generating SVP overall summary...';
+                'Generating SVP overall...';
             try {
                 await this.loadOverallSummarySVP();
             } catch (e) {
                 this.errorMessage =
-                    'Failed to load SVP overall: '
+                    'Failed SVP overall: '
                     + (e.body?.message || e.message);
-                console.error(e);
             } finally {
                 this.isLoading = false;
                 this.loadingMessage = '';
@@ -401,14 +449,27 @@ export default class ProspectEngagementInsights extends LightningElement {
 
         if (!allSvpIds.length) return;
 
-        // card data and summary text in parallel
-        const [svpCardResult] = await Promise.all([
-            getPromptDataForUser({
-                accountIds: allSvpIds,
-                startDate: this.effectiveFrom,
-                endDate: this.effectiveTo
-            })
-        ]);
+        const svpText =
+            this.buildSummaryText('SVP_');
+
+        const [svpCardResult, svpNarrativeResult] =
+            await Promise.all([
+                getPromptDataForUser({
+                    accountIds: allSvpIds,
+                    startDate: this.effectiveFrom,
+                    endDate: this.effectiveTo
+                }),
+                svpText.trim()
+                    ? getOverallPortfolioSummary({
+                        userSummariesJson: svpText
+                    }).catch(e => {
+                        console.error(
+                            'SVP narrative error:',
+                            e.message);
+                        return null;
+                    })
+                    : Promise.resolve(null)
+            ]);
 
         if (svpCardResult) {
             const parsed = this.parseTileData(
@@ -416,14 +477,17 @@ export default class ProspectEngagementInsights extends LightningElement {
             if (parsed) this.overallStatsSVP = parsed;
         }
 
-        const svpText = this.buildSummaryText('SVP_');
-        if (svpText.trim()) {
-            const svpResult = await getOverallPortfolioSummary({
-                userSummariesJson: svpText
-            });
-            if (svpResult) {
+        if (svpNarrativeResult) {
+            const parsed = this.safeParseJSON(
+                svpNarrativeResult, 'overallSVP');
+            if (parsed?.AI_Narrative_Summary__c) {
                 this.overallSummarySVP =
-                    this.parseOverallSummary(svpResult);
+                    this.buildNarrativeSummary(
+                        parsed.AI_Narrative_Summary__c);
+            } else {
+                this.overallSummarySVP =
+                    this.parseOverallSummary(
+                        svpNarrativeResult);
             }
         }
     }
@@ -432,19 +496,17 @@ export default class ProspectEngagementInsights extends LightningElement {
     async handleQuadViewToggle(event) {
         this.quadViewMode =
             event.currentTarget.dataset.view;
-
         if (this.quadViewMode === 'overall'
             && !this.overallStatsQuad4) {
             this.isLoading = true;
             this.loadingMessage =
-                'Generating Quad4 overall summary...';
+                'Generating Quad4 overall...';
             try {
                 await this.loadOverallSummaryQuad4();
             } catch (e) {
                 this.errorMessage =
-                    'Failed to load Quad4 overall: '
+                    'Failed Quad4 overall: '
                     + (e.body?.message || e.message);
-                console.error(e);
             } finally {
                 this.isLoading = false;
                 this.loadingMessage = '';
@@ -455,16 +517,33 @@ export default class ProspectEngagementInsights extends LightningElement {
     async loadOverallSummaryQuad4() {
         const allQuad4Ids = Object.entries(
             this.accountIdsPerUser)
-            .filter(([key]) => key.startsWith('QUAD4_'))
+            .filter(([key]) =>
+                key.startsWith('QUAD4_'))
             .flatMap(([, ids]) => ids);
 
         if (!allQuad4Ids.length) return;
 
-        const quad4CardResult = await getPromptDataForUser({
-            accountIds: allQuad4Ids,
-            startDate: this.effectiveFrom,
-            endDate: this.effectiveTo
-        });
+        const quad4Text =
+            this.buildSummaryText('QUAD4_');
+
+        const [quad4CardResult, quad4NarrativeResult] =
+            await Promise.all([
+                getPromptDataForUser({
+                    accountIds: allQuad4Ids,
+                    startDate: this.effectiveFrom,
+                    endDate: this.effectiveTo
+                }),
+                quad4Text.trim()
+                    ? getOverallPortfolioSummary({
+                        userSummariesJson: quad4Text
+                    }).catch(e => {
+                        console.error(
+                            'Quad4 narrative error:',
+                            e.message);
+                        return null;
+                    })
+                    : Promise.resolve(null)
+            ]);
 
         if (quad4CardResult) {
             const parsed = this.parseTileData(
@@ -472,23 +551,101 @@ export default class ProspectEngagementInsights extends LightningElement {
             if (parsed) this.overallStatsQuad4 = parsed;
         }
 
-        const quad4Text = this.buildSummaryText('QUAD4_');
-        if (quad4Text.trim()) {
-            const quad4Result =
-                await getOverallPortfolioSummary({
-                    userSummariesJson: quad4Text
-                });
-            if (quad4Result) {
+        if (quad4NarrativeResult) {
+            const parsed = this.safeParseJSON(
+                quad4NarrativeResult, 'overallQuad4');
+            if (parsed?.AI_Narrative_Summary__c) {
                 this.overallSummaryQuad4 =
-                    this.parseOverallSummary(quad4Result);
+                    this.buildNarrativeSummary(
+                        parsed.AI_Narrative_Summary__c);
+            } else {
+                this.overallSummaryQuad4 =
+                    this.parseOverallSummary(
+                        quad4NarrativeResult);
             }
         }
     }
 
-    // ── BUILD SUMMARY TEXT (for overall narrative) ─────────────
+    async loadOverallPortfolioSummary() {
+
+        this.overallPortfolioLoading = true;
+
+        try {
+
+            // Merge all account ids
+            const allAccountIds = [
+                ...new Set(
+                    Object.values(this.accountIdsPerUser)
+                        .flat()
+                )
+            ];
+
+            if (!allAccountIds.length) {
+                this.overallPortfolioSummary = '';
+                return;
+            }
+
+            const result =
+                await getOverallPortfolioSummary({
+
+                    accountIds: allAccountIds,
+
+                    startDate: this.effectiveFrom,
+
+                    endDate: this.effectiveTo
+
+                });
+
+            if (!result) {
+                this.overallPortfolioSummary = '';
+                return;
+            }
+
+            const parsed = this.safeParseJSON(
+                result,
+                'overallPortfolio'
+            );
+
+            if (
+                parsed &&
+                parsed.AI_Narrative_Summary__c
+            ) {
+
+                this.overallPortfolioSummary =
+                    this.buildNarrativeSummary(
+                        parsed.AI_Narrative_Summary__c
+                    );
+
+            } else {
+
+                this.overallPortfolioSummary = result;
+
+            }
+
+        }
+        catch (e) {
+
+            console.error(e);
+
+            this.overallPortfolioSummary =
+                'Unable to generate summary.';
+
+        }
+        finally {
+
+            this.overallPortfolioLoading = false;
+
+        }
+
+    }
+
+
+
+    // ── BUILD SUMMARY TEXT ─────────────────────────────────────
     buildSummaryText(prefix) {
         let text = '';
-        for (const userKey of Object.keys(this.tileData)) {
+        for (const userKey of Object.keys(
+            this.tileData)) {
             if (!userKey.startsWith(prefix)) continue;
             const s = this.tileData[userKey];
             if (!s) continue;
@@ -498,53 +655,46 @@ export default class ProspectEngagementInsights extends LightningElement {
                 .replace('SVP_', '')
                 .replace('QUAD4_', '');
 
-            let userText =
-                `\n${isSVP ? 'SVP' : 'Quad4'}: `
-                + `${userName}\n`;
-            userText +=
-                `Total Engagements: `
+            let t = `\n${isSVP
+                ? 'SVP' : 'Quad4'}: ${userName}\n`;
+            t += `Total Engagements: `
                 + `${s.totalEngagements || '0'}\n`;
-            userText +=
-                `WES: `
+            t += `WES: `
                 + `${s.weightedEngagementScore || '0'}\n`;
-            userText +=
-                `Engagement Rate: `
+            t += `Engagement Rate: `
                 + `${s.engagementRate || '0%'}\n`;
 
             if (s.topChannels?.length) {
-                userText += `Top Channels: ${s.topChannels.map(c =>
-                    c.channel
-                    + ' (volume: ' + c.volume
-                    + ', response: '
-                    + c.responseRate + ')'
-                ).join(', ')}\n`;
+                t += `Top Channels: ${s.topChannels
+                    .map(c => `${c.channel} `
+                        + `(volume: ${c.volume}, `
+                        + `response: ${c.responseRate})`)
+                    .join(', ')}\n`;
             }
             if (s.lowChannels?.length) {
-                userText += `Low Channels: ${s.lowChannels.map(c =>
-                    c.channel
-                    + ' (volume: ' + c.volume
-                    + ', response: '
-                    + c.responseRate + ')'
-                ).join(', ')}\n`;
+                t += `Low Channels: ${s.lowChannels
+                    .map(c => `${c.channel} `
+                        + `(volume: ${c.volume}, `
+                        + `response: ${c.responseRate})`)
+                    .join(', ')}\n`;
             }
             if (s.topEngagedAccounts?.length) {
-                userText += `Top Accounts: ${s.topEngagedAccounts.map(a =>
-                    a.name
-                    + ' (' + a.industry
-                    + ', ' + a.tier + ')'
-                ).join(', ')}\n`;
+                t += `Top Accounts: ${s.topEngagedAccounts
+                    .map(a => `${a.name} `
+                        + `(${a.industry}, ${a.tier})`)
+                    .join(', ')}\n`;
             }
             if (s.lowEngagedAccounts?.length) {
-                userText += `Low Accounts: ${s.lowEngagedAccounts.map(a =>
-                    a.name + ' - ' + a.reason
-                ).join(', ')}\n`;
+                t += `Low Accounts: ${s.lowEngagedAccounts
+                    .map(a => `${a.name} - ${a.reason}`)
+                    .join(', ')}\n`;
             }
             if (s.channelMix?.length) {
-                userText += `Channel Mix: ${s.channelMix.map(m =>
-                    m.label + ': ' + m.pct + '%'
-                ).join(', ')}\n`;
+                t += `Channel Mix: ${s.channelMix
+                    .map(m => `${m.label}: ${m.pct}%`)
+                    .join(', ')}\n`;
             }
-            text += userText + '\n';
+            text += t + '\n';
         }
         return text;
     }
@@ -552,60 +702,204 @@ export default class ProspectEngagementInsights extends LightningElement {
     // ── PARSE TILE DATA ────────────────────────────────────────
     parseTileData(rawResult, userKey) {
         try {
-            let parsed;
-            if (typeof rawResult === 'string') {
-                const clean = rawResult
-                    .replace(/```json/g, '')
-                    .replace(/```/g, '')
-                    .trim();
-                parsed = JSON.parse(clean);
-            } else {
-                parsed = rawResult;
-            }
+            const parsed = this.safeParseJSON(
+                rawResult, `parseTileData:${userKey}`);
+            if (!parsed) return null;
 
             return {
-                totalEngagements: parsed.totalEngagements || '',
-                weightedEngagementScore: parsed.weightedEngagementScore || '',
-                engagementRate: parsed.engagementRate || '',
-                topChannels: parsed.Engagement_Channels_and_Performance__c
+                totalEngagements:
+                    parsed.totalEngagements || '',
+                weightedEngagementScore:
+                    parsed.weightedEngagementScore || '',
+                engagementRate:
+                    parsed.engagementRate || '',
+                topChannels:
+                    parsed.Engagement_Channels_and_Performance__c
                     ?.['Top Performing Channels'] || [],
-                lowChannels: parsed.Engagement_Channels_and_Performance__c
+                lowChannels:
+                    parsed.Engagement_Channels_and_Performance__c
                     ?.['Low Performing Channels'] || [],
-                topEngagedAccounts: parsed.topEngagedAccounts || [],
-                lowEngagedAccounts: parsed.lowEngagedAccounts || [],
-                contacts: Object.entries(
-                    parsed.Contacts_Engaged__c || {})
-                    .filter(([key]) => key !== 'totalUniqueContacts')
-                    .map(([name, val]) => ({
-                        name: name,
-                        title: val.title,
-                        score: val.score || ''
-                    })),
-                leastEngagedContacts: Object.entries(
-                    parsed.Least_Engaged_Contacts__c || {})
-                    .map(([name, val]) => ({
-                        name: name,
-                        title: val.title,
-                        score: val.score || ''
-                    })),
-                totalUniqueContacts: parsed.Contacts_Engaged__c
-                    ?.totalUniqueContacts || '',
-                channelMix: (parsed.channelMix || [])
-                    .map(m => ({
-                        label: m.label,
-                        pct: m.pct
-                    })),
-                keyTakeaways: parsed.Key_Takeaways_and_Recommendations__c || [],
-                outreachCadence: parsed.outreachCadence || '',
-                bestChannels: parsed.Collective_Engagement_Insights__c
-                    ?.['Best Performing Channels'] || [],
-                underperformingChannels: parsed.Collective_Engagement_Insights__c
-                    ?.['Underperforming Channels'] || []
+                topEngagedAccounts:
+                    parsed.topEngagedAccounts || [],
+                lowEngagedAccounts:
+                    parsed.lowEngagedAccounts || [],
+                contacts:
+                    Object.entries(
+                        parsed.Contacts_Engaged__c || {})
+                        .filter(([key]) =>
+                            key !== 'totalUniqueContacts')
+                        .map(([name, val]) => ({
+                            name,
+                            title: val?.title || '',
+                            score: val?.score || ''
+                        })),
+                leastEngagedContacts:
+                    Object.entries(
+                        parsed.Least_Engaged_Contacts__c
+                        || {})
+                        .map(([name, val]) => ({
+                            name,
+                            title: val?.title || '',
+                            score: val?.score || ''
+                        })),
+                totalUniqueContacts:
+                    parsed.Contacts_Engaged__c
+                        ?.totalUniqueContacts || '',
+                channelMix:
+                    (parsed.channelMix || [])
+                        .map(m => ({
+                            label: m.label,
+                            pct: m.pct
+                        })),
+                keyTakeaways:
+                    parsed.Key_Takeaways_and_Recommendations__c
+                    || [],
+                outreachCadence:
+                    parsed.outreachCadence || '',
+                bestChannels:
+                    parsed.Collective_Engagement_Insights__c
+                    ?.['Best Performing Channels']
+                    || [],
+                underperformingChannels:
+                    parsed.Collective_Engagement_Insights__c
+                    ?.['Underperforming Channels']
+                    || []
             };
+        } catch (e) {
+            console.error(
+                'parseTileData failed for',
+                userKey, e);
+            return null;
+        }
+    }
+
+    // ── SAFE JSON PARSE ────────────────────────────────────────
+    safeParseJSON(raw, context = '') {
+        if (!raw) {
+            console.warn(
+                `safeParseJSON: empty (${context})`);
+            return null;
+        }
+        try {
+            if (typeof raw === 'object') return raw;
+
+            let text = String(raw).trim();
+
+            // remove carriage returns
+            text = text.replace(/\r\n/g, '\n');
+            text = text.replace(/\r/g, '\n');
+
+            // remove invisible characters
+            text = text.replace(/^\uFEFF/, '');
+            text = text.replace(/\u200B/g, '');
+            text = text.replace(/\uFEFF/g, '');
+            text = text.replace(/\u00A0/g, ' ');
+
+            // fix smart quotes
+            text = text.replace(/[\u201C\u201D]/g, '"');
+            text = text.replace(/[\u2018\u2019]/g, "'");
+
+            // strip markdown
+            text = text
+                .replace(/```json\s*/gi, '')
+                .replace(/```\s*/g, '')
+                .trim();
+
+            const firstBrace = text.indexOf('{');
+            const lastBrace = text.lastIndexOf('}');
+
+            if (firstBrace === -1) {
+                console.warn(
+                    `safeParseJSON: no { found `
+                    + `(${context})`);
+                return null;
+            }
+
+            text = lastBrace > firstBrace
+                ? text.slice(firstBrace, lastBrace + 1)
+                : text.slice(firstBrace);
+
+            // check for empty object
+            const stripped = text.replace(/\s/g, '');
+            if (stripped === '{}'
+                || stripped === '{null}') {
+                console.warn(
+                    `safeParseJSON: empty object `
+                    + `(${context})`);
+                return null;
+            }
+
+            return JSON.parse(text);
 
         } catch (e) {
             console.error(
-                'Error parsing tile data for', userKey, e);
+                `safeParseJSON failed (${context}):`,
+                e.message);
+            console.error('Raw:',
+                String(raw).slice(0, 300));
+            return this.tryRepairJSON(raw, context);
+        }
+    }
+
+    // ── REPAIR TRUNCATED JSON ──────────────────────────────────
+    tryRepairJSON(raw, context) {
+        try {
+            if (!raw || typeof raw !== 'string')
+                return null;
+
+            let text = String(raw)
+                .replace(/\r\n/g, '\n')
+                .replace(/\r/g, '\n')
+                .replace(/^\uFEFF/, '')
+                .replace(/\u200B/g, '')
+                .replace(/\u00A0/g, ' ')
+                .replace(/[\u201C\u201D]/g, '"')
+                .replace(/[\u2018\u2019]/g, "'")
+                .replace(/```json\s*/gi, '')
+                .replace(/```\s*/g, '')
+                .trim();
+
+            const firstBrace = text.indexOf('{');
+            if (firstBrace === -1) return null;
+
+            text = text.slice(firstBrace);
+
+            let open = 0;
+            let inStr = false;
+            let esc = false;
+
+            for (const ch of text) {
+                if (esc) { esc = false; continue; }
+                if (ch === '\\' && inStr) {
+                    esc = true; continue;
+                }
+                if (ch === '"') {
+                    inStr = !inStr; continue;
+                }
+                if (inStr) continue;
+                if (ch === '{') open++;
+                if (ch === '}') open--;
+            }
+
+            if (open > 0) {
+                if (inStr) text += '"';
+                text += '}'.repeat(open);
+                console.warn(
+                    `tryRepairJSON: closed ${open} `
+                    + `braces (${context})`);
+            }
+
+            const result = JSON.parse(text);
+            if (!result
+                || Object.keys(result).length === 0) {
+                return null;
+            }
+            return result;
+
+        } catch (e2) {
+            console.error(
+                `tryRepairJSON failed (${context}):`,
+                e2.message);
             return null;
         }
     }
@@ -654,20 +948,19 @@ export default class ProspectEngagementInsights extends LightningElement {
     handleTierSelection(e) {
         const val = e.target.dataset.value;
         const checked = e.target.checked;
-
         this.tierOptions = this.tierOptions.map(t => ({
             ...t,
-            selected: t.value === val ? checked : t.selected
+            selected: t.value === val
+                ? checked : t.selected
         }));
-
         if (checked) {
             this.selectedTiers = [
                 ...this.selectedTiers, val];
         } else {
             this.selectedTiers =
-                this.selectedTiers.filter(t => t !== val);
+                this.selectedTiers.filter(
+                    t => t !== val);
         }
-
         this.isDirty = true;
     }
 
@@ -691,10 +984,19 @@ export default class ProspectEngagementInsights extends LightningElement {
                     item => item !== value);
         }
         this.isDirty = true;
-        console.log('Selected', this.selectedUsers);
     }
 
     // ── GETTERS ────────────────────────────────────────────────
+    get showOverallTab() {
+        // show if total visible users > 1
+        // counts both SVP and Quad4 selected users
+        const svpCount = this.svpLabels?.length || 0;
+        const quad4Count = this.quad4Labels?.length || 0;
+        return (svpCount + quad4Count) > 1;
+    }
+    get hasOverallPortfolioSummary() {
+    return !!this.overallPortfolioSummary;
+}
     get currentLabels() {
         return this.activeTab === 'SVP'
             ? this.svpLabels : this.quad4Labels;
@@ -702,7 +1004,7 @@ export default class ProspectEngagementInsights extends LightningElement {
 
     get userOptions() {
         return this.currentLabels.map(label => ({
-            label: label,
+            label,
             value: label,
             selected: this.selectedUsers.includes(label),
             disabled: label.length === 1
@@ -711,7 +1013,6 @@ export default class ProspectEngagementInsights extends LightningElement {
 
     get filteredLabels() {
         if (!this.selectedUsers.length) return [];
-
         const labelsForTab = this.activeTab === 'SVP'
             ? this.svpLabels : this.quad4Labels;
 
@@ -722,18 +1023,27 @@ export default class ProspectEngagementInsights extends LightningElement {
                 const key = this.activeTab === 'SVP'
                     ? 'SVP_' + label
                     : 'QUAD4_' + label;
+
+                const aiSummary =
+                    this.aiSummaryMap[key] || '';
+
                 return {
-                    label: label,
-                    accountIds: this.accountIdsPerUser[key] || [],
-                    summary: this.tileData[key] || null,
-                    aiSummary: this.aiSummaryMap[key] || '',
-                    isExpanded: false,
-                    summaryClass: this.expandedTiles[label]
-                        ? 'summary-card expanded'
-                        : 'summary-card',
-                    iconName: this.expandedTiles[label]
-                        ? 'utility:minimize_window'
-                        : 'utility:expand_alt'
+                    label,
+                    userKey: key,
+                    accountIds:
+                        this.accountIdsPerUser[key] || [],
+                    summary:
+                        this.tileData[key] || null,
+                    aiSummary,
+                    hasAiSummary: aiSummary.length > 0,
+                    summaryClass:
+                        this.expandedTiles[label]
+                            ? 'summary-card expanded'
+                            : 'summary-card',
+                    iconName:
+                        this.expandedTiles[label]
+                            ? 'utility:minimize_window'
+                            : 'utility:expand_alt'
                 };
             });
     }
@@ -741,85 +1051,67 @@ export default class ProspectEngagementInsights extends LightningElement {
     get showSvpToggle() {
         return this.svpLabels?.length > 1;
     }
-
     get showQuadToggle() {
         return this.quad4Labels?.length > 1;
     }
-
     get isSvpUsersView() {
         return this.svpViewMode === 'users';
     }
-
     get isSvpOverallView() {
         return this.svpViewMode === 'overall';
     }
-
     get isQuadUsersView() {
         return this.quadViewMode === 'users';
     }
-
     get isQuadOverallView() {
         return this.quadViewMode === 'overall';
     }
-
     get svpUsersBtnClass() {
         return this.svpViewMode === 'users'
             ? 'toggle-btn toggle-btn--active'
             : 'toggle-btn';
     }
-
     get svpOverallBtnClass() {
         return this.svpViewMode === 'overall'
             ? 'toggle-btn toggle-btn--active'
             : 'toggle-btn';
     }
-
     get quadUsersBtnClass() {
         return this.quadViewMode === 'users'
             ? 'toggle-btn toggle-btn--active'
             : 'toggle-btn';
     }
-
     get quadOverallBtnClass() {
         return this.quadViewMode === 'overall'
             ? 'toggle-btn toggle-btn--active'
             : 'toggle-btn';
     }
-
     get hasOverallStatsSVP() {
         return !!this.overallStatsSVP;
     }
-
     get hasOverallStatsQuad4() {
         return !!this.overallStatsQuad4;
     }
-
     get hasOverallSummarySVP() {
         return !!this.overallSummarySVP;
     }
-
     get hasOverallSummaryQuad4() {
         return !!this.overallSummaryQuad4;
     }
-
     get showSVPTab() {
         return this.canViewSvpTab;
     }
-
     get showQuad4Tab() {
         return this.canViewQuad4Tab;
     }
-
     get hasError() {
         return !!this.errorMessage;
     }
-
     get isGenerateDisabled() {
         return this.isGenerating
             || this.isLoading
             || !this.isDirty;
     }
-
     get selectedTiersLabel() {
         if (!this.selectedTiers.length)
             return 'Choose tier';
@@ -827,18 +1119,15 @@ export default class ProspectEngagementInsights extends LightningElement {
             return this.tierOptions
                 .filter(t =>
                     this.selectedTiers.includes(t.value))
-                .map(t => t.label)
-                .join(', ');
+                .map(t => t.label).join(', ');
         }
         return `${this.selectedTiers[0]}, `
             + `${this.selectedTiers[1]} `
             + `+${this.selectedTiers.length - 2}`;
     }
-
     get selectedUsersLabel() {
         const users = this.selectedUsers.length
-            ? this.selectedUsers
-            : this.currentLabels;
+            ? this.selectedUsers : this.currentLabels;
         if (!users.length) return 'Select Users';
         if (users.length <= 2) return users.join(', ');
         return `${users[0]}, ${users[1]} `
@@ -847,211 +1136,315 @@ export default class ProspectEngagementInsights extends LightningElement {
 
     // ── NARRATIVE BUILDER ──────────────────────────────────────
     buildNarrativeSummary(narrative) {
-        if (!narrative) return '';
+        if (!narrative
+            || typeof narrative !== 'object') {
+            return '';
+        }
 
         const sections = [];
 
-        if (narrative.Cultivated_vs_New_Accounts__c) {
-            const n = narrative.Cultivated_vs_New_Accounts__c;
-            sections.push(this.section(
-                'Cultivated vs. New Accounts', [
-                n.recommendation,
-                n.supportingDataPoint,
-                n.explanation,
-                n.actionStep
-                    ? `Next step: ${n.actionStep}` : ''
-            ]));
-        }
+        const add = (key, title, linesFn) => {
+            try {
+                if (narrative[key]) {
+                    const lines = linesFn(narrative[key])
+                        .filter(Boolean);
+                    if (lines.length) {
+                        sections.push(
+                            this.section(title, lines));
+                    }
+                }
+            } catch (e) {
+                console.error(
+                    `Section ${key} failed:`, e.message);
+            }
+        };
 
-        if (narrative.Outreach_Pattern_That_Works__c) {
-            const n = narrative.Outreach_Pattern_That_Works__c;
-            sections.push(this.section(
-                'Outreach Pattern That Works', [
-                n.stepOne,
-                n.stepTwo,
-                n.stepThree,
-                n.trigger
+        add('Cultivated_vs_New_Accounts__c',
+            'Cultivated vs. New Accounts', n => [
+                n?.recommendation,
+                n?.supportingDataPoint,
+                n?.explanation,
+                n?.actionStep
+                    ? `Next step: ${n.actionStep}` : ''
+            ]);
+
+        add('Outreach_Pattern_That_Works__c',
+            'Outreach Pattern That Works', n => [
+                n?.stepOne,
+                n?.stepTwo,
+                n?.stepThree,
+                n?.trigger
                     ? `Trigger: ${n.trigger}` : '',
-                n.explanation,
-                n.actionStep
+                n?.explanation,
+                n?.actionStep
                     ? `Next step: ${n.actionStep}` : ''
-            ]));
-        }
+            ]);
 
-        if (narrative.Confirmed_Active_vs_Quiet_Engagement__c) {
+        try {
             const n =
-                narrative.Confirmed_Active_vs_Quiet_Engagement__c;
-            const lines = [];
-            if (n.confirmedActive?.length) {
-                lines.push('Confirmed Active:');
-                n.confirmedActive.forEach(a =>
-                    lines.push(`${a.name} - ${a.evidence}`)
-                );
+                narrative
+                    .Confirmed_Active_vs_Quiet_Engagement__c;
+            if (n) {
+                const lines = [];
+                if (n?.confirmedActive?.length) {
+                    lines.push('Confirmed Active:');
+                    n.confirmedActive.forEach(a => {
+                        if (a?.name && a?.evidence)
+                            lines.push(
+                                `${a.name} — ${a.evidence}`);
+                    });
+                }
+                if (n?.quietPassiveOnly?.length) {
+                    lines.push('Quiet / Passive Only:');
+                    n.quietPassiveOnly.forEach(a => {
+                        if (a?.name)
+                            lines.push(
+                                `${a.name} — `
+                                + `${a.evidence || ''}`);
+                    });
+                }
+                if (n?.looksEngagedButUnconfirmed?.length) {
+                    lines.push(
+                        'Looks Engaged but Unconfirmed:');
+                    n.looksEngagedButUnconfirmed.forEach(
+                        a => {
+                            if (a?.name)
+                                lines.push(
+                                    `${a.name} — `
+                                    + `${a.reason || ''}`);
+                        });
+                }
+                if (n?.explanation)
+                    lines.push(n.explanation);
+                if (lines.length) sections.push(
+                    this.section(
+                        'Confirmed Active vs '
+                        + 'Quiet Engagement', lines));
             }
-            if (n.quietPassiveOnly?.length) {
-                lines.push('Quiet / Passive Only:');
-                n.quietPassiveOnly.forEach(a =>
-                    lines.push(`${a.name} - ${a.reason || ''}`)
-                );
+        } catch (e) {
+            console.error(
+                'Confirmed_Active section failed:',
+                e.message);
+        }
+
+        add('Engagement_Commonality_Across_Accounts__c',
+            'Common Engagement Patterns', n => [
+                n?.risingEngagementCommonPattern
+                    ? `Rising: `
+                    + n.risingEngagementCommonPattern
+                    : '',
+                n?.risingEngagementAccounts?.length
+                    ? `Rising Accounts: `
+                    + n.risingEngagementAccounts
+                        .join(', ')
+                    : '',
+                n?.fallingEngagementCommonPattern
+                    ? `Falling: `
+                    + n.fallingEngagementCommonPattern
+                    : '',
+                n?.fallingEngagementAccounts?.length
+                    ? `Falling Accounts: `
+                    + n.fallingEngagementAccounts
+                        .join(', ')
+                    : '',
+                n?.explanation
+            ]);
+
+        try {
+            const n =
+                narrative.Accounts_Falling_Behind_Peers__c;
+            if (n?.accounts?.length) {
+                const list = [];
+                n.accounts.forEach(a => {
+                    if (!a) return;
+                    if (a.name) list.push(
+                        `${a.name} `
+                        + `(${a.industry || ''}, `
+                        + `${a.tier || ''})`);
+                    if (a.metric) list.push(a.metric);
+                    if (a.likelyReason)
+                        list.push(a.likelyReason);
+                    if (a.actionStep)
+                        list.push(
+                            `Action: ${a.actionStep}`);
+                });
+                if (n.explanation)
+                    list.push(n.explanation);
+                if (list.length) sections.push(
+                    this.section(
+                        'Accounts Falling Behind Peers',
+                        list));
             }
-            if (n.looksEngagedButUnconfirmed?.length) {
-                lines.push('Looks Engaged but Unconfirmed:');
-                n.looksEngagedButUnconfirmed.forEach(a =>
-                    lines.push(`${a.name} - ${a.reason}`)
-                );
+        } catch (e) {
+            console.error(
+                'Accounts_Falling_Behind failed:',
+                e.message);
+        }
+
+        add('Where_Effort_Is_Wasted__c',
+            'Where Effort Is Wasted', n => [
+                n?.recommendation,
+                n?.supportingDataPoint,
+                n?.explanation,
+                n?.actionStep
+            ]);
+
+        try {
+            const n =
+                narrative.Over_Contacted_Accounts__c;
+            if (n) {
+                const list = [];
+                n.accounts?.forEach(a => {
+                    if (!a) return;
+                    if (a.name) list.push(
+                        `${a.name}: ${a.reason || ''}`);
+                    if (a.actionStep)
+                        list.push(
+                            `Action: ${a.actionStep}`);
+                });
+                if (n.explanation)
+                    list.push(n.explanation);
+                if (list.length) sections.push(
+                    this.section(
+                        'Over Contacted Accounts', list));
             }
-            lines.push(n.explanation);
-            sections.push(this.section(
-                'Confirmed Active vs Quiet Engagement',
-                lines));
+        } catch (e) {
+            console.error(
+                'Over_Contacted failed:', e.message);
         }
 
-        if (narrative.Engagement_Commonality_Across_Accounts__c) {
+        try {
             const n =
-                narrative.Engagement_Commonality_Across_Accounts__c;
-            sections.push(this.section(
-                'Common Engagement Patterns', [
-                `Rising Pattern: ${n.risingEngagementCommonPattern}`,
-                `Rising Accounts: ${(n.risingEngagementAccounts || []).join(', ')}`,
-                `Falling Pattern: ${n.fallingEngagementCommonPattern}`,
-                `Falling Accounts: ${(n.fallingEngagementAccounts || []).join(', ')}`,
-                n.explanation
-            ]));
-        }
-
-        if (narrative.Accounts_Falling_Behind_Peers__c
-            ?.accounts?.length) {
-            const list = [];
-            narrative.Accounts_Falling_Behind_Peers__c
-                .accounts.forEach(a => {
-                    list.push(
-                        `${a.name} (${a.industry}, ${a.tier})`);
-                    list.push(a.metric);
-                    list.push(a.likelyReason);
-                    list.push(`Action: ${a.actionStep}`);
+                narrative.Negative_or_Zero_Engagement__c;
+            if (n) {
+                const list = [];
+                n.accounts?.forEach(a => {
+                    if (!a) return;
+                    if (a.name) list.push(
+                        `${a.name} — ${a.metric || ''}`);
+                    if (a.reengagementAction)
+                        list.push(
+                            `Re-engage: `
+                            + a.reengagementAction);
                 });
-            list.push(
-                narrative.Accounts_Falling_Behind_Peers__c
-                    .explanation);
-            sections.push(this.section(
-                'Accounts Falling Behind Peers', list));
-        }
-
-        if (narrative.Where_Effort_Is_Wasted__c) {
-            const n = narrative.Where_Effort_Is_Wasted__c;
-            sections.push(this.section(
-                'Where Effort Is Wasted', [
-                n.recommendation,
-                n.supportingDataPoint,
-                n.explanation,
-                n.actionStep
-            ]));
-        }
-
-        if (narrative.Over_Contacted_Accounts__c) {
-            const list = [];
-            narrative.Over_Contacted_Accounts__c
-                .accounts?.forEach(a => {
-                    list.push(`${a.name}: ${a.reason}`);
-                    list.push(`Action: ${a.actionStep}`);
+                n.contacts?.forEach(c => {
+                    if (!c) return;
+                    if (c.name) list.push(
+                        `${c.name} (${c.title || ''})`);
+                    if (c.score)
+                        list.push(`Score: ${c.score}`);
+                    if (c.reengagementAction)
+                        list.push(
+                            `Re-engage: `
+                            + c.reengagementAction);
                 });
-            list.push(
-                narrative.Over_Contacted_Accounts__c
-                    .explanation);
-            sections.push(this.section(
-                'Over Contacted Accounts', list));
+                if (list.length) sections.push(
+                    this.section(
+                        'Negative / Zero Engagement',
+                        list));
+            }
+        } catch (e) {
+            console.error(
+                'Negative_Zero failed:', e.message);
         }
 
-        if (narrative.Negative_or_Zero_Engagement__c) {
-            const list = [];
-            narrative.Negative_or_Zero_Engagement__c
-                .accounts?.forEach(a => {
-                    list.push(`${a.name} - ${a.metric}`);
-                    list.push(
-                        `Re-engagement: ${a.reengagementAction}`);
-                });
-            narrative.Negative_or_Zero_Engagement__c
-                .contacts?.forEach(c => {
-                    list.push(`${c.name} (${c.title})`);
-                    list.push(`Score: ${c.score}`);
-                    list.push(
-                        `Re-engagement: ${c.reengagementAction}`);
-                });
-            sections.push(this.section(
-                'Negative / Zero Engagement', list));
-        }
-
-        if (narrative.Priority_Accounts_to_Act_On_Now__c
-            ?.accounts?.length) {
-            const list = [];
-            narrative.Priority_Accounts_to_Act_On_Now__c
-                .accounts.forEach(a => {
-                    list.push(`${a.name}`);
-                    list.push(a.metric);
-                    list.push(a.whyNow);
-                });
-            sections.push(this.section(
-                'Priority Accounts To Act On Now', list));
-        }
-
-        if (narrative.Other_Ways_to_Improve_Outreach__c) {
+        try {
             const n =
-                narrative.Other_Ways_to_Improve_Outreach__c;
-            sections.push(this.section(
-                'Other Ways To Improve Outreach', [
-                n.recommendation,
-                n.explanation,
-                n.actionStep
-            ]));
-        }
-
-        if (narrative.Best_Near_Term_Opportunities__c
-            ?.accounts?.length) {
-            const list = [];
-            narrative.Best_Near_Term_Opportunities__c
-                .accounts.forEach(a => {
-                    list.push(`${a.name}`);
-                    list.push(a.whyNow);
+                narrative
+                    .Priority_Accounts_to_Act_On_Now__c;
+            if (n?.accounts?.length) {
+                const list = [];
+                n.accounts.forEach(a => {
+                    if (!a) return;
+                    if (a.name) list.push(a.name);
+                    if (a.metric) list.push(a.metric);
+                    if (a.whyNow) list.push(a.whyNow);
                 });
-            sections.push(this.section(
-                'Best Near-Term Opportunities', list));
+                if (list.length) sections.push(
+                    this.section(
+                        'Priority Accounts To Act On Now',
+                        list));
+            }
+        } catch (e) {
+            console.error(
+                'Priority_Accounts failed:', e.message);
         }
 
-        if (narrative.One_Behavioral_Change_That_Matters_Most__c) {
+        add('Other_Ways_to_Improve_Outreach__c',
+            'Other Ways To Improve Outreach', n => [
+                n?.recommendation,
+                n?.explanation,
+                n?.actionStep
+            ]);
+
+        try {
             const n =
-                narrative.One_Behavioral_Change_That_Matters_Most__c;
-            sections.push(this.section(
-                'One Behavioral Change That Matters Most', [
-                n.recommendation,
-                n.supportingDataPoint,
-                n.explanation,
-                n.actionStep
-            ]));
+                narrative.Best_Near_Term_Opportunities__c;
+            if (n?.accounts?.length) {
+                const list = [];
+                n.accounts.forEach(a => {
+                    if (!a) return;
+                    if (a.name) list.push(a.name);
+                    if (a.whyNow) list.push(a.whyNow);
+                });
+                if (list.length) sections.push(
+                    this.section(
+                        'Best Near-Term Opportunities',
+                        list));
+            }
+        } catch (e) {
+            console.error(
+                'Best_Near_Term failed:', e.message);
         }
 
-        if (narrative.Direct_Marketing_Lead_Stage_Movement_Analysis) {
+        add('One_Behavioral_Change_That_Matters_Most__c',
+            'One Behavioral Change That Matters Most',
+            n => [
+                n?.recommendation,
+                n?.supportingDataPoint,
+                n?.explanation,
+                n?.actionStep
+            ]);
+
+        try {
             const n =
-                narrative.Direct_Marketing_Lead_Stage_Movement_Analysis;
-            sections.push(this.section(
-                'Direct Marketing Lead Stage Movement Analysis',
-                [n.conclusion, n.detailedExplanation]
-            ));
+                narrative
+                    .Direct_Marketing_Lead_Stage_Movement_Analysis;
+            if (n) {
+                const lines = [];
+                if (n?.conclusion)
+                    lines.push(n.conclusion);
+                if (n?.detailedExplanation) {
+                    n.detailedExplanation
+                        .split(/\(\d+\)/)
+                        .map(s => s.trim())
+                        .filter(Boolean)
+                        .forEach(s => lines.push(s));
+                }
+                if (lines.length) sections.push(
+                    this.section(
+                        'Direct Marketing Stage '
+                        + 'Movement Analysis', lines));
+            }
+        } catch (e) {
+            console.error(
+                'Stage_Movement failed:', e.message);
         }
 
         return sections.join('<br><br>');
     }
 
+    // ── SECTION HELPER ─────────────────────────────────────────
     section(title, lines) {
         const cleaned = lines
             .filter(Boolean)
-            .map(line => this.stripMarkdown(line))
-            .map(line =>
-                this.removeLeadingTitleEcho(line, title))
-            .map(line =>
-                this.stripLeadingPunctuation(line))
+            .map(l => this.stripMarkdown(l))
+            .map(l =>
+                this.removeLeadingTitleEcho(l, title))
+            .map(l =>
+                this.stripLeadingPunctuation(l))
             .filter(Boolean)
-            .map(line => `&#8226; ${line}`);
-
+            .map(l => `&#8226; ${l}`);
         return `<strong>${title}</strong>`
             + `<br>${cleaned.join('<br>')}`;
     }
@@ -1072,67 +1465,54 @@ export default class ProspectEngagementInsights extends LightningElement {
         if (!text) return text;
         const escaped = title.replace(
             /[.*+?^${}()|[\]\\]/g, '\\$&');
-        const pattern = new RegExp(
-            `^${escaped}\\s*`, 'i');
-        return text.replace(pattern, '').trim();
+        return text.replace(
+            new RegExp(`^${escaped}\\s*`, 'i'), '')
+            .trim();
     }
 
     // ── OVERALL SUMMARY PARSER ─────────────────────────────────
     parseOverallSummary(rawResult) {
-        try {
-            let parsed;
-            if (typeof rawResult === 'string') {
-                const clean = rawResult
-                    .replace(/```json/g, '')
-                    .replace(/```/g, '')
-                    .trim();
-                parsed = JSON.parse(clean);
-            } else {
-                parsed = rawResult;
-            }
-            return this.buildOverallSummaryHtml(parsed);
-        } catch (e) {
-            console.error(
-                'Error parsing overall summary:', e);
-            return '';
+        const parsed = this.safeParseJSON(
+            rawResult, 'parseOverallSummary');
+        if (!parsed) {
+            return typeof rawResult === 'string'
+                ? rawResult : '';
         }
+        return this.buildOverallSummaryHtml(parsed);
     }
 
     buildOverallSummaryHtml(data) {
         if (!data) return '';
-
         const titles = {
             Portfolio_Wide_Engagement_Patterns__c:
                 'Portfolio-Wide Engagement Patterns',
             Month_Over_Month_Shifts__c:
                 'Month-Over-Month Shifts',
             Industries_Tiers_Engaging_Well__c:
-                'Industries and Tiers Engaging Well by Channel',
+                'Industries and Tiers Engaging Well',
             Industries_Not_Engaging_Well__c:
-                'Industries Not Engaging Well by Channel',
+                'Industries Not Engaging Well',
             High_Effectiveness_Lower_Effort__c:
                 'High Effectiveness with Lower Effort',
             Volume_vs_Diminishing_Returns__c:
                 'Volume vs. Diminishing Returns',
             Optimal_Cadence_Stage_Movement__c:
-                'Optimal Cadence for Stage Movement'
+                'Optimal Cadence for Stage Movement',
+            Direct_Marketing_Stage_Movement_Analysis:
+                'Direct Marketing Stage Movement Analysis',
         };
-
         const sections = [];
         for (const key of Object.keys(titles)) {
             const s = data[key];
             if (!s) continue;
-
             const points = (s.insufficientData
                 ? [s.insight || 'Insufficient data.']
                 : (s.points || [])
             ).filter(Boolean)
                 .map(p => this.stripMarkdown(p));
-
-            sections.push(
+            if (points.length) sections.push(
                 this.section(titles[key], points));
         }
-
         return sections.join('<br><br>');
     }
 }
