@@ -91,7 +91,7 @@
                     </div>
                     <div class="filter-group">
                         <span class="filter-label">
-                            <i class="ti ti-target" aria-hidden="true"></i> SVP/Quad4 Team
+                            <i class="ti ti-target" aria-hidden="true"></i> Quad4/SVP Team
                         </span>
                         <div class="user-dropdown-container" onmouseleave={handleMouseLeave}>
 
@@ -124,7 +124,7 @@
                     <div class="filter-btn-wrap slds-p-left_large">
                         <button class="generate-summary-btn" onclick={handleGenerateSummary} disabled={isGenerating}>
                             <lightning-icon icon-name="utility:agent_astro" size="small" alternative-text="Agent Astro"
-                                disabled={isLoading}>
+                                disabled={isGenerateDisabled}>
                             </lightning-icon>
                             <span class="button-text">Apply Filters</span>
                         </button>
@@ -138,117 +138,106 @@
                     <template if:true={showQuad4Tab}>
 
                         <lightning-tab label="Quad4" value="Quad4" onactive={handleTabChange}>
-                            <template if:true={showQuadToggle}>
-                                <div class="view-toggle">
-                                    <button class={quadUsersBtnClass} data-view="users" onclick={handleQuadViewToggle}>
-                                        Q4 Team
-                                    </button>
-                                    <button class={quadOverallBtnClass} data-view="overall"
-                                        onclick={handleQuadViewToggle}>
-                                        Overall Summary
-                                    </button>
-                                </div>
-                            </template>
+
                             <!-- <template if:true={noTiles}>
                                 <p class="no-tiles">No tiles available.</p>
                             </template> -->
-                            <template if:true={isQuadUsersView}>
 
-                                <div class="tiles-grid">
-                                    <template for:each={filteredLabels} for:item="tile">
-                                        <div key={tile.label} class="tile-card">
 
-                                            <div class="tile-header">
-                                                <span class="tile-name">
-                                                    {tile.label}
-                                                </span>
-                                            </div>
+                            <div class="tiles-grid">
+                                <template for:each={filteredLabels} for:item="tile">
+                                    <div key={tile.label} class="tile-card">
 
-                                            <template if:true={tile.summary}>
-                                                <div class="tile-body">
-                                                    <div class="split-top">
-                                                        <div class="metric-chip">
-                                                            <span
-                                                                class="metric-val">{tile.summary.totalEngagements}</span>
-                                                            <span class="metric-lbl">Total Engagements/Outreach</span>
-                                                        </div>
-                                                        <div class="metric-chip">
-                                                            <span
-                                                                class="metric-val">{tile.summary.weightedEngagementScore}</span>
-                                                            <span class="metric-lbl">Engagement Effectiveness
-                                                                Score</span>
-                                                        </div>
+                                        <div class="tile-header">
+                                            <span class="tile-name">
+                                                {tile.label}
+                                            </span>
+                                        </div>
+
+                                        <template if:true={tile.summary}>
+                                            <div class="tile-body">
+                                                <div class="split-top">
+                                                    <div class="metric-chip">
+                                                        <span class="metric-val">{tile.summary.totalEngagements}</span>
+                                                        <span class="metric-lbl">Total Engagements/Outreach</span>
                                                     </div>
-                                                    <!-- Top Engaged Accounts -->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--green">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:arrowup"
-                                                                    size="x-small" class="icon-green"></lightning-icon>
-                                                            </span> Top Engaged Accounts
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--green">
-
-                                                                <template for:each={tile.summary.topEngagedAccounts}
-                                                                    for:item="acc">
-                                                                    <li key={acc.name}>{acc.name} — {acc.industry} ·
-                                                                        {acc.stage}
-                                                                    </li>
-                                                                </template>
-                                                            </ul>
-                                                        </div>
+                                                    <div class="metric-chip">
+                                                        <span
+                                                            class="metric-val">{tile.summary.weightedEngagementScore}</span>
+                                                        <span class="metric-lbl">Engagement Effectiveness
+                                                            Score</span>
                                                     </div>
-                                                    <!-- Low Engaged Accounts -->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--red">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:arrowdown"
-                                                                    size="x-small" class="icon-red"></lightning-icon>
-                                                            </span> Low Engaged Accounts
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--red">
-                                                                <template for:each={tile.summary.lowEngagedAccounts}
-                                                                    for:item="acc">
-                                                                    <li key={acc.name}>{acc.name} — {acc.industry} ·
-                                                                        {acc.reason}
-                                                                    </li>
-                                                                </template>
-                                                                <!-- <template for:each={tile.summary.lowEngagedAccounts} for:item="item">
-                            <li key={item}>{item}</li>
-                        </template> -->
-                                                                <!-- <li>Jahn doe — Retail · Prospecting</li>
-                                                    <li>Mark smith doe — Finance · Prospecting</li>
-                                                    <li>Lisa Ray doe — Insurance · Prospecting</li> -->
-                                                            </ul>
-                                                        </div>
+                                                </div>
+                                                <!-- Top Engaged Accounts -->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--green">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:arrowup" size="x-small"
+                                                                class="icon-green"></lightning-icon>
+                                                        </span> Top Engaged Accounts
                                                     </div>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--green">
 
-
-                                                    <!--Most Engaged Contacts-->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--blue">
-
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:user" size="x-small"
-                                                                    class="icon-blue"></lightning-icon>
-                                                            </span>
-
-
-                                                            Most Engaged Contacts
-                                                        </div>
-                                                        <ul class="bullet-list bullet-list--blue">
-                                                            <template for:each={tile.summary.contacts} for:item="c">
-                                                                <li key={c.name}>
-                                                                    <template if:true={c.name}>{c.name} -</template>
-                                                                    <template if:true={c.title}> {c.title}</template>
-                                                                    <template if:true={c.Score}> {c.score}</template>
+                                                            <template for:each={tile.summary.topEngagedAccounts}
+                                                                for:item="acc">
+                                                                <li key={acc.name}>{acc.name} — {acc.industry} ·
+                                                                    {acc.stage}
                                                                 </li>
                                                             </template>
-
                                                         </ul>
-                                                        <!-- <ul class="contact-list">
+                                                    </div>
+                                                </div>
+                                                <!-- Low Engaged Accounts -->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--red">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:arrowdown" size="x-small"
+                                                                class="icon-red"></lightning-icon>
+                                                        </span> Low Engaged Accounts
+                                                    </div>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--red">
+                                                            <template for:each={tile.summary.lowEngagedAccounts}
+                                                                for:item="acc">
+                                                                <li key={acc.name}>{acc.name} — {acc.industry} ·
+                                                                    {acc.reason}
+                                                                </li>
+                                                            </template>
+                                                            <!-- <template for:each={tile.summary.lowEngagedAccounts} for:item="item">
+                            <li key={item}>{item}</li>
+                        </template> -->
+                                                            <!-- <li>Jahn doe — Retail · Prospecting</li>
+                                                    <li>Mark smith doe — Finance · Prospecting</li>
+                                                    <li>Lisa Ray doe — Insurance · Prospecting</li> -->
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+
+                                                <!--Most Engaged Contacts-->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--blue">
+
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:user" size="x-small"
+                                                                class="icon-blue"></lightning-icon>
+                                                        </span>
+
+
+                                                        Most Engaged Contacts
+                                                    </div>
+                                                    <ul class="bullet-list bullet-list--blue">
+                                                        <template for:each={tile.summary.contacts} for:item="c">
+                                                            <li key={c.name}>
+                                                                <template if:true={c.name}>{c.name} -</template>
+                                                                <template if:true={c.title}> {c.title}</template>
+                                                                <template if:true={c.Score}> {c.score}</template>
+                                                            </li>
+                                                        </template>
+
+                                                    </ul>
+                                                    <!-- <ul class="contact-list">
                                                             <template for:each={tile.summary.contacts} for:item="c">
                                                                 <li key={c.name} class="contact-row">
                                                                     <div class="contact-info">
@@ -260,123 +249,120 @@
                                                                 </li>
                                                             </template>
                                                         </ul> -->
+                                                </div>
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--blue">
+
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:user" size="x-small"
+                                                                class="icon-blue"></lightning-icon>
+                                                        </span>
+
+
+                                                        Least Engaged Contacts
                                                     </div>
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--blue">
-
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:user" size="x-small"
-                                                                    class="icon-blue"></lightning-icon>
-                                                            </span>
-
-
-                                                            Least Engaged Contacts
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--blue">
-                                                                <template for:each={tile.summary.contacts} for:item="c">
-                                                                    <li key={c.name}>
-                                                                        <template if:true={c.name}>{c.name} -</template>
-                                                                        <template if:true={c.title}>
-                                                                            {c.title}</template>
-                                                                        <template if:true={c.Score}>
-                                                                            {c.score}</template>
-                                                                    </li>
-                                                                </template>
-                                                                <!-- <li>Jahn doe - Vp finance</li>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--blue">
+                                                            <template for:each={tile.summary.contacts} for:item="c">
+                                                                <li key={c.name}>
+                                                                    <template if:true={c.name}>{c.name} -</template>
+                                                                    <template if:true={c.title}>
+                                                                        {c.title}</template>
+                                                                    <template if:true={c.Score}>
+                                                                        {c.score}</template>
+                                                                </li>
+                                                            </template>
+                                                            <!-- <li>Jahn doe - Vp finance</li>
                                                     <li>Mark smith doe - CFO</li>
                                                     <li>Lisa Ray doe</li> -->
-                                                                <!-- <template for:each={tile.summary.contacts} for:item="item">
+                                                            <!-- <template for:each={tile.summary.contacts} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                            </ul>
-                                                        </div>
+                                                        </ul>
                                                     </div>
+                                                </div>
 
-                                                    <!--Channel Mix-->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--blue">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:justify_text"
-                                                                    size="x-small" class="icon-blue"></lightning-icon>
-                                                            </span>
-                                                            Channel Mix
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <div class="channel-mix-table">
-                                                                <!-- <div class="mix-table-head">
+                                                <!--Channel Mix-->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--blue">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:justify_text"
+                                                                size="x-small" class="icon-blue"></lightning-icon>
+                                                        </span>
+                                                        Channel Mix
+                                                    </div>
+                                                    <div class="section-content">
+                                                        <div class="channel-mix-table">
+                                                            <!-- <div class="mix-table-head">
                                                                     <span>Channel</span>
                                                                   <span>Share</span> 
                                                                 </div> -->
-                                                                <template for:each={tile.summary.channelMix}
-                                                                    for:item="mix">
-                                                                    <div key={mix.label} class="mix-table-row">
-                                                                        <span class="mix-table-label">{mix.label}</span>
-                                                                        <span class="mix-table-pct">{mix.pct}%</span>
-                                                                    </div>
-                                                                </template>
-                                                            </div>
+                                                            <template for:each={tile.summary.channelMix} for:item="mix">
+                                                                <div key={mix.label} class="mix-table-row">
+                                                                    <span class="mix-table-label">{mix.label}</span>
+                                                                    <span class="mix-table-pct">{mix.pct}%</span>
+                                                                </div>
+                                                            </template>
                                                         </div>
                                                     </div>
-                                                    <!-- Top Channels -->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--green">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:announcement"
-                                                                    size="x-small" class="icon-green"></lightning-icon>
+                                                </div>
+                                                <!-- Top Channels -->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--green">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:announcement"
+                                                                size="x-small" class="icon-green"></lightning-icon>
 
-                                                            </span> Top Channels
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--green">
-                                                                <template for:each={tile.summary.topChannels}
-                                                                    for:item="ch">
-                                                                    <li key={ch.channel}>{ch.channel} — {ch.volume} ·
-                                                                        {ch.responseRate}</li>
-                                                                </template>
-                                                                <!-- <li> Mass Email: 100% completion rate. Strong potential for targeted
+                                                        </span> Top Channels
+                                                    </div>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--green">
+                                                            <template for:each={tile.summary.topChannels} for:item="ch">
+                                                                <li key={ch.channel}>{ch.channel} — {ch.volume} ·
+                                                                    {ch.responseRate}</li>
+                                                            </template>
+                                                            <!-- <li> Mass Email: 100% completion rate. Strong potential for targeted
                                                         outreach.</li>
                                                     <li> Newsletters: 3% open and click-through rates. Most consistent
                                                         engagement.</li>
                                                     <li>Newsletters — 3% open rate</li> -->
 
-                                                                <!-- <template for:each={tile.summary.topChannels} for:item="item">
+                                                            <!-- <template for:each={tile.summary.topChannels} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                            </ul>
-                                                        </div>
+                                                        </ul>
                                                     </div>
+                                                </div>
 
-                                                    <!-- Low Channels -->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--red">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:warning"
-                                                                    size="x-small" class="icon-red"></lightning-icon>
+                                                <!-- Low Channels -->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--red">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:warning" size="x-small"
+                                                                class="icon-red"></lightning-icon>
 
-                                                            </span> Low Channels
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--red">
-                                                                <!-- <li>Linkeidn — 0.4% engagement</li>
+                                                        </span> Low Channels
+                                                    </div>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--red">
+                                                            <!-- <li>Linkeidn — 0.4% engagement</li>
                                                     <li>webinar — 6.25% attendance</li>
                                                     <li>Newsletters — 0% response</li> -->
-                                                                <template for:each={tile.summary.lowChannels}
-                                                                    for:item="ch">
-                                                                    <li key={ch.channel}>{ch.channel} — {ch.volume} ·
-                                                                        {ch.responseRate}</li>
-                                                                </template>
-                                                                <!-- <li>LinkedIn</li>
+                                                            <template for:each={tile.summary.lowChannels} for:item="ch">
+                                                                <li key={ch.channel}>{ch.channel} — {ch.volume} ·
+                                                                    {ch.responseRate}</li>
+                                                            </template>
+                                                            <!-- <li>LinkedIn</li>
                                                 <li>Mails</li> -->
-                                                                <!-- <template for:each={tile.summary.lowChannels} for:item="item">
+                                                            <!-- <template for:each={tile.summary.lowChannels} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                            </ul>
-                                                        </div>
+                                                        </ul>
                                                     </div>
+                                                </div>
 
-                                                    <!--Channel Mix-->
-                                                    <!--<div class="channel-mix">
+                                                <!--Channel Mix-->
+                                                <!--<div class="channel-mix">
         <template for:each={tile.summary.channelMix} for:item="mix">
             <div key={mix.label} class="mix-row">
                 <span class="mix-label">{mix.label}</span>
@@ -388,211 +374,36 @@
         </template>
     </div>-->
 
-                                                    <!--channel div tilesection close-->
-                                                    <div class="tile-section" onclick={handleSummaryClick}
-                                                        data-summary={tile.aiSummary}>
-                                                        <div class={tile.summaryClass}>
-                                                            <div class="summary-card-head">
-                                                                <!-- <lightning-icon icon-name="utility:einstein" size="x-small"
+                                                <!--channel div tilesection close-->
+                                                <div class="tile-section" onclick={handleSummaryClick}
+                                                    data-summary={tile.aiSummary}>
+                                                    <div class={tile.summaryClass}>
+                                                        <div class="summary-card-head">
+                                                            <!-- <lightning-icon icon-name="utility:einstein" size="x-small"
                                                             class="icon-gray"></lightning-icon> -->
-                                                                <span class="summary-spark">✦</span>
+                                                            <span class="summary-spark">✦</span>
 
-                                                                <span>AI Summary</span>
+                                                            <span>AI Summary</span>
 
-                                                                <lightning-icon icon-name={tile.iconName} size="x-small"
-                                                                    class="summary-expand-icon" data-label={tile.label}
-                                                                    onclick={handleSummaryClick}>
-                                                                </lightning-icon>
-                                                            </div>
+                                                            <lightning-icon icon-name={tile.iconName} size="x-small"
+                                                                class="summary-expand-icon" data-label={tile.label}
+                                                                onclick={handleSummaryClick}>
+                                                            </lightning-icon>
+                                                        </div>
 
 
-                                                            <div class="summary-card-body">
-                                                                <lightning-formatted-rich-text value={tile.aiSummary}>
-                                                                </lightning-formatted-rich-text>
+                                                        <div class="summary-card-body">
+                                                            <lightning-formatted-rich-text value={tile.aiSummary}>
+                                                            </lightning-formatted-rich-text>
 
-                                                            </div>
                                                         </div>
                                                     </div>
-
-                                                    <!-- <div>{tile.accountIds}</div> -->
                                                 </div>
-                                            </template>
 
-                                        </div>
-                                    </template>
-                                    <template if:true={showSummaryModal}>
-                                        <section class="slds-modal slds-fade-in-open summary-popup">
-                                            <div class=" summary-popup-container">
-                                                <div class="summary-popup-header">
-                                                    <span class="summary-spark">✦</span>
-                                                    <span>AI Summary</span>
-                                                    <button class="summary-popup-close"
-                                                        onclick={closeSummaryModal}>✕</button>
-                                                </div>
-                                                <div class="summary-popup-body">
-                                                    <lightning-formatted-rich-text value={selectedSummary}>
-                                                    </lightning-formatted-rich-text>
-
-                                                </div>
-                                                <!-- <div class="summary-popup-footer">
-                                                    <button class="summary-popup-close-btn"
-                                                        onclick={closeSummaryModal}>Close</button>
-                                                </div> -->
+                                                <!-- <div>{tile.accountIds}</div> -->
                                             </div>
-                                        </section>
-                                        <div class="slds-backdrop slds-backdrop_open" onclick={closeSummaryModal}></div>
-                                    </template>
+                                        </template>
 
-                                    <template if:false={filteredLabels.length}>
-                                        <p>No users selected.</p>
-                                    </template>
-                                </div>
-                            </template>
-                            <template if:true={isQuadOverallView}>
-                                <template if:true={hasOverallStatsQuad4}>
-                                    <div class="tile-card" style="margin: 16px;">
-
-                                        <div class="tile-header">
-                                            <span class="tile-name">✦ Quad4 Overall Summary</span>
-
-                                        </div>
-
-                                        <div class="tile-body">
-
-                                            <!-- Metric Chips -->
-                                            <div class="split-top">
-                                                <div class="metric-chip">
-                                                    <span class="metric-val">{overallStatsQuad4.totalEngagements}</span>
-                                                    <span class="metric-lbl">Total Engagements</span>
-                                                </div>
-                                                <div class="metric-chip">
-                                                    <span
-                                                        class="metric-val">{overallStatsQuad4.weightedEngagementScore}</span>
-                                                    <span class="metric-lbl">Weighted Engagement Score</span>
-                                                </div>
-                                                <div class="metric-chip">
-                                                    <span class="metric-val">{overallStatsQuad4.engagementRate}</span>
-                                                    <span class="metric-lbl">Effectiveness Rate</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- Top Engaged Accounts -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--green">
-                                                    <lightning-icon icon-name="utility:arrowup" size="x-small"
-                                                        class="icon-green"></lightning-icon>
-                                                    Top Engaged Accounts
-                                                </div>
-                                                <ul class="bullet-list bullet-list--green">
-                                                    <template for:each={overallStatsQuad4.topEngagedAccounts}
-                                                        for:item="acc">
-                                                        <li key={acc.name}>{acc.name} — {acc.industry} · {acc.stage}
-                                                        </li>
-                                                    </template>
-                                                </ul>
-                                            </div>
-
-                                            <!-- Top Channels -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--green">
-                                                    <lightning-icon icon-name="utility:announcement" size="x-small"
-                                                        class="icon-green"></lightning-icon>
-                                                    Top Channels
-                                                </div>
-                                                <ul class="bullet-list bullet-list--green">
-                                                    <template for:each={overallStatsQuad4.topChannels} for:item="ch">
-                                                        <li key={ch.channel}>{ch.channel} — {ch.volume} ·
-                                                            {ch.responseRate}
-                                                        </li>
-                                                    </template>
-                                                </ul>
-                                            </div>
-
-                                            <!-- Low Engaged Accounts -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--red">
-                                                    <lightning-icon icon-name="utility:arrowdown" size="x-small"
-                                                        class="icon-red"></lightning-icon>
-                                                    Low Engaged Accounts
-                                                </div>
-                                                <ul class="bullet-list bullet-list--red">
-                                                    <template for:each={overallStatsQuad4.lowEngagedAccounts}
-                                                        for:item="acc">
-                                                        <li key={acc.name}>{acc.name} — {acc.industry} · {acc.reason}
-                                                        </li>
-                                                    </template>
-                                                </ul>
-                                            </div>
-
-                                            <!-- Low Channels -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--red">
-                                                    <lightning-icon icon-name="utility:warning" size="x-small"
-                                                        class="icon-red"></lightning-icon>
-                                                    Low Channels
-                                                </div>
-                                                <ul class="bullet-list bullet-list--red">
-                                                    <template for:each={overallStatsQuad4.lowChannels} for:item="ch">
-                                                        <li key={ch.channel}>{ch.channel} — {ch.volume} ·
-                                                            {ch.responseRate}
-                                                        </li>
-                                                    </template>
-                                                </ul>
-                                            </div>
-
-                                            <!-- Channel Mix -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--blue">
-                                                    <lightning-icon icon-name="utility:justify_text" size="x-small"
-                                                        class="icon-blue"></lightning-icon>
-                                                    Channel Mix
-                                                </div>
-
-                                                <div class="channel-mix-table">
-                                                    <!-- <div class="mix-table-head">
-                                                        <span>Channel</span>
-                                                        <span>Share</span>
-                                                    </div> -->
-                                                    <template for:each={overallStatsQuad4.channelMix} for:item="mix">
-                                                        <div key={mix.label} class="mix-table-row">
-                                                            <span class="mix-table-label">{mix.label}</span>
-                                                            <span class="mix-table-pct">{mix.pct}%</span>
-                                                        </div>
-                                                    </template>
-                                                </div>
-
-
-
-                                                <!-- <div class="channel-mix">
-                                                    <template for:each={overallStatsQuad4.channelMix} for:item="mix">
-                                                        <div key={mix.label} class="mix-row">
-                                                            <span class="mix-label">{mix.label}</span>
-                                                            <span class="mix-pct">{mix.pct}%</span>
-                                                        </div>
-                                                    </template>
-                                                </div> -->
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </template>
-
-
-                                <template if:true={hasOverallSummaryQuad4}>
-                                    <div class="overall-card">
-                                        <div class="overall-card-header">
-                                            <span class="summary-spark">✦</span>
-                                            <span>Quad4 Portfolio Rollup Summary</span>
-                                            <lightning-icon icon-name="utility:expand_alt" size="x-small"
-                                                class="summary-expand-icon" onclick={handleSummaryClick}
-                                                data-summary={overallSummarySVP}>
-                                            </lightning-icon>
-                                        </div>
-                                        <div class="overall-summary-text">
-                                            <!-- {overallSummaryQuad4} -->
-                                            <lightning-formatted-rich-text value={overallSummaryQuad4}>
-                                            </lightning-formatted-rich-text>
-                                        </div>
                                     </div>
                                 </template>
                                 <template if:true={showSummaryModal}>
@@ -605,7 +416,7 @@
                                                     onclick={closeSummaryModal}>✕</button>
                                             </div>
                                             <div class="summary-popup-body">
-                                                <lightning-formatted-rich-text value={overallSummaryQuad4}>
+                                                <lightning-formatted-rich-text value={selectedSummary}>
                                                 </lightning-formatted-rich-text>
 
                                             </div>
@@ -617,7 +428,13 @@
                                     </section>
                                     <div class="slds-backdrop slds-backdrop_open" onclick={closeSummaryModal}></div>
                                 </template>
-                            </template>
+
+                                <template if:false={filteredLabels.length}>
+                                    <p>No users selected.</p>
+                                </template>
+                            </div>
+
+
                         </lightning-tab>
                     </template>
                     <!-- SVP Tab -->
@@ -625,123 +442,108 @@
 
 
                         <lightning-tab style="font-size:40px" label="SVP" value="SVP" onactive={handleTabChange}>
-                            <template if:true={showSvpToggle}>
-                                <div class="view-toggle">
-                                    <button class={svpUsersBtnClass} data-view="users" onclick={handleSvpViewToggle}>
-                                        By SVP
-                                    </button>
-                                    <button class={svpOverallBtnClass} data-view="overall"
-                                        onclick={handleSvpViewToggle}>
-                                        Overall Summary
-                                    </button>
-                                </div>
-                            </template>
+                            <div class="tiles-grid">
+                                <template for:each={filteredLabels} for:item="tile">
+                                    <div key={tile.label} class="tile-card">
 
-                            <template if:true={isSvpUsersView}>
+                                        <div class="tile-header">
+                                            <span class="tile-name">
+                                                {tile.label}
+                                            </span>
+                                        </div>
 
-                                <div class="tiles-grid">
-                                    <template for:each={filteredLabels} for:item="tile">
-                                        <div key={tile.label} class="tile-card">
-
-                                            <div class="tile-header">
-                                                <span class="tile-name">
-                                                    {tile.label}
-                                                </span>
-                                            </div>
-
-                                            <template if:true={tile.summary}>
-                                                <div class="tile-body">
-                                                    <div class="split-top">
-                                                        <div class="metric-chip">
-                                                            <span
-                                                                class="metric-val">{tile.summary.totalEngagements}</span>
-                                                            <span class="metric-lbl">Weighted Engagement Score</span>
-                                                        </div>
-                                                        <div class="metric-chip">
-                                                            <span
-                                                                class="metric-val">{tile.summary.weightedEngagementScore}</span>
-                                                            <span class="metric-lbl">Engagement Rate </span>
-                                                        </div>
+                                        <template if:true={tile.summary}>
+                                            <div class="tile-body">
+                                                <div class="split-top">
+                                                    <div class="metric-chip">
+                                                        <span class="metric-val">{tile.summary.totalEngagements}</span>
+                                                        <span class="metric-lbl">Weighted Engagement Score</span>
                                                     </div>
-                                                    <!-- Top Engaged Accounts -->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--green">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:arrowup"
-                                                                    size="x-small" class="icon-green"></lightning-icon>
-                                                            </span> Top Engaged Accounts
-                                                        </div>
-                                                        <div class="section-content">
+                                                    <div class="metric-chip">
+                                                        <span
+                                                            class="metric-val">{tile.summary.weightedEngagementScore}</span>
+                                                        <span class="metric-lbl">Engagement Rate </span>
+                                                    </div>
+                                                </div>
+                                                <!-- Top Engaged Accounts -->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--green">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:arrowup" size="x-small"
+                                                                class="icon-green"></lightning-icon>
+                                                        </span> Top Engaged Accounts
+                                                    </div>
+                                                    <div class="section-content">
 
-                                                            <ul class="bullet-list bullet-list--green">
-                                                                <!-- <template for:each={tile.summary.topEngagedAccounts} for:item="item">
+                                                        <ul class="bullet-list bullet-list--green">
+                                                            <!-- <template for:each={tile.summary.topEngagedAccounts} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                                <!-- <li>Acme Corp — Technology · Qualification</li>
+                                                            <!-- <li>Acme Corp — Technology · Qualification</li>
                                                     <li>Horizon — Healthcare · NegotiationGroup Corp</li>
                                                     <li>Global tech Corp — Retail · Prospecting</li> -->
-                                                                <template for:each={tile.summary.topEngagedAccounts}
-                                                                    for:item="acc">
-                                                                    <li key={acc.name}>{acc.name} — {acc.industry} ·
-                                                                        {acc.stage}
-                                                                    </li>
-                                                                </template>
-                                                            </ul>
-                                                        </div>
+                                                            <template for:each={tile.summary.topEngagedAccounts}
+                                                                for:item="acc">
+                                                                <li key={acc.name}>{acc.name} — {acc.industry} ·
+                                                                    {acc.stage}
+                                                                </li>
+                                                            </template>
+                                                        </ul>
                                                     </div>
-                                                    <!-- Low Engaged Accounts -->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--red">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:arrowdown"
-                                                                    size="x-small" class="icon-red"></lightning-icon>
-                                                            </span> Low Engaged Accounts
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--red">
-                                                                <template for:each={tile.summary.lowEngagedAccounts}
-                                                                    for:item="acc">
-                                                                    <li key={acc.name}>{acc.name} — {acc.industry} ·
-                                                                        {acc.reason}
-                                                                    </li>
-                                                                </template>
-                                                                <!-- <template for:each={tile.summary.lowEngagedAccounts} for:item="item">
+                                                </div>
+                                                <!-- Low Engaged Accounts -->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--red">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:arrowdown" size="x-small"
+                                                                class="icon-red"></lightning-icon>
+                                                        </span> Low Engaged Accounts
+                                                    </div>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--red">
+                                                            <template for:each={tile.summary.lowEngagedAccounts}
+                                                                for:item="acc">
+                                                                <li key={acc.name}>{acc.name} — {acc.industry} ·
+                                                                    {acc.reason}
+                                                                </li>
+                                                            </template>
+                                                            <!-- <template for:each={tile.summary.lowEngagedAccounts} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                                <!-- <li>Jahn doe — Retail · Prospecting</li>
+                                                            <!-- <li>Jahn doe — Retail · Prospecting</li>
                                                     <li>Mark smith doe — Finance · Prospecting</li>
                                                     <li>Lisa Ray doe — Insurance · Prospecting</li> -->
-                                                            </ul>
-                                                        </div>
+                                                        </ul>
                                                     </div>
+                                                </div>
 
 
-                                                    <!--Most Engaged Contacts-->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--blue">
+                                                <!--Most Engaged Contacts-->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--blue">
 
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:user" size="x-small"
-                                                                    class="icon-blue"></lightning-icon>
-                                                            </span>
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:user" size="x-small"
+                                                                class="icon-blue"></lightning-icon>
+                                                        </span>
 
 
-                                                            Most Engaged Contacts
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--blue">
-                                                                <template for:each={tile.summary.contacts} for:item="c">
-                                                                    <li key={c.name}>
-                                                                        <template if:true={c.name}>{c.name} -</template>
-                                                                        <template if:true={c.title}>
-                                                                            {c.title}</template>
-                                                                        <template if:true={c.Score}>
-                                                                            {c.score}</template>
-                                                                    </li>
-                                                                </template>
+                                                        Most Engaged Contacts
+                                                    </div>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--blue">
+                                                            <template for:each={tile.summary.contacts} for:item="c">
+                                                                <li key={c.name}>
+                                                                    <template if:true={c.name}>{c.name} -</template>
+                                                                    <template if:true={c.title}>
+                                                                        {c.title}</template>
+                                                                    <template if:true={c.Score}>
+                                                                        {c.score}</template>
+                                                                </li>
+                                                            </template>
 
-                                                            </ul>
-                                                            <!-- <ul class="contact-list">
+                                                        </ul>
+                                                        <!-- <ul class="contact-list">
                                                                 <template for:each={tile.summary.contacts} for:item="c">
                                                                     <li key={c.name} class="contact-row">
                                                                         <div class="contact-info">
@@ -753,68 +555,67 @@
                                                                     </li>
                                                                 </template>
                                                             </ul> -->
-                                                        </div>
                                                     </div>
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--blue">
+                                                </div>
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--blue">
 
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:user" size="x-small"
-                                                                    class="icon-blue"></lightning-icon>
-                                                            </span>
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:user" size="x-small"
+                                                                class="icon-blue"></lightning-icon>
+                                                        </span>
 
 
-                                                            Least Engaged Contacts
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--blue">
-                                                                <template for:each={tile.summary.leastEngagedContacts}
-                                                                    for:item="c">
-                                                                    <li key={c.name}>
-                                                                        <template if:true={c.name}>{c.name} -</template>
-                                                                        <template if:true={c.title}>
-                                                                            {c.title}</template>
-                                                                        <template if:true={c.Score}>
-                                                                            {c.score}</template>
-                                                                    </li>
-                                                                </template>
-                                                                <!-- <li>Jahn doe - Vp finance</li>
+                                                        Least Engaged Contacts
+                                                    </div>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--blue">
+                                                            <template for:each={tile.summary.leastEngagedContacts}
+                                                                for:item="c">
+                                                                <li key={c.name}>
+                                                                    <template if:true={c.name}>{c.name} -</template>
+                                                                    <template if:true={c.title}>
+                                                                        {c.title}</template>
+                                                                    <template if:true={c.Score}>
+                                                                        {c.score}</template>
+                                                                </li>
+                                                            </template>
+                                                            <!-- <li>Jahn doe - Vp finance</li>
                                                     <li>Mark smith doe - CFO</li>
                                                     <li>Lisa Ray doe</li> -->
-                                                                <!-- <template for:each={tile.summary.contacts} for:item="item">
+                                                            <!-- <template for:each={tile.summary.contacts} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                            </ul>
-                                                        </div>
+                                                        </ul>
                                                     </div>
+                                                </div>
 
-                                                    <!--Channel Mix-->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--blue">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:justify_text"
-                                                                    size="x-small" class="icon-blue"></lightning-icon>
-                                                            </span>
-                                                            Channel Mix
-                                                        </div>
-                                                        <div class="section-content">
+                                                <!--Channel Mix-->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--blue">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:justify_text"
+                                                                size="x-small" class="icon-blue"></lightning-icon>
+                                                        </span>
+                                                        Channel Mix
+                                                    </div>
+                                                    <div class="section-content">
 
 
-                                                            <div class="channel-mix-table">
-                                                                <!-- <div class="mix-table-head">
+                                                        <div class="channel-mix-table">
+                                                            <!-- <div class="mix-table-head">
                                                                     <span>Channel</span>
                                                                     <span>Share</span> 
                                                                 </div> -->
-                                                                <template for:each={tile.summary.channelMix}
-                                                                    for:item="mix">
-                                                                    <div key={mix.label} class="mix-table-row">
-                                                                        <span class="mix-table-label">{mix.label}</span>
-                                                                        <span class="mix-table-pct">{mix.pct}%</span>
-                                                                    </div>
-                                                                </template>
-                                                            </div>
+                                                            <template for:each={tile.summary.channelMix} for:item="mix">
+                                                                <div key={mix.label} class="mix-table-row">
+                                                                    <span class="mix-table-label">{mix.label}</span>
+                                                                    <span class="mix-table-pct">{mix.pct}%</span>
+                                                                </div>
+                                                            </template>
+                                                        </div>
 
-                                                            <!-- <div class="channel-mix">
+                                                        <!-- <div class="channel-mix">
                                                                 <template for:each={tile.summary.channelMix}
                                                                     for:item="mix">
                                                                     <div key={mix.label} class="mix-row">
@@ -826,72 +627,70 @@
                                                                 </template>
                                                                
                                                             </div> -->
-                                                        </div>
                                                     </div>
-                                                    <!-- Top Channels -->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--green">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:announcement"
-                                                                    size="x-small" class="icon-green"></lightning-icon>
+                                                </div>
+                                                <!-- Top Channels -->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--green">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:announcement"
+                                                                size="x-small" class="icon-green"></lightning-icon>
 
-                                                            </span> Top Channels
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--green">
-                                                                <template for:each={tile.summary.topChannels}
-                                                                    for:item="ch">
-                                                                    <li key={ch.channel}>{ch.channel} -
-                                                                        {ch.responseRate}
-                                                                        -{ch.volume} .
-                                                                    </li>
-                                                                </template>
-                                                                <!-- <li> Mass Email: 100% completion rate. Strong potential for targeted
+                                                        </span> Top Channels
+                                                    </div>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--green">
+                                                            <template for:each={tile.summary.topChannels} for:item="ch">
+                                                                <li key={ch.channel}>{ch.channel} -
+                                                                    {ch.responseRate}
+                                                                    -{ch.volume} .
+                                                                </li>
+                                                            </template>
+                                                            <!-- <li> Mass Email: 100% completion rate. Strong potential for targeted
                                                         outreach.</li>
                                                     <li> Newsletters: 3% open and click-through rates. Most consistent
                                                         engagement.</li>
                                                     <li>Newsletters — 3% open rate</li> -->
 
-                                                                <!-- <template for:each={tile.summary.topChannels} for:item="item">
+                                                            <!-- <template for:each={tile.summary.topChannels} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                            </ul>
-                                                        </div>
+                                                        </ul>
                                                     </div>
+                                                </div>
 
-                                                    <!-- Low Channels -->
-                                                    <div class="tile-section">
-                                                        <div class="section-head section-head--red">
-                                                            <span class="arrow">
-                                                                <lightning-icon icon-name="utility:warning"
-                                                                    size="x-small" class="icon-red"></lightning-icon>
+                                                <!-- Low Channels -->
+                                                <div class="tile-section">
+                                                    <div class="section-head section-head--red">
+                                                        <span class="arrow">
+                                                            <lightning-icon icon-name="utility:warning" size="x-small"
+                                                                class="icon-red"></lightning-icon>
 
-                                                            </span> Low Channels
-                                                        </div>
-                                                        <div class="section-content">
-                                                            <ul class="bullet-list bullet-list--red">
-                                                                <!-- <li>Linkeidn — 0.4% engagement</li>
+                                                        </span> Low Channels
+                                                    </div>
+                                                    <div class="section-content">
+                                                        <ul class="bullet-list bullet-list--red">
+                                                            <!-- <li>Linkeidn — 0.4% engagement</li>
                                                     <li>webinar — 6.25% attendance</li>
                                                     <li>Newsletters — 0% response</li> -->
-                                                                <template for:each={tile.summary.lowChannels}
-                                                                    for:item="ch">
-                                                                    <li key={ch.channel}>{ch.channel} -
-                                                                        {ch.responseRate}
-                                                                        -{ch.volume} .
-                                                                    </li>
-                                                                </template>
-                                                                <!-- <li>LinkedIn</li>
+                                                            <template for:each={tile.summary.lowChannels} for:item="ch">
+                                                                <li key={ch.channel}>{ch.channel} -
+                                                                    {ch.responseRate}
+                                                                    -{ch.volume} .
+                                                                </li>
+                                                            </template>
+                                                            <!-- <li>LinkedIn</li>
                                                 <li>Mails</li> -->
-                                                                <!-- <template for:each={tile.summary.lowChannels} for:item="item">
+                                                            <!-- <template for:each={tile.summary.lowChannels} for:item="item">
                             <li key={item}>{item}</li>
                         </template> -->
-                                                            </ul>
-                                                        </div>
-
+                                                        </ul>
                                                     </div>
 
-                                                    <!--Channel Mix-->
-                                                    <!--<div class="channel-mix">
+                                                </div>
+
+                                                <!--Channel Mix-->
+                                                <!--<div class="channel-mix">
         <template for:each={tile.summary.channelMix} for:item="mix">
             <div key={mix.label} class="mix-row">
                 <span class="mix-label">{mix.label}</span>
@@ -903,217 +702,41 @@
         </template>
     </div>-->
 
-                                                    <!--channel div tilesection close-->
-                                                    <div class="tile-section" onclick={handleSummaryClick}
-                                                        data-summary={tile.aiSummary}>
-                                                        <div class={tile.summaryClass}>
-                                                            <div class="summary-card-head">
-                                                                <!-- <lightning-icon icon-name="utility:einstein" size="x-small"
+                                                <!--channel div tilesection close-->
+                                                <div class="tile-section" onclick={handleSummaryClick}
+                                                    data-summary={tile.aiSummary}>
+                                                    <div class={tile.summaryClass}>
+                                                        <div class="summary-card-head">
+                                                            <!-- <lightning-icon icon-name="utility:einstein" size="x-small"
                                                             class="icon-gray"></lightning-icon> -->
-                                                                <span class="summary-spark">✦</span>
+                                                            <span class="summary-spark">✦</span>
 
-                                                                <span>AI Summary</span>
+                                                            <span>AI Summary</span>
 
-                                                                <lightning-icon icon-name={tile.iconName} size="x-small"
-                                                                    class="summary-expand-icon" data-label={tile.label}
-                                                                    onclick={handleSummaryClick}>
-                                                                </lightning-icon>
-                                                            </div>
+                                                            <lightning-icon icon-name={tile.iconName} size="x-small"
+                                                                class="summary-expand-icon" data-label={tile.label}
+                                                                onclick={handleSummaryClick}>
+                                                            </lightning-icon>
+                                                        </div>
 
 
-                                                            <div class="summary-card-body">
-                                                                <lightning-formatted-rich-text value={tile.aiSummary}>
-                                                                </lightning-formatted-rich-text>
+                                                        <div class="summary-card-body">
+                                                            <lightning-formatted-rich-text value={tile.aiSummary}>
+                                                            </lightning-formatted-rich-text>
 
-                                                            </div>
                                                         </div>
                                                     </div>
-
-
-
-
-                                                    <!-- <div>{tile.accountIds}</div> -->
                                                 </div>
-                                            </template>
 
-                                        </div>
-                                    </template>
-                                    <template if:true={showSummaryModal}>
-                                        <section class="slds-modal slds-fade-in-open summary-popup">
-                                            <div class=" summary-popup-container">
-                                                <div class="summary-popup-header">
-                                                    <span class="summary-spark">✦</span>
-                                                    <span>AI Summary</span>
-                                                    <button class="summary-popup-close"
-                                                        onclick={closeSummaryModal}>✕</button>
-                                                </div>
-                                                <div class="summary-popup-body">
-                                                    <lightning-formatted-rich-text value={selectedSummary}>
-                                                    </lightning-formatted-rich-text>
 
-                                                </div>
-                                                <!-- <div class="summary-popup-footer">
-                                                    <button class="summary-popup-close-btn"
-                                                        onclick={closeSummaryModal}>Close</button>
-                                                </div> -->
+
+
+                                                <!-- <div>{tile.accountIds}</div> -->
                                             </div>
-                                        </section>
-                                        <div class="slds-backdrop slds-backdrop_open" onclick={closeSummaryModal}></div>
-                                    </template>
+                                        </template>
 
-
-                                    <template if:false={filteredLabels.length}>
-                                        <p style="font-size:15px;">No users selected.</p>
-                                    </template>
-                                </div>
-                            </template>
-                            <template if:true={isSvpOverallView}>
-                                <template if:true={hasOverallStatsSVP}>
-                                    <div class="tile-card" style="margin: 16px;">
-
-                                        <div class="tile-header">
-                                            <span class="tile-name">✦ SVP Overall Summary</span>
-                                        </div>
-
-                                        <div class="tile-body">
-
-                                            <!-- Metric Chips -->
-                                            <div class="split-top">
-                                                <div class="metric-chip">
-                                                    <span class="metric-val">{overallStatsSVP.totalEngagements}</span>
-                                                    <span class="metric-lbl">Total Engagements</span>
-                                                </div>
-                                                <div class="metric-chip">
-                                                    <span
-                                                        class="metric-val">{overallStatsSVP.weightedEngagementScore}</span>
-                                                    <span class="metric-lbl">Weighted Engagement Score</span>
-                                                </div>
-                                                <div class="metric-chip">
-                                                    <span class="metric-val">{overallStatsSVP.engagementRate}</span>
-                                                    <span class="metric-lbl">Effectiveness Rate</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- Top Engaged Accounts -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--green">
-                                                    <lightning-icon icon-name="utility:arrowup" size="x-small"
-                                                        class="icon-green"></lightning-icon>
-                                                    Top Engaged Accounts
-                                                </div>
-                                                <ul class="bullet-list bullet-list--green">
-                                                    <template for:each={overallStatsSVP.topEngagedAccounts}
-                                                        for:item="acc">
-                                                        <li key={acc.name}>{acc.name} — {acc.industry} · {acc.stage}
-                                                        </li>
-                                                    </template>
-                                                </ul>
-                                            </div>
-                                            <!-- Top Channels -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--green">
-                                                    <lightning-icon icon-name="utility:announcement" size="x-small"
-                                                        class="icon-green"></lightning-icon>
-                                                    Top Channels
-                                                </div>
-                                                <ul class="bullet-list bullet-list--green">
-                                                    <template for:each={overallStatsSVP.topChannels} for:item="ch">
-                                                        <li key={ch.channel}>{ch.channel} — {ch.volume} ·
-                                                            {ch.responseRate}
-                                                        </li>
-                                                    </template>
-                                                </ul>
-                                            </div>
-                                            <!-- Low Engaged Accounts -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--red">
-                                                    <lightning-icon icon-name="utility:arrowdown" size="x-small"
-                                                        class="icon-red"></lightning-icon>
-                                                    Low Engaged Accounts
-                                                </div>
-                                                <ul class="bullet-list bullet-list--red">
-                                                    <template for:each={overallStatsSVP.lowEngagedAccounts}
-                                                        for:item="acc">
-                                                        <li key={acc.name}>{acc.name} — {acc.industry} · {acc.reason}
-                                                        </li>
-                                                    </template>
-                                                </ul>
-                                            </div>
-                                            <!-- Low Channels -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--red">
-                                                    <lightning-icon icon-name="utility:warning" size="x-small"
-                                                        class="icon-red"></lightning-icon>
-                                                    Low Channels
-                                                </div>
-                                                <ul class="bullet-list bullet-list--red">
-                                                    <template for:each={overallStatsSVP.lowChannels} for:item="ch">
-                                                        <li key={ch.channel}>{ch.channel} — {ch.volume} ·
-                                                            {ch.responseRate}
-                                                        </li>
-                                                    </template>
-                                                </ul>
-                                            </div>
-                                            <!-- Channel Mix -->
-                                            <div class="tile-section">
-                                                <div class="section-head section-head--blue">
-                                                    <lightning-icon icon-name="utility:justify_text" size="x-small"
-                                                        class="icon-blue"></lightning-icon>
-                                                    Channel Mix
-                                                </div>
-
-
-                                                <!-- <div class="channel-mix">
-                                                    <template for:each={overallStatsSVP.channelMix} for:item="mix">
-                                                        <div key={mix.label} class="mix-row">
-                                                            <span class="mix-label">{mix.label}</span>
-                                                            <span class="mix-pct">{mix.pct}%</span>
-                                                        </div>
-                                                    </template>
-                                                </div> -->
-
-                                                <div class="channel-mix-table">
-                                                    <!-- <div class="mix-table-head">
-                                                        <span>Channel</span>
-                                                         <span>Share</span> 
-                                                    </div> -->
-                                                    <template for:each={overallStatsSVP.channelMix} for:item="mix">
-                                                        <div key={mix.label} class="mix-table-row">
-                                                            <span class="mix-table-label">{mix.label}</span>
-                                                            <span class="mix-table-pct">{mix.pct}%</span>
-                                                        </div>
-                                                    </template>
-                                                </div>
-
-
-
-
-                                            </div>
-
-                                        </div>
                                     </div>
                                 </template>
-
-                                <template if:true={hasOverallSummarySVP}>
-                                    <div class="overall-card">
-                                        <div class="overall-card-header">
-                                            <span class="summary-spark">✦</span>
-                                            <span>SVP Portfolio Rollup Summary</span>
-                                            <lightning-icon icon-name="utility:expand_alt" size="x-small"
-                                                class="summary-expand-icon" onclick={handleSummaryClick}
-                                                data-summary={overallSummarySVP}>
-                                            </lightning-icon>
-                                        </div>
-                                        <div class="overall-summary-text">
-                                            <!-- {overallSummarySVP} -->
-                                            <lightning-formatted-rich-text value={overallSummarySVP}>
-                                            </lightning-formatted-rich-text>
-                                        </div>
-                                    </div>
-                                </template>
-
-
-                                <!-- NEW card — SVP aggregated data -->
                                 <template if:true={showSummaryModal}>
                                     <section class="slds-modal slds-fade-in-open summary-popup">
                                         <div class=" summary-popup-container">
@@ -1124,7 +747,7 @@
                                                     onclick={closeSummaryModal}>✕</button>
                                             </div>
                                             <div class="summary-popup-body">
-                                                <lightning-formatted-rich-text value={overallSummarySVP}>
+                                                <lightning-formatted-rich-text value={selectedSummary}>
                                                 </lightning-formatted-rich-text>
 
                                             </div>
@@ -1137,7 +760,13 @@
                                     <div class="slds-backdrop slds-backdrop_open" onclick={closeSummaryModal}></div>
                                 </template>
 
-                            </template>
+
+                                <template if:false={filteredLabels.length}>
+                                    <p style="font-size:15px;">No users selected.</p>
+                                </template>
+                            </div>
+
+
                         </lightning-tab>
                         <!-- <template if:true={hasOverallSummary}>
             <div class="overall-card">
@@ -1153,9 +782,603 @@
                     </template>
 
                     <!--End of SVP Tab-->
-                    <template if:true={showOverallTab}>
 
-                        <lightning-tab label="Overall Summary" value="OVERALL">
+                    <template if:true={showOverallTab}>
+                        <lightning-tab label="Overall Summary" value="OVERALL" onactive={handleTabChange}>
+
+                            <!-- loading -->
+                            <template if:true={overallPortfolioLoading}>
+                                <div class="ov-spinner-wrap">
+                                    <lightning-spinner alternative-text="Loading" size="medium">
+                                    </lightning-spinner>
+                                    <p class="ov-loading-msg">
+                                        Generating overall portfolio summary...
+                                    </p>
+                                </div>
+                            </template>
+
+                            <!-- content -->
+                            <template if:false={overallPortfolioLoading}>
+
+                                <template if:true={overallPortfolioStats}>
+
+                                    <!-- metric chips -->
+                                    <div class="ov-chips-row">
+                                        <div class="ov-chip">
+                                            <span class="ov-chip-val">
+                                                {overallPortfolioStats.totalEngagements}
+                                            </span>
+                                            <span class="ov-chip-lbl">
+                                                Total Engagements
+                                            </span>
+                                        </div>
+                                        <div class="ov-chip">
+                                            <span class="ov-chip-val">
+                                                {overallPortfolioStats.weightedEngagementScore}
+                                            </span>
+                                            <span class="ov-chip-lbl">
+                                                Weighted Engagement Score
+                                            </span>
+                                        </div>
+                                        <div class="ov-chip">
+                                            <span class="ov-chip-val">
+                                                {overallPortfolioStats.engagementRate}
+                                            </span>
+                                            <span class="ov-chip-lbl">
+                                                Effectiveness Rate
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- top + low accounts side by side -->
+                                    <div class="ov-two-col">
+                                        <div class="ov-panel">
+                                            <div class="ov-panel-head ov-panel-head--green">
+                                                <lightning-icon icon-name="utility:arrowup" size="x-small"
+                                                    class="icon-green">
+                                                </lightning-icon>
+                                                Top Engaged Accounts
+                                            </div>
+                                            <ul class="ov-list">
+                                                <template for:each={overallPortfolioStats.topEngagedAccounts}
+                                                    for:item="acc">
+                                                    <li key={acc.name} class="ov-list-item">
+                                                        <span class="ov-item-name">
+                                                            {acc.name}
+                                                        </span>
+                                                        <span class="ov-item-meta">
+                                                            {acc.industry} ·
+                                                            {acc.tier}
+                                                        </span>
+                                                    </li>
+                                                </template>
+                                                <template if:false={overallPortfolioStats.topEngagedAccounts.length}>
+                                                    <li class="ov-list-empty">
+                                                        No data available
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+
+                                        <div class="ov-panel">
+                                            <div class="ov-panel-head ov-panel-head--red">
+                                                <lightning-icon icon-name="utility:arrowdown" size="x-small"
+                                                    class="icon-red">
+                                                </lightning-icon>
+                                                Low Engaged Accounts
+                                            </div>
+                                            <ul class="ov-list">
+                                                <template for:each={overallPortfolioStats.lowEngagedAccounts}
+                                                    for:item="acc">
+                                                    <li key={acc.name} class="ov-list-item">
+                                                        <span class="ov-item-name">
+                                                            {acc.name}
+                                                        </span>
+                                                        <span class="ov-item-meta">
+                                                            <!-- {acc.reason} -->
+                                                            {acc.industry} ·
+                                                            {acc.tier}
+                                                        </span>
+                                                    </li>
+                                                </template>
+                                                <template if:false={overallPortfolioStats.lowEngagedAccounts.length}>
+                                                    <li class="ov-list-empty">
+                                                        No data available
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- top + low channels side by side -->
+                                    <div class="ov-two-col">
+                                        <div class="ov-panel">
+                                            <div class="ov-panel-head ov-panel-head--green">
+                                                <lightning-icon icon-name="utility:announcement" size="x-small"
+                                                    class="icon-green">
+                                                </lightning-icon>
+                                                Top Channels
+                                            </div>
+                                            <ul class="ov-list">
+                                                <template for:each={overallPortfolioStats.topChannels} for:item="ch">
+                                                    <li key={ch.channel} class="ov-list-item">
+                                                        <span class="ov-item-name">
+                                                            {ch.channel}
+                                                        </span>
+                                                        <span class="ov-item-meta">
+                                                            {ch.responseRate}
+                                                            -{ch.volume} .
+                                                        </span>
+                                                    </li>
+                                                </template>
+                                                <template if:false={overallPortfolioStats.topChannels.length}>
+                                                    <li class="ov-list-empty">
+                                                        No data available
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+
+                                        <div class="ov-panel">
+                                            <div class="ov-panel-head ov-panel-head--red">
+                                                <lightning-icon icon-name="utility:warning" size="x-small"
+                                                    class="icon-red">
+                                                </lightning-icon>
+                                                Low Channels
+                                            </div>
+                                            <ul class="ov-list">
+                                                <template for:each={overallPortfolioStats.lowChannels} for:item="ch">
+                                                    <li key={ch.channel} class="ov-list-item">
+                                                        <span class="ov-item-name">
+                                                            {ch.channel}
+                                                        </span>
+                                                        <span class="ov-item-meta">
+                                                            {ch.responseRate}  -{ch.volume} .
+                                                        </span>
+                                                    </li>
+                                                </template>
+                                                <template if:false={overallPortfolioStats.lowChannels.length}>
+                                                    <li class="ov-list-empty">
+                                                        No data available
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- most + least engaged contacts -->
+                                    <div class="ov-two-col">
+                                        <div class="ov-panel">
+                                            <div class="ov-panel-head ov-panel-head--blue">
+                                                <lightning-icon icon-name="utility:user" size="x-small"
+                                                    class="icon-blue">
+                                                </lightning-icon>
+                                                Most Engaged Contacts
+                                            </div>
+                                            <ul class="ov-list">
+                                                <template for:each={overallPortfolioStats.contacts} for:item="c">
+                                                    <li key={c.name} class="ov-list-item">
+                                                        <span class="ov-item-name">
+                                                            {c.name}
+                                                        </span>
+                                                        <span class="ov-item-meta">
+                                                            {c.title}
+                                                        </span>
+                                                    </li>
+                                                </template>
+                                                <template if:false={overallPortfolioStats.contacts.length}>
+                                                    <li class="ov-list-empty">
+                                                        No data available
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+
+                                        <div class="ov-panel">
+                                            <div class="ov-panel-head ov-panel-head--red">
+                                                <lightning-icon icon-name="utility:user" size="x-small"
+                                                    class="icon-red">
+                                                </lightning-icon>
+                                                Least Engaged Contacts
+                                            </div>
+                                            <ul class="ov-list">
+                                                <template for:each={overallPortfolioStats.leastEngagedContacts}
+                                                    for:item="c">
+                                                    <li key={c.name} class="ov-list-item">
+                                                        <span class="ov-item-name">
+                                                            {c.name}
+                                                        </span>
+                                                        <span class="ov-item-meta">
+                                                            {c.title}
+                                                        </span>
+                                                    </li>
+                                                </template>
+                                                <template if:false={overallPortfolioStats.leastEngagedContacts.length}>
+                                                    <li class="ov-list-empty">
+                                                        No data available
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- channel mix — full width -->
+                                    <div class="ov-full-panel">
+                                        <div class="ov-panel-head ov-panel-head--blue">
+                                            <lightning-icon icon-name="utility:justify_text" size="x-small"
+                                                class="icon-blue">
+                                            </lightning-icon>
+                                            Channel Mix
+                                        </div>
+                                        <div class="ov-mix-table">
+                                            <template for:each={overallPortfolioStats.channelMix} for:item="mix">
+                                                <div key={mix.label} class="ov-mix-row">
+                                                    <span class="ov-mix-label">
+                                                        {mix.label}
+                                                    </span>
+                                                    <span class="ov-mix-pct">
+                                                        {mix.pct}%
+                                                    </span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                </template>
+
+                                <!-- AI narrative -->
+                                <template if:true={hasOverallPortfolioSummary}>
+                                    <div class="ov-narrative" onclick={handleSummaryClick}
+                                        data-summary={overallPortfolioSummary}>
+                                        <div class="ov-narrative-head">
+                                            <span class="summary-spark">✦</span>
+                                            <span>AI Overall Portfolio Insight</span>
+                                            <lightning-icon icon-name="utility:expand_alt" size="x-small"
+                                                class="summary-expand-icon">
+                                            </lightning-icon>
+                                        </div>
+                                        <div class="ov-narrative-body">
+                                            <lightning-formatted-rich-text value={overallPortfolioSummary}>
+                                            </lightning-formatted-rich-text>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- modal -->
+                                <template if:true={showSummaryModal}>
+                                    <section class="slds-modal slds-fade-in-open summary-popup">
+                                        <div class="summary-popup-container">
+                                            <div class="summary-popup-header">
+                                                <span class="summary-spark">✦</span>
+                                                <span>AI Overall Portfolio Insight</span>
+                                                <button class="summary-popup-close" onclick={closeSummaryModal}>
+                                                    ✕
+                                                </button>
+                                            </div>
+                                            <div class="summary-popup-body">
+                                                <lightning-formatted-rich-text value={selectedSummary}>
+                                                </lightning-formatted-rich-text>
+                                            </div>
+                                        </div>
+                                    </section>
+                                    <div class="slds-backdrop slds-backdrop_open" onclick={closeSummaryModal}>
+                                    </div>
+                                </template>
+
+                                <!-- no data -->
+                                <template if:false={overallPortfolioStats}>
+                                    <template if:false={hasOverallPortfolioSummary}>
+                                        <div class="ov-empty">
+                                            <p class="ov-empty-msg">
+                                                No overall summary available.
+                                                Click Overall Summary tab after
+                                                loading SVP or Quad4 data.
+                                            </p>
+                                        </div>
+                                    </template>
+                                </template>
+
+                            </template>
+
+                        </lightning-tab>
+                    </template>
+
+
+                    <!-- <template if:true={showOverallTab}>
+                        <lightning-tab label="Overall Summary" value="OVERALL" onactive={handleTabChange}>
+
+                            <template if:true={overallPortfolioLoading}>
+                                <div class="overall-spinner-wrap">
+                                    <lightning-spinner alternative-text="Loading" size="medium">
+                                    </lightning-spinner>
+                                    <p class="overall-loading-msg">
+                                        Generating overall portfolio summary...
+                                    </p>
+                                </div>
+                            </template>
+
+                            <template if:false={overallPortfolioLoading}>
+
+                                <template if:true={overallPortfolioStats}>
+                                    <div class="split-top-overall">
+                                        <div class="metric-chip-overall">
+                                            <span class="metric-val-overall">
+                                                {overallPortfolioStats.totalEngagements}
+                                            </span>
+                                            <span class="metric-lbl-overall">
+                                                Total Engagements
+                                            </span>
+                                        </div>
+                                        <div class="metric-chip-overall">
+                                            <span class="metric-val">
+                                                {overallPortfolioStats.weightedEngagementScore}
+                                            </span>
+                                            <span class="metric-lbl-overall">
+                                                Weighted Engagement Score
+                                            </span>
+                                        </div>
+                                        <div class="metric-chip-overall">
+                                            <span class="metric-val-overall">
+                                                {overallPortfolioStats.engagementRate}
+                                            </span>
+                                            <span class="metric-lbl-overall">
+                                                Effectiveness Rate
+                                            </span>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="overall-side-row">
+                                        <div class="overall-side-cols">
+
+                                            <div class="overall-col">
+                                                <div class="section-head section-head--green">
+                                                    <lightning-icon icon-name="utility:arrowup" size="x-small"
+                                                        class="icon-green">
+                                                    </lightning-icon>
+                                                    Top Engaged Accounts
+                                                </div>
+                                                <ul class="bullet-list bullet-list--green">
+                                                    <template for:each={overallPortfolioStats.topEngagedAccounts}
+                                                        for:item="acc">
+                                                        <li key={acc.name}>
+                                                            {acc.name} —
+                                                            {acc.industry} ·
+                                                            {acc.tier}
+                                                        </li>
+                                                    </template>
+                                                    <template
+                                                        if:false={overallPortfolioStats.topEngagedAccounts.length}>
+                                                        <li class="no-data">
+                                                            No data available
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+
+                                            <div class="overall-col">
+                                                <div class="section-head section-head--red">
+                                                    <lightning-icon icon-name="utility:arrowdown" size="x-small"
+                                                        class="icon-red">
+                                                    </lightning-icon>
+                                                    Low Engaged Accounts
+                                                </div>
+                                                <ul class="bullet-list bullet-list--red">
+                                                    <template for:each={overallPortfolioStats.lowEngagedAccounts}
+                                                        for:item="acc">
+                                                        <li key={acc.name}>
+                                                            {acc.name} —
+                                                            {acc.reason}
+                                                        </li>
+                                                    </template>
+                                                    <template
+                                                        if:false={overallPortfolioStats.lowEngagedAccounts.length}>
+                                                        <li class="no-data">
+                                                            No data available
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="overall-side-row">
+                                        <div class="overall-side-cols">
+
+                                            <div class="overall-col">
+                                                <div class="section-head section-head--green">
+                                                    <lightning-icon icon-name="utility:announcement" size="x-small"
+                                                        class="icon-green">
+                                                    </lightning-icon>
+                                                    Top Channels
+                                                </div>
+                                                <ul class="bullet-list bullet-list--green">
+                                                    <template for:each={overallPortfolioStats.topChannels}
+                                                        for:item="ch">
+                                                        <li key={ch.channel}>
+                                                            {ch.channel} —
+                                                            {ch.responseRate}
+                                                        </li>
+                                                    </template>
+                                                    <template if:false={overallPortfolioStats.topChannels.length}>
+                                                        <li class="no-data">
+                                                            No data available
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+
+                                            <div class="overall-col">
+                                                <div class="section-head section-head--red">
+                                                    <lightning-icon icon-name="utility:warning" size="x-small"
+                                                        class="icon-red">
+                                                    </lightning-icon>
+                                                    Low Channels
+                                                </div>
+                                                <ul class="bullet-list bullet-list--red">
+                                                    <template for:each={overallPortfolioStats.lowChannels}
+                                                        for:item="ch">
+                                                        <li key={ch.channel}>
+                                                            {ch.channel} —
+                                                            {ch.responseRate}
+                                                        </li>
+                                                    </template>
+                                                    <template if:false={overallPortfolioStats.lowChannels.length}>
+                                                        <li class="no-data">
+                                                            No data available
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="overall-side-row">
+                                        <div class="overall-side-cols">
+
+                                            <div class="overall-col">
+                                                <div class="section-head section-head--blue">
+                                                    <lightning-icon icon-name="utility:user" size="x-small"
+                                                        class="icon-blue">
+                                                    </lightning-icon>
+                                                    Most Engaged Contacts
+                                                </div>
+                                                <ul class="bullet-list bullet-list--blue">
+                                                    <template for:each={overallPortfolioStats.contacts} for:item="c">
+                                                        <li key={c.name}>
+                                                            {c.name} —
+                                                            {c.title}
+                                                        </li>
+                                                    </template>
+                                                    <template if:false={overallPortfolioStats.contacts.length}>
+                                                        <li class="no-data">
+                                                            No data available
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+
+                                            <div class="overall-col">
+                                                <div class="section-head section-head--red">
+                                                    <lightning-icon icon-name="utility:user" size="x-small"
+                                                        class="icon-red">
+                                                    </lightning-icon>
+                                                    Least Engaged Contacts
+                                                </div>
+                                                <ul class="bullet-list bullet-list--red">
+                                                    <template for:each={overallPortfolioStats.leastEngagedContacts}
+                                                        for:item="c">
+                                                        <li key={c.name}>
+                                                            {c.name} —
+                                                            {c.title}
+                                                        </li>
+                                                    </template>
+                                                    <template
+                                                        if:false={overallPortfolioStats.leastEngagedContacts.length}>
+                                                        <li class="no-data">
+                                                            No data available
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="tile-section">
+                                        <div class="section-head section-head--blue">
+                                            <lightning-icon icon-name="utility:justify_text" size="x-small"
+                                                class="icon-blue">
+                                            </lightning-icon>
+                                            Channel Mix
+                                        </div>
+                                        <div class="channel-mix-table">
+                                            <template for:each={overallPortfolioStats.channelMix} for:item="mix">
+                                                <div key={mix.label} class="mix-table-row">
+                                                    <span class="mix-table-label">
+                                                        {mix.label}
+                                                    </span>
+                                                    <span class="mix-table-pct">
+                                                        {mix.pct}%
+                                                    </span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                </template>
+
+                                <template if:true={hasOverallPortfolioSummary}>
+                                    <div class="tile-section" onclick={handleSummaryClick}
+                                        data-summary={overallPortfolioSummary}>
+                                        <div class="summary-card">
+                                            <div class="summary-card-head">
+                                                <span class="summary-spark">
+                                                    ✦
+                                                </span>
+                                                <span>
+                                                    AI Overall Portfolio Insight
+                                                </span>
+                                                <lightning-icon icon-name="utility:expand_alt" size="x-small"
+                                                    class="summary-expand-icon">
+                                                </lightning-icon>
+                                            </div>
+                                            <div class="summary-card-body">
+                                                <lightning-formatted-rich-text value={overallPortfolioSummary}>
+                                                </lightning-formatted-rich-text>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template if:true={showSummaryModal}>
+                                    <section class="slds-modal slds-fade-in-open summary-popup">
+                                        <div class=" summary-popup-container">
+                                            <div class="summary-popup-header">
+                                                <span class="summary-spark">✦</span>
+                                                <span>AI Summary</span>
+                                                <button class="summary-popup-close"
+                                                    onclick={closeSummaryModal}>✕</button>
+                                            </div>
+                                            <div class="summary-popup-body">
+                                                <lightning-formatted-rich-text value={overallPortfolioSummary}>
+                                                </lightning-formatted-rich-text>
+
+                                            </div>
+                                             <div class="summary-popup-footer">
+                                                    <button class="summary-popup-close-btn"
+                                                        onclick={closeSummaryModal}>Close</button>
+                                                </div> 
+                                        </div>
+                                    </section>
+                                    <div class="slds-backdrop slds-backdrop_open" onclick={closeSummaryModal}></div>
+                                </template>
+
+                                <template if:false={overallPortfolioStats}>
+                                    <template if:false={hasOverallPortfolioSummary}>
+                                        <div class="overall-empty">
+                                            <p class="overall-empty-msg">
+                                                No overall summary available.
+                                                Please ensure accounts are
+                                                loaded for both SVP and Quad4
+                                                tabs.
+                                            </p>
+                                        </div>
+                                    </template>
+                                </template>
+
+                            </template>
+
+                        </lightning-tab>
+                    </template>-->
+
+
+
+
+                    <!--<template if:true={showOverallTab}>
+
+                        <lightning-tab label="Overall Summary" value="OVERALL" onactive={handleTabChange}>
 
                             <template if:true={overallPortfolioLoading}>
 
@@ -1193,7 +1416,7 @@
 
                         </lightning-tab>
 
-                    </template>
+                    </template>-->
 
                 </lightning-tabset>
 

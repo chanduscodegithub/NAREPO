@@ -25,12 +25,12 @@ export default class ProspectEngagementInsights
     @track selectedTiers = [];
     @track tileData = {};
     @track isGenerating = false;
-    @track overallSummarySVP = '';
-    @track overallSummaryQuad4 = '';
-    @track overallStatsSVP = null;
-    @track overallStatsQuad4 = null;
-    @track svpViewMode = 'users';
-    @track quadViewMode = 'users';
+    // @track overallSummarySVP = '';
+    // @track overallSummaryQuad4 = '';
+    // @track overallStatsSVP = null;
+    // @track overallStatsQuad4 = null;
+    // @track svpViewMode = 'users';
+    // @track quadViewMode = 'users';
     @track effectiveFrom = '';
     @track effectiveTo = '';
     @track showSummaryModal = false;
@@ -39,6 +39,9 @@ export default class ProspectEngagementInsights
     @track isDirty = false;
     @track overallPortfolioSummary = '';
     @track overallPortfolioLoading = false;
+    @track overallPortfolioStats = null;
+    @track appliedUsers = [];
+
 
     selectVal = 'svp';
     selectDateVal = '30';
@@ -96,6 +99,7 @@ export default class ProspectEngagementInsights
         this.svpLabels = result.svpLabels1;
         this.quad4Labels = result.quad4Labels1;
         this.selectedUsers = [...this.currentLabels];
+        this.appliedUsers = [...this.currentLabels];
         this.overallSummarySVP = '';
         this.overallSummaryQuad4 = '';
     }
@@ -252,6 +256,13 @@ export default class ProspectEngagementInsights
         }
 
         // ── parse AI narrative ──────────────────────────
+        // NOTE: the current prompt returns the 13 sections
+        // directly at the JSON top level — there is NO
+        // "AI_Narrative_Summary__c" wrapper key in this schema.
+        // The previous version of this block only ever looked
+        // for that wrapper, which never existed in the response,
+        // so aiSummary stayed empty and the retry button showed
+        // every time. Fixed to parse the top-level object directly.
         let aiSummary = '';
         if (aiResult) {
             const parsed = this.safeParseJSON(
@@ -259,21 +270,15 @@ export default class ProspectEngagementInsights
 
             console.log(`${userKey} parsed null:`,
                 parsed === null);
-            console.log(
-                `${userKey} has AI_Narrative:`,
-                !!parsed?.AI_Narrative_Summary__c);
+            console.log(`${userKey} section keys:`,
+                parsed ? Object.keys(parsed) : []);
 
-            if (parsed?.AI_Narrative_Summary__c
-                && typeof parsed.AI_Narrative_Summary__c
-                === 'object'
-                && Object.keys(
-                    parsed.AI_Narrative_Summary__c)
-                    .length > 0) {
+            if (parsed
+                && typeof parsed === 'object'
+                && Object.keys(parsed).length > 0) {
                 try {
                     aiSummary =
-                        this.buildNarrativeSummary(
-                            parsed.AI_Narrative_Summary__c
-                        );
+                        this.buildNarrativeSummary(parsed);
                     console.log(
                         `${userKey} aiSummary length:`,
                         aiSummary.length);
@@ -284,20 +289,10 @@ export default class ProspectEngagementInsights
                         buildErr.message);
                 }
             } else {
-                if (!parsed) {
-                    console.warn(
-                        `${userKey} — JSON parse failed`);
-                } else if (!parsed.AI_Narrative_Summary__c) {
-                    console.warn(
-                        `${userKey} — `
-                        + `AI_Narrative_Summary__c missing`);
-                    console.warn('Keys in parsed:',
-                        Object.keys(parsed));
-                } else {
-                    console.warn(
-                        `${userKey} — `
-                        + `AI_Narrative_Summary__c empty`);
-                }
+                console.warn(
+                    !parsed
+                        ? `${userKey} — JSON parse failed`
+                        : `${userKey} — parsed JSON was empty`);
             }
         } else {
             console.warn(
@@ -336,7 +331,7 @@ export default class ProspectEngagementInsights
             this.overallSummaryQuad4 = '';
             this.overallStatsSVP = null;
             this.overallStatsQuad4 = null;
-
+            this.appliedUsers = [...this.selectedUsers];
             await this.loadAccountIds();
 
             this.loadingMessage =
@@ -355,21 +350,53 @@ export default class ProspectEngagementInsights
 
     // ── TAB CHANGE ─────────────────────────────────────────────
     async handleTabChange(event) {
-        if (this.activeTab === 'OVERALL' && !this.overallPortfolioSummary) {
-            await this.loadOverallPortfolioSummary();
-        }
+        // if (this.activeTab === 'OVERALL' && !this.overallPortfolioSummary) {
+        //     await this.loadOverallPortfolioSummary();
+        // }
         const newTab = event.target.value || event.detail?.value;
         if (!newTab || newTab === this.activeTab) return;
         this.activeTab = newTab;
+        if (newTab === 'OVERALL') {
+            this.selectedUsers = [
+                ...new Set([
+                    ...this.svpLabels,
+                    ...this.quad4Labels
+                ])
+            ];
+
+            if (!this.overallPortfolioSummary) {
+
+                await this.loadOverallPortfolioSummary();
+
+            }
+
+            return;
+        }
+
         this.showDropdown = false;
         this.isDirty = true;
 
-        this.selectedUsers = this.activeTab === 'SVP'
-            ? [...this.svpLabels]
-            : [...this.quad4Labels];
+        if (this.activeTab === 'SVP') {
 
-        const labelsForTab = this.activeTab === 'SVP'
-            ? this.svpLabels : this.quad4Labels;
+            this.selectedUsers = [...this.svpLabels];
+
+        } else if (this.activeTab === 'Quad4') {
+
+            this.selectedUsers = [...this.quad4Labels];
+
+        } else if (this.activeTab === 'OVERALL') {
+
+            this.selectedUsers = [
+                ...new Set([
+                    ...this.svpLabels,
+                    ...this.quad4Labels
+                ])
+            ];
+
+        }
+        this.appliedUsers = [...this.selectedUsers];
+
+        const labelsForTab = this.activeTab === 'SVP' ? this.svpLabels : this.quad4Labels;
 
         const hasData = labelsForTab.some(label => {
             const key = this.activeTab === 'SVP'
@@ -440,206 +467,169 @@ export default class ProspectEngagementInsights
             }
         }
     }
-
-    async loadOverallSummarySVP() {
-        const allSvpIds = Object.entries(
-            this.accountIdsPerUser)
-            .filter(([key]) => key.startsWith('SVP_'))
-            .flatMap(([, ids]) => ids);
-
-        if (!allSvpIds.length) return;
-
-        const svpText =
-            this.buildSummaryText('SVP_');
-
-        const [svpCardResult, svpNarrativeResult] =
-            await Promise.all([
-                getPromptDataForUser({
-                    accountIds: allSvpIds,
-                    startDate: this.effectiveFrom,
-                    endDate: this.effectiveTo
-                }),
-                svpText.trim()
-                    ? getOverallPortfolioSummary({
-                        userSummariesJson: svpText
-                    }).catch(e => {
-                        console.error(
-                            'SVP narrative error:',
-                            e.message);
-                        return null;
-                    })
-                    : Promise.resolve(null)
-            ]);
-
-        if (svpCardResult) {
-            const parsed = this.parseTileData(
-                svpCardResult, 'SVP_OVERALL');
-            if (parsed) this.overallStatsSVP = parsed;
-        }
-
-        if (svpNarrativeResult) {
-            const parsed = this.safeParseJSON(
-                svpNarrativeResult, 'overallSVP');
-            if (parsed?.AI_Narrative_Summary__c) {
-                this.overallSummarySVP =
-                    this.buildNarrativeSummary(
-                        parsed.AI_Narrative_Summary__c);
-            } else {
-                this.overallSummarySVP =
-                    this.parseOverallSummary(
-                        svpNarrativeResult);
-            }
-        }
-    }
-
-    // ── OVERALL QUAD4 ──────────────────────────────────────────
-    async handleQuadViewToggle(event) {
-        this.quadViewMode =
-            event.currentTarget.dataset.view;
-        if (this.quadViewMode === 'overall'
-            && !this.overallStatsQuad4) {
-            this.isLoading = true;
-            this.loadingMessage =
-                'Generating Quad4 overall...';
-            try {
-                await this.loadOverallSummaryQuad4();
-            } catch (e) {
-                this.errorMessage =
-                    'Failed Quad4 overall: '
-                    + (e.body?.message || e.message);
-            } finally {
-                this.isLoading = false;
-                this.loadingMessage = '';
-            }
-        }
-    }
-
-    async loadOverallSummaryQuad4() {
-        const allQuad4Ids = Object.entries(
-            this.accountIdsPerUser)
-            .filter(([key]) =>
-                key.startsWith('QUAD4_'))
-            .flatMap(([, ids]) => ids);
-
-        if (!allQuad4Ids.length) return;
-
-        const quad4Text =
-            this.buildSummaryText('QUAD4_');
-
-        const [quad4CardResult, quad4NarrativeResult] =
-            await Promise.all([
-                getPromptDataForUser({
-                    accountIds: allQuad4Ids,
-                    startDate: this.effectiveFrom,
-                    endDate: this.effectiveTo
-                }),
-                quad4Text.trim()
-                    ? getOverallPortfolioSummary({
-                        userSummariesJson: quad4Text
-                    }).catch(e => {
-                        console.error(
-                            'Quad4 narrative error:',
-                            e.message);
-                        return null;
-                    })
-                    : Promise.resolve(null)
-            ]);
-
-        if (quad4CardResult) {
-            const parsed = this.parseTileData(
-                quad4CardResult, 'QUAD4_OVERALL');
-            if (parsed) this.overallStatsQuad4 = parsed;
-        }
-
-        if (quad4NarrativeResult) {
-            const parsed = this.safeParseJSON(
-                quad4NarrativeResult, 'overallQuad4');
-            if (parsed?.AI_Narrative_Summary__c) {
-                this.overallSummaryQuad4 =
-                    this.buildNarrativeSummary(
-                        parsed.AI_Narrative_Summary__c);
-            } else {
-                this.overallSummaryQuad4 =
-                    this.parseOverallSummary(
-                        quad4NarrativeResult);
-            }
-        }
-    }
-
     async loadOverallPortfolioSummary() {
+
+        if (this.overallPortfolioLoading) {
+            return;
+        }
 
         this.overallPortfolioLoading = true;
 
         try {
 
-            // Merge all account ids
-            const allAccountIds = [
-                ...new Set(
-                    Object.values(this.accountIdsPerUser)
-                        .flat()
-                )
-            ];
+            const allAccountIds = [];
 
-            if (!allAccountIds.length) {
+            this.selectedUsers.forEach(user => {
+
+                const svpKey = 'SVP_' + user;
+                const quadKey = 'QUAD4_' + user;
+
+                if (this.accountIdsPerUser[svpKey]) {
+                    allAccountIds.push(...this.accountIdsPerUser[svpKey]);
+                }
+
+                if (this.accountIdsPerUser[quadKey]) {
+                    allAccountIds.push(...this.accountIdsPerUser[quadKey]);
+                }
+
+            });
+
+            const uniqueAccountIds = [...new Set(allAccountIds)];
+
+            if (!uniqueAccountIds.length) {
                 this.overallPortfolioSummary = '';
+                this.overallPortfolioStats = null;
                 return;
             }
 
-            const result =
-                await getOverallPortfolioSummary({
+            // Call both methods together
+            const [statsResult, summaryResult] = await Promise.all([
 
-                    accountIds: allAccountIds,
+                getPromptDataForUser({
+
+                    accountIds: uniqueAccountIds,
 
                     startDate: this.effectiveFrom,
 
                     endDate: this.effectiveTo
 
-                });
+                }),
 
-            if (!result) {
+                getOverallPortfolioSummary({
+
+                    accountIds: uniqueAccountIds,
+
+                    startDate: this.effectiveFrom,
+
+                    endDate: this.effectiveTo
+
+                })
+
+            ]);
+
+            // Parse portfolio stats (same data used for SVP/Quad4 Overall)
+            if (statsResult) {
+                this.overallPortfolioStats =
+                    this.parseTileData(statsResult, 'OVERALL');
+            } else {
+                this.overallPortfolioStats = null;
+            }
+
+            // Existing summary logic (unchanged)
+            if (!summaryResult) {
                 this.overallPortfolioSummary = '';
                 return;
             }
 
             const parsed = this.safeParseJSON(
-                result,
+                summaryResult,
                 'overallPortfolio'
             );
 
-            if (
-                parsed &&
-                parsed.AI_Narrative_Summary__c
-            ) {
-
+            if (parsed) {
                 this.overallPortfolioSummary =
-                    this.buildNarrativeSummary(
-                        parsed.AI_Narrative_Summary__c
-                    );
-
+                    this.formatOverallPortfolioSummary(parsed);
             } else {
-
-                this.overallPortfolioSummary = result;
-
+                this.overallPortfolioSummary = summaryResult;
             }
 
-        }
-        catch (e) {
+        } catch (e) {
 
             console.error(e);
 
-            this.overallPortfolioSummary =
-                'Unable to generate summary.';
+            this.overallPortfolioSummary = 'Unable to generate summary.';
+            this.overallPortfolioStats = null;
 
-        }
-        finally {
+        } finally {
 
             this.overallPortfolioLoading = false;
 
         }
-
     }
 
+    formatOverallPortfolioSummary(summary) {
 
+        if (!summary) return '';
+
+        let html = '';
+
+        Object.entries(summary).forEach(([key, value]) => {
+
+            const heading = key
+                .replace(/__c$/, '')
+                .replace(/_/g, ' ');
+
+            html += `<h2><b>${heading}</b></h2>`;
+
+            if (value.insight) {
+
+                const parts = value.insight
+                    .trim()
+                    .split('|')
+                    .map(p => p.replace(/\|/g, '').trim())
+                    .filter(Boolean);
+
+                if (parts.length > 1) {
+
+                    html += '<ul>';
+
+                    parts.forEach(part => {
+
+                        const cleanedPart = part
+                            .replace(/\|+\s*$/g, '')   // remove trailing |
+                            .replace(/\s+\|/g, '')     // remove " |"
+                            .trim();
+
+                        html += `<li>${cleanedPart}</li>`;
+                    });
+
+                    html += '</ul>';
+
+                } else {
+
+                    html += `<p>${value.insight}</p>`;
+
+                }
+            }
+
+            if (value.points?.length) {
+
+                html += '<ul>';
+
+                value.points.forEach(point => {
+                    html += `<li>${point}</li>`;
+                });
+
+                html += '</ul>';
+            }
+
+            html += '<br/>';
+
+        });
+
+        return html;
+
+    }
 
     // ── BUILD SUMMARY TEXT ─────────────────────────────────────
     buildSummaryText(prefix) {
@@ -995,11 +985,24 @@ export default class ProspectEngagementInsights
         return (svpCount + quad4Count) > 1;
     }
     get hasOverallPortfolioSummary() {
-    return !!this.overallPortfolioSummary;
-}
+        return !!this.overallPortfolioSummary;
+    }
     get currentLabels() {
-        return this.activeTab === 'SVP'
-            ? this.svpLabels : this.quad4Labels;
+        if (this.activeTab === 'SVP') {
+            return this.svpLabels;
+        }
+
+        if (this.activeTab === 'Quad4') {
+            return this.quad4Labels;
+        }
+
+        // Overall tab
+        return [
+            ...new Set([
+                ...this.svpLabels,
+                ...this.quad4Labels
+            ])
+        ];
     }
 
     get userOptions() {
@@ -1018,7 +1021,7 @@ export default class ProspectEngagementInsights
 
         return labelsForTab
             .filter(label =>
-                this.selectedUsers.includes(label))
+                this.appliedUsers.includes(label))
             .map(label => {
                 const key = this.activeTab === 'SVP'
                     ? 'SVP_' + label
@@ -1135,307 +1138,106 @@ export default class ProspectEngagementInsights
     }
 
     // ── NARRATIVE BUILDER ──────────────────────────────────────
+    // UPDATED to match the new prompt schema, where every section
+    // is a uniform { evidence, insight } object instead of the old
+    // per-section custom field names (recommendation, stepOne,
+    // accounts[], confirmedActive[], etc).
+    //
+    // "insight" is the only field rendered here (same "|"-split
+    // bullet pattern already used in formatOverallPortfolioSummary,
+    // now reused so both narrative builders behave identically).
+    // "evidence" is intentionally not rendered in the tile UI — it
+    // is available on the parsed object if a future requirement
+    // needs to surface it (e.g. a tooltip or "why" expandable line).
     buildNarrativeSummary(narrative) {
-        if (!narrative
-            || typeof narrative !== 'object') {
+        if (!narrative || typeof narrative !== 'object') {
             return '';
         }
 
-        const sections = [];
-
-        const add = (key, title, linesFn) => {
-            try {
-                if (narrative[key]) {
-                    const lines = linesFn(narrative[key])
-                        .filter(Boolean);
-                    if (lines.length) {
-                        sections.push(
-                            this.section(title, lines));
-                    }
-                }
-            } catch (e) {
-                console.error(
-                    `Section ${key} failed:`, e.message);
-            }
+        // key = field name returned by the prompt
+        // value = section title shown in the UI
+        const titles = {
+            Cultivated_vs_New_Accounts__c:
+                'Cultivated vs. New Accounts',
+            Outreach_Pattern_That_Works__c:
+                'Outreach Pattern That Works',
+            Confirmed_Active_vs_Quiet_Engagement__c:
+                'Confirmed Active vs Quiet Engagement',
+            Engagement_Commonality_Across_Accounts__c:
+                'Common Engagement Patterns',
+            Accounts_Falling_Behind_Peers__c:
+                'Accounts Falling Behind Peers',
+            Where_Effort_Is_Wasted__c:
+                'Where Effort Is Wasted',
+            Over_Contacted_Accounts__c:
+                'Over Contacted Accounts',
+            // renamed from Negative_or_Zero_Engagement__c
+            Negative_Zero_Engagement_Accounts__c:
+                'Negative / Zero Engagement',
+            // renamed from Priority_Accounts_to_Act_On_Now__c
+            Priority_Accounts_To_Act_On_Now__c:
+                'Priority Accounts To Act On Now',
+            // renamed from Other_Ways_to_Improve_Outreach__c
+            Other_Ways_To_Improve_Outreach__c:
+                'Other Ways To Improve Outreach',
+            Best_Near_Term_Opportunities__c:
+                'Best Near-Term Opportunities',
+            One_Behavioral_Change_That_Matters_Most__c:
+                'One Behavioral Change That Matters Most',
+            // renamed from Direct_Marketing_Lead_Stage_Movement_Analysis
+            Direct_Marketing_Stage_Movement_Analysis__c:
+                'Direct Marketing Stage Movement Analysis'
         };
 
-        add('Cultivated_vs_New_Accounts__c',
-            'Cultivated vs. New Accounts', n => [
-                n?.recommendation,
-                n?.supportingDataPoint,
-                n?.explanation,
-                n?.actionStep
-                    ? `Next step: ${n.actionStep}` : ''
-            ]);
-
-        add('Outreach_Pattern_That_Works__c',
-            'Outreach Pattern That Works', n => [
-                n?.stepOne,
-                n?.stepTwo,
-                n?.stepThree,
-                n?.trigger
-                    ? `Trigger: ${n.trigger}` : '',
-                n?.explanation,
-                n?.actionStep
-                    ? `Next step: ${n.actionStep}` : ''
-            ]);
-
-        try {
-            const n =
-                narrative
-                    .Confirmed_Active_vs_Quiet_Engagement__c;
-            if (n) {
-                const lines = [];
-                if (n?.confirmedActive?.length) {
-                    lines.push('Confirmed Active:');
-                    n.confirmedActive.forEach(a => {
-                        if (a?.name && a?.evidence)
-                            lines.push(
-                                `${a.name} — ${a.evidence}`);
-                    });
-                }
-                if (n?.quietPassiveOnly?.length) {
-                    lines.push('Quiet / Passive Only:');
-                    n.quietPassiveOnly.forEach(a => {
-                        if (a?.name)
-                            lines.push(
-                                `${a.name} — `
-                                + `${a.evidence || ''}`);
-                    });
-                }
-                if (n?.looksEngagedButUnconfirmed?.length) {
-                    lines.push(
-                        'Looks Engaged but Unconfirmed:');
-                    n.looksEngagedButUnconfirmed.forEach(
-                        a => {
-                            if (a?.name)
-                                lines.push(
-                                    `${a.name} — `
-                                    + `${a.reason || ''}`);
-                        });
-                }
-                if (n?.explanation)
-                    lines.push(n.explanation);
-                if (lines.length) sections.push(
-                    this.section(
-                        'Confirmed Active vs '
-                        + 'Quiet Engagement', lines));
-            }
-        } catch (e) {
-            console.error(
-                'Confirmed_Active section failed:',
-                e.message);
+         const actualKeyByTrimmed = {};
+        for (const k of Object.keys(narrative)) {
+            actualKeyByTrimmed[k.trim()] = k;
         }
+        const sections = [];
 
-        add('Engagement_Commonality_Across_Accounts__c',
-            'Common Engagement Patterns', n => [
-                n?.risingEngagementCommonPattern
-                    ? `Rising: `
-                    + n.risingEngagementCommonPattern
-                    : '',
-                n?.risingEngagementAccounts?.length
-                    ? `Rising Accounts: `
-                    + n.risingEngagementAccounts
-                        .join(', ')
-                    : '',
-                n?.fallingEngagementCommonPattern
-                    ? `Falling: `
-                    + n.fallingEngagementCommonPattern
-                    : '',
-                n?.fallingEngagementAccounts?.length
-                    ? `Falling Accounts: `
-                    + n.fallingEngagementAccounts
-                        .join(', ')
-                    : '',
-                n?.explanation
-            ]);
+        for (const key of Object.keys(titles)) {
+            try {
+                const entry = narrative[key];
+                if (!entry || !entry.insight) continue;
 
-        try {
-            const n =
-                narrative.Accounts_Falling_Behind_Peers__c;
-            if (n?.accounts?.length) {
-                const list = [];
-                n.accounts.forEach(a => {
-                    if (!a) return;
-                    if (a.name) list.push(
-                        `${a.name} `
-                        + `(${a.industry || ''}, `
-                        + `${a.tier || ''})`);
-                    if (a.metric) list.push(a.metric);
-                    if (a.likelyReason)
-                        list.push(a.likelyReason);
-                    if (a.actionStep)
-                        list.push(
-                            `Action: ${a.actionStep}`);
-                });
-                if (n.explanation)
-                    list.push(n.explanation);
-                if (list.length) sections.push(
-                    this.section(
-                        'Accounts Falling Behind Peers',
-                        list));
+                const rawInsight = String(entry.insight).trim();
+                if (!rawInsight) continue;
+
+                // same bullet-splitting pattern as
+                // formatOverallPortfolioSummary — split on "|",
+                // trim each part, drop empties. If there's only
+                // one part (no "|" present), treat the whole
+                // insight as a single bullet line.
+                const parts = rawInsight
+                    .split('|')
+                    .map(p => p.replace(/\|/g, '').trim())
+                    .filter(Boolean);
+
+                const lines = parts.length > 1
+                    ? parts
+                    : [rawInsight];
+
+                // evidence is now rendered too — shown as a
+                // supporting line under the insight bullets so
+                // the user can see the data behind each insight
+                const evidence = entry.evidence
+                    ? String(entry.evidence).trim()
+                    : '';
+
+                sections.push(
+                    this.section(titles[key], lines, evidence));
+            } catch (e) {
+                console.error(`Section ${key} failed:`, e.message);
             }
-        } catch (e) {
-            console.error(
-                'Accounts_Falling_Behind failed:',
-                e.message);
-        }
-
-        add('Where_Effort_Is_Wasted__c',
-            'Where Effort Is Wasted', n => [
-                n?.recommendation,
-                n?.supportingDataPoint,
-                n?.explanation,
-                n?.actionStep
-            ]);
-
-        try {
-            const n =
-                narrative.Over_Contacted_Accounts__c;
-            if (n) {
-                const list = [];
-                n.accounts?.forEach(a => {
-                    if (!a) return;
-                    if (a.name) list.push(
-                        `${a.name}: ${a.reason || ''}`);
-                    if (a.actionStep)
-                        list.push(
-                            `Action: ${a.actionStep}`);
-                });
-                if (n.explanation)
-                    list.push(n.explanation);
-                if (list.length) sections.push(
-                    this.section(
-                        'Over Contacted Accounts', list));
-            }
-        } catch (e) {
-            console.error(
-                'Over_Contacted failed:', e.message);
-        }
-
-        try {
-            const n =
-                narrative.Negative_or_Zero_Engagement__c;
-            if (n) {
-                const list = [];
-                n.accounts?.forEach(a => {
-                    if (!a) return;
-                    if (a.name) list.push(
-                        `${a.name} — ${a.metric || ''}`);
-                    if (a.reengagementAction)
-                        list.push(
-                            `Re-engage: `
-                            + a.reengagementAction);
-                });
-                n.contacts?.forEach(c => {
-                    if (!c) return;
-                    if (c.name) list.push(
-                        `${c.name} (${c.title || ''})`);
-                    if (c.score)
-                        list.push(`Score: ${c.score}`);
-                    if (c.reengagementAction)
-                        list.push(
-                            `Re-engage: `
-                            + c.reengagementAction);
-                });
-                if (list.length) sections.push(
-                    this.section(
-                        'Negative / Zero Engagement',
-                        list));
-            }
-        } catch (e) {
-            console.error(
-                'Negative_Zero failed:', e.message);
-        }
-
-        try {
-            const n =
-                narrative
-                    .Priority_Accounts_to_Act_On_Now__c;
-            if (n?.accounts?.length) {
-                const list = [];
-                n.accounts.forEach(a => {
-                    if (!a) return;
-                    if (a.name) list.push(a.name);
-                    if (a.metric) list.push(a.metric);
-                    if (a.whyNow) list.push(a.whyNow);
-                });
-                if (list.length) sections.push(
-                    this.section(
-                        'Priority Accounts To Act On Now',
-                        list));
-            }
-        } catch (e) {
-            console.error(
-                'Priority_Accounts failed:', e.message);
-        }
-
-        add('Other_Ways_to_Improve_Outreach__c',
-            'Other Ways To Improve Outreach', n => [
-                n?.recommendation,
-                n?.explanation,
-                n?.actionStep
-            ]);
-
-        try {
-            const n =
-                narrative.Best_Near_Term_Opportunities__c;
-            if (n?.accounts?.length) {
-                const list = [];
-                n.accounts.forEach(a => {
-                    if (!a) return;
-                    if (a.name) list.push(a.name);
-                    if (a.whyNow) list.push(a.whyNow);
-                });
-                if (list.length) sections.push(
-                    this.section(
-                        'Best Near-Term Opportunities',
-                        list));
-            }
-        } catch (e) {
-            console.error(
-                'Best_Near_Term failed:', e.message);
-        }
-
-        add('One_Behavioral_Change_That_Matters_Most__c',
-            'One Behavioral Change That Matters Most',
-            n => [
-                n?.recommendation,
-                n?.supportingDataPoint,
-                n?.explanation,
-                n?.actionStep
-            ]);
-
-        try {
-            const n =
-                narrative
-                    .Direct_Marketing_Lead_Stage_Movement_Analysis;
-            if (n) {
-                const lines = [];
-                if (n?.conclusion)
-                    lines.push(n.conclusion);
-                if (n?.detailedExplanation) {
-                    n.detailedExplanation
-                        .split(/\(\d+\)/)
-                        .map(s => s.trim())
-                        .filter(Boolean)
-                        .forEach(s => lines.push(s));
-                }
-                if (lines.length) sections.push(
-                    this.section(
-                        'Direct Marketing Stage '
-                        + 'Movement Analysis', lines));
-            }
-        } catch (e) {
-            console.error(
-                'Stage_Movement failed:', e.message);
         }
 
         return sections.join('<br><br>');
     }
 
     // ── SECTION HELPER ─────────────────────────────────────────
-    section(title, lines) {
+    // evidence is optional — existing callers (e.g.
+    // buildOverallSummaryHtml) that don't pass it are unaffected
+    section(title, lines, evidence = '') {
         const cleaned = lines
             .filter(Boolean)
             .map(l => this.stripMarkdown(l))
@@ -1445,8 +1247,16 @@ export default class ProspectEngagementInsights
                 this.stripLeadingPunctuation(l))
             .filter(Boolean)
             .map(l => `&#8226; ${l}`);
-        return `<strong>${title}</strong>`
+
+        let html = `<strong>${title}</strong>`
             + `<br>${cleaned.join('<br>')}`;
+
+        if (evidence) {
+            const cleanEvidence = this.stripMarkdown(evidence);
+            html += `<br><em>Evidence: ${cleanEvidence}</em>`;
+        }
+
+        return html;
     }
 
     stripMarkdown(text) {
