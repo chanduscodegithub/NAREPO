@@ -25,12 +25,6 @@ export default class ProspectEngagementInsights
     @track selectedTiers = [];
     @track tileData = {};
     @track isGenerating = false;
-    // @track overallSummarySVP = '';
-    // @track overallSummaryQuad4 = '';
-    // @track overallStatsSVP = null;
-    // @track overallStatsQuad4 = null;
-    // @track svpViewMode = 'users';
-    // @track quadViewMode = 'users';
     @track effectiveFrom = '';
     @track effectiveTo = '';
     @track showSummaryModal = false;
@@ -54,32 +48,21 @@ export default class ProspectEngagementInsights
     // ── LIFECYCLE ──────────────────────────────────────────────
     async connectedCallback() {
         const today = new Date();
-        this.effectiveTo =
-            today.toISOString().split('T')[0];
+        this.effectiveTo = today.toISOString().split('T')[0];
         const twoYearsAgo = new Date();
-        twoYearsAgo.setFullYear(
-            twoYearsAgo.getFullYear() - 2);
-        this.effectiveFrom =
-            twoYearsAgo.toISOString().split('T')[0];
-
+        twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+        this.effectiveFrom = twoYearsAgo.toISOString().split('T')[0];
         try {
             this.isLoading = true;
             this.loadingMessage = 'Preparing AI insights...';
-
             await Promise.all([
                 this.loadTierOptions(),
                 this.loadUserInfo()
             ]);
-
             await this.loadAccountIds();
-
-            this.loadingMessage =
-                'Generating AI insights...';
-
+            this.loadingMessage = 'Generating AI insights...';
             await this.loadAllTileData();
-
             this.isDirty = false;
-
         } catch (e) {
             this.errorMessage = 'Failed to load: '
                 + (e.body?.message || e.message);
@@ -100,8 +83,6 @@ export default class ProspectEngagementInsights
         this.quad4Labels = result.quad4Labels1;
         this.selectedUsers = [...this.currentLabels];
         this.appliedUsers = [...this.currentLabels];
-        this.overallSummarySVP = '';
-        this.overallSummaryQuad4 = '';
     }
 
     // ── TIER OPTIONS ───────────────────────────────────────────
@@ -131,19 +112,26 @@ export default class ProspectEngagementInsights
     }
 
     // ── ACCOUNT IDs ────────────────────────────────────────────
+    // Handles all three tabs explicitly. OVERALL fetches BOTH
+    // svpLabels and quad4Labels (not the merged selectedUsers list),
+    // so both real prefixes get populated correctly.
     async loadAccountIds() {
         try {
-            const isSVP = this.activeTab === 'SVP';
-            const svpUsers = isSVP
-                ? (this.selectedUsers.length
+            let svpUsers = [];
+            let quad4Users = [];
+
+            if (this.activeTab === 'SVP') {
+                svpUsers = this.selectedUsers.length
                     ? this.selectedUsers
-                    : this.svpLabels)
-                : [];
-            const quad4Users = !isSVP
-                ? (this.selectedUsers.length
+                    : this.svpLabels;
+            } else if (this.activeTab === 'Quad4') {
+                quad4Users = this.selectedUsers.length
                     ? this.selectedUsers
-                    : this.quad4Labels)
-                : [];
+                    : this.quad4Labels;
+            } else if (this.activeTab === 'OVERALL') {
+                svpUsers = this.svpLabels;
+                quad4Users = this.quad4Labels;
+            }
 
             const result = await getAccountIdsPerUser({
                 svpUserNames: svpUsers,
@@ -162,16 +150,13 @@ export default class ProspectEngagementInsights
     }
 
     // ── LOAD ALL TILE DATA ─────────────────────────────────────
-    // fires all users simultaneously
-    // each user handled by loadSingleUserData
     async loadAllTileData() {
-        const userKeys = Object.keys(
-            this.accountIdsPerUser)
-            .filter(key =>
-                this.activeTab === 'SVP'
-                    ? key.startsWith('SVP_')
-                    : key.startsWith('QUAD4_')
-            );
+        const userKeys = Object.keys(this.accountIdsPerUser).filter(key => {
+            if (this.activeTab === 'OVERALL') return true;
+            return this.activeTab === 'SVP'
+                ? key.startsWith('SVP_')
+                : key.startsWith('QUAD4_');
+        });
 
         if (!userKeys.length) {
             console.warn('No user keys for tab:',
@@ -201,7 +186,6 @@ export default class ProspectEngagementInsights
         console.log(`Loading ${userKey} — `
             + `${accountIds.length} accounts`);
 
-        // ── fire both calls simultaneously ─────────────
         let cardResult = null;
         let aiResult = null;
 
@@ -213,8 +197,6 @@ export default class ProspectEngagementInsights
                         startDate: this.effectiveFrom,
                         endDate: this.effectiveTo
                     }),
-                    // AI call — catch separately
-                    // card always shows even if AI fails
                     getAISummaryForUser({
                         accountIds,
                         startDate: this.effectiveFrom,
@@ -233,16 +215,6 @@ export default class ProspectEngagementInsights
             return;
         }
 
-        console.log(`${userKey} cardResult null:`,
-            cardResult === null);
-        console.log(`${userKey} aiResult null:`,
-            aiResult === null);
-        console.log(`${userKey} aiResult length:`,
-            aiResult?.length || 0);
-        console.log(`${userKey} aiResult first 200:`,
-            String(aiResult || '').slice(0, 200));
-
-        // ── parse card data ─────────────────────────────
         let summary = null;
         if (cardResult) {
             try {
@@ -255,23 +227,10 @@ export default class ProspectEngagementInsights
             }
         }
 
-        // ── parse AI narrative ──────────────────────────
-        // NOTE: the current prompt returns the 13 sections
-        // directly at the JSON top level — there is NO
-        // "AI_Narrative_Summary__c" wrapper key in this schema.
-        // The previous version of this block only ever looked
-        // for that wrapper, which never existed in the response,
-        // so aiSummary stayed empty and the retry button showed
-        // every time. Fixed to parse the top-level object directly.
         let aiSummary = '';
         if (aiResult) {
             const parsed = this.safeParseJSON(
                 aiResult, `aiSummary:${userKey}`);
-
-            console.log(`${userKey} parsed null:`,
-                parsed === null);
-            console.log(`${userKey} section keys:`,
-                parsed ? Object.keys(parsed) : []);
 
             if (parsed
                 && typeof parsed === 'object'
@@ -279,9 +238,6 @@ export default class ProspectEngagementInsights
                 try {
                     aiSummary =
                         this.buildNarrativeSummary(parsed);
-                    console.log(
-                        `${userKey} aiSummary length:`,
-                        aiSummary.length);
                 } catch (buildErr) {
                     console.error(
                         `buildNarrativeSummary `
@@ -299,7 +255,6 @@ export default class ProspectEngagementInsights
                 `${userKey} — aiResult null or empty`);
         }
 
-        // ── update UI immediately for this user ─────────
         if (summary) {
             this.tileData = {
                 ...this.tileData,
@@ -307,16 +262,14 @@ export default class ProspectEngagementInsights
             };
         }
 
-        // always update — empty = retry button shows
         this.aiSummaryMap = {
             ...this.aiSummaryMap,
             [userKey]: aiSummary
         };
-
-        console.log(`${userKey} — done`);
     }
 
     // ── GENERATE SUMMARY ───────────────────────────────────────
+    // FIX: loadAccountIds() now runs BEFORE loadOverallPortfolioSummary().
     async handleGenerateSummary() {
         try {
             this.isLoading = true;
@@ -327,15 +280,17 @@ export default class ProspectEngagementInsights
             this.tileData = {};
             this.accountIdsPerUser = {};
             this.aiSummaryMap = {};
-            this.overallSummarySVP = '';
-            this.overallSummaryQuad4 = '';
-            this.overallStatsSVP = null;
-            this.overallStatsQuad4 = null;
+            this.overallPortfolioSummary = '';
+            this.overallPortfolioStats = null;
+
             this.appliedUsers = [...this.selectedUsers];
             await this.loadAccountIds();
 
-            this.loadingMessage =
-                'Generating AI insights...';
+          /*  if (this.activeTab === 'OVERALL') {
+                await this.loadOverallPortfolioSummary();
+            }*/
+
+            this.loadingMessage ='Generating AI insights...';
 
             await this.loadAllTileData();
 
@@ -350,12 +305,10 @@ export default class ProspectEngagementInsights
 
     // ── TAB CHANGE ─────────────────────────────────────────────
     async handleTabChange(event) {
-        // if (this.activeTab === 'OVERALL' && !this.overallPortfolioSummary) {
-        //     await this.loadOverallPortfolioSummary();
-        // }
         const newTab = event.target.value || event.detail?.value;
         if (!newTab || newTab === this.activeTab) return;
         this.activeTab = newTab;
+
         if (newTab === 'OVERALL') {
             this.selectedUsers = [
                 ...new Set([
@@ -364,11 +317,12 @@ export default class ProspectEngagementInsights
                 ])
             ];
 
-            if (!this.overallPortfolioSummary) {
+            // FIX: appliedUsers synced here too
+            this.appliedUsers = [...this.selectedUsers];
 
+           /* if (!this.overallPortfolioSummary) {
                 await this.loadOverallPortfolioSummary();
-
-            }
+            }*/
 
             return;
         }
@@ -384,16 +338,8 @@ export default class ProspectEngagementInsights
 
             this.selectedUsers = [...this.quad4Labels];
 
-        } else if (this.activeTab === 'OVERALL') {
-
-            this.selectedUsers = [
-                ...new Set([
-                    ...this.svpLabels,
-                    ...this.quad4Labels
-                ])
-            ];
-
         }
+
         this.appliedUsers = [...this.selectedUsers];
 
         const labelsForTab = this.activeTab === 'SVP' ? this.svpLabels : this.quad4Labels;
@@ -406,6 +352,7 @@ export default class ProspectEngagementInsights
 
         if (!hasData) {
             this.isLoading = true;
+            this.loadingMessage = 'Generating AI insights...';
             try {
                 await this.loadAccountIds();
                 await this.loadAllTileData();
@@ -414,6 +361,7 @@ export default class ProspectEngagementInsights
                     'Tab change error:', e);
             } finally {
                 this.isLoading = false;
+                this.loadingMessage = '';
             }
         }
     }
@@ -424,20 +372,14 @@ export default class ProspectEngagementInsights
             event.currentTarget.dataset.userkey;
         if (!userKey) return;
 
-        console.log(`Retrying AI for ${userKey}`);
-
-        // save card data before retry
         const savedTile = this.tileData[userKey];
 
-        // temporarily remove so loadSingleUserData runs
         const newTileData = { ...this.tileData };
         delete newTileData[userKey];
         this.tileData = newTileData;
 
-        // retry this one user
         await this.loadSingleUserData(userKey);
 
-        // restore card data if retry lost it
         if (!this.tileData[userKey] && savedTile) {
             this.tileData = {
                 ...this.tileData,
@@ -446,27 +388,7 @@ export default class ProspectEngagementInsights
         }
     }
 
-    // ── OVERALL SVP ────────────────────────────────────────────
-    async handleSvpViewToggle(event) {
-        this.svpViewMode =
-            event.currentTarget.dataset.view;
-        if (this.svpViewMode === 'overall'
-            && !this.overallStatsSVP) {
-            this.isLoading = true;
-            this.loadingMessage =
-                'Generating SVP overall...';
-            try {
-                await this.loadOverallSummarySVP();
-            } catch (e) {
-                this.errorMessage =
-                    'Failed SVP overall: '
-                    + (e.body?.message || e.message);
-            } finally {
-                this.isLoading = false;
-                this.loadingMessage = '';
-            }
-        }
-    }
+    // ── OVERALL PORTFOLIO SUMMARY ───────────────────────────────
     async loadOverallPortfolioSummary() {
 
         if (this.overallPortfolioLoading) {
@@ -479,7 +401,7 @@ export default class ProspectEngagementInsights
 
             const allAccountIds = [];
 
-            this.selectedUsers.forEach(user => {
+            this.appliedUsers.forEach(user => {
 
                 const svpKey = 'SVP_' + user;
                 const quadKey = 'QUAD4_' + user;
@@ -502,32 +424,22 @@ export default class ProspectEngagementInsights
                 return;
             }
 
-            // Call both methods together
             const [statsResult, summaryResult] = await Promise.all([
 
                 getPromptDataForUser({
-
                     accountIds: uniqueAccountIds,
-
                     startDate: this.effectiveFrom,
-
                     endDate: this.effectiveTo
-
                 }),
 
                 getOverallPortfolioSummary({
-
                     accountIds: uniqueAccountIds,
-
                     startDate: this.effectiveFrom,
-
                     endDate: this.effectiveTo
-
                 })
 
             ]);
 
-            // Parse portfolio stats (same data used for SVP/Quad4 Overall)
             if (statsResult) {
                 this.overallPortfolioStats =
                     this.parseTileData(statsResult, 'OVERALL');
@@ -535,7 +447,6 @@ export default class ProspectEngagementInsights
                 this.overallPortfolioStats = null;
             }
 
-            // Existing summary logic (unchanged)
             if (!summaryResult) {
                 this.overallPortfolioSummary = '';
                 return;
@@ -596,8 +507,8 @@ export default class ProspectEngagementInsights
                     parts.forEach(part => {
 
                         const cleanedPart = part
-                            .replace(/\|+\s*$/g, '')   // remove trailing |
-                            .replace(/\s+\|/g, '')     // remove " |"
+                            .replace(/\|+\s*$/g, '')
+                            .replace(/\s+\|/g, '')
                             .trim();
 
                         html += `<li>${cleanedPart}</li>`;
@@ -775,21 +686,17 @@ export default class ProspectEngagementInsights
 
             let text = String(raw).trim();
 
-            // remove carriage returns
             text = text.replace(/\r\n/g, '\n');
             text = text.replace(/\r/g, '\n');
 
-            // remove invisible characters
             text = text.replace(/^\uFEFF/, '');
             text = text.replace(/\u200B/g, '');
             text = text.replace(/\uFEFF/g, '');
             text = text.replace(/\u00A0/g, ' ');
 
-            // fix smart quotes
             text = text.replace(/[\u201C\u201D]/g, '"');
             text = text.replace(/[\u2018\u2019]/g, "'");
 
-            // strip markdown
             text = text
                 .replace(/```json\s*/gi, '')
                 .replace(/```\s*/g, '')
@@ -809,7 +716,6 @@ export default class ProspectEngagementInsights
                 ? text.slice(firstBrace, lastBrace + 1)
                 : text.slice(firstBrace);
 
-            // check for empty object
             const stripped = text.replace(/\s/g, '');
             if (stripped === '{}'
                 || stripped === '{null}') {
@@ -978,8 +884,6 @@ export default class ProspectEngagementInsights
 
     // ── GETTERS ────────────────────────────────────────────────
     get showOverallTab() {
-        // show if total visible users > 1
-        // counts both SVP and Quad4 selected users
         const svpCount = this.svpLabels?.length || 0;
         const quad4Count = this.quad4Labels?.length || 0;
         return (svpCount + quad4Count) > 1;
@@ -991,12 +895,9 @@ export default class ProspectEngagementInsights
         if (this.activeTab === 'SVP') {
             return this.svpLabels;
         }
-
         if (this.activeTab === 'Quad4') {
             return this.quad4Labels;
         }
-
-        // Overall tab
         return [
             ...new Set([
                 ...this.svpLabels,
@@ -1051,56 +952,6 @@ export default class ProspectEngagementInsights
             });
     }
 
-    get showSvpToggle() {
-        return this.svpLabels?.length > 1;
-    }
-    get showQuadToggle() {
-        return this.quad4Labels?.length > 1;
-    }
-    get isSvpUsersView() {
-        return this.svpViewMode === 'users';
-    }
-    get isSvpOverallView() {
-        return this.svpViewMode === 'overall';
-    }
-    get isQuadUsersView() {
-        return this.quadViewMode === 'users';
-    }
-    get isQuadOverallView() {
-        return this.quadViewMode === 'overall';
-    }
-    get svpUsersBtnClass() {
-        return this.svpViewMode === 'users'
-            ? 'toggle-btn toggle-btn--active'
-            : 'toggle-btn';
-    }
-    get svpOverallBtnClass() {
-        return this.svpViewMode === 'overall'
-            ? 'toggle-btn toggle-btn--active'
-            : 'toggle-btn';
-    }
-    get quadUsersBtnClass() {
-        return this.quadViewMode === 'users'
-            ? 'toggle-btn toggle-btn--active'
-            : 'toggle-btn';
-    }
-    get quadOverallBtnClass() {
-        return this.quadViewMode === 'overall'
-            ? 'toggle-btn toggle-btn--active'
-            : 'toggle-btn';
-    }
-    get hasOverallStatsSVP() {
-        return !!this.overallStatsSVP;
-    }
-    get hasOverallStatsQuad4() {
-        return !!this.overallStatsQuad4;
-    }
-    get hasOverallSummarySVP() {
-        return !!this.overallSummarySVP;
-    }
-    get hasOverallSummaryQuad4() {
-        return !!this.overallSummaryQuad4;
-    }
     get showSVPTab() {
         return this.canViewSvpTab;
     }
@@ -1138,94 +989,88 @@ export default class ProspectEngagementInsights
     }
 
     // ── NARRATIVE BUILDER ──────────────────────────────────────
-    // UPDATED to match the new prompt schema, where every section
-    // is a uniform { evidence, insight } object instead of the old
-    // per-section custom field names (recommendation, stepOne,
-    // accounts[], confirmedActive[], etc).
-    //
-    // "insight" is the only field rendered here (same "|"-split
-    // bullet pattern already used in formatOverallPortfolioSummary,
-    // now reused so both narrative builders behave identically).
-    // "evidence" is intentionally not rendered in the tile UI — it
-    // is available on the parsed object if a future requirement
-    // needs to surface it (e.g. a tooltip or "why" expandable line).
+    // Matches the CURRENT prompt schema — 14 keys, no "__c" suffix,
+    // each value is an ARRAY of bullet strings. Falls back to older
+    // shapes ({evidence,insight} object, or plain string).
     buildNarrativeSummary(narrative) {
         if (!narrative || typeof narrative !== 'object') {
             return '';
         }
 
-        // key = field name returned by the prompt
-        // value = section title shown in the UI
         const titles = {
-            Cultivated_vs_New_Accounts__c:
+            Cultivated_vs_New_Accounts:
                 'Cultivated vs. New Accounts',
-            Outreach_Pattern_That_Works__c:
+            Outreach_Pattern_That_Works:
                 'Outreach Pattern That Works',
-            Confirmed_Active_vs_Quiet_Engagement__c:
+            Confirmed_Active_vs_Quiet_Engagement:
                 'Confirmed Active vs Quiet Engagement',
-            Engagement_Commonality_Across_Accounts__c:
+            Engagement_Commonality_Across_Accounts:
                 'Common Engagement Patterns',
-            Accounts_Falling_Behind_Peers__c:
+            Accounts_Falling_Behind_Peers:
                 'Accounts Falling Behind Peers',
-            Where_Effort_Is_Wasted__c:
+            Where_Effort_Is_Wasted:
                 'Where Effort Is Wasted',
-            Over_Contacted_Accounts__c:
+            Over_Contacted_Accounts:
                 'Over Contacted Accounts',
-            // renamed from Negative_or_Zero_Engagement__c
-            Negative_Zero_Engagement_Accounts__c:
+            Negative_Zero_Engagement_Accounts:
                 'Negative / Zero Engagement',
-            // renamed from Priority_Accounts_to_Act_On_Now__c
-            Priority_Accounts_To_Act_On_Now__c:
+            Priority_Accounts_To_Act_On_Now:
                 'Priority Accounts To Act On Now',
-            // renamed from Other_Ways_to_Improve_Outreach__c
-            Other_Ways_To_Improve_Outreach__c:
-                'Other Ways To Improve Outreach',
-            Best_Near_Term_Opportunities__c:
-                'Best Near-Term Opportunities',
-            One_Behavioral_Change_That_Matters_Most__c:
+            One_Behavioral_Change_That_Matters_Most:
                 'One Behavioral Change That Matters Most',
-            // renamed from Direct_Marketing_Lead_Stage_Movement_Analysis
-            Direct_Marketing_Stage_Movement_Analysis__c:
-                'Direct Marketing Stage Movement Analysis'
+            Direct_Marketing_Stage_Movement_Analysis:
+                'Direct Marketing Stage Movement Analysis',
+            Channel_Level_Performance:
+                'Channel-Level Performance',
+            Underused_High_Performing_Channels:
+                'Underused High-Performing Channels',
+            Regional_Engagement_Guidance:
+                'Regional Engagement Guidance'
         };
 
-         const actualKeyByTrimmed = {};
+        const actualKeyByTrimmed = {};
         for (const k of Object.keys(narrative)) {
             actualKeyByTrimmed[k.trim()] = k;
         }
+
         const sections = [];
 
         for (const key of Object.keys(titles)) {
             try {
-                const entry = narrative[key];
-                if (!entry || !entry.insight) continue;
+                const actualKey = actualKeyByTrimmed[key];
+                if (!actualKey) continue;
 
-                const rawInsight = String(entry.insight).trim();
-                if (!rawInsight) continue;
+                const rawValue = narrative[actualKey];
+                if (!rawValue) continue;
 
-                // same bullet-splitting pattern as
-                // formatOverallPortfolioSummary — split on "|",
-                // trim each part, drop empties. If there's only
-                // one part (no "|" present), treat the whole
-                // insight as a single bullet line.
-                const parts = rawInsight
-                    .split('|')
-                    .map(p => p.replace(/\|/g, '').trim())
-                    .filter(Boolean);
+                let lines;
+                let evidence = '';
 
-                const lines = parts.length > 1
-                    ? parts
-                    : [rawInsight];
+                if (Array.isArray(rawValue)) {
+                    lines = rawValue
+                        .map(v => String(v).trim())
+                        .filter(Boolean);
+                } else if (typeof rawValue === 'object') {
+                    const rawText = rawValue.insight
+                        ? String(rawValue.insight).trim()
+                        : '';
+                    lines = rawText
+                        ? rawText.split('|').map(p => p.replace(/\|/g, '').trim()).filter(Boolean)
+                        : [];
+                    evidence = rawValue.evidence
+                        ? String(rawValue.evidence).trim()
+                        : '';
+                } else {
+                    const rawText = String(rawValue).trim();
+                    const parts = rawText
+                        ? rawText.split('|').map(p => p.replace(/\|/g, '').trim()).filter(Boolean)
+                        : [];
+                    lines = parts.length > 1 ? parts : (rawText ? [rawText] : []);
+                }
 
-                // evidence is now rendered too — shown as a
-                // supporting line under the insight bullets so
-                // the user can see the data behind each insight
-                const evidence = entry.evidence
-                    ? String(entry.evidence).trim()
-                    : '';
+                if (!lines.length) continue;
 
-                sections.push(
-                    this.section(titles[key], lines, evidence));
+                sections.push(this.section(titles[key], lines, evidence));
             } catch (e) {
                 console.error(`Section ${key} failed:`, e.message);
             }
@@ -1235,8 +1080,6 @@ export default class ProspectEngagementInsights
     }
 
     // ── SECTION HELPER ─────────────────────────────────────────
-    // evidence is optional — existing callers (e.g.
-    // buildOverallSummaryHtml) that don't pass it are unaffected
     section(title, lines, evidence = '') {
         const cleaned = lines
             .filter(Boolean)

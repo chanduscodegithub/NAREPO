@@ -4,22 +4,16 @@
         <header class="slds-modal__header">
             <div class="summary-header">
                 <div class="header-left"></div>
-
                 <h2 class="pop_Up_Heading"> Prospect Outreach - SVP/Quad4 Roll Up Summary</h2>
                 <div class="header-left"></div>
             </div>
         </header>
-
         <!--Container-->
-
-
-
         <div class="slds-modal__content slds-p-around_medium">
             <template if:true={isLoading}>
                 <div class="spinner-container">
                     <lightning-spinner alternative-text="Generating Summary" size="large">
                     </lightning-spinner>
-
                     <div class="spinner-text">
                         {loadingMessage}
                     </div>
@@ -122,9 +116,8 @@
                     </div>
 
                     <div class="filter-btn-wrap slds-p-left_large">
-                        <button class="generate-summary-btn" onclick={handleGenerateSummary} disabled={isGenerating}>
-                            <lightning-icon icon-name="utility:agent_astro" size="small" alternative-text="Agent Astro"
-                                disabled={isGenerateDisabled}>
+                        <button class="generate-summary-btn" onclick={handleGenerateSummary} disabled={isGenerateDisabled}>
+                            <lightning-icon icon-name="utility:agent_astro" size="small" alternative-text="Agent Astro">
                             </lightning-icon>
                             <span class="button-text">Apply Filters</span>
                         </button>
@@ -136,14 +129,10 @@
                 <lightning-tabset active-tab-value={activeTab} onselect={handleTabChange}>
                     <!-- Quad4 Tab -->
                     <template if:true={showQuad4Tab}>
-
                         <lightning-tab label="Quad4" value="Quad4" onactive={handleTabChange}>
-
                             <!-- <template if:true={noTiles}>
                                 <p class="no-tiles">No tiles available.</p>
                             </template> -->
-
-
                             <div class="tiles-grid">
                                 <template for:each={filteredLabels} for:item="tile">
                                     <div key={tile.label} class="tile-card">
