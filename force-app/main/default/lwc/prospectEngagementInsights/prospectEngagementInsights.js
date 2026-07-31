@@ -30,7 +30,7 @@ export default class ProspectEngagementInsights
     @track showSummaryModal = false;
     @track selectedSummary = '';
     @track aiSummaryMap = {};
-    @track isDirty = false;
+    //@track isDirty = false;
     @track overallPortfolioSummary = '';
     @track overallPortfolioLoading = false;
     @track overallPortfolioStats = null;
@@ -61,8 +61,8 @@ export default class ProspectEngagementInsights
             ]);
             await this.loadAccountIds();
             this.loadingMessage = 'Generating AI insights...';
-            await this.loadAllTileData();
-            this.isDirty = false;
+            //await this.loadAllTileData();
+             //this.isDirty = false;
         } catch (e) {
             this.errorMessage = 'Failed to load: '
                 + (e.body?.message || e.message);
@@ -165,26 +165,19 @@ export default class ProspectEngagementInsights
         }
 
         await Promise.all(
-            userKeys.map(userKey =>
-                this.loadSingleUserData(userKey))
+            userKeys.map(userKey => this.loadSingleUserData(userKey))
         );
     }
 
     // ── SINGLE USER — card + AI simultaneously ─────────────────
     async loadSingleUserData(userKey) {
         if (this.tileData[userKey]) return;
-
-        const accountIds =
-            this.accountIdsPerUser[userKey];
-
+        const accountIds = this.accountIdsPerUser[userKey];
         if (!accountIds?.length) {
-            console.warn(
-                `No accounts for ${userKey} — skip`);
+            //console.warn(`No accounts for ${userKey} — skip`);
             return;
         }
-
-        console.log(`Loading ${userKey} — `
-            + `${accountIds.length} accounts`);
+       // console.log(`Loading ${userKey} — ` + `${accountIds.length} accounts`);
 
         let cardResult = null;
         let aiResult = null;
@@ -273,26 +266,22 @@ export default class ProspectEngagementInsights
     async handleGenerateSummary() {
         try {
             this.isLoading = true;
-            this.isDirty = false;
-            this.loadingMessage =
-                'Preparing AI insights...';
-
+            //this.isDirty = false;
+            this.loadingMessage ='Preparing AI insights...';
             this.tileData = {};
             this.accountIdsPerUser = {};
             this.aiSummaryMap = {};
             this.overallPortfolioSummary = '';
             this.overallPortfolioStats = null;
-
             this.appliedUsers = [...this.selectedUsers];
             await this.loadAccountIds();
-
           /*  if (this.activeTab === 'OVERALL') {
                 await this.loadOverallPortfolioSummary();
             }*/
 
             this.loadingMessage ='Generating AI insights...';
 
-            await this.loadAllTileData();
+           // await this.loadAllTileData();
 
         } catch (e) {
             console.error(
@@ -328,7 +317,7 @@ export default class ProspectEngagementInsights
         }
 
         this.showDropdown = false;
-        this.isDirty = true;
+        //this.isDirty = true;
 
         if (this.activeTab === 'SVP') {
 
@@ -355,7 +344,7 @@ export default class ProspectEngagementInsights
             this.loadingMessage = 'Generating AI insights...';
             try {
                 await this.loadAccountIds();
-                await this.loadAllTileData();
+                //await this.loadAllTileData();
             } catch (e) {
                 console.error(
                     'Tab change error:', e);
@@ -368,18 +357,13 @@ export default class ProspectEngagementInsights
 
     // ── RETRY AI SUMMARY ───────────────────────────────────────
     async handleRetryAISummary(event) {
-        const userKey =
-            event.currentTarget.dataset.userkey;
+        const userKey = event.currentTarget.dataset.userkey;
         if (!userKey) return;
-
         const savedTile = this.tileData[userKey];
-
         const newTileData = { ...this.tileData };
         delete newTileData[userKey];
         this.tileData = newTileData;
-
         await this.loadSingleUserData(userKey);
-
         if (!this.tileData[userKey] && savedTile) {
             this.tileData = {
                 ...this.tileData,
@@ -815,17 +799,17 @@ export default class ProspectEngagementInsights
     // ── DATE FILTERS ───────────────────────────────────────────
     handleEffectiveFromChange(event) {
         this.effectiveFrom = event.detail.value;
-        this.isDirty = true;
+        //this.isDirty = true;
     }
 
     handleEffectiveToChange(event) {
         this.effectiveTo = event.detail.value;
-        this.isDirty = true;
+        //this.isDirty = true;
     }
 
     handleDateChange(e) {
         this.selectDateVal = e.detail.value;
-        this.isDirty = true;
+       // this.isDirty = true;
     }
 
     handleChange(e) {
@@ -857,7 +841,7 @@ export default class ProspectEngagementInsights
                 this.selectedTiers.filter(
                     t => t !== val);
         }
-        this.isDirty = true;
+       // this.isDirty = true;
     }
 
     // ── USER FILTER ────────────────────────────────────────────
@@ -879,7 +863,7 @@ export default class ProspectEngagementInsights
                 this.selectedUsers.filter(
                     item => item !== value);
         }
-        this.isDirty = true;
+       // this.isDirty = true;
     }
 
     // ── GETTERS ────────────────────────────────────────────────
@@ -961,11 +945,10 @@ export default class ProspectEngagementInsights
     get hasError() {
         return !!this.errorMessage;
     }
-    get isGenerateDisabled() {
-        return this.isGenerating
-            || this.isLoading
-            || !this.isDirty;
-    }
+    // get isGenerateDisabled() {
+    //     console.log( 'isDirty:', this.isDirty, 'isLoading:', this.isLoading, 'isGenerating:', this.isGenerating );
+    //     return this.isGenerating || this.isLoading  || !this.isDirty;
+    // }
     get selectedTiersLabel() {
         if (!this.selectedTiers.length)
             return 'Choose tier';
